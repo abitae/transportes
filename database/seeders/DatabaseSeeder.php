@@ -3,7 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Configuration\Sucursal;
+use App\Models\Configuration\Transportista;
+use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
+use App\Models\Package\Encomienda;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -126,5 +129,10 @@ class DatabaseSeeder extends Seeder
         Permission::insert($permissions->toArray());
         $role->syncPermissions(Permission::all());
         Customer::factory(100)->create();
+
+        Transportista::factory(10)->create();
+        Vehiculo::factory(10)->create();
+
+        Encomienda::factory(1000)->create();
     }
 }

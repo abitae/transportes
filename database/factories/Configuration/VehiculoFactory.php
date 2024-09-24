@@ -17,7 +17,7 @@ class VehiculoFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'placa' => $this->faker->randomNumber(8, false),
         ];
     }
 }

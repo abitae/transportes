@@ -9,16 +9,16 @@
         @endphp
         <div class="grid grid-cols-6 gap-5 shadow-xl">
             <div class="grid col-span-1">
-                <x-mary-select label="Sucursales" icon="s-inbox-stack" :options="$sucursals" wire:model="selectedUser"
+                <x-mary-select label="Destino" icon="s-inbox-stack" :options="$sucursals" wire:model="sucursal_dest_id"
                     inline />
             </div>
-            <div class="grid col-span-2">
+            <div class="grid col-span-3">
                 @php
                     $config2 = ['mode' => 'range', 'altFormat' => 'j F, Y'];
                 @endphp
                 <x-mary-datepicker label="Range" wire:model="myDate3" icon="o-calendar" :config="$config2" inline />
             </div>
-            <div class="grid col-span-2">
+            <div class="grid col-span-1">
 
             </div>
             <div class="grid col-span-1">
@@ -32,24 +32,31 @@
                 <x-mary-card shadow separator>
                     @php
                         $headers = [
-                            ['key' => 'code', 'label' => 'Documento', 'class' => ''],
-                            ['key' => 'name', 'label' => 'Name', 'class' => ''],
-                            ['key' => 'phone', 'label' => 'Telefono', 'class' => ''],
+                            ['key' => 'code', 'label' => 'Codigo', 'class' => ''],
+                            ['key' => 'remitente', 'label' => 'Remitente', 'class' => ''],
+                            ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
                         ];
                         $row_decoration = [
-                            'bg-red-50' => fn(App\Models\package\Customer $customer) => !$customer->isActive,
+                            'bg-red-50' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,
                         ];
                     @endphp
-                    <x-mary-table wire:model="selected" selectable :headers="$headers" :rows="$customers" with-pagination
-                        per-page="perPage" :row-decoration="$row_decoration" :sort-by="$sortBy" :per-page-values="[50, 100, 150]">
+                    <x-mary-table wire:model="selected" selectable :headers="$headers" :rows="$encomiendas" with-pagination
+                        per-page="perPage" :row-decoration="$row_decoration" :per-page-values="[10, 50, 100, 150]">
                         <x-slot:empty>
                             <x-mary-icon name="o-cube" label="No se encontro registros." />
                         </x-slot:empty>
                         @scope('cell_code', $stuff)
                             <nobr>
-                                <x-mary-badge :value="strtoupper($stuff->type_code)" class="badge-info" /> {{ $stuff->code }}
+                                <x-mary-badge :value="strtoupper($stuff->code)" class="badge-info" />
                             </nobr>
                         @endscope
+                        @scope('cell_remitente', $stuff)
+                            <x-mary-badge :value="$stuff->remitente->name" class="w-full badge-info" />
+                        @endscope
+                        @scope('cell_destinatario', $stuff)
+                            <x-mary-badge :value="$stuff->destinatario->name" class="w-full badge-info" />
+                        @endscope
+
                         @scope('actions', $user)
                             <nobr>
                                 <x-mary-button icon="o-trash" wire:click="delete({{ $user->id }})" spinner

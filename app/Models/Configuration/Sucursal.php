@@ -17,13 +17,13 @@ class Sucursal extends Model
         'email',
         'isActive',
     ];
-    public function sucursals_remitente()
+    public function encomiendas_remitente()
     {
-        return $this->hasMany(Encomienda::class, 'customer_id');
+        return $this->hasMany(Encomienda::class, 'customer_id','id');
     }
-    public function sucursals_destinatario()
+    public function encomiendas_destinatario()
     {
-        return $this->hasMany(Encomienda::class, 'customer_dest_id');
+        return $this->hasMany(Encomienda::class, 'customer_dest_id','id');
     }
     public function users()
     {

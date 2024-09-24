@@ -19,10 +19,10 @@ class Customer extends Model
     ];
     public function encomiendas_remitente()
     {
-        return $this->hasMany(Encomienda::class, 'customer_id');
+        return $this->hasMany(Encomienda::class, 'customer_id','id');
     }
     public function encomiendas_destinatario()
     {
-        return $this->hasMany(Encomienda::class, 'customer_dest_id');
+        return $this->hasMany(Encomienda::class, 'customer_dest_id','id');
     }
 }
