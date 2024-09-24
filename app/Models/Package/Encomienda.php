@@ -12,7 +12,22 @@ use Illuminate\Database\Eloquent\Model;
 class Encomienda extends Model
 {
     use HasFactory;
-    
+    protected $fillable = [
+        'code',
+        'user_id',
+        'transportista_id',
+        'vehiculo_id',
+        'customer_id',
+        'sucursal_id',
+        'customer_dest_id',
+        'sucursal_dest_id',
+        'cantidad',
+        'estado_pago',
+        'tipo_pago',
+        'tipo_comprobante',
+        'doc_traslado',
+        'estado_encomienda',
+    ];
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -27,18 +42,18 @@ class Encomienda extends Model
     }
     public function remitente()
     {
-        return $this->belongsTo(Customer::class, 'customer_id','id');
+        return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
     public function sucursal_remitente()
     {
-        return $this->belongsTo(Sucursal::class, 'sucursal_id','id');
+        return $this->belongsTo(Sucursal::class, 'sucursal_id', 'id');
     }
     public function destinatario()
     {
-        return $this->belongsTo(Customer::class,'customer_dest_id','id');
+        return $this->belongsTo(Customer::class, 'customer_dest_id', 'id');
     }
     public function sucursal_destinatario()
     {
-        return $this->belongsTo(Sucursal::class, 'sucursal_dest_id','id');
+        return $this->belongsTo(Sucursal::class, 'sucursal_dest_id', 'id');
     }
 }

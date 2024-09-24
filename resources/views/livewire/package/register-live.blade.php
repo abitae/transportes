@@ -13,35 +13,28 @@
                 @endphp
                 <div class="grid grid-cols-4 gap-1">
                     <div class="grid col-span-2">
-                        <x-mary-input label="Numero de documento">
+                        <x-mary-input label="Numero de documento"  wire:model='customerForm.code'>
                             <x-slot:prepend>
-                                @php
-                                    $docs = [
-                                        ['id' => 'dni', 'name' => 'DNI'],
-                                        ['id' => 'ruc', 'name' => 'RUC'],
-                                        ['id' => 'ce', 'name' => 'CE'],
-                                    ];
-                                @endphp
                                 <x-mary-select wire:model='customerForm.type_code' icon="o-user" :options="$docs"
                                     class="rounded-e-none" />
                             </x-slot:prepend>
                             <x-slot:append>
-                                <x-mary-button icon="o-magnifying-glass" class="btn-primary rounded-s-none" />
+                                <x-mary-button wire:click='searchDocument' icon="o-magnifying-glass" class="btn-primary rounded-s-none" />
                             </x-slot:append>
                         </x-mary-input>
                     </div>
                     <div class="grid col-span-2">
-                        <x-mary-input label="Nombre/Raz. Social">
+                        <x-mary-input label="Nombre/Raz. Social" wire:model='customerForm.name'>
 
                         </x-mary-input>
                     </div>
                     <div class="grid col-span-3">
-                        <x-mary-input label="Direccion">
+                        <x-mary-input label="Direccion" wire:model='customerForm.address'>
 
                         </x-mary-input>
                     </div>
                     <div class="grid col-span-1">
-                        <x-mary-input label="Celular">
+                        <x-mary-input label="Celular" wire:model='customerForm.phone'>
 
                         </x-mary-input>
                     </div>
@@ -53,14 +46,7 @@
                     <div class="grid col-span-2">
                         <x-mary-input label="Numero de documento">
                             <x-slot:prepend>
-                                @php
-                                    $docs = [
-                                        ['id' => 'dni', 'name' => 'DNI'],
-                                        ['id' => 'ruc', 'name' => 'RUC'],
-                                        ['id' => 'ce', 'name' => 'CE'],
-                                    ];
-                                @endphp
-                                <x-mary-select wire:model='customerForm.type_code' icon="o-user" :options="$docs"
+                                <x-mary-select wire:model='type_code' icon="o-user" :options="$docs"
                                     class="rounded-e-none" />
                             </x-slot:prepend>
                             <x-slot:append>

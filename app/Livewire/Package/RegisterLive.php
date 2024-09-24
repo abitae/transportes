@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Package;
 
+use App\Livewire\Forms\CustomerForm;
 use App\Models\User;
 use App\Traits\LogCustom;
+use App\Traits\SearchDocument;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -12,13 +14,22 @@ use Mary\Traits\Toast;
 class RegisterLive extends Component
 {
     use LogCustom;
+    use SearchDocument;
     use Toast;
     use WithPagination, WithoutUrlPagination;
     public int $step = 1;
     public $title = 'Registro';
     public $sub_title = 'Registrar paquetes de envio';
+
+    public CustomerForm $customerForm;
+
     public function render()
     {
+        $docs = [
+            ['id' => 'dni', 'name' => 'DNI'],
+            ['id' => 'ruc', 'name' => 'RUC'],
+            ['id' => 'ce', 'name' => 'CE'],
+        ];
         $users2 = User::all();
 
         $headers2 = [
@@ -35,7 +46,11 @@ class RegisterLive extends Component
             ['id' => 2, 'name' => 'FACTURA'],
             ['id' => 3, 'name' => 'TICKET'],
         ];
-        return view('livewire.package.register-live', compact('users2', 'headers2', 'pagos', 'comprobantes'));
+        return view('livewire.package.register-live', compact('docs', 'users2', 'headers2', 'pagos', 'comprobantes'));
+    }
+    public function searchDocument()
+    {
+        $this->customerForm->store();
     }
     public function next()
     {

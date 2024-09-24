@@ -2,17 +2,20 @@
 
 namespace App\Livewire\Forms;
 
+use App\Models\Package\Customer;
+use App\Traits\LogCustom;
+use App\Traits\SearchDocument;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
-use App\Traits\LogCustom;
-use App\Models\Package\Customer;
 
 class CustomerForm extends Form
 {
     use LogCustom;
+    use SearchDocument;
+
     public ?Customer $customer;
     #[Validate('required')]
-    public $type_code='dni';
+    public $type_code = 'dni';
     #[Validate('required|numeric|digits_between:8,11|unique:customers')]
     public $code = '';
     #[Validate('required')]
@@ -36,10 +39,19 @@ class CustomerForm extends Form
     }
     public function store()
     {
-        $this->validate();
+        $data = $this->search($this->type_code, $this->code);
+        if ($data['encontrado']) {
+            dump($data['data']);
+            if ($this->type_code == 'dni') {
 
+            } elseif ($this->type_code == 'ruc') {
+                $this->name = ($data['data']->ruc);
+            }
+
+        }
+        $this->validate();
         try {
-            Customer::create([
+            Customer::firstOrCreate([
                 'type_code' => $this->type_code,
                 'code' => $this->code,
                 'name' => $this->name,
