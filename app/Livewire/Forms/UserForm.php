@@ -18,14 +18,19 @@ class UserForm extends Form
     #[Validate('required')]
     #[Validate('unique:' . User::class)]
     public $email = '';
-    #[Validate('required','confirmed')]
-    public $password = '';
-    public $password_confirmation = '';
+    #[Validate('required')]
+    public $password = 'password';
+    #[Validate('required')]
+    public $sucursal_id = '';
+    #[Validate('required')]
+    public $role = '';
     public function setUser(User $user)
     {
         $this->user = $user;
         $this->name = $user->name;
         $this->email = $user->email;
+        $this->sucursal_id = $user->sucursal_id;
+        $this->role = $user->getRoleNames()->first();
     }
     public function store()
     {
@@ -35,7 +40,8 @@ class UserForm extends Form
                 'name' => $this->name,
                 'email' => $this->email,
                 'password' => Hash::make($this->password),
-            ]);
+                'sucursal_id' => $this->sucursal_id,
+            ])->syncRoles([$this->role]);
             $this->infoLog('User store ' . Auth::user()->name);
             return true;
         } catch (\Exception $e) {
@@ -46,12 +52,12 @@ class UserForm extends Form
     public function update()
     {
         try {
-            if ($this->password != $this->password_confirmation) {
-                return false;
-            }
             $this->user->update([
-                'password' => Hash::make($this->password),
+                'name' => $this->name,
+                'email' => $this->email,
+                'sucursal_id' => $this->sucursal_id,
             ]);
+            $this->user->syncRoles([$this->role]);
             $this->infoLog('User update ' . Auth::user()->name);
             return true;
         } catch (\Exception $e) {

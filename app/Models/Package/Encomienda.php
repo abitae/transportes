@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Models\Package;
+
+use App\Models\Configuration\Sucursal;
+use App\Models\Configuration\Transportista;
+use App\Models\Configuration\Vehiculo;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Encomienda extends Model
+{
+    use HasFactory;
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function transportista()
+    {
+        return $this->belongsTo(Transportista::class);
+    }
+    public function vehiculo()
+    {
+        return $this->belongsTo(Vehiculo::class);
+    }
+    public function remitente()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+    public function sucursal_remitente()
+    {
+        return $this->belongsTo(Sucursal::class);
+    }
+    public function destinatario()
+    {
+        return $this->belongsTo(Customer::class, 'customer_dest_id');
+    }
+    public function sucursal_destinatario()
+    {
+        return $this->belongsTo(Sucursal::class, 'sucursal_dest_id');
+    }
+}

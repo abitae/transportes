@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Configuration\Sucursal;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->foreignId('sucursal_id')->constrained('sucursals')->onDelete('cascade');
             $table->boolean('isActive')->default(true);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
@@ -37,7 +39,7 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
     }
-
+    
     /**
      * Reverse the migrations.
      */

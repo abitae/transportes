@@ -15,6 +15,14 @@
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    {{-- It will not apply locale yet  --}}
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+    <script>
+        flatpickr.localize(flatpickr.l10ns.es);
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -60,8 +68,14 @@
                 <x-mary-menu-item title="Caja" icon="o-banknotes" link="{{ route('caja.index') }}" />
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Paquetes" icon="o-cog-6-tooth">
-                    <x-mary-menu-item title="Sucursales" icon="o-wifi" link="{{ route('dashboard') }}" />
-                    <x-mary-menu-item title="Colaboradores" icon="o-archive-box" link="####" />
+                    <x-mary-menu-item title="Registrar paquetes" icon="o-banknotes"
+                        link="{{ route('package.register') }}" />
+                    <x-mary-menu-item title="Enviar paquetes" icon="o-banknotes" link="{{ route('package.send') }}" />
+                    <x-mary-menu-item title="Recibir paquetes" icon="o-banknotes"
+                        link="{{ route('package.receive') }}" />
+                    <x-mary-menu-item title="Entregar paquetes" icon="o-banknotes"
+                        link="{{ route('package.deliver') }}" />
+                    <x-mary-menu-item title="Clientes" icon="o-wifi" link="{{ route('package.customer') }}" />
                 </x-mary-menu-sub>
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Configuracion" icon="o-cog-6-tooth">
@@ -73,14 +87,11 @@
                 <x-mary-menu-item title="Messages" icon="o-envelope" link="###" />
             </x-mary-menu>
         </x-slot:sidebar>
-
         <x-slot:content>
             {{ $slot }}
         </x-slot:content>
     </x-mary-main>
-
     <x-mary-toast />
-
     <x-mary-spotlight />
 </body>
 

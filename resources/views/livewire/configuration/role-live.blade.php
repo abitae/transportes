@@ -1,52 +1,34 @@
 <div>
     <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator>
         <x-slot:menu>
-            <x-mary-button wire:click='openModal' responsive icon="o-plus" label="Nuevo usuario"
+            <x-mary-button wire:click='openModal' responsive icon="o-plus" label="Nuevo rol"
                 class="text-white bg-sky-500" />
         </x-slot:menu>
-        <div class="grid content-start grid-cols-4 xs:grid-cols-1">
-            <x-mary-stat title="Paquetes" description="Paquetes pendientes de envio" value="44" icon="m-archive-box"
-                tooltip="Paquetes" />
-            <x-mary-stat title="Monto apertura" description="This month" value="12" icon="o-arrow-trending-up"
-                tooltip="Ops!" />
-            <x-mary-stat title="Ingresos" description="Boletas, Facturas y ticket" value="12"
-                icon="o-arrow-trending-up" class="text-green-500" color="text-green-500"
-                tooltip="Total entradas de dinero" />
-            <x-mary-stat title="Egresos" description="Pagos y salidas" value="123" icon="o-arrow-trending-down"
-                class="text-red-500" color="text-red-500" tooltip="Total salidas de dinero" />
-        </div>
     </x-mary-card>
     <div class="grid grid-cols-4 space-x-2">
         <div class="grid col-span-4 pt-2">
             <x-mary-card shadow separator>
                 @php
                     $headers = [
-                        ['key' => 'id', 'label' => '#', 'class' => 'bg-purple-500 w-1'],
+                        ['key' => 'id', 'label' => '#', 'class' => 'bg-purple-500 w-1 text-white'],
                         ['key' => 'name', 'label' => 'Name', 'class' => ''],
-                        ['key' => 'email', 'label' => 'Email', 'class' => ''],
-                        ['key' => 'isActive', 'label' => 'isActive', 'class' => ''],
+                        ['key' => 'permission', 'label' => 'Permissions'],
                     ];
-                    $row_decoration = [
-                        'bg-red-50' => fn(App\Models\User $user) => !$user->isActive,
-                    ];
+
                 @endphp
-                <x-mary-table :headers="$headers" :rows="$users" with-pagination per-page="perPage" :row-decoration="$row_decoration"
-                    :per-page-values="[5, 20, 10, 50]">
-                    @scope('cell_isActive', $stuff)
-                        <button wire:click='estado({{ $stuff->id }})'
-                            wire:confirm.prompt="Estas seguro de eliminar registro?\n\nEscriba 'SI' para confirmar!|SI"
-                            class="flex items-center">
-                            <div
-                                class="h-2.5 w-2.5 rounded-full {{ $stuff->isActive ? 'bg-green-400' : 'bg-red-600' }} mr-2">
-                            </div>
-                            {{ $stuff->isActive ? 'Active' : 'Disabled' }}
-                        </button>
+                <x-mary-table :headers="$headers" :rows="$roles" with-pagination per-page="perPage" :per-page-values="[5, 20, 10, 50]">
+                    @scope('cell_permission', $rol)
+                        @forelse($rol->permissions as $permission)
+                            <x-mary-badge :value="$permission->name" class="text-white bg-green-500" />
+                        @empty
+                            <p class="text-white bg-red-500"> No permission </p>
+                        @endforelse
                     @endscope
-                    @scope('actions', $user)
+                    @scope('actions', $role)
                         <nobr>
-                            <x-mary-button icon="s-pencil-square" wire:click="update({{ $user->id }})" spinner
+                            <x-mary-button icon="s-pencil-square" wire:click="update({{ $role->id }})" spinner
                                 class="btn-sm" />
-                            <x-mary-button icon="o-trash" wire:click="delete({{ $user->id }})"
+                            <x-mary-button icon="o-trash" wire:click="delete({{ $role->id }})"
                                 wire:confirm.prompt="Estas seguro?\n\nEscribe DELETE para confirmar|DELETE" spinner
                                 class="btn-sm" />
                         </nobr>
@@ -55,31 +37,24 @@
             </x-mary-card>
         </div>
     </div>
-    <x-mary-modal wire:model="modalUser" persistent class="backdrop-blur" box-class="max-h-full max-w-128 ">
+    <x-mary-modal wire:model="modalRole" persistent class="backdrop-blur" box-class="h-full max-w-full">
         <x-mary-icon name="s-envelope" class="text-green-500 text-md"
-            label="{{ !isset($userForm->user) ? 'CREAR USUARIO' : 'EDITAR USUARIO' }}" />
-        <x-mary-form wire:submit="{{ !isset($userForm->user) ? 'create' : 'edit' }}">
+            label="{{ !isset($roleForm->role) ? 'CREAR ROL' : 'EDITAR ROL' }}" />
+        <x-mary-form wire:submit="{{ !isset($roleForm->role) ? 'create' : 'edit' }}">
             <div class="border border-green-500 rounded-lg">
                 <div class="grid grid-cols-4 p-2">
-                    @if (!isset($userForm->user))
-                        <div class="grid col-span-4 pt-2">
-                            <x-mary-input label="Nombre" inline wire:model='userForm.name' />
-                        </div>
-                        <div class="grid col-span-4 pt-2">
-                            <x-mary-input label="Email" inline wire:model='userForm.email' />
-                        </div>
-                    @endif
                     <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Password" inline wire:model='userForm.password' type="password" />
+                        <x-mary-input label="Nombre" inline wire:model='roleForm.name' />
                     </div>
+                </div>
+                <div class="grid grid-cols-4 p-2">
                     <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Re-password" inline wire:model='userForm.password_confirmation'
-                            type="password" />
+                       <x-mary-choices-offline label="Multiple" wire:model="roleForm.permissions" :options="$permisos"/>
                     </div>
                 </div>
                 <x-slot:actions>
-                    <x-mary-button label="Cancel" @click="$wire.modalUser = false" class="bg-red-500" />
-                    <x-mary-button type="submit" spinner="{{ !isset($userForm->sucursal) ? 'create' : 'edit' }}"
+                    <x-mary-button label="Cancel" @click="$wire.modalRole = false" class="bg-red-500" />
+                    <x-mary-button type="submit" spinner="{{ !isset($roleForm->role) ? 'create' : 'edit' }}"
                         label="Save" class="bg-blue-500" />
                 </x-slot:actions>
             </div>

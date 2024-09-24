@@ -7,6 +7,7 @@ use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
 use Mary\Traits\Toast;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleLive extends Component
@@ -14,14 +15,17 @@ class RoleLive extends Component
     use Toast;
     use WithPagination, WithoutUrlPagination;
     public RoleForm $roleForm;
-    public $title = 'Usuarios';
-    public $sub_title = 'Modulo de usuarios';
+    public $title = 'Roles';
+    public $sub_title = 'Modulo de roles y permisos';
     public int $perPage = 10;
     public bool $modalRole = false;
+
+    public $permisions= [];
     public function render()
     {
-        $roles = Role::latest()->paginate($this->perPage);
-        return view('livewire.configuration.role-live', compact('roles'));
+        $roles = Role::with('permissions')->paginate($this->perPage);
+        $permisos = Permission::all();
+        return view('livewire.configuration.role-live', compact('roles', 'permisos'));
     }
     public function openModal()
     {

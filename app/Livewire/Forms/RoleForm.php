@@ -14,7 +14,6 @@ class RoleForm extends Form
 
     #[Validate('required|min:4|unique:roles')]
     public $name = '';
-
     public function setRole(Role $role)
     {
         $this->role = $role;
@@ -22,6 +21,7 @@ class RoleForm extends Form
     }
     public function store()
     {
+
         try {
             $this->validate();
             Role::create($this->all());

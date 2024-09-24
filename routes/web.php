@@ -6,6 +6,12 @@ use App\Livewire\Componentes;
 use App\Livewire\Configuration\RoleLive;
 use App\Livewire\Configuration\SucursalLive;
 use App\Livewire\Configuration\UserLive;
+use App\Livewire\Package\CustomerLive;
+use App\Livewire\Package\DeliverPackageLive;
+use App\Livewire\Package\ReceivePackageLive;
+use App\Livewire\Package\RegisterLive;
+use App\Livewire\Package\SendLive;
+use App\Livewire\Package\SendPackageLive;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,5 +37,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/sucursal', SucursalLive::class)->name('config.sucursal');
     Route::get('/user', UserLive::class)->name('config.user');
     Route::get('/role', RoleLive::class)->name('config.role');
+});
+Route::middleware('auth')->group(function () {
+    Route::get('/customer', CustomerLive::class)->name('package.customer');
+    Route::get('/registrar', RegisterLive::class)->name('package.register');
+    Route::get('/send_package', SendPackageLive::class)->name('package.send');
+    Route::get('/receive_package', ReceivePackageLive::class)->name('package.receive');
+    Route::get('/deliver_package', DeliverPackageLive::class)->name('package.deliver');
 });
 require __DIR__ . '/auth.php';

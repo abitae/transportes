@@ -1,32 +1,28 @@
 <?php
 
-namespace App\Models\Configuration;
+namespace App\Models\Package;
 
-use App\Models\Package\Encomienda;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Sucursal extends Model
+class Customer extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'type_code',
+        'code',
         'name',
-        'address',
         'phone',
         'email',
+        'address',
         'isActive',
     ];
-    public function sucursals_remitente()
+    public function encomiendas_remitente()
     {
         return $this->hasMany(Encomienda::class, 'customer_id');
     }
-    public function sucursals_destinatario()
+    public function encomiendas_destinatario()
     {
         return $this->hasMany(Encomienda::class, 'customer_dest_id');
-    }
-    public function users()
-    {
-        return $this->hasMany(User::class);
     }
 }
