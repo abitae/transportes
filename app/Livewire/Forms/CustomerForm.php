@@ -16,17 +16,17 @@ class CustomerForm extends Form
     public ?Customer $customer;
     #[Validate('required')]
     public $type_code = 'dni';
-    #[Validate('required|numeric|digits_between:8,11|unique:customers')]
+    #[Validate('required|numeric|digits_between:8,11')]
     public $code = '';
     #[Validate('required')]
     public $name = '';
-    #[Validate('')]
+    #[Validate('required')]
     public $phone = '';
     #[Validate('email')]
     public $email = '';
-    #[Validate('')]
+    #[Validate('required')]
     public $address = '';
-    public $isActive = false;
+    public $isActive = true;
     public function setCustomer(Customer $customer)
     {
         $this->customer = $customer;
@@ -39,28 +39,33 @@ class CustomerForm extends Form
     }
     public function store()
     {
-        $data = $this->search($this->type_code, $this->code);
-        if ($data['encontrado']) {
-            dump($data['data']);
-            if ($this->type_code == 'dni') {
-
-            } elseif ($this->type_code == 'ruc') {
-                $this->name = ($data['data']->ruc);
-            }
-
-        }
-        $this->validate();
         try {
-            Customer::firstOrCreate([
-                'type_code' => $this->type_code,
-                'code' => $this->code,
-                'name' => $this->name,
-                'phone' => $this->phone,
-                'email' => $this->email,
-                'address' => $this->address,
-            ]);
-            $this->infoLog('Role store', $this->name);
-            return true;
+
+            $data = $this->search($this->type_code, $this->code);
+            if ($data['encontrado']) {
+                if ($this->type_code == 'dni') {
+                    $this->name = ($data['data']->nombre);
+                } elseif ($this->type_code == 'ruc') {
+                    $this->name = ($data['data']->razon_social);
+                    $this->address = $data['data']->direccion;
+                }
+
+                $customer = Customer::firstOrCreate(
+                    ['type_code' => $this->type_code,
+                        'code' => $this->code],
+                    ['name' => $this->name,
+                        'phone' => $this->phone,
+                        'email' => $this->email,
+                        'address' => $this->address]
+                );
+                $this->phone = $customer->phone;
+                $this->email = $customer->email;
+                $this->address = $customer->address;
+                $this->infoLog('Customer store ' . $this->code);
+                return true;
+            } else {
+                return false;
+            }
         } catch (\Exception $e) {
             $this->errorLog('Customer store', $e);
             return false;
@@ -69,15 +74,16 @@ class CustomerForm extends Form
     public function update()
     {
         try {
-            $this->customer->update([
-                'type_code' => $this->type_code,
-                'code' => $this->code,
-                'name' => $this->name,
-                'phone' => $this->phone,
-                'email' => $this->email,
-                'address' => $this->address,
-            ]);
-            $this->infoLog('Customer update', $this->code);
+            $this->validate();
+            $customer = Customer::updateOrCreate(
+                ['type_code' => $this->type_code,
+                    'code' => $this->code],
+                ['name' => $this->name,
+                    'phone' => $this->phone,
+                    'email' => $this->email,
+                    'address' => $this->address]
+            );
+            $this->infoLog('Customer update' . $this->code);
             return true;
         } catch (\Exception $e) {
             $this->errorLog('Customer update', $e);
@@ -89,7 +95,7 @@ class CustomerForm extends Form
         try {
             $customer = Customer::find($id);
             $customer->delete();
-            $this->infoLog('Customer update', $this->code);
+            $this->infoLog('Customer update' . $this->code);
             return true;
         } catch (\Exception $e) {
             $this->errorLog('Customer update', $e);
@@ -102,7 +108,7 @@ class CustomerForm extends Form
             $customer = Customer::find($id);
             $customer->isActive = !$customer->isActive;
             $customer->save();
-            $this->infoLog('Customer update', $this->code);
+            $this->infoLog('Customer update' . $this->code);
             return true;
         } catch (\Exception $e) {
             $this->errorLog('Customer update', $e);

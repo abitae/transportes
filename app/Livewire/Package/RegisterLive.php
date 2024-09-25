@@ -22,7 +22,7 @@ class RegisterLive extends Component
     public $sub_title = 'Registrar paquetes de envio';
 
     public CustomerForm $customerForm;
-
+    public CustomerForm $customerFormDest;
     public function render()
     {
         $docs = [
@@ -48,14 +48,42 @@ class RegisterLive extends Component
         ];
         return view('livewire.package.register-live', compact('docs', 'users2', 'headers2', 'pagos', 'comprobantes'));
     }
-    public function searchDocument()
+    public function searchRemitente()
     {
         $this->customerForm->store();
+    }
+    public function searchDestinatario()
+    {
+        $this->customerFormDest->store();
     }
     public function next()
     {
         if ($this->step < 4) {
-            $this->step++;
+            if ($this->step == 1) {
+                if ($this->customerForm->update()) {
+                    $this->step++;
+                    $this->toast('Remitente registrado correctamente.', 'success');
+                }
+            }
+            if ($this->step == 2) {
+                if ($this->customerFormDest->update()) {
+                    $this->step++;
+                    $this->toast('Destinatario registrado correctamente.', 'success');
+                }
+            }
+            if ($this->step == 3) {
+                if (true) {
+                    $this->step++;
+                    $this->toast('3 registrado correctamente.', 'success');
+
+                }
+            }
+            if ($this->step == 4) {
+                if (true) {
+                    $this->toast('4 registrado correctamente.', 'success');
+                    dump($this->customerFormDest);
+                }
+            }
         }
     }
     public function prev()

@@ -3,7 +3,7 @@
         <x-slot:menu>
             <x-mary-input label="Buscar envio" inline wire:model.live='search' />
             <x-mary-button wire:click='openModal' responsive icon="o-plus" label="Nuevo envio"
-                class="text-white shadow-xl bg-sky-500"/>
+                class="text-white shadow-xl bg-sky-500" />
         </x-slot:menu>
         <x-mary-steps wire:model="step" steps-color="step-warning"
             class="p-2 my-5 border rounded-lg shadow-xl border-sky-500">
@@ -13,13 +13,14 @@
                 @endphp
                 <div class="grid grid-cols-4 gap-1">
                     <div class="grid col-span-2">
-                        <x-mary-input label="Numero de documento"  wire:model='customerForm.code'>
+                        <x-mary-input label="Numero de documento" wire:model='customerForm.code'>
                             <x-slot:prepend>
                                 <x-mary-select wire:model='customerForm.type_code' icon="o-user" :options="$docs"
                                     class="rounded-e-none" />
                             </x-slot:prepend>
                             <x-slot:append>
-                                <x-mary-button wire:click='searchDocument' icon="o-magnifying-glass" class="btn-primary rounded-s-none" />
+                                <x-mary-button wire:click='searchRemitente' icon="o-magnifying-glass"
+                                    class="btn-primary rounded-s-none" />
                             </x-slot:append>
                         </x-mary-input>
                     </div>
@@ -44,28 +45,29 @@
             <x-mary-step step="2" text="Destinatario">
                 <div class="grid grid-cols-4 gap-1">
                     <div class="grid col-span-2">
-                        <x-mary-input label="Numero de documento">
+                        <x-mary-input label="Numero de documento" wire:model='customerFormDest.code'>
                             <x-slot:prepend>
-                                <x-mary-select wire:model='type_code' icon="o-user" :options="$docs"
+                                <x-mary-select wire:model='customerFormDest.type_code' icon="o-user" :options="$docs"
                                     class="rounded-e-none" />
                             </x-slot:prepend>
                             <x-slot:append>
-                                <x-mary-button icon="o-magnifying-glass" class="btn-primary rounded-s-none" />
+                                <x-mary-button wire:click='searchDestinatario' icon="o-magnifying-glass"
+                                    class="btn-primary rounded-s-none" />
                             </x-slot:append>
                         </x-mary-input>
                     </div>
                     <div class="grid col-span-2">
-                        <x-mary-input label="Nombre/Raz. Social">
+                        <x-mary-input label="Nombre/Raz. Social" wire:model='customerFormDest.name'>
 
                         </x-mary-input>
                     </div>
                     <div class="grid col-span-3">
-                        <x-mary-input label="Direccion">
+                        <x-mary-input label="Direccion" wire:model='customerFormDest.address'>
 
                         </x-mary-input>
                     </div>
                     <div class="grid col-span-1">
-                        <x-mary-input label="Celular">
+                        <x-mary-input label="Celular" wire:model='customerFormDest.phone'>
 
                         </x-mary-input>
                     </div>
