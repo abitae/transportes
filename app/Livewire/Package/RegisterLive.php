@@ -3,6 +3,8 @@
 namespace App\Livewire\Package;
 
 use App\Livewire\Forms\CustomerForm;
+use App\Models\Configuration\Sucursal;
+use App\Models\Package\Paquete;
 use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
 use Livewire\Component;
@@ -16,7 +18,7 @@ class RegisterLive extends Component
     use SearchDocument;
     use Toast;
     use WithPagination, WithoutUrlPagination;
-    public int $step = 3;
+    public int $step = 1;
     public $title = 'Registro';
     public $sub_title = 'Registrar paquetes de envio';
 
@@ -28,7 +30,12 @@ class RegisterLive extends Component
     public $amount;
 
     public $paquetes;
-    public $paquetesPro;
+    public $sucursal_dest_id;
+    public $pin1;
+    public $pin2;
+    public $doc_traslado;
+    public $glosa;
+    public $modalConfimation = false;
     public function mount()
     {
         $this->paquetes = collect([]);
@@ -48,6 +55,7 @@ class RegisterLive extends Component
             ['key' => 'amount', 'label' => 'Monto', 'class' => ''],
             ['key' => 'actions', 'label' => 'Accion', 'class' => ''],
         ];
+        $sucursales = Sucursal::where('isActive', true)->get();
         $pagos = [
             ['id' => 1, 'name' => 'PAGADO'],
             ['id' => 2, 'name' => 'CONTRA ENTREGA'],
@@ -57,7 +65,7 @@ class RegisterLive extends Component
             ['id' => 2, 'name' => 'FACTURA'],
             ['id' => 3, 'name' => 'TICKET'],
         ];
-        return view('livewire.package.register-live', compact('docs', 'headers_paquetes', 'pagos', 'comprobantes'));
+        return view('livewire.package.register-live', compact('docs', 'headers_paquetes', 'sucursales', 'pagos', 'comprobantes'));
     }
     public function searchRemitente()
     {
@@ -84,11 +92,10 @@ class RegisterLive extends Component
                     }
                     break;
                 case 3:
-                    $this->step++;
-                    $this->toast('3 registrado correctamente.', 'success');
-                    break;
-                case 4:
-                    $this->toast('3 registrado correctamente.', 'success');
+                    if ($this->paquetes->isNotEmpty()) {
+                        $this->step++;
+                        $this->toast('3 registrado correctamente.', 'success');
+                    }
                     break;
             }
         }
@@ -101,21 +108,26 @@ class RegisterLive extends Component
     }
     public function addPaquete()
     {
-        $this->paquetes->push([
-            'cantidad' => $this->cantidad,
-            'description' => $this->description,
-            'peso' => $this->peso,
-            'amount' => $this->amount,
-        ]);
-        //dump($this->paquetes->toArray());
+        $paquete = new Paquete();
+        $paquete->cantidad = $this->cantidad;
+        $paquete->description = $this->description;
+        $paquete->peso = $this->peso;
+        $paquete->amount = $this->amount;
+        $this->paquetes->push($paquete->toArray());
     }
-    public function save()
+    public function finish()
     {
-        $paquetes = $this->paquetes;
-        foreach ($paquetes as $paquete) {
-            $this->paquetes->push(collect($paquete)->put('encomienda_id', 1));
-        }
-        dump($this->paquetes->all());
+        $this->modalConfimation = true;
+        //dump($this->sucursal_dest_id);
+        //dump($this->pin1);
+        //dump($this->pin2);
+        //dump($this->doc_traslado);
+        //dump($this->glosa);
+        //$paquetes = $this->paquetes;
+        //foreach ($paquetes as $paquete) {
+        //    $this->paquetes->push(collect($paquete)->put('encomienda_id', 1));
+        //}
+        //dump($this->paquetes->all());
         //Paquete::upsert($this->paquetes->toArray(), null, null);
     }
 }
