@@ -27,6 +27,7 @@ class Encomienda extends Model
         'tipo_comprobante',
         'doc_traslado',
         'estado_encomienda',
+        'pin',
     ];
     public function user()
     {
@@ -55,5 +56,9 @@ class Encomienda extends Model
     public function sucursal_destinatario()
     {
         return $this->belongsTo(Sucursal::class, 'sucursal_dest_id', 'id');
+    }
+    public function paquetes()
+    {
+        return $this->hasMany(Paquete::class);
     }
 }

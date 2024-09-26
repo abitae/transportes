@@ -14,6 +14,8 @@ class CustomerForm extends Form
     use SearchDocument;
 
     public ?Customer $customer;
+    public $customer_id;
+
     #[Validate('required')]
     public $type_code = 'dni';
     #[Validate('required|numeric|digits_between:8,11')]
@@ -40,7 +42,6 @@ class CustomerForm extends Form
     public function store()
     {
         try {
-
             $data = $this->search($this->type_code, $this->code);
             if ($data['encontrado']) {
                 if ($this->type_code == 'dni') {
@@ -49,7 +50,6 @@ class CustomerForm extends Form
                     $this->name = ($data['data']->razon_social);
                     $this->address = $data['data']->direccion;
                 }
-
                 $customer = Customer::firstOrCreate(
                     ['type_code' => $this->type_code,
                         'code' => $this->code],
@@ -61,6 +61,7 @@ class CustomerForm extends Form
                 $this->phone = $customer->phone;
                 $this->email = $customer->email;
                 $this->address = $customer->address;
+                $this->customer_id = $customer->id;
                 $this->infoLog('Customer store ' . $this->code);
                 return true;
             } else {

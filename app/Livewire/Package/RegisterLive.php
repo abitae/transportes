@@ -3,7 +3,6 @@
 namespace App\Livewire\Package;
 
 use App\Livewire\Forms\CustomerForm;
-use App\Models\User;
 use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
 use Livewire\Component;
@@ -17,12 +16,23 @@ class RegisterLive extends Component
     use SearchDocument;
     use Toast;
     use WithPagination, WithoutUrlPagination;
-    public int $step = 1;
+    public int $step = 3;
     public $title = 'Registro';
     public $sub_title = 'Registrar paquetes de envio';
 
-    public CustomerForm $customerForm;
-    public CustomerForm $customerFormDest;
+    public CustomerForm $customerForm, $customerFormDest;
+
+    public $cantidad;
+    public $description;
+    public $peso;
+    public $amount;
+
+    public $paquetes;
+    public $paquetesPro;
+    public function mount()
+    {
+        $this->paquetes = collect([]);
+    }
     public function render()
     {
         $docs = [
@@ -30,12 +40,13 @@ class RegisterLive extends Component
             ['id' => 'ruc', 'name' => 'RUC'],
             ['id' => 'ce', 'name' => 'CE'],
         ];
-        $users2 = User::all();
 
-        $headers2 = [
-            ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1 text-black'],
-            ['key' => 'name', 'label' => 'Nice Name', 'class' => 'text-green-500'],
-            ['key' => 'email', 'label' => 'Email', 'class' => 'text-green-500'],
+        $headers_paquetes = [
+            ['key' => 'cantidad', 'label' => 'Cantidad', 'class' => ''],
+            ['key' => 'description', 'label' => 'Descripcion', 'class' => ''],
+            ['key' => 'peso', 'label' => 'Peso', 'class' => ''],
+            ['key' => 'amount', 'label' => 'Monto', 'class' => ''],
+            ['key' => 'actions', 'label' => 'Accion', 'class' => ''],
         ];
         $pagos = [
             ['id' => 1, 'name' => 'PAGADO'],
@@ -46,7 +57,7 @@ class RegisterLive extends Component
             ['id' => 2, 'name' => 'FACTURA'],
             ['id' => 3, 'name' => 'TICKET'],
         ];
-        return view('livewire.package.register-live', compact('docs', 'users2', 'headers2', 'pagos', 'comprobantes'));
+        return view('livewire.package.register-live', compact('docs', 'headers_paquetes', 'pagos', 'comprobantes'));
     }
     public function searchRemitente()
     {
@@ -59,30 +70,26 @@ class RegisterLive extends Component
     public function next()
     {
         if ($this->step < 4) {
-            if ($this->step == 1) {
-                if ($this->customerForm->update()) {
-                    $this->step++;
-                    $this->toast('Remitente registrado correctamente.', 'success');
-                }
-            }
-            if ($this->step == 2) {
-                if ($this->customerFormDest->update()) {
-                    $this->step++;
-                    $this->toast('Destinatario registrado correctamente.', 'success');
-                }
-            }
-            if ($this->step == 3) {
-                if (true) {
+            switch ($this->step) {
+                case 1:
+                    if ($this->customerForm->update()) {
+                        $this->step++;
+                        $this->toast('Remitente registrado correctamente.', 'success');
+                    }
+                    break;
+                case 2:
+                    if ($this->customerForm->update()) {
+                        $this->step++;
+                        $this->toast('Destinatario registrado correctamente.', 'success');
+                    }
+                    break;
+                case 3:
                     $this->step++;
                     $this->toast('3 registrado correctamente.', 'success');
-
-                }
-            }
-            if ($this->step == 4) {
-                if (true) {
-                    $this->toast('4 registrado correctamente.', 'success');
-                    dump($this->customerFormDest);
-                }
+                    break;
+                case 4:
+                    $this->toast('3 registrado correctamente.', 'success');
+                    break;
             }
         }
     }
@@ -91,5 +98,24 @@ class RegisterLive extends Component
         if ($this->step > 1) {
             $this->step--;
         }
+    }
+    public function addPaquete()
+    {
+        $this->paquetes->push([
+            'cantidad' => $this->cantidad,
+            'description' => $this->description,
+            'peso' => $this->peso,
+            'amount' => $this->amount,
+        ]);
+        //dump($this->paquetes->toArray());
+    }
+    public function save()
+    {
+        $paquetes = $this->paquetes;
+        foreach ($paquetes as $paquete) {
+            $this->paquetes->push(collect($paquete)->put('encomienda_id', 1));
+        }
+        dump($this->paquetes->all());
+        //Paquete::upsert($this->paquetes->toArray(), null, null);
     }
 }

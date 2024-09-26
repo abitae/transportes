@@ -9,7 +9,7 @@
             class="p-2 my-5 border rounded-lg shadow-xl border-sky-500">
             <x-mary-step step="1" text="Remitente">
                 @php
-                    $users = App\Models\User::take(5)->get();
+                $users = App\Models\User::take(5)->get();
                 @endphp
                 <div class="grid grid-cols-4 gap-1">
                     <div class="grid col-span-2">
@@ -77,44 +77,37 @@
             <x-mary-step step="3" text="Paquetes">
                 <div class="grid grid-cols-8 gap-1">
                     <div class="grid col-span-1">
-                        <x-mary-input label="CANT." wire:model="money1" class="rounded-r-lg" />
+                        <x-mary-input label="CANT." wire:model="cantidad" class="rounded-r-lg" />
                     </div>
                     <div class="grid col-span-4">
-                        <x-mary-input label="DESCRIPCION" wire:model="money1" class="rounded-r-lg" />
+                        <x-mary-input label="DESCRIPCION" wire:model="description" class="rounded-r-lg" />
                     </div>
                     <div class="grid col-span-1">
-                        <x-mary-input label="PESO (KG)" wire:model="money1" suffix="KG" locale="es-PE" />
+                        <x-mary-input label="PESO (KG)" wire:model="peso" suffix="KG" locale="es-PE" />
                     </div>
                     <div class="grid col-span-1">
-                        <x-mary-input label="MONTO" wire:model="money1" suffix="S/" locale="es-PE" money />
+                        <x-mary-input label="MONTO" wire:model="amount" suffix="S/" />
                     </div>
                     <div class="flex items-end">
-                        <x-mary-button icon="o-plus" class="text-white rounded-lg bg-sky-500" />
+                        <x-mary-button icon="o-plus" wire:click='addPaquete' class="text-white rounded-lg bg-sky-500" />
+                        <x-mary-button icon="o-plus" wire:click='save' class="text-white rounded-lg bg-sky-500" />
                     </div>
                     <div class="grid col-span-8">
-                        <x-mary-table :headers="$headers2" :rows="$users2" striped
-                            @row-click="alert($event.detail.name)">
-                            {{-- You can name the injected object as you wish  --}}
-                            @scope('cell_name', $user)
-                                <x-mary-badge :value="$user->name" class="badge-info" />
-                            @endscope
-                            {{-- Special `actions` slot --}}
-                            @scope('actions', $user)
-                                <x-mary-button icon="o-trash" wire:click="delete({{ $user->id }})" spinner
-                                    class="btn-sm" />
-                            @endscope
+                        <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped>
+                            <x-slot:empty>
+                                <x-mary-icon name="o-cube" label="No se encontro registros." />
+                            </x-slot:empty>
+                            
                         </x-mary-table>
                     </div>
                 </div>
-
-
             </x-mary-step>
             <x-mary-step step="4" text="Destino" data-content="✓" step-classes="!step-success">
 
                 <div class="grid grid-cols-8 gap-1">
                     <div class="grid col-span-3">
                         @php
-                            $users3 = App\Models\User::take(5)->get();
+                        $users3 = App\Models\User::take(5)->get();
                         @endphp
                         <x-mary-select label="Sucursal" icon="o-user" :options="$users3" class="rounded-r-lg"
                             wire:model="selectedUser" />
@@ -142,12 +135,12 @@
         </x-mary-steps>
         <x-slot:actions>
             @if ($step != 1)
-                <x-mary-button label="Anterior" wire:click="prev" class='shadow-xl' />
+            <x-mary-button label="Anterior" wire:click="prev" class='shadow-xl' />
             @endif
             @if ($step == 4)
-                <x-mary-button label="Finish" wire:click="finish" class='shadow-xl' />
+            <x-mary-button label="Finish" wire:click="finish" class='shadow-xl' />
             @else
-                <x-mary-button label="Siguiente" wire:click="next" class='shadow-xl' />
+            <x-mary-button label="Siguiente" wire:click="next" class='shadow-xl' />
             @endif
         </x-slot:actions>
     </x-mary-card>

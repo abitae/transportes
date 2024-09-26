@@ -38,6 +38,8 @@ class EncomiendaFactory extends Factory
             'tipo_comprobante' => $this->faker->randomElement(['Factura','Boleta','Ticket']),
             'doc_traslado' => $this->faker->randomNumber(8, false),
             'estado_encomienda' => $this->faker->randomElement(['Registrado', 'En ruta', 'Entregado']),
+            'pin' => $this->faker->randomNumber(3, false),
         ];
     }
 }
+

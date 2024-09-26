@@ -40,6 +40,7 @@ return new class extends Migration
             $table->string('doc_traslado')->nullable();
 
             $table->string('estado_encomienda');
+            $table->integer('pin')->unsigned();
             $table->boolean('isActive')->default(true);
             $table->timestamps();
         });
