@@ -30,11 +30,27 @@ class DatabaseSeeder extends Seeder
                 'isActive' => true,
             ]
         );
+        Sucursal::factory()->create(
+            [
+                'name' => 'Sucursal 2',
+                'address' => 'Calle 123',
+                'phone' => '1234567890',
+                'email' => 'sucursal1@hotmail.com',
+                'isActive' => true,
+            ]
+        );
 
         $user = User::factory()->create([
             'name' => 'Abel Arana',
             'email' => 'abel.arana@hotmail.com',
             'sucursal_id' => 1,
+            'isActive' => true,
+            'password' => bcrypt('lobomalo123'),
+        ]);
+        User::factory()->create([
+            'name' => 'usuario1',
+            'email' => 'usuario1@hotmail.com',
+            'sucursal_id' => 2,
             'isActive' => true,
             'password' => bcrypt('lobomalo123'),
         ]);
