@@ -3,10 +3,15 @@
 namespace App\Livewire\Package;
 
 use App\Livewire\Forms\CustomerForm;
+use App\Livewire\Forms\EncomiendaForm;
 use App\Models\Configuration\Sucursal;
+use App\Models\Package\Customer;
 use App\Models\Package\Paquete;
 use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Renderless;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -22,23 +27,29 @@ class RegisterLive extends Component
     public $title = 'Registro';
     public $sub_title = 'Registrar paquetes de envio';
 
-    public CustomerForm $customerForm, $customerFormDest;
-
+    public CustomerForm $customerForm, $customerFormDest, $customerFact;
+    public EncomiendaForm $encomiendaForm;
     public $cantidad;
     public $description;
     public $peso;
     public $amount;
 
     public $paquetes;
+    public $sucursal_destino;
     public $sucursal_dest_id;
     public $pin1;
     public $pin2;
     public $doc_traslado;
+    public $estado_pago;
+    public $tipo_comprobante;
     public $glosa;
     public $modalConfimation = false;
     public function mount()
     {
         $this->paquetes = collect([]);
+        $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->first()->id;
+        $this->estado_pago = 1;
+        $this->tipo_comprobante = 3;
     }
     public function render()
     {
@@ -52,10 +63,11 @@ class RegisterLive extends Component
             ['key' => 'cantidad', 'label' => 'Cantidad', 'class' => ''],
             ['key' => 'description', 'label' => 'Descripcion', 'class' => ''],
             ['key' => 'peso', 'label' => 'Peso', 'class' => ''],
-            ['key' => 'amount', 'label' => 'Monto', 'class' => ''],
-            ['key' => 'actions', 'label' => 'Accion', 'class' => ''],
+            ['key' => 'amount', 'label' => 'P.UNIT', 'class' => ''],
+            ['key' => 'sub_total', 'label' => 'MONTO', 'class' => ''],
         ];
-        $sucursales = Sucursal::where('isActive', true)->get();
+        $sucursales = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->get();
+
         $pagos = [
             ['id' => 1, 'name' => 'PAGADO'],
             ['id' => 2, 'name' => 'CONTRA ENTREGA'],
@@ -75,6 +87,10 @@ class RegisterLive extends Component
     {
         $this->customerFormDest->store();
     }
+    public function searchFacturacion()
+    {
+        $this->customerFact->store();
+    }
     public function next()
     {
         if ($this->step < 4) {
@@ -82,19 +98,25 @@ class RegisterLive extends Component
                 case 1:
                     if ($this->customerForm->update()) {
                         $this->step++;
-                        $this->toast('Remitente registrado correctamente.', 'success');
+                        $this->success('Genial, ingresado correctamente!');
+                    } else {
+                        $this->error('Error, verifique los datos!');
                     }
                     break;
                 case 2:
-                    if ($this->customerForm->update()) {
+                    if ($this->customerFormDest->update()) {
                         $this->step++;
-                        $this->toast('Destinatario registrado correctamente.', 'success');
+                        $this->success('Genial, ingresado correctamente!');
+                    } else {
+                        $this->error('Error, verifique los datos!');
                     }
                     break;
                 case 3:
                     if ($this->paquetes->isNotEmpty()) {
                         $this->step++;
-                        $this->toast('3 registrado correctamente.', 'success');
+                        $this->success('Genial, ingresado correctamente!');
+                    } else {
+                        $this->error('Error, verifique los datos!');
                     }
                     break;
             }
@@ -108,26 +130,68 @@ class RegisterLive extends Component
     }
     public function addPaquete()
     {
-        $paquete = new Paquete();
-        $paquete->cantidad = $this->cantidad;
-        $paquete->description = $this->description;
-        $paquete->peso = $this->peso;
-        $paquete->amount = $this->amount;
-        $this->paquetes->push($paquete->toArray());
+        if (!is_null($this->cantidad) and !is_null($this->description) and !is_null($this->peso) and !is_null($this->amount)) {
+            $paquete = new Paquete();
+            $paquete->cantidad = $this->cantidad;
+            $paquete->description = $this->description;
+            $paquete->peso = $this->peso;
+            $paquete->amount = $this->amount;
+            $paquete->sub_total = $this->amount * $this->cantidad;
+            $this->paquetes->push($paquete->toArray());
+        } else {
+            $this->error('Error, verifique los datos!');
+        }
+    }
+    public function resetPaquete()
+    {
+        $this->paquetes = collect([]);
     }
     public function finish()
     {
-        $this->modalConfimation = true;
-        //dump($this->sucursal_dest_id);
-        //dump($this->pin1);
-        //dump($this->pin2);
-        //dump($this->doc_traslado);
-        //dump($this->glosa);
-        //$paquetes = $this->paquetes;
-        //foreach ($paquetes as $paquete) {
-        //    $this->paquetes->push(collect($paquete)->put('encomienda_id', 1));
-        //}
-        //dump($this->paquetes->all());
-        //Paquete::upsert($this->paquetes->toArray(), null, null);
+        if (isset($this->sucursal_dest_id) and isset($this->pin1) and isset($this->pin2) and $this->pin1 == $this->pin2) {
+            $this->sucursal_destino = Sucursal::findOrFail($this->sucursal_dest_id);
+            $this->customerFact = $this->customerForm;
+            $this->modalConfimation = true;
+        } else {
+            $this->error('Error, verifique los datos!');
+        }
+    }
+    #[Renderless]
+    public function confirmEncomienda()
+    {
+        $this->encomiendaForm->code = 'BT-' . Auth::user()->id . Carbon::now()->setTimezone('America/Lima')->format('md-His') . '-' . rand(100, 999);
+        $this->encomiendaForm->user_id = Auth::user()->id;
+        $this->encomiendaForm->transportista_id = 1;
+        $this->encomiendaForm->vehiculo_id = 1;
+        $this->encomiendaForm->customer_id = Customer::firstOrCreate(
+            ['type_code' => $this->customerForm->type_code, 'code' => $this->customerForm->code]
+        )->id;
+        $this->encomiendaForm->sucursal_id = Auth::user()->sucursal->id;
+        $this->encomiendaForm->customer_dest_id = Customer::firstOrCreate(
+            ['type_code' => $this->customerFormDest->type_code, 'code' => $this->customerFormDest->code]
+        )->id;
+        $this->encomiendaForm->sucursal_dest_id = $this->sucursal_dest_id;
+        $this->encomiendaForm->cantidad = $this->paquetes->sum('cantidad');
+
+        $this->encomiendaForm->monto = $this->paquetes->sum('sub_total');
+        $this->encomiendaForm->estado_pago = $this->estado_pago;
+        $this->encomiendaForm->tipo_pago = 'efectivo';
+        if ($this->encomiendaForm->estado_pago == 2) {
+            $this->encomiendaForm->tipo_comprobante = 3;
+        } else {
+            $this->encomiendaForm->tipo_comprobante = $this->tipo_comprobante;
+        }
+        $this->encomiendaForm->doc_traslado = $this->doc_traslado;
+        $this->encomiendaForm->glosa = $this->glosa;
+        $this->encomiendaForm->estado_encomienda = 'REGISTRADO';
+        $this->encomiendaForm->pin = $this->pin1;
+        if ($this->encomiendaForm->store($this->paquetes, $this->customerFact)) {
+            $this->success('Genial, ingresado correctamente!');
+            $this->modalConfimation = false;
+            $this->redirectRoute('package.register');
+        } else {
+            $this->error('Error, verifique los datos!');
+        }
+
     }
 }

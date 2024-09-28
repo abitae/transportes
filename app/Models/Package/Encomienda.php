@@ -22,10 +22,12 @@ class Encomienda extends Model
         'customer_dest_id',
         'sucursal_dest_id',
         'cantidad',
+        'monto',
         'estado_pago',
         'tipo_pago',
         'tipo_comprobante',
         'doc_traslado',
+        'glosa',
         'estado_encomienda',
         'pin',
     ];

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('peso');
             $table->decimal('amount', 5, 2);
+            $table->decimal('sub_total', 5, 2);
             $table->timestamps();
         });
     }

@@ -14,6 +14,7 @@ class Paquete extends Model
         'description',
         'peso',
         'amount',
+        'sub_total'
     ];
     public function encomienda()
     {

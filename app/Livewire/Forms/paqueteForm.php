@@ -20,6 +20,6 @@ class paqueteForm extends Form
     public $amount;
     public function save($paquetes)
     {
-        Paquete::upsert($this->paquetes->toArray(), null, null);
+        
     }
 }

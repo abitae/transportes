@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('code')->unique();
 
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('transportista_id')->constrained('transportistas')->onDelete('cascade');
-            $table->foreignId('vehiculo_id')->constrained('vehiculos')->onDelete('cascade');
+            $table->foreignId('transportista_id')->constrained('transportistas')->onDelete('cascade')->nullable();
+            $table->foreignId('vehiculo_id')->constrained('vehiculos')->onDelete('cascade')->nullable();
 
             //remitente
             $table->unsignedBigInteger('customer_id');
@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('tipo_pago');
             $table->string('tipo_comprobante');
             $table->string('doc_traslado')->nullable();
+            $table->string('glosa')->nullable();
 
             $table->string('estado_encomienda');
             $table->integer('pin')->unsigned();
