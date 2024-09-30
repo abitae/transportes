@@ -9,6 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 class Transportista extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'licencia',
+        'dni',
+        'name',
+        'isActive',
+    ];
     public function encomiendas()
     {
         return $this->hasMany(Encomienda::class);

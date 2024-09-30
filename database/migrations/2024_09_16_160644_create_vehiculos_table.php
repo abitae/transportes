@@ -13,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('vehiculos', function (Blueprint $table) {
             $table->id();
-            $table->string('placa')->unique();
+            $table->string('name')->unique();
+            $table->string('marca');
+            $table->string('modelo');
+            $table->boolean('isActive')->default(true);
             $table->timestamps();
         });
     }

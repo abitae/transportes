@@ -42,8 +42,10 @@ class EncomiendaForm extends Form
             $encomienda = Encomienda::create([
                 'code' => $this->code,
                 'user_id' => $this->user_id,
+                
                 'transportista_id' => $this->transportista_id,
                 'vehiculo_id' => $this->vehiculo_id,
+
                 'customer_id' => $this->customer_id,
                 'sucursal_id' => $this->sucursal_id,
                 'customer_dest_id' => $this->customer_dest_id,

@@ -150,7 +150,7 @@ class DatabaseSeeder extends Seeder
         Transportista::factory(10)->create();
         Vehiculo::factory(10)->create();
 
-        //Encomienda::factory(100)->create();
-        //Paquete::factory(1000)->create();
+        Encomienda::factory(100)->create();
+        Paquete::factory(1000)->create();
     }
 }
