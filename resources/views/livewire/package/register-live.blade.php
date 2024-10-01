@@ -112,7 +112,7 @@
                     </div>
                     <div class="grid col-span-2">
                         <x-mary-icon name="o-hashtag" label="PING" />
-                        <x-mary-pin wire:model="pin1" size="3" numeric />
+                        <x-mary-pin wire:model="pin1" size="3" numeric type='password'/>
                     </div>
                     <div class="grid col-span-2">
                         <x-mary-icon name="o-hashtag" label="CONFIRMACION" />

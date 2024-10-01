@@ -1,25 +1,22 @@
 <div>
     <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator>
-
-        @php
-            $users = App\Models\User::take(5)->get();
-        @endphp
-        <div class="grid grid-cols-6 gap-5 shadow-xl">
+        <x-slot:menu>
+            <x-mary-button wire:click='openModal' responsive icon="o-plus" label="Nuevo envio"
+                class="text-white bg-sky-500" />
+        </x-slot:menu>
+        <div class="grid grid-cols-6 gap-1 shadow-xl">
             <div class="grid col-span-1">
-                <x-mary-select label="Sucursales" icon="s-inbox-stack" :options="$sucursals" wire:model="selectedUser"
+                <x-mary-select label="Raiz" icon="s-inbox-stack" :options="$sucursals" wire:model="sucursal_id"
                     inline />
             </div>
-            <div class="grid col-span-2">
-                @php
-                    $config2 = ['mode' => 'range', 'altFormat' => 'j F, Y'];
-                @endphp
-                <x-mary-datepicker label="Range" wire:model="myDate3" icon="o-calendar" :config="$config2" inline />
+            <div class="grid col-span-1">
+                <x-mary-datetime label="Fecha" wire:model.live="date_ini" icon="o-calendar" inline />
             </div>
             <div class="grid col-span-2">
 
             </div>
             <div class="grid col-span-1">
-                <x-mary-button wire:click='openModal' responsive icon="s-truck" label="Recepcionar paquetes"
+                <x-mary-button wire:click='openModal' responsive icon="s-truck" label="Receive paquetes"
                     class="text-white bg-green-500" />
             </div>
         </div>
@@ -28,36 +25,79 @@
             <div class="grid col-span-4">
                 <x-mary-card shadow separator>
                     @php
-                        $headers = [
-                            ['key' => 'code', 'label' => 'Documento', 'class' => ''],
-                            ['key' => 'name', 'label' => 'Name', 'class' => ''],
-                            ['key' => 'phone', 'label' => 'Telefono', 'class' => ''],
-                        ];
-                        $row_decoration = [
-                            'bg-red-50' => fn(App\Models\package\Customer $customer) => !$customer->isActive,
-                        ];
+                    $headers = [
+                    ['key' => 'actions', 'label' => 'Action', 'class' => ''],
+                    ['key' => 'remitente', 'label' => 'Remitente', 'class' => ''],
+                    ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
+                    ];
+                    $row_decoration = [
+                    'bg-red-50' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,
+                    ];
                     @endphp
-                    <x-mary-table wire:model="selected" selectable :headers="$headers" :rows="$customers" with-pagination
-                        per-page="perPage" :row-decoration="$row_decoration" :sort-by="$sortBy" :per-page-values="[50, 100, 150]">
+                    <x-mary-table wire:model="selected" selectable :headers="$headers" :rows="$encomiendas"
+                        with-pagination per-page="perPage" :row-decoration="$row_decoration"
+                        :per-page-values="[100, 150, 200]">
                         <x-slot:empty>
                             <x-mary-icon name="o-cube" label="No se encontro registros." />
                         </x-slot:empty>
-                        @scope('cell_code', $stuff)
-                            <nobr>
-                                <x-mary-badge :value="strtoupper($stuff->type_code)" class="badge-info" /> {{ $stuff->code }}
-                            </nobr>
+                        @scope('cell_remitente', $stuff)
+                        <div class="grid grid-cols-5 grid-rows-5 gap-1">
+                            <div class="col-span-3">
+                                <x-mary-badge :value="$stuff->remitente->code" class="text-white bg-purple-500" />
+                            </div>
+                            <div class="col-span-4 row-start-2">
+                                {{ strtoupper($stuff->remitente->name) }}
+                            </div>
+                            <div class="col-span-2 row-start-3">
+                                <x-mary-badge :value="$stuff->sucursal_remitente->name"
+                                    class="text-white bg-green-500" />
+                            </div>
+                            <div class="col-span-2 col-start-3 row-start-3">
+                                <x-mary-badge :value="$stuff->sucursal_remitente->created_at->format('d/m/Y')"
+                                    class="text-right text-white badge-warning" />
+                            </div>
+                            <div class="col-span-4 row-start-4">
+                                {{ $stuff->sucursal_remitente->address }}
+                            </div>
+                        </div>
+
                         @endscope
-                        @scope('actions', $user)
-                            <nobr>
-                                <x-mary-button icon="o-trash" wire:click="delete({{ $user->id }})" spinner
-                                    class="btn-xs" />
-                                <x-mary-button icon="o-trash" wire:click="delete({{ $user->id }})" spinner
-                                    class="btn-xs" />
-                                <x-mary-button icon="o-trash" wire:click="delete({{ $user->id }})" spinner
-                                    class="btn-xs" />
-                                <x-mary-button icon="o-trash" wire:click="delete({{ $user->id }})" spinner
-                                    class="btn-xs" />
-                            </nobr>
+                        @scope('cell_destinatario', $stuff)
+                        <div class="grid grid-cols-5 grid-rows-5 gap-1">
+                            <div class="col-span-3">
+                                <x-mary-badge :value="$stuff->destinatario->code" class="text-white bg-purple-500" />
+                            </div>
+                            <div class="col-span-4 row-start-2">
+                                {{ strtoupper($stuff->destinatario->name)}}
+
+                            </div>
+                            <div class="col-span-2 row-start-3">
+                                <x-mary-badge :value="$stuff->sucursal_destinatario->name"
+                                    class="text-white bg-green-500" />
+                            </div>
+                            <div class="col-span-2 col-start-3 row-start-3">
+                                <x-mary-badge :value="$stuff->sucursal_destinatario->created_at->format('d/m/Y')"
+                                    class="text-right text-white badge-warning" />
+                            </div>
+                            <div class="col-span-4 row-start-4">
+                                {{ $stuff->sucursal_destinatario->address }}
+                            </div>
+                        </div>
+                        @endscope
+
+                        @scope('cell_actions', $stuff)
+                        <x-mary-badge :value="strtoupper($stuff->code)" class="w-min-full badge-warning" />
+                        <br>
+                        <nobr>
+                            <x-mary-button icon="o-no-symbol" wire:click="delete({{ $stuff->id }})" spinner
+                                class="text-white bg-red-500 btn-xs" />
+                            <x-mary-button icon="o-pencil-square" wire:click="delete({{ $stuff->id }})" spinner
+                                class="text-white bg-yellow-500 btn-xs" />
+                            <x-mary-button icon="s-bars-3" wire:click="delete({{ $stuff->id }})" spinner
+                                class="text-white btn-xs bg-cyan-500" />
+                            <x-mary-button icon="o-printer" wire:click="delete({{ $stuff->id }})" spinner
+                                class="text-white bg-purple-500 btn-xs" />
+                        </nobr>
                         @endscope
                     </x-mary-table>
                 </x-mary-card>
@@ -65,49 +105,21 @@
         </div>
 
     </x-mary-card>
-    <x-mary-modal wire:model="modalCustomer" persistent class="backdrop-blur" box-class="max-h-full max-w-128 ">
-        <x-mary-icon name="s-envelope" class="text-green-500 text-md"
-            label="{{ !isset($customerForm->user) ? 'CREAR CLIENTE' : 'EDITAR CLIENTE' }}" />
-        <x-mary-form wire:submit.prevent="{{ !isset($customerForm->customer) ? 'create' : 'update' }}">
-            <div class="border border-green-500 rounded-lg">
-                <div class="grid grid-cols-4 p-2">
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-input wire:model.live='customerForm.code' label="Numero documento" inline>
-                            <x-slot:prepend>
-                                @php
-                                    $docs = [
-                                        ['id' => 'dni', 'name' => 'DNI'],
-                                        ['id' => 'ruc', 'name' => 'RUC'],
-                                        ['id' => 'ce', 'name' => 'CE'],
-                                    ];
-                                @endphp
-                                <x-mary-select wire:model='customerForm.type_code' icon="o-user" :options="$docs"
-                                    class="bg-purple-300 rounded-e-none" />
-                            </x-slot:prepend>
-                            <x-slot:append>
-                                <x-mary-button icon="o-magnifying-glass"
-                                    class="bg-purple-300 btn-secondary rounded-s-none" wire:click='SearchDocument'
-                                    spinner='SearchDocument' />
-                            </x-slot:append>
-                        </x-mary-input>
-                    </div>
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Denominacion" inline wire:model='customerForm.name' />
-                    </div>
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Email" inline wire:model='customerForm.email' />
-                    </div>
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Telefono" inline wire:model='customerForm.phone' />
-                    </div>
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Direccion" inline wire:model='customerForm.address' />
+    <x-mary-modal wire:model="modalEnvio" persistent class="backdrop-blur" box-class="max-h-full max-w-128 ">
+        <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="ENVIAR PAQUETES" />
+        <x-mary-form wire:submit.prevent="receivePaquetes">
+            <div class="p-2 border border-green-500 rounded-lg">
+                <div class="grid grid-cols-4 gap-1">
+                    <div class="grid col-span-4">
+                        <x-mary-card title="{{ $this->numElementos ?? 0 }}" subtitle="Paquetes selecionados" shadow
+                            separator>
+                            Sucursal de raiz : {{ $this->sucursal_rem->name ?? 'Sucursal raiz' }}
+                        </x-mary-card>
                     </div>
                 </div>
                 <x-slot:actions>
                     <x-mary-button label="Cancel" wire:click="openModal()" class="bg-red-500" />
-                    <x-mary-button type="submit" spinner="{{ !isset($customerForm->sucursal) ? 'create' : 'edit' }}"
-                        label="Save" class="bg-blue-500" />
+                    <x-mary-button type="submit" spinner="sendPaquetes" label="Save" class="bg-blue-500" />
                 </x-slot:actions>
             </div>
         </x-mary-form>
