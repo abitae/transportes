@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WebsiteController;
 use App\Livewire\Caja\CajaLive;
 use App\Livewire\Componentes;
 use App\Livewire\Configuration\RoleLive;
@@ -10,13 +11,21 @@ use App\Livewire\Package\CustomerLive;
 use App\Livewire\Package\DeliverPackageLive;
 use App\Livewire\Package\ReceivePackageLive;
 use App\Livewire\Package\RegisterLive;
-use App\Livewire\Package\SendLive;
 use App\Livewire\Package\SendPackageLive;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [WebsiteController::class, 'index'])->name('index');
+Route::get('/servicios', [WebsiteController::class, 'servicios'])->name('servicios');
+Route::get('/contacto', [WebsiteController::class, 'contact'])->name('contacto');
+Route::get('/rotulo', [WebsiteController::class, 'rotulo'])->name('rotulo');
+Route::get('/search-tracking', [WebsiteController::class, 'trancking'])->name('search-tracking');
+
+Route::post('subscribe-newsletter', 'WebsiteController@subscribeNewsletter');
+Route::get('/libro-de-reclamaciones', "LibroDeReclamacionController@complaintsBook")->name('libro-de-reclamaciones');
+Route::get("/lista-sucursales", "LibroDeReclamacionController@getListBranchOffices");
+Route::post("/registrar-reclamacion", "LibroDeReclamacionController@registerClaim");
+Route::get('/cotizacion/{view}', "CotizacionController@quotation")->name('cotizacion');
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
