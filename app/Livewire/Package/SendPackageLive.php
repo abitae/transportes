@@ -39,14 +39,17 @@ class SendPackageLive extends Component
     }
     public function render()
     {
-
         $sucursals = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->get();
-        $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)->where('sucursal_dest_id', $this->sucursal_dest_id)->where(
-            fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
-        )->paginate($this->perPage, '*', 'page');
+        
+        $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
+            ->where('sucursal_dest_id', $this->sucursal_dest_id)
+            ->where('estado_encomienda', 'REGISTRADO')
+            ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
+            )->paginate($this->perPage, '*', 'page');
+
         $transportistas = Transportista::where('isActive', true)->get();
         $vehiculos = Vehiculo::where('isActive', true)->get();
-        return view('livewire.package.send-package-live', compact('encomiendas', 'sucursals', 'transportistas','vehiculos'));
+        return view('livewire.package.send-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
     }
     public function openModal()
     {
@@ -58,6 +61,18 @@ class SendPackageLive extends Component
     }
     public function sendPaquetes()
     {
-        dump($this->vehiculo_id, $this->transportista_id, $this->date_traslado);
+        $retorno = Encomienda::whereIn('id', $this->selected)->update([
+            'estado_encomienda' => 'ENVIADO',
+            'updated_at' => $this->date_traslado,
+            'vehiculo_id' => $this->vehiculo_id,
+            'transportista_id' => $this->transportista_id,
+        ]);
+        if (count($this->selected) == $retorno) {
+            $this->success('Genial, ingresado correctamente!');
+            $this->modalEnvio = false;
+            $this->selected = [];
+        } else {
+            $this->error('Error, verifique los datos!');
+        }
     }
 }

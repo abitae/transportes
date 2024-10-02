@@ -4,9 +4,6 @@
             <x-mary-button wire:click='openModal' responsive icon="o-plus" label="Nuevo envio"
                 class="text-white bg-sky-500" />
         </x-slot:menu>
-        @php
-        $users = App\Models\User::take(5)->get();
-        @endphp
         <div class="grid grid-cols-6 gap-1 shadow-xl">
             <div class="grid col-span-1">
                 <x-mary-select label="Destino" icon="s-inbox-stack" :options="$sucursals" wire:model="sucursal_dest_id"

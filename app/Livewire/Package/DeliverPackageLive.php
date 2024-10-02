@@ -38,9 +38,12 @@ class DeliverPackageLive extends Component
     public function render()
     {
         $sucursals = Sucursal::where('isActive', true)->whereIn('id', [Auth::user()->id])->get();
-        $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)->where('sucursal_id', $this->sucursal_id)->where(
-            fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
-        )->paginate($this->perPage, '*', 'page');
+        $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
+            ->where('sucursal_id', $this->sucursal_id)
+            ->where('sucursal_dest_id', Auth::user()->sucursal->id)
+            ->where('estado_encomienda', 'RECIBIDO')
+            ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
+            )->paginate($this->perPage, '*', 'page');
         return view('livewire.package.deliver-package-live', compact('encomiendas', 'sucursals'));
     }
     public function openModal($id)

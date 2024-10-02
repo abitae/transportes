@@ -22,7 +22,6 @@ class ReceivePackageLive extends Component
     public array $selected = [];
     public $search;
     public $date_ini;
-    public $date_traslado;
     public int $sucursal_id;
     public $numElementos;
     public Sucursal $sucursal_rem;
@@ -32,13 +31,15 @@ class ReceivePackageLive extends Component
 
         $this->sucursal_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->first()->id;
         $this->date_ini = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
-        $this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
+        
     }
     public function render()
     {
         $sucursals = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->get();
-        $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)->where('sucursal_id', $this->sucursal_id)->where(
-            fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
+        $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
+        ->where('sucursal_id', $this->sucursal_id)
+        ->where('estado_encomienda', 'ENVIADO')
+        ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
         )->paginate($this->perPage, '*', 'page');
         return view('livewire.package.receive-package-live', compact('encomiendas', 'sucursals'));
     }
@@ -50,9 +51,19 @@ class ReceivePackageLive extends Component
             $this->modalEnvio = !$this->modalEnvio;
         }
     }
-    public function deliverPaquetes()
+    public function receivePaquetes()
     {
-        dump($this->selected);
+        $retorno = Encomienda::whereIn('id', $this->selected)->update([
+            'estado_encomienda' => 'RECIBIDO',
+            'updated_at' => \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d H:i:s'),
+        ]);
+        if (count($this->selected) == $retorno) {
+            $this->success('Genial, ingresado correctamente!');
+            $this->modalEnvio = false;
+            $this->selected = [];
+        } else {
+            $this->error('Error, verifique los datos!');
+        }
     }
 
 }
