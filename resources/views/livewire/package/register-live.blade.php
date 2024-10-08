@@ -1,7 +1,6 @@
 <div>
     <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow>
         <x-slot:menu>
-            <x-mary-input label="Buscar envio" inline wire:model.live='search' />
             <x-mary-button wire:click='openModal' responsive icon="o-plus" label="Nuevo envio"
                 class="text-white shadow-xl bg-sky-500" />
         </x-slot:menu>

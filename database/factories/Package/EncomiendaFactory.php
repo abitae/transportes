@@ -7,7 +7,6 @@ use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
 use App\Models\User;
-use Database\Factories\Configuration\TransportistaFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -37,8 +36,10 @@ class EncomiendaFactory extends Factory
             'tipo_pago' => $this->faker->randomElement(['Efectivo', 'Transferencia', 'Tarjeta de crédito']),
             'tipo_comprobante' => $this->faker->randomElement(['Factura','Boleta','Ticket']),
             'doc_traslado' => $this->faker->randomNumber(8, false),
+            'glosa' => $this->faker->randomElement(['Sin glosa', 'Con glosa']),
             'estado_encomienda' => $this->faker->randomElement(['REGISTRADO', 'ENVIADO', 'RECIBIDO', 'ENTREGADO','CANCELADO']),
             'pin' => $this->faker->randomNumber(3, false),
+            'isActive' => true,
         ];
     }
 }

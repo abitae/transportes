@@ -31,6 +31,9 @@ class SendPackageLive extends Component
     public Sucursal $sucursal_dest;
     public $transportista_id;
     public $vehiculo_id;
+    public $isActive = true;
+    public bool $showDrawer = false;
+    public Encomienda $encomienda;
     public function mount()
     {
         $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->first()->id;
@@ -40,13 +43,13 @@ class SendPackageLive extends Component
     public function render()
     {
         $sucursals = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->get();
-        
+
         $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
+            ->where('isActive', $this->isActive)
             ->where('sucursal_dest_id', $this->sucursal_dest_id)
             ->where('estado_encomienda', 'REGISTRADO')
             ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
             )->paginate($this->perPage, '*', 'page');
-
         $transportistas = Transportista::where('isActive', true)->get();
         $vehiculos = Vehiculo::where('isActive', true)->get();
         return view('livewire.package.send-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
@@ -61,18 +64,41 @@ class SendPackageLive extends Component
     }
     public function sendPaquetes()
     {
-        $retorno = Encomienda::whereIn('id', $this->selected)->update([
-            'estado_encomienda' => 'ENVIADO',
-            'updated_at' => $this->date_traslado,
-            'vehiculo_id' => $this->vehiculo_id,
-            'transportista_id' => $this->transportista_id,
-        ]);
-        if (count($this->selected) == $retorno) {
+        if (!is_null($this->vehiculo_id) and !is_null($this->transportista_id)) {
+
+            $retorno = Encomienda::where('isActive', true)
+                ->whereIn('id', $this->selected)->update([
+                'estado_encomienda' => 'ENVIADO',
+                'updated_at' => $this->date_traslado,
+                'vehiculo_id' => $this->vehiculo_id,
+                'transportista_id' => $this->transportista_id,
+            ]);
+            if (count($this->selected) == $retorno) {
+                $this->success('Genial, ingresado correctamente!');
+                $this->modalEnvio = false;
+                $this->selected = [];
+            } else {
+                $this->error('Error, verifique los datos!');
+            }
+        }
+    }
+    public function isActive(Encomienda $encomienda)
+    {
+        try {
+            $encomienda->isActive = !$encomienda->isActive;
+            $encomienda->save();
             $this->success('Genial, ingresado correctamente!');
-            $this->modalEnvio = false;
-            $this->selected = [];
-        } else {
+        } catch (\Exception $e) {
             $this->error('Error, verifique los datos!');
         }
+    }
+    public function detail(Encomienda $encomienda)
+    {
+        $this->encomienda = $encomienda;
+        $this->showDrawer = true;
+    }
+    public function print()
+    {
+
     }
 }
