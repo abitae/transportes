@@ -56,7 +56,7 @@ class CajaLive extends Component
     public function save()
     {
         if ($this->openCaja) {
-            if ($this->cajaForm->update($this->caja)) {
+            if ($this->cajaForm->update($this->caja) and $this->cajaForm->monto_cierre == ($this->caja->entries->sum('monto_entry') - $this->caja->exits->sum('monto_exit'))) {
                 $this->success('Genial, actualizado correctamente!');
                 $this->modalCaja = false;
                 $this->openCaja = false;
@@ -91,6 +91,7 @@ class CajaLive extends Component
     }
     public function exitCaja()
     {
+
         if ($this->openCaja) {
             $this->exitForm->caja_id = $this->caja->id;
             if ($this->exitForm->store()) {

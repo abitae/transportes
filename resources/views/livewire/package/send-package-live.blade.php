@@ -86,12 +86,12 @@
                         <x-mary-badge :value="strtoupper($stuff->code)" class="w-min-full badge-warning" />
                         <br>
                         <nobr>
-                            <x-mary-button icon="o-no-symbol" wire:click="isActive({{ $stuff->id }})" spinner
-                                wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{ $stuff->remitente->code }}"
+                            <x-mary-button icon="o-no-symbol" wire:click="enableEncomienda({{ $stuff->id }})" spinner
+                                wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
                                 class="text-white bg-red-500 btn-xs" />
-                            <x-mary-button icon="s-bars-3" wire:click="detail({{ $stuff->id }})" spinner
+                            <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
                                 class="text-white btn-xs bg-cyan-500" />
-                            <x-mary-button icon="o-printer" wire:click="print({{ $stuff->id }})" spinner
+                            <x-mary-button icon="o-printer" wire:click="printEncomienda({{ $stuff->id }})" spinner
                                 class="text-white bg-purple-500 btn-xs" />
                         </nobr>
                         @endscope
@@ -155,7 +155,7 @@
             </div>
             <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
             @php
-            $headers_paquetes = [
+            $headers_paquets = [
             ['key' => 'cantidad', 'label' => 'Cantidad', 'class' => ''],
             ['key' => 'description', 'label' => 'Descripcion', 'class' => ''],
             ['key' => 'peso', 'label' => 'Peso', 'class' => ''],
@@ -163,7 +163,7 @@
             ['key' => 'sub_total', 'label' => 'MONTO', 'class' => ''],
             ];
             @endphp
-            <x-mary-table :headers="$headers_paquetes" :rows="$encomienda->paquetes" striped>
+            <x-mary-table :headers="$headers_paquets" :rows="$encomienda->paquetes" striped>
             </x-mary-table>
         </x-mary-card>
     </x-mary-drawer>

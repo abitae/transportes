@@ -34,7 +34,7 @@ class EncomiendaFactory extends Factory
             'monto' => $this->faker->randomFloat(2, 1, 1000),
             'estado_pago' => $this->faker->randomElement(['PAGADO', 'CONTRA ENTREGA']),
             'tipo_pago' => $this->faker->randomElement(['Efectivo', 'Transferencia', 'Tarjeta de crédito']),
-            'tipo_comprobante' => $this->faker->randomElement(['Factura','Boleta','Ticket']),
+            'tipo_comprobante' => $this->faker->randomElement(['BOLETA','FACTURA','TICKET']),
             'doc_traslado' => $this->faker->randomNumber(8, false),
             'glosa' => $this->faker->randomElement(['Sin glosa', 'Con glosa']),
             'estado_encomienda' => $this->faker->randomElement(['REGISTRADO', 'ENVIADO', 'RECIBIDO', 'ENTREGADO','CANCELADO']),

@@ -7,6 +7,9 @@ use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Encomienda;
 use App\Traits\LogCustom;
+use Barryvdh\DomPDF\Facade\Pdf;
+use function Spatie\LaravelPdf\Support\pdf;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -82,8 +85,9 @@ class SendPackageLive extends Component
             }
         }
     }
-    public function isActive(Encomienda $encomienda)
+    public function enableEncomienda(Encomienda $encomienda)
     {
+        //dump($encomienda);
         try {
             $encomienda->isActive = !$encomienda->isActive;
             $encomienda->save();
@@ -92,13 +96,21 @@ class SendPackageLive extends Component
             $this->error('Error, verifique los datos!');
         }
     }
-    public function detail(Encomienda $encomienda)
+    public function detailEncomienda(Encomienda $encomienda)
     {
         $this->encomienda = $encomienda;
         $this->showDrawer = true;
     }
-    public function print()
+    public function printEncomienda(Encomienda $envio)
     {
-
+        $width = 78;
+        $heigh = 250;
+        $paper_format = array(0, 0, ($width / 25.4) * 72, ($heigh / 25.4) * 72);
+        
+        $pdf = Pdf::setPaper($paper_format,'portrait')->loadView('report.pdf.ticket', compact('envio'));
+        return $pdf->stream();
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, $envio->code . '.pdf');
     }
 }

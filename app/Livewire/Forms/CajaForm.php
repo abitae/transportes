@@ -13,6 +13,7 @@ class CajaForm extends Form
 
     #[Validate('required')]
     public $monto_apertura = 0;
+    #[Validate('required')]
     public $monto_cierre = 0;
 
     public function store()
@@ -33,6 +34,7 @@ class CajaForm extends Form
     }
     public function update(Caja $caja)
     {
+        //$this->monto_cierre = $caja->entries->sum('monto_entry') - $caja->exits->sum('monto_exit');
         try {
             $caja->update([
                 'monto_cierre' => $this->monto_cierre,

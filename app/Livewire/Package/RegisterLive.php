@@ -4,6 +4,8 @@ namespace App\Livewire\Package;
 
 use App\Livewire\Forms\CustomerForm;
 use App\Livewire\Forms\EncomiendaForm;
+use App\Livewire\Forms\EntryCajaForm;
+use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Customer;
 use App\Models\Package\Paquete;
@@ -44,12 +46,22 @@ class RegisterLive extends Component
     public $tipo_comprobante;
     public $glosa;
     public $modalConfimation = false;
+    public $caja;
+    public EntryCajaForm $entryForm;
     public function mount()
     {
         $this->paquetes = collect([]);
         $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->first()->id;
         $this->estado_pago = 1;
         $this->tipo_comprobante = 3;
+
+        $this->caja = Caja::where('user_id', Auth::user()->id)
+            ->where('isActive', true)
+            ->latest()->first();
+        if (!$this->caja) {
+            $this->redirectRoute('caja.index');
+        }
+
     }
     public function render()
     {
@@ -188,6 +200,19 @@ class RegisterLive extends Component
         if ($this->encomiendaForm->store($this->paquetes, $this->customerFact)) {
             $this->success('Genial, ingresado correctamente!');
             $this->modalConfimation = false;
+
+            $this->entryForm->caja_id = $this->caja->id;
+            $this->entryForm->monto_entry = $this->encomiendaForm->monto;
+            $this->entryForm->description = $this->encomiendaForm->code;
+            $this->entryForm->tipo = 'ENVIO ENCOMIENDA';
+
+            if ($this->entryForm->store()) {
+
+                $this->entryForm->reset();
+            } else {
+                
+            }
+
             $this->redirectRoute('package.register');
         } else {
             $this->error('Error, verifique los datos!');
