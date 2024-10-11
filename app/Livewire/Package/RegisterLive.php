@@ -50,17 +50,16 @@ class RegisterLive extends Component
     public EntryCajaForm $entryForm;
     public function mount()
     {
-        $this->paquetes = collect([]);
-        $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->first()->id;
-        $this->estado_pago = 1;
-        $this->tipo_comprobante = 3;
-
         $this->caja = Caja::where('user_id', Auth::user()->id)
             ->where('isActive', true)
             ->latest()->first();
         if (!$this->caja) {
             $this->redirectRoute('caja.index');
         }
+        $this->paquetes = collect([]);
+        $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->first()->id;
+        $this->estado_pago = 1;
+        $this->tipo_comprobante = 3;
 
     }
     public function render()
@@ -210,7 +209,7 @@ class RegisterLive extends Component
 
                 $this->entryForm->reset();
             } else {
-                
+
             }
 
             $this->redirectRoute('package.register');

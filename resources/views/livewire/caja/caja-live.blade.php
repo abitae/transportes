@@ -18,7 +18,7 @@
                 icon="o-arrow-trending-down" class="text-red-500" color="text-red-500"
                 tooltip="Total salidas de dinero" />
             <x-mary-stat title="Monto cierre" description="Cierre"
-                value="{{ $caja->entries->sum('monto_entry') - $caja->exits->sum('monto_exit') }}"
+                value="{{ $caja->monto_apertura + $caja->entries->sum('monto_entry') - $caja->exits->sum('monto_exit') }}"
                 icon="o-arrow-trending-down" tooltip="Ops!" />
         </div>
         @endif

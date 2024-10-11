@@ -2,9 +2,11 @@
 
 namespace App\Livewire\Package;
 
+use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
 use App\Traits\LogCustom;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -26,21 +28,29 @@ class ReceivePackageLive extends Component
     public $numElementos;
     public Sucursal $sucursal_rem;
     public $modalEnvio = false;
+    public $caja;
+    public bool $showDrawer = false;
+    public Encomienda $encomienda;
     public function mount()
     {
-
+        $this->caja = Caja::where('user_id', Auth::user()->id)
+            ->where('isActive', true)
+            ->latest()->first();
+        if (!$this->caja) {
+            $this->redirectRoute('caja.index');
+        }
         $this->sucursal_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->first()->id;
         $this->date_ini = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
-        
+
     }
     public function render()
     {
         $sucursals = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->get();
         $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
-        ->where('sucursal_id', $this->sucursal_id)
-        ->where('estado_encomienda', 'ENVIADO')
-        ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
-        )->paginate($this->perPage, '*', 'page');
+            ->where('sucursal_id', $this->sucursal_id)
+            ->where('estado_encomienda', 'ENVIADO')
+            ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
+            )->paginate($this->perPage, '*', 'page');
         return view('livewire.package.receive-package-live', compact('encomiendas', 'sucursals'));
     }
     public function openModal()
@@ -65,5 +75,21 @@ class ReceivePackageLive extends Component
             $this->error('Error, verifique los datos!');
         }
     }
-
+    public function detailEncomienda(Encomienda $encomienda)
+    {
+        $this->encomienda = $encomienda;
+        $this->showDrawer = true;
+    }
+    public function printEncomienda(Encomienda $envio)
+    {
+        $width = 78;
+        $heigh = 250;
+        $paper_format = array(0, 0, ($width / 25.4) * 72, ($heigh / 25.4) * 72);
+        
+        $pdf = Pdf::setPaper($paper_format,'portrait')->loadView('report.pdf.ticket', compact('envio'));
+        //return $pdf->stream();
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, $envio->code . '.pdf');
+    }
 }

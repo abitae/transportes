@@ -2,14 +2,13 @@
 
 namespace App\Livewire\Package;
 
+use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Encomienda;
 use App\Traits\LogCustom;
 use Barryvdh\DomPDF\Facade\Pdf;
-use function Spatie\LaravelPdf\Support\pdf;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -37,8 +36,15 @@ class SendPackageLive extends Component
     public $isActive = true;
     public bool $showDrawer = false;
     public Encomienda $encomienda;
+    public $caja;
     public function mount()
     {
+        $this->caja = Caja::where('user_id', Auth::user()->id)
+            ->where('isActive', true)
+            ->latest()->first();
+        if (!$this->caja) {
+            $this->redirectRoute('caja.index');
+        }
         $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->first()->id;
         $this->date_ini = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
         $this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
@@ -108,7 +114,7 @@ class SendPackageLive extends Component
         $paper_format = array(0, 0, ($width / 25.4) * 72, ($heigh / 25.4) * 72);
         
         $pdf = Pdf::setPaper($paper_format,'portrait')->loadView('report.pdf.ticket', compact('envio'));
-        return $pdf->stream();
+        //return $pdf->stream();
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
         }, $envio->code . '.pdf');

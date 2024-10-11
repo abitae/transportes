@@ -29,6 +29,7 @@
                     ];
                     $row_decoration = [
                     'bg-red-400' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,
+                    'bg-blue-400' => fn(App\Models\package\Encomienda $encomienda) => $encomienda->estado_pago == 2,
                     ];
                     @endphp
                     <x-mary-table wire:model="selected" selectable :headers="$headers" :rows="$encomiendas"

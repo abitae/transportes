@@ -32,6 +32,7 @@
                     ];
                     $row_decoration = [
                     'bg-red-50' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,
+                    'bg-blue-400' => fn(App\Models\package\Encomienda $encomienda) => $encomienda->estado_pago == 2,
                     ];
                     @endphp
                     <x-mary-table wire:model="selected" selectable :headers="$headers" :rows="$encomiendas"
@@ -89,13 +90,9 @@
                         <x-mary-badge :value="strtoupper($stuff->code)" class="w-min-full badge-warning" />
                         <br>
                         <nobr>
-                            <x-mary-button icon="o-no-symbol" wire:click="delete({{ $stuff->id }})" spinner
-                                class="text-white bg-red-500 btn-xs" />
-                            <x-mary-button icon="o-pencil-square" wire:click="delete({{ $stuff->id }})" spinner
-                                class="text-white bg-yellow-500 btn-xs" />
-                            <x-mary-button icon="s-bars-3" wire:click="delete({{ $stuff->id }})" spinner
+                            <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
                                 class="text-white btn-xs bg-cyan-500" />
-                            <x-mary-button icon="o-printer" wire:click="delete({{ $stuff->id }})" spinner
+                            <x-mary-button icon="o-printer" wire:click="printEncomienda({{ $stuff->id }})" spinner
                                 class="text-white bg-purple-500 btn-xs" />
                         </nobr>
                         @endscope
@@ -124,4 +121,41 @@
             </div>
         </x-mary-form>
     </x-mary-modal>
+    @isset($encomienda)
+    <x-mary-drawer wire:model="showDrawer" title="Detalle de encomienda" subtitle="Code {{ $encomienda->code }}"
+        separator with-close-button close-on-escape class="w-11/12 lg:w-2/3" right>
+        <x-mary-card shadow>
+            <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
+            <div class="grid grid-cols-5 grid-rows-3 gap-1 bg-green-200 rounded">
+                <div class="col-span-3">{{ $encomienda->remitente->name ?? 'name' }}</div>
+                <div class="row-start-2">{{ strtoupper($encomienda->remitente->type_code) ?? 'type_code' }}
+                </div>
+                <div class="row-start-2">{{ $encomienda->remitente->code ?? 'code' }}</div>
+                <div class="row-start-2">{{ $encomienda->remitente->phone ?? 'phone' }}</div>
+                <div class="col-span-3">{{ $encomienda->sucursal_remitente->name ?? 'sucursal' }}</div>
+            </div>
+            <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="DESTINATARIO" />
+            <div class="grid grid-cols-5 grid-rows-3 gap-1 bg-red-100 rounded">
+                <div class="col-span-3">{{ $encomienda->destinatario->name ?? 'name' }}</div>
+                <div class="row-start-2">{{ strtoupper($encomienda->destinatario->type_code) ??
+                    'type_code' }}</div>
+                <div class="row-start-2">{{ $encomienda->destinatario->code ?? 'code' }}</div>
+                <div class="row-start-2">{{ $encomienda->destinatario->phone ?? 'phone' }}</div>
+                <div class="col-span-3">{{ $encomienda->sucursal_destino->name ?? 'sucursal' }}</div>
+            </div>
+            <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
+            @php
+            $headers_paquets = [
+            ['key' => 'cantidad', 'label' => 'Cantidad', 'class' => ''],
+            ['key' => 'description', 'label' => 'Descripcion', 'class' => ''],
+            ['key' => 'peso', 'label' => 'Peso', 'class' => ''],
+            ['key' => 'amount', 'label' => 'P.UNIT', 'class' => ''],
+            ['key' => 'sub_total', 'label' => 'MONTO', 'class' => ''],
+            ];
+            @endphp
+            <x-mary-table :headers="$headers_paquets" :rows="$encomienda->paquetes" striped>
+            </x-mary-table>
+        </x-mary-card>
+    </x-mary-drawer>
+    @endisset
 </div>

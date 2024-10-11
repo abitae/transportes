@@ -34,7 +34,7 @@ return new class extends Migration
             $table->integer('cantidad');
             $table->decimal('monto', 8, 2);
 
-            $table->string('estado_pago');
+            $table->boolean('estado_pago')->default(true);
             $table->string('tipo_pago');
             $table->string('tipo_comprobante');
             $table->string('doc_traslado')->nullable();

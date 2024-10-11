@@ -4,6 +4,7 @@ namespace App\Livewire\Forms;
 
 use App\Models\Caja\Caja;
 use App\Traits\LogCustom;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
@@ -20,7 +21,7 @@ class CajaForm extends Form
     {
         try {
             $caja = Caja::create([
-                'user_id' => 1,
+                'user_id' => Auth::user()->id,
                 'monto_apertura' => $this->monto_apertura,
                 'monto_cierre' => 0,
                 'isActive' => true,

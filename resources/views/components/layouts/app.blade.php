@@ -82,6 +82,10 @@
                     <x-mary-menu-item title="Sucursales" icon="s-briefcase" link="{{ route('config.sucursal') }}" />
                     <x-mary-menu-item title="Usuarios" icon="s-briefcase" link="{{ route('config.user') }}" />
                     <x-mary-menu-item title="Roles" icon="s-briefcase" link="{{ route('config.role') }}" />
+
+                    <x-mary-menu-item title="Choferes" icon="s-briefcase" link="{{ route('config.sucursal') }}" />
+                    <x-mary-menu-item title="Vehiculos" icon="s-briefcase" link="{{ route('config.user') }}" />
+                    
                 </x-mary-menu-sub>
                 <x-mary-menu-separator />
                 <x-mary-menu-item title="Messages" icon="o-envelope" link="###" />

@@ -2,8 +2,7 @@
 <html lang="es">
 
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
   <title>Ticket - 312312313</title>
   
@@ -24,11 +23,9 @@
       border-collapse: collapse;
       margin: 0px;
     }
-
     .titulo {
       font-size: 14px;
     }
-
     .subtitulo {
       font-size: 10px;
     }
