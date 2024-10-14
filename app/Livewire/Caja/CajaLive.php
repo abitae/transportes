@@ -6,6 +6,7 @@ use App\Livewire\Forms\CajaForm;
 use App\Livewire\Forms\EntryCajaForm;
 use App\Livewire\Forms\ExitCajaForm;
 use App\Models\Caja\Caja;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -103,5 +104,17 @@ class CajaLive extends Component
                 $this->modalExit = false;
             }
         }
+    }
+    public function printCaja(Caja $caja)
+    {
+        $width = 78;
+        $heigh = 250;
+        $paper_format = array(0, 0, ($width / 25.4) * 72, ($heigh / 25.4) * 72);
+        
+        $pdf = Pdf::setPaper($paper_format,'portrait')->loadView('report.pdf.caja', compact('caja'));
+        //return $pdf->stream();
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, $caja->id . '.pdf');
     }
 }

@@ -30,6 +30,9 @@ class Encomienda extends Model
         'glosa',
         'estado_encomienda',
         'pin',
+        'isHome',
+        'isReturn',
+        'isActive'
     ];
     public function user()
     {

@@ -20,6 +20,7 @@ class TransportistaFactory extends Factory
             'licencia' => $this->faker->randomNumber(8, false),
             'dni' => $this->faker->randomNumber(8, false),
             'name' => $this->faker->name,
+            'tipo' => 'INTERNO',
             'isActive' => true,
         ];
     }

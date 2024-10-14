@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('licencia')->unique();
             $table->string('dni')->unique();
             $table->string('name');
+            $table->string('tipo');
             $table->boolean('isActive')->default(true);
             $table->timestamps();
         });

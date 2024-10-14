@@ -29,7 +29,6 @@
                     ];
                     $row_decoration = [
                     'bg-red-400' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,
-                    'bg-blue-400' => fn(App\Models\package\Encomienda $encomienda) => $encomienda->estado_pago == 2,
                     ];
                     @endphp
                     <x-mary-table wire:model="selected" selectable :headers="$headers" :rows="$encomiendas"
@@ -82,16 +81,20 @@
                             </div>
                         </div>
                         @endscope
-
                         @scope('cell_actions', $stuff)
-                        <x-mary-badge :value="strtoupper($stuff->code)" class="w-min-full badge-warning" />
+                        
+                        
+                        <x-mary-badge :value="strtoupper($stuff->code)" class="w-min-full {{ $stuff->estado_pago == 2 ? 'badge-warning': 'bg-purple-500/10' }}" />
+                            
                         <br>
                         <nobr>
                             <x-mary-button icon="o-no-symbol" wire:click="enableEncomienda({{ $stuff->id }})" spinner
                                 wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
                                 class="text-white bg-red-500 btn-xs" />
                             <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
-                                class="text-white btn-xs bg-cyan-500" />
+                                class="text-white btn-xs bg-cyan-500">
+                                
+                            </x-mary-button>
                             <x-mary-button icon="o-printer" wire:click="printEncomienda({{ $stuff->id }})" spinner
                                 class="text-white bg-purple-500 btn-xs" />
                         </nobr>

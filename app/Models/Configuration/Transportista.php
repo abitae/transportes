@@ -13,6 +13,7 @@ class Transportista extends Model
         'licencia',
         'dni',
         'name',
+        'tipo',
         'isActive',
     ];
     public function encomiendas()

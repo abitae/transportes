@@ -60,6 +60,13 @@
 
                         </x-mary-input>
                     </div>
+                    <div class="grid col-span-8">
+                        <hr />
+                        <x-mary-toggle label="Reparto a domicilio" wire:model.live="isHome"
+                            hint="Active para reparto a domicilio" />
+                        <hr />
+                    </div>
+                    @if ($isHome)
                     <div class="grid col-span-3">
                         <x-mary-input label="Direccion" wire:model='customerFormDest.address'>
 
@@ -70,6 +77,8 @@
 
                         </x-mary-input>
                     </div>
+                    @endif
+
 
                 </div>
             </x-mary-step>
@@ -89,7 +98,7 @@
                     </div>
                     <div class="flex items-end">
                         <x-mary-button icon="o-plus" wire:click='addPaquete' class="text-white rounded-lg bg-sky-500" />
-                        <x-mary-button icon="o-plus" wire:click='resetPaquete'
+                        <x-mary-button icon="o-no-symbol" wire:click='resetPaquete'
                             class="text-white bg-red-500 rounded-lg" />
                     </div>
                     <div class="grid col-span-8">
@@ -108,6 +117,7 @@
                             wire:model="sucursal_dest_id" />
                     </div>
                     <div class="grid col-span-1">
+
                     </div>
                     <div class="grid col-span-2">
                         <x-mary-icon name="o-hashtag" label="PING" />
@@ -118,11 +128,25 @@
                         <x-mary-pin wire:model="pin2" size="3" numeric />
                     </div>
                     <div class="grid col-span-8">
+                        <hr />
+                        <x-mary-toggle label="Retorno de guia" wire:model="isReturn"
+                            hint="Active para retorno de guia" />
+                        <hr />
+                    </div>
+                    <div class="grid col-span-8">
                         <x-mary-input label="Documento de traslado" wire:model="doc_traslado" class="rounded-r-lg" />
                     </div>
                     <div class="grid col-span-8">
                         <x-mary-textarea label="Glosa" wire:model="glosa" placeholder="Escribe una glosa"
                             hint="Max 1000 chars" rows="2" inline class="rounded-r-lg" />
+                    </div>
+                    <div class="grid col-span-4">
+                        <x-mary-choices-offline label="Transportista" wire:model="transportista_id"
+                            :options="$transportistas" single searchable />
+                    </div>
+                    <div class="grid col-span-4">
+                        <x-mary-choices-offline label="Vehiculos" wire:model="vehiculo_id" :options="$vehiculos" single
+                            searchable />
                     </div>
                 </div>
             </x-mary-step>

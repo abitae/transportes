@@ -22,11 +22,11 @@ class CustomerForm extends Form
     public $code = '';
     #[Validate('required')]
     public $name = '';
-    #[Validate('required')]
+    #[Validate('')]
     public $phone = '';
     #[Validate('email')]
     public $email = '';
-    #[Validate('required')]
+    #[Validate('')]
     public $address = '';
     public $isActive = true;
     public function setCustomer(Customer $customer)

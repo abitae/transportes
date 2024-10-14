@@ -6,7 +6,9 @@ use App\Livewire\Caja\CajaLive;
 use App\Livewire\Componentes;
 use App\Livewire\Configuration\RoleLive;
 use App\Livewire\Configuration\SucursalLive;
+use App\Livewire\Configuration\TransportistaLive;
 use App\Livewire\Configuration\UserLive;
+use App\Livewire\Configuration\VehiculoLive;
 use App\Livewire\Package\CustomerLive;
 use App\Livewire\Package\DeliverPackageLive;
 use App\Livewire\Package\ReceivePackageLive;
@@ -44,6 +46,8 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/sucursal', SucursalLive::class)->name('config.sucursal');
+    Route::get('/vehiculo', VehiculoLive::class)->name('config.vehiculo');
+    Route::get('/transportistas', TransportistaLive::class)->name('config.transportista');
     Route::get('/user', UserLive::class)->name('config.user');
     Route::get('/role', RoleLive::class)->name('config.role');
 });

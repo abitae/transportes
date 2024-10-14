@@ -162,6 +162,7 @@
             ['key' => 'updated_at', 'label' => 'Fecha Cierre', 'class' => 'text-black'],
             ['key' => 'monto_apertura', 'label' => 'Apertura', 'class' => 'bg-green-500 text-black'],
             ['key' => 'monto_cierre', 'label' => 'Cierre', 'class' => 'bg-red-500 text-black'],
+            ['key' => 'action', 'label' => 'Print', 'class' => ''],
             ];
             $row_decoration = [
             'bg-yellow-500' => fn(App\Models\Caja\Caja $caja) => $caja->isActive,
@@ -174,6 +175,13 @@
                 @endscope
                 @scope('cell_updated_at', $stuff)
                 <x-mary-badge :value="$stuff->updated_at->format('d/m/Y')" class="badge-warning" />
+                @endscope
+                @scope('cell_action', $stuff)
+                @if (!$stuff->isActive)
+                <x-mary-button icon="o-printer" wire:click="printCaja({{ $stuff->id }})" spinner
+                    class="text-white bg-purple-500 btn-xs" />
+                @endif
+
                 @endscope
             </x-mary-table>
             @else

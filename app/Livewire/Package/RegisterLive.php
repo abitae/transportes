@@ -7,13 +7,14 @@ use App\Livewire\Forms\EncomiendaForm;
 use App\Livewire\Forms\EntryCajaForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
+use App\Models\Configuration\Transportista;
+use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
 use App\Models\Package\Paquete;
 use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Renderless;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -47,6 +48,8 @@ class RegisterLive extends Component
     public $glosa;
     public $modalConfimation = false;
     public $caja;
+    public $isReturn = false;
+    public $isHome = false;
     public EntryCajaForm $entryForm;
     public function mount()
     {
@@ -88,7 +91,9 @@ class RegisterLive extends Component
             ['id' => 2, 'name' => 'FACTURA'],
             ['id' => 3, 'name' => 'TICKET'],
         ];
-        return view('livewire.package.register-live', compact('docs', 'headers_paquetes', 'sucursales', 'pagos', 'comprobantes'));
+        $transportistas = Transportista::where('isActive', true)->get();
+        $vehiculos = Vehiculo::where('isActive', true)->get();
+        return view('livewire.package.register-live', compact('docs', 'headers_paquetes', 'sucursales', 'pagos', 'comprobantes', 'transportistas', 'vehiculos'));
     }
     public function searchRemitente()
     {
@@ -116,8 +121,19 @@ class RegisterLive extends Component
                     break;
                 case 2:
                     if ($this->customerFormDest->update()) {
-                        $this->step++;
-                        $this->success('Genial, ingresado correctamente!');
+                        if ($this->isHome) {
+                            if ($this->customerFormDest->address) {
+                                $this->step++;
+                                $this->success('Genial, ingresado correctamente!');
+
+                            } else {
+                                $this->error('Error, es necesario  ingresar la dirección de entrega!');
+                            }
+                        } else {
+                            $this->step++;
+                            $this->success('Genial, ingresado correctamente!');
+                        }
+
                     } else {
                         $this->error('Error, verifique los datos!');
                     }
@@ -167,7 +183,7 @@ class RegisterLive extends Component
             $this->error('Error, verifique los datos!');
         }
     }
-    #[Renderless]
+
     public function confirmEncomienda()
     {
         $this->encomiendaForm->code = 'BT-' . Auth::user()->id . Carbon::now()->setTimezone('America/Lima')->format('md-His') . '-' . rand(100, 999);
@@ -196,6 +212,8 @@ class RegisterLive extends Component
         $this->encomiendaForm->glosa = $this->glosa;
         $this->encomiendaForm->estado_encomienda = 'REGISTRADO';
         $this->encomiendaForm->pin = $this->pin1;
+        $this->encomiendaForm->isHome = $this->isHome;
+        $this->encomiendaForm->isReturn = $this->isReturn;
         if ($this->encomiendaForm->store($this->paquetes, $this->customerFact)) {
             $this->success('Genial, ingresado correctamente!');
             $this->modalConfimation = false;

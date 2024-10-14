@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('marca');
             $table->string('modelo');
+            $table->string('tipo');
             $table->boolean('isActive')->default(true);
             $table->timestamps();
         });

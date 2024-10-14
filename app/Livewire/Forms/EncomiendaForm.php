@@ -31,10 +31,8 @@ class EncomiendaForm extends Form
     public $glosa;
     public $estado_encomienda;
     public $pin;
-    public function validateEncomienda()
-    {
-
-    }
+    public $isReturn;
+    public $isHome;
     public function store($paquetes, $customerFact)
     {
         try {
@@ -59,6 +57,8 @@ class EncomiendaForm extends Form
                 'glosa' => $this->glosa,
                 'estado_encomienda' => $this->estado_encomienda,
                 'pin' => $this->pin,
+                'isReturn' => $this->isReturn,
+                'isHome' => $this->isHome,
             ]);
             foreach ($paquetes as $paquete) {
                 $paquetesKey->push(collect($paquete)->put('encomienda_id', $encomienda->id));

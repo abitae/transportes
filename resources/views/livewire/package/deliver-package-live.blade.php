@@ -31,9 +31,7 @@
                     ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
                     ];
                     $row_decoration = [
-                    'bg-red-50' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,
-                    'bg-blue-400' => fn(App\Models\package\Encomienda $encomienda) => $encomienda->estado_pago == 2,
-                    ];
+                    'bg-red-50' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,];
                     @endphp
                     <x-mary-table :headers="$headers" :rows="$encomiendas" with-pagination per-page="perPage"
                         :row-decoration="$row_decoration" :per-page-values="[100, 150, 200]">
@@ -85,7 +83,7 @@
                         @endscope
 
                         @scope('cell_actions', $stuff)
-                        <x-mary-badge :value="strtoupper($stuff->code)" class="w-min-full badge-warning" />
+                        <x-mary-badge :value="strtoupper($stuff->code)" class="w-min-full {{ $stuff->estado_pago == 2 ? 'badge-warning': 'bg-purple-500/10' }}" />
                         <br>
                         <nobr>
                             <x-mary-button icon="o-pencil-square" wire:click="openModal({{ $stuff->id }})" spinner

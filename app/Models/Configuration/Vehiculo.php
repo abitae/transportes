@@ -13,6 +13,7 @@ class Vehiculo extends Model
         'name',
         'marca',
         'modelo',
+        'tipo',
         'isActive',
     ];
     public function encomiendas()

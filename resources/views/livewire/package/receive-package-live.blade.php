@@ -32,7 +32,6 @@
                     ];
                     $row_decoration = [
                     'bg-red-50' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,
-                    'bg-blue-400' => fn(App\Models\package\Encomienda $encomienda) => $encomienda->estado_pago == 2,
                     ];
                     @endphp
                     <x-mary-table wire:model="selected" selectable :headers="$headers" :rows="$encomiendas"
@@ -87,7 +86,7 @@
                         @endscope
 
                         @scope('cell_actions', $stuff)
-                        <x-mary-badge :value="strtoupper($stuff->code)" class="w-min-full badge-warning" />
+                        <x-mary-badge :value="strtoupper($stuff->code)" class="w-min-full {{ $stuff->estado_pago == 2 ? 'badge-warning': 'bg-purple-500/10' }}" />
                         <br>
                         <nobr>
                             <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner

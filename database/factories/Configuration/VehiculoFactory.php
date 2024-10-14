@@ -20,6 +20,7 @@ class VehiculoFactory extends Factory
             'name' => $this->faker->randomNumber(8, false),
             'marca' => 'TOYOTA',
             'modelo' => 'TOYOTA',
+            'tipo' => 'INTERNO',
             'isActive' => true,
         ];
     }

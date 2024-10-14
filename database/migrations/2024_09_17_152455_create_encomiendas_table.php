@@ -42,6 +42,8 @@ return new class extends Migration
 
             $table->string('estado_encomienda');
             $table->integer('pin')->unsigned();
+            $table->boolean('isHome')->default(false);
+            $table->boolean('isReturn')->default(false);
             $table->boolean('isActive')->default(true);
             $table->timestamps();
         });
