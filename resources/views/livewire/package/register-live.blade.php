@@ -102,7 +102,8 @@
                             class="text-white bg-red-500 rounded-lg" />
                     </div>
                     <div class="grid col-span-8">
-                        <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped>
+                        <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped
+                            @row-click="alert($event.detail.description)">
                             <x-slot:empty>
                                 <x-mary-icon name="o-cube" label="No se encontro registros." />
                             </x-slot:empty>

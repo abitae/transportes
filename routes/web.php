@@ -9,6 +9,7 @@ use App\Livewire\Configuration\SucursalLive;
 use App\Livewire\Configuration\TransportistaLive;
 use App\Livewire\Configuration\UserLive;
 use App\Livewire\Configuration\VehiculoLive;
+use App\Livewire\Home\DashboardLive;
 use App\Livewire\Package\CustomerLive;
 use App\Livewire\Package\DeliverPackageLive;
 use App\Livewire\Package\ReceivePackageLive;
@@ -28,11 +29,9 @@ Route::get("/lista-sucursales", "LibroDeReclamacionController@getListBranchOffic
 Route::post("/registrar-reclamacion", "LibroDeReclamacionController@registerClaim");
 Route::get('/cotizacion/{view}', "CotizacionController@quotation")->name('cotizacion');
 
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', DashboardLive::class)->name('dashboard');
+});
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

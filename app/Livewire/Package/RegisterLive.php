@@ -169,6 +169,11 @@ class RegisterLive extends Component
             $this->error('Error, verifique los datos!');
         }
     }
+    public function restPaquete($index)
+    {
+        dump($index);
+        $this->paquetes->forget($index);
+    }
     public function resetPaquete()
     {
         $this->paquetes = collect([]);
