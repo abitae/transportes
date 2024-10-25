@@ -128,17 +128,21 @@
                         <x-mary-icon name="o-hashtag" label="CONFIRMACION" />
                         <x-mary-pin wire:model="pin2" size="3" numeric />
                     </div>
-                    <div class="grid col-span-8">
+                    <div class="grid col-span-4">
                         <hr />
                         <x-mary-toggle label="Retorno de guia" wire:model="isReturn"
                             hint="Active para retorno de guia" />
                         <hr />
                     </div>
-                    <div class="grid col-span-8">
-                        <x-mary-input label="Documento de traslado" wire:model="doc_traslado" class="rounded-r-lg" />
+                    <div class="grid col-span-4">
+                        <x-mary-input label="Documento de traslado" wire:model="doc_traslado" class="rounded-r-lg" inline/>
                     </div>
-                    <div class="grid col-span-8">
+                    <div class="grid col-span-4">
                         <x-mary-textarea label="Glosa" wire:model="glosa" placeholder="Escribe una glosa"
+                            hint="Max 1000 chars" rows="2" inline class="rounded-r-lg" />
+                    </div>
+                    <div class="grid col-span-4">
+                        <x-mary-textarea label="Observaciones" wire:model="observation" placeholder="Observaciones"
                             hint="Max 1000 chars" rows="2" inline class="rounded-r-lg" />
                     </div>
                     <div class="grid col-span-4">
@@ -146,7 +150,7 @@
                             :options="$transportistas" single searchable />
                     </div>
                     <div class="grid col-span-4">
-                        <x-mary-choices-offline label="Vehiculos" wire:model="vehiculo_id" :options="$vehiculos" single
+                        <x-mary-choices-offline label="Vehiculo" wire:model="vehiculo_id" :options="$vehiculos" single
                             searchable />
                     </div>
                 </div>

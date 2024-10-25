@@ -30,7 +30,11 @@ return new class extends Migration
             $table->foreign('customer_dest_id')->references('id')->on('customers');
             $table->unsignedBigInteger('sucursal_dest_id');
             $table->foreign('sucursal_dest_id')->references('id')->on('sucursals');
-
+            //facturacion
+            $table->unsignedBigInteger('customer_fact_id');
+            $table->foreign('customer_fact_id')->references('id')->on('customers');
+           
+           
             $table->integer('cantidad');
             $table->decimal('monto', 8, 2);
 
@@ -39,7 +43,7 @@ return new class extends Migration
             $table->string('tipo_comprobante');
             $table->string('doc_traslado')->nullable();
             $table->string('glosa')->nullable();
-
+            $table->string('observation')->nullable();
             $table->string('estado_encomienda');
             $table->integer('pin')->unsigned();
             $table->boolean('isHome')->default(false);

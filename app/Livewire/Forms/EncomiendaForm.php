@@ -10,7 +10,7 @@ use Livewire\Form;
 class EncomiendaForm extends Form
 {
     use LogCustom;
-    
+
     public $code;
     public $user_id;
     public $transportista_id;
@@ -21,7 +21,7 @@ class EncomiendaForm extends Form
 
     public $customer_dest_id;
     public $sucursal_dest_id;
-
+    public $customer_fact_id;
     public $cantidad;
     public $monto;
     public $estado_pago;
@@ -29,25 +29,25 @@ class EncomiendaForm extends Form
     public $tipo_comprobante;
     public $doc_traslado;
     public $glosa;
+    public $observation;
     public $estado_encomienda;
     public $pin;
     public $isReturn;
     public $isHome;
-    public function store($paquetes, $customerFact)
+    public function store($paquetes)
     {
         try {
             $paquetesKey = collect([]);
             $encomienda = Encomienda::create([
                 'code' => $this->code,
                 'user_id' => $this->user_id,
-                
                 'transportista_id' => $this->transportista_id,
                 'vehiculo_id' => $this->vehiculo_id,
-
                 'customer_id' => $this->customer_id,
                 'sucursal_id' => $this->sucursal_id,
                 'customer_dest_id' => $this->customer_dest_id,
                 'sucursal_dest_id' => $this->sucursal_dest_id,
+                'customer_fact_id' => $this->customer_fact_id,
                 'cantidad' => $this->cantidad,
                 'monto' => $this->monto,
                 'estado_pago' => $this->estado_pago,
@@ -55,6 +55,7 @@ class EncomiendaForm extends Form
                 'tipo_comprobante' => $this->tipo_comprobante,
                 'doc_traslado' => $this->doc_traslado,
                 'glosa' => $this->glosa,
+                'observation' => $this->observation,
                 'estado_encomienda' => $this->estado_encomienda,
                 'pin' => $this->pin,
                 'isReturn' => $this->isReturn,
@@ -64,11 +65,11 @@ class EncomiendaForm extends Form
                 $paquetesKey->push(collect($paquete)->put('encomienda_id', $encomienda->id));
             }
             Paquete::upsert($paquetesKey->toArray(), null, null);
-            $this->infoLog('Encomienda store'. $encomienda->id);
-            return true;
+            $this->infoLog('Encomienda store' . $encomienda->id);
+            return $encomienda;
         } catch (\Exception $e) {
             $this->errorLog('Encomienda store', $e);
-            return false;
+            return null;
         }
 
     }

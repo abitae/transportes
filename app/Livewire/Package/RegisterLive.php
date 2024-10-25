@@ -10,9 +10,11 @@ use App\Models\Configuration\Sucursal;
 use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
+use App\Models\Package\Encomienda;
 use App\Models\Package\Paquete;
 use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -46,6 +48,9 @@ class RegisterLive extends Component
     public $estado_pago;
     public $tipo_comprobante;
     public $glosa;
+    public $observation;
+    public $transportista_id;
+    public $vehiculo_id;
     public $modalConfimation = false;
     public $caja;
     public $isReturn = false;
@@ -60,9 +65,11 @@ class RegisterLive extends Component
             $this->redirectRoute('caja.index');
         }
         $this->paquetes = collect([]);
-        $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->first()->id;
+        $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
         $this->estado_pago = 1;
         $this->tipo_comprobante = 3;
+        $this->transportista_id = Transportista::where('isActive', true)->first()->id;
+        $this->vehiculo_id = Vehiculo::where('isActive', true)->first()->id;
 
     }
     public function render()
@@ -191,10 +198,12 @@ class RegisterLive extends Component
 
     public function confirmEncomienda()
     {
+        $encomienda = new Encomienda();
+        $encomienda->code =
         $this->encomiendaForm->code = 'BT-' . Auth::user()->id . Carbon::now()->setTimezone('America/Lima')->format('md-His') . '-' . rand(100, 999);
         $this->encomiendaForm->user_id = Auth::user()->id;
-        $this->encomiendaForm->transportista_id = 1;
-        $this->encomiendaForm->vehiculo_id = 1;
+        $this->encomiendaForm->transportista_id = $this->transportista_id;
+        $this->encomiendaForm->vehiculo_id = $this->vehiculo_id;
         $this->encomiendaForm->customer_id = Customer::firstOrCreate(
             ['type_code' => $this->customerForm->type_code, 'code' => $this->customerForm->code]
         )->id;
@@ -203,6 +212,9 @@ class RegisterLive extends Component
             ['type_code' => $this->customerFormDest->type_code, 'code' => $this->customerFormDest->code]
         )->id;
         $this->encomiendaForm->sucursal_dest_id = $this->sucursal_dest_id;
+        $this->encomiendaForm->customer_fact_id = Customer::firstOrCreate(
+            ['type_code' => $this->customerFact->type_code, 'code' => $this->customerFact->code]
+        )->id;
         $this->encomiendaForm->cantidad = $this->paquetes->sum('cantidad');
 
         $this->encomiendaForm->monto = $this->paquetes->sum('sub_total');
@@ -215,11 +227,13 @@ class RegisterLive extends Component
         }
         $this->encomiendaForm->doc_traslado = $this->doc_traslado;
         $this->encomiendaForm->glosa = $this->glosa;
+        $this->encomiendaForm->observation = $this->observation;
         $this->encomiendaForm->estado_encomienda = 'REGISTRADO';
         $this->encomiendaForm->pin = $this->pin1;
         $this->encomiendaForm->isHome = $this->isHome;
         $this->encomiendaForm->isReturn = $this->isReturn;
-        if ($this->encomiendaForm->store($this->paquetes, $this->customerFact)) {
+        $encomienda = $this->encomiendaForm->store($this->paquetes);
+        if (!is_null($encomienda)) {
             $this->success('Genial, ingresado correctamente!');
             $this->modalConfimation = false;
 
@@ -234,11 +248,29 @@ class RegisterLive extends Component
             } else {
 
             }
-
+            $width = 78;
+            $heigh = 250;
+            $paper_format = array(0, 0, 220, 710);
+            $envio = $encomienda;
+            $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
+            return response()->streamDownload(function () use ($pdf) {
+                echo $pdf->stream();
+            }, $encomienda->code . '.pdf');
             $this->redirectRoute('package.register');
         } else {
             $this->error('Error, verifique los datos!');
         }
 
+    }
+    public function printEncomienda(Encomienda $envio)
+    {
+        $width = 78;
+        $heigh = 250;
+        $paper_format = array(0, 0, 220, 710);
+
+        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, $envio->code . '.pdf');
     }
 }

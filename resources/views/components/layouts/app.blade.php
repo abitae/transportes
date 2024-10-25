@@ -36,10 +36,12 @@
 
             {{-- Brand --}}
             <img src="{{ asset('img/logo01.png') }}" alt ='Infinity.ut' class='w-auto h-10'>
+            
         </x-slot:brand>
 
         {{-- Right side actions --}}
         <x-slot:actions>
+            <x-mary-icon name="s-home" class="text-xl text-center text-green-500 w-9 h-9" label="{{ auth()->user()->sucursal->name }}" />
             <x-mary-theme-toggle darkTheme="dark" lightTheme="light" />
             <x-mary-button label="Messages" icon="o-envelope" link="###" class="btn-ghost btn-sm" responsive />
             <x-mary-button icon="o-bell" class="relative btn-circle">

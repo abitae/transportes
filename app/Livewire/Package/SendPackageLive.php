@@ -2,10 +2,12 @@
 
 namespace App\Livewire\Package;
 
+use App\Livewire\Forms\CustomerForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
+use App\Models\Package\Customer;
 use App\Models\Package\Encomienda;
 use App\Traits\LogCustom;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -37,6 +39,9 @@ class SendPackageLive extends Component
     public bool $showDrawer = false;
     public Encomienda $encomienda;
     public $caja;
+    public $editModal = false;
+    public $isHome;
+    public CustomerForm $customerFormDest;
     public function mount()
     {
         $this->caja = Caja::where('user_id', Auth::user()->id)
@@ -45,7 +50,7 @@ class SendPackageLive extends Component
         if (!$this->caja) {
             $this->redirectRoute('caja.index');
         }
-        $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->first()->id;
+        $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
         $this->date_ini = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
         $this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
     }
@@ -55,12 +60,16 @@ class SendPackageLive extends Component
 
         $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
             ->where('isActive', $this->isActive)
+            ->where('sucursal_id', Auth::user()->sucursal->id)
             ->where('sucursal_dest_id', $this->sucursal_dest_id)
             ->where('estado_encomienda', 'REGISTRADO')
-            ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
-            )->paginate($this->perPage, '*', 'page');
+            ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%'))
+            ->latest()
+            ->paginate($this->perPage, '*', 'page');
+
         $transportistas = Transportista::where('isActive', true)->get();
         $vehiculos = Vehiculo::where('isActive', true)->get();
+
         return view('livewire.package.send-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
     }
     public function openModal()
@@ -107,16 +116,37 @@ class SendPackageLive extends Component
         $this->encomienda = $encomienda;
         $this->showDrawer = true;
     }
+
     public function printEncomienda(Encomienda $envio)
     {
         $width = 78;
         $heigh = 250;
         $paper_format = array(0, 0, ($width / 25.4) * 72, ($heigh / 25.4) * 72);
-        
-        $pdf = Pdf::setPaper($paper_format,'portrait')->loadView('report.pdf.ticket', compact('envio'));
+
+        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
         //return $pdf->stream();
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
         }, $envio->code . '.pdf');
+    }
+    public function editEncomienda(Encomienda $encomienda)
+    {
+        $this->encomienda = $encomienda;
+        $this->editModal = true;
+        $this->isHome = false;
+    }
+    public function updateEncomienda()
+    {
+        if ($this->customerFormDest->code and $this->customerFormDest->type_code) {
+            $this->encomienda->customer_dest_id = Customer::where('code', $this->customerFormDest->code)->where('type_code', $this->customerFormDest->type_code)->first()->id;
+            $this->encomienda->isHome = $this->isHome;
+            $this->encomienda->save();
+            $this->editModal = false;
+        }
+
+    }
+    public function searchDestinatario()
+    {
+        $this->customerFormDest->store();
     }
 }

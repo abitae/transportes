@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
     {
         Sucursal::factory()->create(
             [
-                'name' => 'Sucursal 1',
-                'address' => 'Calle 123',
+                'name' => 'HUANCAYO 28 DE JULIO',
+                'address' => 'JR 28 DE JULIO 439 HUANCAYO',
                 'phone' => '1234567890',
                 'email' => 'sucursal1@hotmail.com',
                 'isActive' => true,
@@ -32,8 +32,80 @@ class DatabaseSeeder extends Seeder
         );
         Sucursal::factory()->create(
             [
-                'name' => 'Sucursal 2',
-                'address' => 'Calle 123',
+                'name' => 'LIMA VILLEGAS',
+                'address' => 'CALLE JULIO VILLEGAS 122-124 LA VICTORIA LIMA',
+                'phone' => '1234567890',
+                'email' => 'sucursal1@hotmail.com',
+                'isActive' => true,
+            ]
+        );
+        Sucursal::factory()->create(
+            [
+                'name' => 'LIMA OBREROS',
+                'address' => 'JR OBREROS 125  A LA VICTORIA LIMA',
+                'phone' => '1234567890',
+                'email' => 'sucursal1@hotmail.com',
+                'isActive' => true,
+            ]
+        );
+        Sucursal::factory()->create(
+            [
+                'name' => 'HUANCAVELICA UNIVERSITARIA',
+                'address' => 'Av. Universitaria 1003 Huancavelica',
+                'phone' => '1234567890',
+                'email' => 'sucursal1@hotmail.com',
+                'isActive' => true,
+            ]
+        );
+        Sucursal::factory()->create(
+            [
+                'name' => 'JAUJA',
+                'address' => 'JAUJA',
+                'phone' => '1234567890',
+                'email' => 'sucursal1@hotmail.com',
+                'isActive' => true,
+            ]
+        );
+        Sucursal::factory()->create(
+            [
+                'name' => 'OROYA',
+                'address' => 'Av. ALVERTO DIAS 1288- SANTA ROSA DE SACO OROYA',
+                'phone' => '1234567890',
+                'email' => 'sucursal1@hotmail.com',
+                'isActive' => true,
+            ]
+        );
+        Sucursal::factory()->create(
+            [
+                'name' => 'HUANUCO',
+                'address' => 'HUANUCO',
+                'phone' => '1234567890',
+                'email' => 'sucursal1@hotmail.com',
+                'isActive' => true,
+            ]
+        );
+        Sucursal::factory()->create(
+            [
+                'name' => 'PICHANAKI',
+                'address' => 'PICHANAKI',
+                'phone' => '1234567890',
+                'email' => 'sucursal1@hotmail.com',
+                'isActive' => true,
+            ]
+        );
+        Sucursal::factory()->create(
+            [
+                'name' => 'AREQUIPA',
+                'address' => 'AREQUIPA',
+                'phone' => '1234567890',
+                'email' => 'sucursal1@hotmail.com',
+                'isActive' => true,
+            ]
+        );
+        Sucursal::factory()->create(
+            [
+                'name' => 'TRUJILLO',
+                'address' => 'TRUJILLO',
                 'phone' => '1234567890',
                 'email' => 'sucursal1@hotmail.com',
                 'isActive' => true,
@@ -150,7 +222,7 @@ class DatabaseSeeder extends Seeder
         Transportista::factory(10)->create();
         Vehiculo::factory(10)->create();
 
-        Encomienda::factory(100)->create();
-        Paquete::factory(1000)->create();
+        Encomienda::factory(1000)->create();
+        Paquete::factory(10000)->create();
     }
 }

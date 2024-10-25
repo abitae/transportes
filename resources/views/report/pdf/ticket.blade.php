@@ -193,12 +193,6 @@
           <b>Placa N°: </b> {{ $envio->vehiculo->placa }}
         </td>
       </tr>
-      {{-- <tr>
-        <td colspan="2">
-          <b>N° de Licencia del Conductor: </b> {{$envio->colaborador->licencia}}
-        </td>
-      </tr> --}}
-
       <tr>
         <td colspan="2">
           <b>DNI: </b> {{$envio->transportista->dni }}

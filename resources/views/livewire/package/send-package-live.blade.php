@@ -7,8 +7,8 @@
         </x-slot:menu>
         <div class="grid grid-cols-6 gap-2 p-2 shadow-md">
             <div class="grid col-span-2">
-                <x-mary-select label="Destino" icon="s-inbox-stack" :options="$sucursals" wire:model="sucursal_dest_id"
-                    inline />
+                <x-mary-select label="Destino" icon="s-inbox-stack" :options="$sucursals"
+                    wire:model.live="sucursal_dest_id" inline />
             </div>
             <div class="grid col-span-2">
                 <x-mary-datetime label="Fecha de registro" wire:model.live="date_ini" icon="o-calendar" inline />
@@ -82,10 +82,11 @@
                         </div>
                         @endscope
                         @scope('cell_actions', $stuff)
-                        
-                        
-                        <x-mary-badge :value="strtoupper($stuff->code)" class="w-min-full {{ $stuff->estado_pago == 2 ? 'badge-warning': 'bg-purple-500/10' }}" />
-                            
+
+
+                        <x-mary-badge :value="strtoupper($stuff->code)"
+                            class="w-min-full {{ $stuff->estado_pago == 2 ? 'badge-warning': 'bg-purple-500/10' }}" />
+
                         <br>
                         <nobr>
                             <x-mary-button icon="o-no-symbol" wire:click="enableEncomienda({{ $stuff->id }})" spinner
@@ -93,10 +94,11 @@
                                 class="text-white bg-red-500 btn-xs" />
                             <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
                                 class="text-white btn-xs bg-cyan-500">
-                                
                             </x-mary-button>
                             <x-mary-button icon="o-printer" wire:click="printEncomienda({{ $stuff->id }})" spinner
                                 class="text-white bg-purple-500 btn-xs" />
+                            <x-mary-button icon="o-pencil-square" wire:click="editEncomienda({{ $stuff->id }})" spinner
+                                class="text-white bg-green-500 btn-xs" />
                         </nobr>
                         @endscope
                     </x-mary-table>
@@ -171,6 +173,61 @@
             </x-mary-table>
         </x-mary-card>
     </x-mary-drawer>
+    <x-mary-modal wire:model="editModal" persistent class="backdrop-blur" box-class="max-h-full max-w-256 ">
+        <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="EDITAR ENCOMIENDA" />
+        <x-mary-form wire:submit.prevent="updateEncomienda">
+            <div class="p-2 border border-green-500 rounded-lg">
+                <div class="grid grid-cols-4 gap-1">
+                    <div class="grid col-span-4">
+                        <x-mary-input label="Numero de documento" wire:model='customerFormDest.code'>
+                            <x-slot:prepend>
+                                @php
+                                $docs = [
+                                ['id' => 'dni', 'name' => 'DNI'],
+                                ['id' => 'ruc', 'name' => 'RUC'],
+                                ['id' => 'ce', 'name' => 'CE'],
+                                ];
+
+                                @endphp
+                                <x-mary-select wire:model='customerFormDest.type_code' icon="o-user" :options="$docs"
+                                    class="rounded-e-none" />
+                            </x-slot:prepend>
+                            <x-slot:append>
+                                <x-mary-button wire:click='searchDestinatario' icon="o-magnifying-glass"
+                                    class="btn-primary rounded-s-none" />
+                            </x-slot:append>
+                        </x-mary-input>
+                    </div>
+                    <div class="grid col-span-4">
+                        <x-mary-input label="Nombre/Raz. Social" wire:model='customerFormDest.name'>
+
+                        </x-mary-input>
+                    </div>
+                    <div class="grid col-span-4">
+                        <hr />
+                        <x-mary-toggle label="Reparto a domicilio" wire:model.live="isHome"
+                            hint="Active para reparto a domicilio" />
+                        <hr />
+                    </div>
+                    @if ($isHome)
+                    <div class="grid col-span-3">
+                        <x-mary-input label="Direccion" wire:model='customerFormDest.address'>
+
+                        </x-mary-input>
+                    </div>
+                    <div class="grid col-span-1">
+                        <x-mary-input label="Celular" wire:model='customerFormDest.phone'>
+                        </x-mary-input>
+                    </div>
+                    @endif
+                </div>
+                <x-slot:actions>
+                    <x-mary-button label="Cancel" @click="$wire.editModal = false" class="bg-red-500" />
+                    <x-mary-button type="submit" spinner="updateEncomienda" label="Save" class="bg-blue-500" />
+                </x-slot:actions>
+            </div>
+        </x-mary-form>
+    </x-mary-modal>
     @endisset
 
 

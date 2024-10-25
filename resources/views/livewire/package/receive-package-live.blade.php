@@ -1,23 +1,17 @@
 <div>
     <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator>
         <x-slot:menu>
-            <x-mary-button wire:click='openModal' responsive icon="o-plus" label="Nuevo envio"
-                class="text-white bg-sky-500" />
+            <x-mary-input label="Buscar envio" inline wire:model.live='search' />
+            <x-mary-button wire:click='openModal' responsive icon="s-truck" label="Receive paquetes"
+                    class="text-white bg-green-500" />
         </x-slot:menu>
         <div class="grid grid-cols-6 gap-1 shadow-xl">
-            <div class="grid col-span-1">
-                <x-mary-select label="Raiz" icon="s-inbox-stack" :options="$sucursals" wire:model="sucursal_id"
+            <div class="grid col-span-2">
+                <x-mary-select label="Raiz" icon="s-inbox-stack" :options="$sucursals" wire:model.live="sucursal_id"
                     inline />
             </div>
-            <div class="grid col-span-1">
-                <x-mary-datetime label="Fecha" wire:model.live="date_ini" icon="o-calendar" inline />
-            </div>
             <div class="grid col-span-2">
-
-            </div>
-            <div class="grid col-span-1">
-                <x-mary-button wire:click='openModal' responsive icon="s-truck" label="Receive paquetes"
-                    class="text-white bg-green-500" />
+                <x-mary-datetime label="Fecha" wire:model.live="date_ini" icon="o-calendar" inline />
             </div>
         </div>
         <x-mary-menu-separator />
