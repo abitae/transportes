@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
     {
         Sucursal::factory()->create(
             [
+                'code' => 'H28',
                 'name' => 'HUANCAYO 28 DE JULIO',
                 'address' => 'JR 28 DE JULIO 439 HUANCAYO',
                 'phone' => '1234567890',
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
         );
         Sucursal::factory()->create(
             [
+                'code' => 'LVI',
                 'name' => 'LIMA VILLEGAS',
                 'address' => 'CALLE JULIO VILLEGAS 122-124 LA VICTORIA LIMA',
                 'phone' => '1234567890',
@@ -41,6 +43,7 @@ class DatabaseSeeder extends Seeder
         );
         Sucursal::factory()->create(
             [
+                'code' => 'LOB',
                 'name' => 'LIMA OBREROS',
                 'address' => 'JR OBREROS 125  A LA VICTORIA LIMA',
                 'phone' => '1234567890',
@@ -50,6 +53,7 @@ class DatabaseSeeder extends Seeder
         );
         Sucursal::factory()->create(
             [
+                'code' => 'HVU',
                 'name' => 'HUANCAVELICA UNIVERSITARIA',
                 'address' => 'Av. Universitaria 1003 Huancavelica',
                 'phone' => '1234567890',
@@ -59,6 +63,7 @@ class DatabaseSeeder extends Seeder
         );
         Sucursal::factory()->create(
             [
+                'code' => 'JAU',
                 'name' => 'JAUJA',
                 'address' => 'JAUJA',
                 'phone' => '1234567890',
@@ -68,6 +73,7 @@ class DatabaseSeeder extends Seeder
         );
         Sucursal::factory()->create(
             [
+                'code' => 'ORO',
                 'name' => 'OROYA',
                 'address' => 'Av. ALVERTO DIAS 1288- SANTA ROSA DE SACO OROYA',
                 'phone' => '1234567890',
@@ -77,6 +83,7 @@ class DatabaseSeeder extends Seeder
         );
         Sucursal::factory()->create(
             [
+                'code' => 'HUA',
                 'name' => 'HUANUCO',
                 'address' => 'HUANUCO',
                 'phone' => '1234567890',
@@ -86,6 +93,7 @@ class DatabaseSeeder extends Seeder
         );
         Sucursal::factory()->create(
             [
+                'code' => 'PIC',
                 'name' => 'PICHANAKI',
                 'address' => 'PICHANAKI',
                 'phone' => '1234567890',
@@ -95,6 +103,7 @@ class DatabaseSeeder extends Seeder
         );
         Sucursal::factory()->create(
             [
+                'code' => 'ARQ',
                 'name' => 'AREQUIPA',
                 'address' => 'AREQUIPA',
                 'phone' => '1234567890',
@@ -104,6 +113,7 @@ class DatabaseSeeder extends Seeder
         );
         Sucursal::factory()->create(
             [
+                'code' => 'TRU',
                 'name' => 'TRUJILLO',
                 'address' => 'TRUJILLO',
                 'phone' => '1234567890',

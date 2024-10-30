@@ -12,6 +12,8 @@ class SucursalForm extends Form
 {
     use LogCustom;
     public ?Sucursal $sucursal = null;
+    #[Validate('required|max:3')]
+    public $code = '';
     #[Validate('required')]
     public $name = '';
     #[Validate('required')]
@@ -23,6 +25,7 @@ class SucursalForm extends Form
     public function setSucursal(Sucursal $sucursal)
     {
         $this->sucursal = $sucursal;
+        $this->code = $sucursal->code;
         $this->name = $sucursal->name;
         $this->address = $sucursal->address;
         $this->phone = $sucursal->phone;
@@ -33,6 +36,7 @@ class SucursalForm extends Form
         try {
             $this->validate();
             Sucursal::create([
+                'code' => $this->code,
                 'name' => $this->name,
                 'address' => $this->address,
                 'phone' => $this->phone,
@@ -50,6 +54,7 @@ class SucursalForm extends Form
         try {
             $this->validate();
             $this->sucursal->update([
+                'code' => $this->code,
                 'name' => $this->name,
                 'address' => $this->address,
                 'phone' => $this->phone,

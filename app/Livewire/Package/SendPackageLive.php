@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Package;
 
+use App\Exports\ManifiestoExport;
 use App\Livewire\Forms\CustomerForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 use Mary\Traits\Toast;
 
 class SendPackageLive extends Component
@@ -94,7 +96,9 @@ class SendPackageLive extends Component
             if (count($this->selected) == $retorno) {
                 $this->success('Genial, ingresado correctamente!');
                 $this->modalEnvio = false;
+                $ids = $this->selected;
                 $this->selected = [];
+                return Excel::download(new ManifiestoExport($ids), 'manifiesto.xlsx');
             } else {
                 $this->error('Error, verifique los datos!');
             }

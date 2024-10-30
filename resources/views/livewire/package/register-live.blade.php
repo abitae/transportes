@@ -122,11 +122,11 @@
                     </div>
                     <div class="grid col-span-2">
                         <x-mary-icon name="o-hashtag" label="PING" />
-                        <x-mary-pin wire:model="pin1" size="3" numeric />
+                        <x-mary-pin ida="pin1" wire:model="pin1" size="3" numeric />
                     </div>
                     <div class="grid col-span-2">
                         <x-mary-icon name="o-hashtag" label="CONFIRMACION" />
-                        <x-mary-pin wire:model="pin2" size="3" numeric />
+                        <x-mary-pin ida="pin2" wire:model="pin2" size="3" numeric />
                     </div>
                     <div class="grid col-span-4">
                         <hr />
@@ -135,7 +135,8 @@
                         <hr />
                     </div>
                     <div class="grid col-span-4">
-                        <x-mary-input label="Documento de traslado" wire:model="doc_traslado" class="rounded-r-lg" inline/>
+                        <x-mary-input label="Documento de traslado" wire:model="doc_traslado" class="rounded-r-lg"
+                            inline />
                     </div>
                     <div class="grid col-span-4">
                         <x-mary-textarea label="Glosa" wire:model="glosa" placeholder="Escribe una glosa"
@@ -167,15 +168,14 @@
             @endif
         </x-slot:actions>
     </x-mary-card>
-    <x-mary-modal wire:model="modalConfimation" persistent class="backdrop-blur"
-        box-class="max-w-full max-h-full bg-purple-50">
+    <x-mary-modal wire:model="modalConfimation" persistent class="backdrop-blur" box-class="max-w-full max-h-full">
         <div class="grid grid-cols-8 gap-2 p-2 border roundedlg border-sky-500">
             <div class="grid col-span-4">
                 <div class="grid grid-cols-8 border rounded-lg border-sky-500">
                     <div class="grid col-span-8">
                         <x-mary-card shadow>
                             <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
-                            <div class="grid grid-cols-5 grid-rows-3 gap-1 bg-green-200 rounded">
+                            <div class="grid grid-cols-5 grid-rows-3 gap-1 rounded">
                                 <div class="col-span-3">{{ $this->customerForm->name ?? 'name' }}</div>
                                 <div class="row-start-2">{{ strtoupper($this->customerForm->type_code) ?? 'type_code' }}
                                 </div>
@@ -184,7 +184,7 @@
                                 <div class="col-span-3">{{ Auth::user()->sucursal->name ?? 'sucursal' }}</div>
                             </div>
                             <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="DESTINATARIO" />
-                            <div class="grid grid-cols-5 grid-rows-3 gap-1 bg-red-100 rounded">
+                            <div class="grid grid-cols-5 grid-rows-3 gap-1 rounded">
                                 <div class="col-span-3">{{ $this->customerFormDest->name ?? 'name' }}</div>
                                 <div class="row-start-2">{{ strtoupper($this->customerFormDest->type_code) ??
                                     'type_code' }}</div>
@@ -243,8 +243,19 @@
             </div>
             <x-slot:actions>
                 <x-mary-button label="Cancel" @click="$wire.modalConfimation = false" />
-                <x-mary-button wire:click='confirmEncomienda' label="Confirm" class="btn-primary" />
+                <x-mary-button wire:click='confirmEncomienda'  label="Confirm" class="btn-primary" />
             </x-slot:actions>
+        </div>
+    </x-mary-modal>
+    <x-mary-modal wire:model="modalFinal" persistent class="backdrop-blur" box-class="min-w-ful">
+        <div class="grid grid-cols-8 gap-1 border rounded border-sky-500">
+            <div class="grid col-span-8">
+                <x-mary-card shadow>
+                    <x-mary-button wire:click='newEncomienda' label="NUEVA ENCOMIENDA" class="btn-primary" />
+                    <x-mary-button wire:click='listEncomienda' label="LISTA ENCOMIENDAS" class="btn-primary" />
+                </x-mary-card>
+
+            </div>
         </div>
     </x-mary-modal>
 </div>

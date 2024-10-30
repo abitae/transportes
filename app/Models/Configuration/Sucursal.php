@@ -11,6 +11,7 @@ class Sucursal extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'code',
         'name',
         'address',
         'phone',

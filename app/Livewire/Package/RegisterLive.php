@@ -55,6 +55,7 @@ class RegisterLive extends Component
     public $caja;
     public $isReturn = false;
     public $isHome = false;
+    public $modalFinal = false;
     public EntryCajaForm $entryForm;
     public function mount()
     {
@@ -248,29 +249,29 @@ class RegisterLive extends Component
             } else {
 
             }
+
             $width = 78;
             $heigh = 250;
             $paper_format = array(0, 0, 220, 710);
             $envio = $encomienda;
             $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
+            $this->modalFinal = true;
             return response()->streamDownload(function () use ($pdf) {
                 echo $pdf->stream();
             }, $encomienda->code . '.pdf');
-            $this->redirectRoute('package.register');
+
+            
         } else {
             $this->error('Error, verifique los datos!');
         }
 
     }
-    public function printEncomienda(Encomienda $envio)
+    public function newEncomienda()
     {
-        $width = 78;
-        $heigh = 250;
-        $paper_format = array(0, 0, 220, 710);
-
-        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, $envio->code . '.pdf');
+        $this->redirectRoute('package.register');
+    }
+    public function listEncomienda()
+    {
+        $this->redirectRoute('package.send');
     }
 }

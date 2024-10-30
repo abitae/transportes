@@ -22,6 +22,7 @@
                 @php
                     $headers = [
                         ['key' => 'id', 'label' => '#', 'class' => 'bg-blue-500 w-1'],
+                        ['key' => 'code', 'label' => 'Code', 'class' => ''],
                         ['key' => 'name', 'label' => 'Name', 'class' => ''],
                         ['key' => 'address', 'label' => 'Direccion', 'class' => ''],
                         ['key' => 'phone', 'label' => 'Telefono', 'class' => ''],
@@ -63,6 +64,9 @@
         <x-mary-form wire:submit="{{ !isset($sucursalForm->sucursal) ? 'create' : 'edit' }}">
             <div class="border border-green-500 rounded-lg">
                 <div class="grid grid-cols-4 p-2">
+                    <div class="grid col-span-4 pt-2">
+                        <x-mary-input label="Code" inline wire:model='sucursalForm.code' />
+                    </div>
                     <div class="grid col-span-4 pt-2">
                         <x-mary-input label="Nombre" inline wire:model='sucursalForm.name' />
                     </div>

@@ -24,6 +24,7 @@
                     @php
                     $headers = [
                     ['key' => 'actions', 'label' => 'Action', 'class' => ''],
+                    ['key' => 'estado', 'label' => 'Estado', 'class' => ''],
                     ['key' => 'remitente', 'label' => 'Remitente', 'class' => ''],
                     ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
                     ];
@@ -38,68 +39,80 @@
                             <x-mary-icon name="o-cube" label="No se encontro registros." />
                         </x-slot:empty>
                         @scope('cell_remitente', $stuff)
-                        <div class="grid grid-cols-5 grid-rows-5 gap-1">
-                            <div class="col-span-3">
+                        <div class="grid grid-cols-1 grid-rows-4 gap-1 text-xs">
+                            <div>
                                 <x-mary-badge :value="$stuff->remitente->code" class="text-white bg-purple-500" />
                             </div>
-                            <div class="col-span-4 row-start-2">
+                            <div>
                                 {{ strtoupper($stuff->remitente->name) }}
                             </div>
-                            <div class="col-span-2 row-start-3">
+                            <div>
                                 <x-mary-badge :value="$stuff->sucursal_remitente->name"
-                                    class="text-white bg-green-500" />
+                                    class="text-xs text-white bg-green-500" />
                             </div>
-                            <div class="col-span-2 col-start-3 row-start-3">
+                            <div>
                                 <x-mary-badge :value="$stuff->sucursal_remitente->created_at->format('d/m/Y')"
-                                    class="text-right text-white badge-warning" />
+                                    class="text-xs text-right text-white badge-warning" />
                             </div>
-                            <div class="col-span-4 row-start-4">
+                            <div>
                                 {{ $stuff->sucursal_remitente->address }}
                             </div>
                         </div>
-
                         @endscope
                         @scope('cell_destinatario', $stuff)
-                        <div class="grid grid-cols-5 grid-rows-5 gap-1">
-                            <div class="col-span-3">
+                        <div class="grid grid-cols-1 grid-rows-4 gap-1 text-xs">
+                            <div>
                                 <x-mary-badge :value="$stuff->destinatario->code" class="text-white bg-purple-500" />
                             </div>
-                            <div class="col-span-4 row-start-2">
+                            <div>
                                 {{ strtoupper($stuff->destinatario->name)}}
-
                             </div>
-                            <div class="col-span-2 row-start-3">
+                            <div>
                                 <x-mary-badge :value="$stuff->sucursal_destinatario->name"
-                                    class="text-white bg-green-500" />
+                                    class="text-xs text-white bg-green-500" />
                             </div>
-                            <div class="col-span-2 col-start-3 row-start-3">
+                            <div>
                                 <x-mary-badge :value="$stuff->sucursal_destinatario->created_at->format('d/m/Y')"
-                                    class="text-right text-white badge-warning" />
+                                    class="text-xs text-right text-white badge-warning" />
                             </div>
-                            <div class="col-span-4 row-start-4">
+                            <div>
                                 {{ $stuff->sucursal_destinatario->address }}
                             </div>
                         </div>
                         @endscope
-                        @scope('cell_actions', $stuff)
-
-
-                        <x-mary-badge :value="strtoupper($stuff->code)"
-                            class="w-min-full {{ $stuff->estado_pago == 2 ? 'badge-warning': 'bg-purple-500/10' }}" />
-
+                        @scope('cell_estado', $stuff)
+                        <x-mary-badge :value="strtoupper('P')"
+                            class="w-min-full {{ $stuff->estado_pago == 2 ? 'bg-red-500': 'bg-green-500' }}" />
                         <br>
-                        <nobr>
-                            <x-mary-button icon="o-no-symbol" wire:click="enableEncomienda({{ $stuff->id }})" spinner
-                                wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
-                                class="text-white bg-red-500 btn-xs" />
-                            <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
-                                class="text-white btn-xs bg-cyan-500">
-                            </x-mary-button>
-                            <x-mary-button icon="o-printer" wire:click="printEncomienda({{ $stuff->id }})" spinner
-                                class="text-white bg-purple-500 btn-xs" />
-                            <x-mary-button icon="o-pencil-square" wire:click="editEncomienda({{ $stuff->id }})" spinner
-                                class="text-white bg-green-500 btn-xs" />
-                        </nobr>
+                        <x-mary-badge :value="strtoupper('D')"
+                            class="w-min-full {{ !$stuff->isHome ? 'bg-red-500': 'bg-green-500' }}" />
+                        <br>
+                        <x-mary-badge :value="strtoupper('R')"
+                            class="w-min-full {{ !$stuff->isReturn ? 'bg-red-500': 'bg-green-500' }}" />
+                        @endscope
+                        @scope('cell_actions', $stuff)
+                        <div class="grid grid-cols-1 grid-rows-3 gap-1">
+                            <div>
+                                <x-mary-badge :value="strtoupper($stuff->code)"
+                                    class="w-full text-xs {{ $stuff->estado_pago == 2 ? 'bg-red-500': 'bg-green-500' }}" />
+                            </div>
+                            <div>
+                                <x-mary-button icon="o-no-symbol" wire:click="enableEncomienda({{ $stuff->id }})"
+                                    spinner
+                                    wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
+                                    class="text-white bg-red-500 btn-xs" />
+                                <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
+                                    class="text-white btn-xs bg-cyan-500" />
+                                <x-mary-button icon="o-printer" wire:click="printEncomienda({{ $stuff->id }})" spinner
+                                    class="text-white bg-purple-500 btn-xs" />
+                            </div>
+                            <div>
+
+                                <x-mary-button icon="o-pencil-square" wire:click="editEncomienda({{ $stuff->id }})"
+                                    spinner class="text-white bg-green-500 btn-xs" />
+                            </div>
+                        </div>
+
                         @endscope
                     </x-mary-table>
                 </x-mary-card>

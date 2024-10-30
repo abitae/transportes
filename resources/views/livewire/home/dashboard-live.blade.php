@@ -8,9 +8,7 @@
             <div>
                 <x-mary-chart wire:model="myChart" />
             </div>
-            <div>
-                <x-mary-chart wire:model="myChart" />
-            </div>
+            
             <div class="row-start-2">
 
             </div>

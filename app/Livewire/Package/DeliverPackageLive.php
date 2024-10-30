@@ -46,14 +46,14 @@ class DeliverPackageLive extends Component
         if (!$this->caja) {
             $this->redirectRoute('caja.index');
         }
-        $this->sucursal_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->first()->id;
+        $this->sucursal_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
         $this->date_ini = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
         $this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
         $this->tipo_comprobante = 3;
     }
     public function render()
     {
-        $sucursals = Sucursal::where('isActive', true)->whereIn('id', [Auth::user()->id])->get();
+        $sucursals = Sucursal::where('isActive', true)->whereNot('id', [Auth::user()->sucursal->id])->get();
         $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
             ->where('sucursal_id', $this->sucursal_id)
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
@@ -69,8 +69,8 @@ class DeliverPackageLive extends Component
     }
     public function printEncomienda(Encomienda $envio)
     {
-        $width = 78;
-        $heigh = 250;
+        $width = 80;
+        $heigh = 270;
         $paper_format = array(0, 0, ($width / 25.4) * 72, ($heigh / 25.4) * 72);
 
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
