@@ -244,7 +244,6 @@ class RegisterLive extends Component
             $this->entryForm->tipo = 'ENVIO ENCOMIENDA';
 
             if ($this->entryForm->store()) {
-
                 $this->entryForm->reset();
             } else {
 

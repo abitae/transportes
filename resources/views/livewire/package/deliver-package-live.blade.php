@@ -99,7 +99,7 @@
                                     class="w-full text-xs {{ $stuff->estado_pago == 2 ? 'bg-red-500': 'bg-green-500' }}" />
                             </div>
                             <div>
-                                <x-mary-button icon="o-pencil-square" wire:click="openModal({{ $stuff->id }})" spinner
+                                <x-mary-button icon="c-bars-arrow-up" wire:click="openModal({{ $stuff->id }})" spinner
                                     class="text-white bg-yellow-500 btn-xs" />
                                 <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
                                     class="text-white btn-xs bg-cyan-500" />
