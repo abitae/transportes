@@ -13,6 +13,7 @@ use App\Livewire\Home\DashboardLive;
 use App\Livewire\Package\CustomerLive;
 use App\Livewire\Package\DeliverPackageLive;
 use App\Livewire\Package\ReceivePackageLive;
+use App\Livewire\Package\RecordPackageLive;
 use App\Livewire\Package\RegisterLive;
 use App\Livewire\Package\SendPackageLive;
 use Illuminate\Support\Facades\Route;
@@ -56,5 +57,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/send_package', SendPackageLive::class)->name('package.send');
     Route::get('/receive_package', ReceivePackageLive::class)->name('package.receive');
     Route::get('/deliver_package', DeliverPackageLive::class)->name('package.deliver');
+    Route::get('/record_package', RecordPackageLive::class)->name('package.record');
 });
 require __DIR__ . '/auth.php';

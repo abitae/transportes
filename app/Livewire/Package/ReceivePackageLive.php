@@ -81,16 +81,29 @@ class ReceivePackageLive extends Component
         $this->encomienda = $encomienda;
         $this->showDrawer = true;
     }
-    public function printEncomienda(Encomienda $envio)
+    public function printTicket(Encomienda $envio)
     {
         $width = 78;
         $heigh = 250;
         $paper_format = array(0, 0, 220, 710);
         
-        $pdf = Pdf::setPaper($paper_format,'portrait')->loadView('report.pdf.ticket', compact('envio'));
-        //return $pdf->stream();
+        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
+
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
-        }, $envio->code . '.pdf');
+        }, 'T'.$envio->code . '.pdf');
     }
+    public function printSticker(Encomienda $envio)
+    {
+        $width = 78;
+        $heigh = 250;
+        $paper_format = array(0, 0, 220, 710);
+        
+        $pdf = Pdf::loadView('report.pdf.sticker', compact('envio'));
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->stream();
+        }, 'S'.$envio->code . '.pdf');
+    }
+
 }

@@ -2,16 +2,17 @@
     <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator>
         <x-slot:menu>
             <x-mary-input label="Buscar envio" inline wire:model.live='search' />
-            <x-mary-button wire:click='openModal' responsive icon="s-truck" label="Receive paquetes"
-                class="text-white bg-green-500" />
         </x-slot:menu>
-        <div class="grid grid-cols-6 gap-1 shadow-xl">
+        <div class="grid grid-cols-6 gap-2 p-2 shadow-md">
             <div class="grid col-span-2">
-                <x-mary-select label="Raiz" icon="s-inbox-stack" :options="$sucursals" wire:model.live="sucursal_id"
-                    inline />
+                <x-mary-select label="Sucursal de envio" icon="s-inbox-stack" :options="$sucursals"
+                    wire:model.live="sucursal_dest_id" inline />
             </div>
             <div class="grid col-span-2">
-                <x-mary-datetime label="Fecha" wire:model.live="date_ini" icon="o-calendar" inline />
+                <x-mary-datetime label="Fecha de registro" wire:model.live="date_ini" icon="o-calendar" inline />
+            </div>
+            <div class="grid col-span-2">
+                
             </div>
         </div>
         <x-mary-menu-separator />
@@ -26,10 +27,10 @@
                     ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
                     ];
                     $row_decoration = [
-                    'bg-red-50' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,
+                    'bg-red-400' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,
                     ];
                     @endphp
-                    <x-mary-table wire:model="selected" selectable :headers="$headers" :rows="$encomiendas"
+                    <x-mary-table wire:model="selected" :headers="$headers" :rows="$encomiendas"
                         with-pagination per-page="perPage" :row-decoration="$row_decoration"
                         :per-page-values="[100, 150, 200]">
                         <x-slot:empty>
@@ -98,13 +99,12 @@
                             class="w-min-full {{ !$stuff->isReturn ? 'bg-red-500': 'bg-green-500' }}" />
                         @endscope
                         @scope('cell_actions', $stuff)
-                        <div class="grid grid-cols-1 grid-rows-3 gap-1">
+                        <div class="grid grid-cols-1 grid-rows-2 gap-1">
                             <div>
                                 <x-mary-badge :value="strtoupper($stuff->code)"
                                     class="w-full text-xs {{ $stuff->estado_pago == 2 ? 'bg-red-500': 'bg-green-500' }}" />
                             </div>
                             <div>
-    
                                 <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
                                     class="text-white btn-xs bg-cyan-500" />
                                 <x-mary-button icon="o-printer" wire:click="printTicket({{ $stuff->id }})" spinner
@@ -112,13 +112,7 @@
                                 <x-mary-button icon="o-printer" wire:click="printSticker({{ $stuff->id }})" spinner
                                     class="text-white bg-green-500 btn-xs" />
                             </div>
-                            <div>
-                                <x-mary-button icon="o-no-symbol" wire:click="enableEncomienda({{ $stuff->id }})"
-                                    spinner
-                                    wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
-                                    class="text-white bg-red-500 btn-xs" />
-
-                            </div>
+                            
                         </div>
 
                         @endscope
@@ -126,27 +120,8 @@
                 </x-mary-card>
             </div>
         </div>
-
     </x-mary-card>
-    <x-mary-modal wire:model="modalEnvio" persistent class="backdrop-blur" box-class="max-h-full max-w-128 ">
-        <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="ENVIAR PAQUETES" />
-        <x-mary-form wire:submit.prevent="receivePaquetes">
-            <div class="p-2 border border-green-500 rounded-lg">
-                <div class="grid grid-cols-4 gap-1">
-                    <div class="grid col-span-4">
-                        <x-mary-card title="{{ $this->numElementos ?? 0 }}" subtitle="Paquetes selecionados" shadow
-                            separator>
-                            Sucursal de raiz : {{ $this->sucursal_rem->name ?? 'Sucursal raiz' }}
-                        </x-mary-card>
-                    </div>
-                </div>
-                <x-slot:actions>
-                    <x-mary-button label="Cancel" wire:click="openModal()" class="bg-red-500" />
-                    <x-mary-button type="submit" spinner="sendPaquetes" label="Save" class="bg-blue-500" />
-                </x-slot:actions>
-            </div>
-        </x-mary-form>
-    </x-mary-modal>
+
     @isset($encomienda)
     <x-mary-drawer wire:model="showDrawer" title="Detalle de encomienda" subtitle="Code {{ $encomienda->code }}"
         separator with-close-button close-on-escape class="w-11/12 lg:w-2/3" right>
@@ -184,4 +159,6 @@
         </x-mary-card>
     </x-mary-drawer>
     @endisset
+
+
 </div>

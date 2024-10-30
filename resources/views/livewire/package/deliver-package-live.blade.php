@@ -87,7 +87,15 @@
                                     class="text-xs text-right text-white badge-warning" />
                             </div>
                             <div>
+                                @if ($stuff->isHome)
+                                REPARTO DOMICILIO
+                                <br>
+                                {{ $stuff->destinatario->address }}
+                                @else
+                                ENTREGA SUCURSAL
+                                <br>
                                 {{ $stuff->sucursal_destinatario->address }}
+                                @endif
                             </div>
                         </div>
                         @endscope

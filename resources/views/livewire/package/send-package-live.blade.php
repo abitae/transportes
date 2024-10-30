@@ -68,15 +68,25 @@
                                 {{ strtoupper($stuff->destinatario->name)}}
                             </div>
                             <div>
+                                
                                 <x-mary-badge :value="$stuff->sucursal_destinatario->name"
                                     class="text-xs text-white bg-green-500" />
+
                             </div>
                             <div>
                                 <x-mary-badge :value="$stuff->sucursal_destinatario->created_at->format('d/m/Y')"
                                     class="text-xs text-right text-white badge-warning" />
                             </div>
                             <div>
+                                @if ($stuff->isHome)
+                                REPARTO DOMICILIO
+                                <br>
+                                {{ $stuff->destinatario->address }}
+                                @else
+                                ENTREGA SUCURSAL
+                                <br>
                                 {{ $stuff->sucursal_destinatario->address }}
+                                @endif
                             </div>
                         </div>
                         @endscope
@@ -97,19 +107,21 @@
                                     class="w-full text-xs {{ $stuff->estado_pago == 2 ? 'bg-red-500': 'bg-green-500' }}" />
                             </div>
                             <div>
+                                <x-mary-button icon="o-pencil-square" wire:click="editEncomienda({{ $stuff->id }})"
+                                    spinner class="text-white bg-green-500 btn-xs" />
+                                <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
+                                    class="text-white btn-xs bg-cyan-500" />
+                                <x-mary-button icon="o-printer" wire:click="printTicket({{ $stuff->id }})" spinner
+                                    class="text-white bg-purple-500 btn-xs" />
+                                <x-mary-button icon="o-printer" wire:click="printSticker({{ $stuff->id }})" spinner
+                                    class="text-white bg-green-500 btn-xs" />
+                            </div>
+                            <div>
                                 <x-mary-button icon="o-no-symbol" wire:click="enableEncomienda({{ $stuff->id }})"
                                     spinner
                                     wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
                                     class="text-white bg-red-500 btn-xs" />
-                                <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
-                                    class="text-white btn-xs bg-cyan-500" />
-                                <x-mary-button icon="o-printer" wire:click="printEncomienda({{ $stuff->id }})" spinner
-                                    class="text-white bg-purple-500 btn-xs" />
-                            </div>
-                            <div>
 
-                                <x-mary-button icon="o-pencil-square" wire:click="editEncomienda({{ $stuff->id }})"
-                                    spinner class="text-white bg-green-500 btn-xs" />
                             </div>
                         </div>
 

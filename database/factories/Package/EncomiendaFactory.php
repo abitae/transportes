@@ -41,8 +41,8 @@ class EncomiendaFactory extends Factory
             'observation' => $this->faker->text(),
             'estado_encomienda' => $this->faker->randomElement(['REGISTRADO', 'ENVIADO', 'RECIBIDO', 'ENTREGADO', 'CANCELADO']),
             'pin' => 123,
-            'isHome' => false,
-            'isReturn' => false,
+            'isHome'  => $this->faker->randomElement([true, false]),
+            'isReturn' => $this->faker->randomElement([true, false]),
             'isActive' => true,
         ];
     }

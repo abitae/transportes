@@ -121,12 +121,16 @@
 
                     </div>
                     <div class="grid col-span-2">
+                        @if (!$isHome)
                         <x-mary-icon name="o-hashtag" label="PING" />
                         <x-mary-pin ida="pin1" wire:model="pin1" size="3" numeric />
+                        @endif
                     </div>
                     <div class="grid col-span-2">
+                        @if (!$isHome)
                         <x-mary-icon name="o-hashtag" label="CONFIRMACION" />
                         <x-mary-pin ida="pin2" wire:model="pin2" size="3" numeric />
+                        @endif
                     </div>
                     <div class="grid col-span-4">
                         <hr />
@@ -169,7 +173,7 @@
         </x-slot:actions>
     </x-mary-card>
     <x-mary-modal wire:model="modalConfimation" persistent class="backdrop-blur" box-class="max-w-full max-h-full">
-        <div class="grid grid-cols-8 gap-2 p-2 border roundedlg border-sky-500">
+        <div class="grid grid-cols-8 gap-1 p-2 border rounded-lg border-sky-500">
             <div class="grid col-span-4">
                 <div class="grid grid-cols-8 border rounded-lg border-sky-500">
                     <div class="grid col-span-8">
@@ -243,19 +247,37 @@
             </div>
             <x-slot:actions>
                 <x-mary-button label="Cancel" @click="$wire.modalConfimation = false" />
-                <x-mary-button wire:click='confirmEncomienda'  label="Confirm" class="btn-primary" />
+                <x-mary-button wire:click='confirmEncomienda' label="Confirm" class="btn-primary" />
             </x-slot:actions>
         </div>
     </x-mary-modal>
-    <x-mary-modal wire:model="modalFinal" persistent class="backdrop-blur" box-class="min-w-ful">
-        <div class="grid grid-cols-8 gap-1 border rounded border-sky-500">
-            <div class="grid col-span-8">
-                <x-mary-card shadow>
-                    <x-mary-button wire:click='newEncomienda' label="NUEVA ENCOMIENDA" class="btn-primary" />
-                    <x-mary-button wire:click='listEncomienda' label="LISTA ENCOMIENDAS" class="btn-primary" />
-                </x-mary-card>
+    <x-mary-modal wire:model="modalFinal" persistent class="backdrop-blur" box-class="w-full">
 
+
+        <x-mary-card shadow>
+            <div class="grid content-center justify-center grid-cols-2 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
+                <div>Imprimir ticket
+                    <br>
+                    <x-mary-button icon="o-printer" wire:click="printTicket" spinner
+                        class="text-white bg-purple-500 btn-xl" />
+                </div>
+                <div>Imprimir sticker
+                    <br>
+                    <x-mary-button icon="o-printer" wire:click="printSticker" spinner
+                        class="text-white bg-green-500 btn-xl" />
+                </div>
+                <div>Nueva encomienda
+                    <br>
+                    <x-mary-button icon="o-newspaper" wire:click="redirectionRegister" spinner
+                        class="text-white bg-sky-500 btn-xl" />
+                </div>
+                <div>Lista de encomiendas
+                    <br>
+                    <x-mary-button icon="o-list-bullet" wire:click="redirectionSend" spinner
+                        class="text-white bg-blue-500 btn-xl" />
+                </div>
             </div>
-        </div>
+        </x-mary-card>
+
     </x-mary-modal>
 </div>

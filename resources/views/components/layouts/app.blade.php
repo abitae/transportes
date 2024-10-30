@@ -77,6 +77,8 @@
                         link="{{ route('package.receive') }}" />
                     <x-mary-menu-item title="Entregar paquetes" icon="o-banknotes"
                         link="{{ route('package.deliver') }}" />
+                        <x-mary-menu-item title="Paquetes entregados" icon="o-banknotes"
+                        link="{{ route('package.record') }}" />
                     <x-mary-menu-item title="Clientes" icon="o-wifi" link="{{ route('package.customer') }}" />
                 </x-mary-menu-sub>
                 <x-mary-menu-separator />

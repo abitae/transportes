@@ -14,18 +14,18 @@ use App\Traits\LogCustom;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Livewire\WithoutUrlPagination;
+use Livewire\Features\SupportPagination\WithoutUrlPagination;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
 use Mary\Traits\Toast;
 
-class SendPackageLive extends Component
+class RecordPackageLive extends Component
 {
     use LogCustom;
     use Toast;
     use WithPagination, WithoutUrlPagination;
-    public $title = 'Enviar paquetes';
-    public $sub_title = 'Modulo de envio de paquetes';
+    public $title = 'Encomiendas entregadas';
+    public $sub_title = 'Modulo de paquetes entregados';
     public $search = '';
     public $perPage = 100;
     public array $selected = [];
@@ -62,9 +62,9 @@ class SendPackageLive extends Component
 
         $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
             ->where('isActive', $this->isActive)
-            ->where('sucursal_id', Auth::user()->sucursal->id)
-            ->where('sucursal_dest_id', $this->sucursal_dest_id)
-            ->where('estado_encomienda', 'REGISTRADO')
+            ->where('sucursal_id', $this->sucursal_dest_id)
+            ->where('sucursal_dest_id', Auth::user()->sucursal->id)
+            ->where('estado_encomienda', 'ENTREGADO')
             ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%'))
             ->latest()
             ->paginate($this->perPage, '*', 'page');
@@ -72,7 +72,7 @@ class SendPackageLive extends Component
         $transportistas = Transportista::where('isActive', true)->get();
         $vehiculos = Vehiculo::where('isActive', true)->get();
 
-        return view('livewire.package.send-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
+        return view('livewire.package.record-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
     }
     public function openModal()
     {
@@ -82,39 +82,8 @@ class SendPackageLive extends Component
             $this->modalEnvio = !$this->modalEnvio;
         }
     }
-    public function sendPaquetes()
-    {
-        if (!is_null($this->vehiculo_id) and !is_null($this->transportista_id)) {
-
-            $retorno = Encomienda::where('isActive', true)
-                ->whereIn('id', $this->selected)->update([
-                'estado_encomienda' => 'ENVIADO',
-                'updated_at' => $this->date_traslado,
-                'vehiculo_id' => $this->vehiculo_id,
-                'transportista_id' => $this->transportista_id,
-            ]);
-            if (count($this->selected) == $retorno) {
-                $this->success('Genial, ingresado correctamente!');
-                $this->modalEnvio = false;
-                $ids = $this->selected;
-                $this->selected = [];
-                return Excel::download(new ManifiestoExport($ids), 'manifiesto.xlsx');
-            } else {
-                $this->error('Error, verifique los datos!');
-            }
-        }
-    }
-    public function enableEncomienda(Encomienda $encomienda)
-    {
-        //dump($encomienda);
-        try {
-            $encomienda->isActive = !$encomienda->isActive;
-            $encomienda->save();
-            $this->success('Genial, ingresado correctamente!');
-        } catch (\Exception $e) {
-            $this->error('Error, verifique los datos!');
-        }
-    }
+    
+    
     public function detailEncomienda(Encomienda $encomienda)
     {
         $this->encomienda = $encomienda;
@@ -145,26 +114,5 @@ class SendPackageLive extends Component
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
         }, 'S'.$envio->code . '.pdf');
-    }
-    public function editEncomienda(Encomienda $encomienda)
-    {
-        $this->encomienda = $encomienda;
-        $this->editModal = true;
-    }
-    public function updateEncomienda()
-    {
-        if ($this->customerFormDest->code and $this->customerFormDest->type_code) {
-            $this->encomienda->customer_dest_id = Customer::where('code', $this->customerFormDest->code)->where('type_code', $this->customerFormDest->type_code)->first()->id;
-            
-            $this->encomienda->isHome = $this->isHome;
-            $this->customerFormDest->update();
-            $this->encomienda->save();
-            $this->editModal = false;
-        }
-
-    }
-    public function searchDestinatario()
-    {
-        $this->customerFormDest->store();
     }
 }

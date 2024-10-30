@@ -66,10 +66,52 @@
             <th>CANTIDAD</th>
             <th>PAQUETES</th>
             <th>MONTO</th>
+            <th>RETORNO</th>
         </tr>
     </thead>
     <tbody>
-        @foreach($encomiendas as $encomienda)
+        @foreach($encomiendas as $encomiendaLibre)
+        <tr>
+            <td>{{ $encomiendaLibre->code }}</td>
+            <td>{{ $encomiendaLibre->doc_traslado ?? 'S/D' }}</td>
+            <td>{{ $encomiendaLibre->remitente->name }}</td>
+            <td>{{ $encomiendaLibre->destinatario->name }}</td>
+            <td>{{ $encomiendaLibre->cantidad }}</td>
+            <td>
+                @php
+                $packsLibre = '';
+                @endphp
+                @forelse ($encomiendaLibre->paquetes as $paquete)
+                {{ $packsLibre.''.$paquete->description.'('.$paquete->cantidad.')'.'('.$paquete->amount.')-' }}
+                @empty
+                @endforelse
+            </td>
+            <td>
+                {{ $encomiendaLibre->monto }}
+            </td>
+            <td>
+                {{ $encomiendaLibre->isReturn ? 'SI' : 'NO' }}
+            </td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+
+<table>
+    <thead>
+        <tr>
+            <th>NRO GUIA</th>
+            <th>GUIA CLIENTE</th>
+            <th>DESTINATARIO</th>
+            <th>REMITENTE</th>
+            <th>CANTIDAD</th>
+            <th>PAQUETES</th>
+            <th>MONTO</th>
+            <th>RETORNO</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($encomiendasIsHome as $encomienda)
         <tr>
             <td>{{ $encomienda->code }}</td>
             <td>{{ $encomienda->doc_traslado ?? 'S/D' }}</td>
@@ -78,18 +120,21 @@
             <td>{{ $encomienda->cantidad }}</td>
             <td>
                 @php
-                    $packs = '';
+                $packs = '';
                 @endphp
                 @forelse ($encomienda->paquetes as $paquete)
-                    {{ $packs.''.$paquete->description.'('.$paquete->cantidad.')'.'('.$paquete->amount.')-' }}
+                {{ $packs.''.$paquete->description.'('.$paquete->cantidad.')'.'('.$paquete->amount.')-' }}
                 @empty
-                    
                 @endforelse
             </td>
             <td>
                 {{ $encomienda->monto }}
             </td>
+            <td>
+                {{ $encomienda->isReturn ? 'SI' : 'NO' }}
+            </td>
         </tr>
         @endforeach
     </tbody>
 </table>
+
