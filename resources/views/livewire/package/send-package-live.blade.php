@@ -121,7 +121,6 @@
                                     spinner
                                     wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
                                     class="text-white bg-red-500 btn-xs" />
-
                             </div>
                         </div>
 

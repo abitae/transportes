@@ -20,6 +20,7 @@ class PaqueteFactory extends Factory
         return [
             'encomienda_id' => $this->faker->randomElement(Encomienda::pluck('id')->toArray()),
             'cantidad' => $this->faker->randomNumber(2, false),
+            'und_medida' =>$this->faker->randomElement(['UND' , 'M3']),
             'description' => $this->faker->address,
             'peso' => 10.4,
             'amount' => 12.8,

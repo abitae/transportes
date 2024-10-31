@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('encomienda_id')->constrained('encomiendas')->onDelete('cascade');
             $table->integer('cantidad')->unsigned();
+            $table->string('und_medida');
             $table->string('description');
             $table->string('peso');
             $table->decimal('amount', 5, 2);

@@ -62,11 +62,13 @@
             <th>GUIA CLIENTE
             </th>
             <th>DESTINATARIO</th>
+            <th>TELEFONO</th>
             <th>REMITENTE</th>
             <th>CANTIDAD</th>
             <th>PAQUETES</th>
             <th>MONTO</th>
             <th>RETORNO</th>
+            <th>PAGO</th>
         </tr>
     </thead>
     <tbody>
@@ -75,6 +77,7 @@
             <td>{{ $encomiendaLibre->code }}</td>
             <td>{{ $encomiendaLibre->doc_traslado ?? 'S/D' }}</td>
             <td>{{ $encomiendaLibre->remitente->name }}</td>
+            <td>{{ $encomiendaLibre->remitente->phone }}</td>
             <td>{{ $encomiendaLibre->destinatario->name }}</td>
             <td>{{ $encomiendaLibre->cantidad }}</td>
             <td>
@@ -92,6 +95,9 @@
             <td>
                 {{ $encomiendaLibre->isReturn ? 'SI' : 'NO' }}
             </td>
+            <td>
+                {{ $encomiendaLibre->estado_pago = 2 ? 'CONTRA ENTREGA' : 'PAGADO'}}
+            </td>
         </tr>
         @endforeach
     </tbody>
@@ -103,11 +109,13 @@
             <th>NRO GUIA</th>
             <th>GUIA CLIENTE</th>
             <th>DESTINATARIO</th>
+            <th>TELEFONO</th>
             <th>REMITENTE</th>
             <th>CANTIDAD</th>
             <th>PAQUETES</th>
             <th>MONTO</th>
             <th>RETORNO</th>
+            <th>PAGO</th>
         </tr>
     </thead>
     <tbody>
@@ -116,6 +124,7 @@
             <td>{{ $encomienda->code }}</td>
             <td>{{ $encomienda->doc_traslado ?? 'S/D' }}</td>
             <td>{{ $encomienda->remitente->name }}</td>
+            <td>{{ $encomienda->remitente->phone }}</td>
             <td>{{ $encomienda->destinatario->name }}</td>
             <td>{{ $encomienda->cantidad }}</td>
             <td>
@@ -132,6 +141,9 @@
             </td>
             <td>
                 {{ $encomienda->isReturn ? 'SI' : 'NO' }}
+            </td>
+            <td>
+                {{ $encomiendaLibre->estado_pago = 2 ? 'CONTRA ENTREGA' : 'PAGADO'}}
             </td>
         </tr>
         @endforeach

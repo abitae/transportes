@@ -83,33 +83,55 @@
                 </div>
             </x-mary-step>
             <x-mary-step step="3" text="Paquetes">
-                <div class="grid grid-cols-8 gap-1">
-                    <div class="grid col-span-1">
-                        <x-mary-input label="CANT." wire:model="cantidad" class="rounded-r-lg" />
+
+                <div class="grid grid-cols-8 grid-rows-1 gap-1">
+                    <div>
+                        <x-mary-input label="CANT." wire:model="cantidad" class="text-xs rounded-r-lg" />
                     </div>
-                    <div class="grid col-span-4">
+                    <div>
+                        @php
+                        $unds = [
+                        [
+                        'id' => 'UND',
+                        'name' => 'UND'
+                        ],
+                        [
+                        'id' => 'M3',
+                        'name' => 'M3'
+                        ]
+                        ];
+                        @endphp
+                        <x-mary-select label="MEDIDA" :options="$unds" wire:model="und_medida" />
+                    </div>
+                    <div class="col-span-3">
                         <x-mary-input label="DESCRIPCION" wire:model="description" class="rounded-r-lg" />
                     </div>
-                    <div class="grid col-span-1">
+                    <div class="col-start-6">
                         <x-mary-input label="PESO (KG)" wire:model="peso" suffix="KG" locale="es-PE" />
                     </div>
-                    <div class="grid col-span-1">
+                    <div class="col-start-7">
                         <x-mary-input label="MONTO" wire:model="amount" suffix="S/" />
                     </div>
-                    <div class="flex items-end">
+                    <div class="flex items-end col-start-8">
                         <x-mary-button icon="o-plus" wire:click='addPaquete' class="text-white rounded-lg bg-sky-500" />
                         <x-mary-button icon="o-no-symbol" wire:click='resetPaquete'
                             class="text-white bg-red-500 rounded-lg" />
                     </div>
-                    <div class="grid col-span-8">
+                </div>
+                <div class="grid grid-cols-8 gap-1">
+                    <div class="col-span-8">
                         <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped
                             @row-click="alert($event.detail.description)">
                             <x-slot:empty>
                                 <x-mary-icon name="o-cube" label="No se encontro registros." />
                             </x-slot:empty>
+                            @scope('actions', $pack)
+                            <x-mary-button icon="o-trash" wire:click="restPaquete({{ $pack->id }})" spinner class="btn-xs" />
+                            @endscope
                         </x-mary-table>
                     </div>
                 </div>
+
             </x-mary-step>
             <x-mary-step step="4" text="Destino" data-content="✓" step-classes="!step-success">
                 <div class="grid grid-cols-8 gap-1">
@@ -255,7 +277,8 @@
 
 
         <x-mary-card shadow>
-            <div class="grid content-center justify-center grid-cols-2 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
+            <div
+                class="grid content-center justify-center grid-cols-2 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
                 <div>Imprimir ticket
                     <br>
                     <x-mary-button icon="o-printer" wire:click="printTicket" spinner

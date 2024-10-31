@@ -11,6 +11,7 @@ class Paquete extends Model
     protected $fillable = [
         'encomienda_id',
         'cantidad',
+        'und_medida',
         'description',
         'peso',
         'amount',

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ticket - 312312313</title>
+  <title> {{ $envio->tipo_comprobante}} - {{ $envio->code }} </title>
 
   <style>
     html {
@@ -14,7 +14,6 @@
     body {
       padding: 0;
       margin-left: 0;
-      page-break-inside: unset !important;
     }
 
     table {
@@ -24,7 +23,7 @@
     }
 
     .titulo {
-      font-size: 14px;
+      font-size: 12px;
     }
 
     .subtitulo {
@@ -44,6 +43,11 @@
       margin-top: 20px;
       font-size: 12px;
       
+    }
+    .firma {
+      border: 2px solid black;
+      height: 100px;
+      width: 250px;
     }
   </style>
 </head>
@@ -78,7 +82,7 @@
         <th colspan="2" style="text-align: center">{{ $envio->tipo_comprobante }}</th>
       </tr>
       <tr>
-        <th colspan="2" class="text-center titulo"> Guía Elect: {{ $envio->code}} </th>
+        <th colspan="2" class="text-center titulo"> Guía Elect: {{ $envio->code }} </th>
       </tr>
       <tr>
         <th colspan="2" class="text-center titulo"> Doc. Traslado: {{ $envio->doc_traslado ?? ''}} </th>
@@ -109,22 +113,25 @@
       </tr>
 
       <tr>
-        <td colspan="2" class="text-center subtitulo"> N° REGISTRO MTC - <b> {{$envio->colaborador[0]->mtc ?? ''}}</b>
+        <td colspan="2" class="text-center subtitulo"> N° REGISTRO MTC - <b> 1553682 CNG </b>
         </td>
       </tr>
 
       <tr>
         <td colspan="2" class="subtitulo"> Fecha Emisión: {{
-          \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d'); }} </td>
+          \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d H:s'); }} </td>
       </tr>
 
       <tr>
-        <td colspan="2" class="subtitulo"> Fecha Traslado: {{ $envio->fecha }} </td>
+        <td colspan="2" class="subtitulo"> 
+          Fecha Traslado: {{ $envio->fecha }} 
+          
+        </td>
       </tr>
 
       <tr>
-        <td>
-
+        <td colspan="2" class="subtitulo">
+          Usuario : {{ $envio->user->name }}
         </td>
       </tr>
 
@@ -217,10 +224,10 @@
     </tbody>
   </table>
 
-  <table style="margin-top: 10px;" class="subtitulo">
-    <tbody>
+  <table>
+    <tbody class="subtitulo">
       <tr>
-        <th colspan="4">
+        <th colspan="4" class="text-center subtitulo" style="font-size: 10px">
           DESCRIPCIÓN DEL EMBALAJE
         </th>
       </tr>
@@ -248,8 +255,12 @@
       </tr>
     </tbody>
   </table>
+  <div class="firma">
+
+  </div>
   <div class="footer">
-    Políticas de Envío - Corporación Logística Brayan Brush<br>
+    Políticas de Envío - Corporación Logística Brayan Brush
+    <br>
 •	El cliente debe proporcionar una dirección completa y un número de teléfono válido. Si no es posible contactar al destinatario o la dirección es incorrecta, el paquete será devuelto a nuestros almacenes.
 •	Después de dos intentos fallidos, el envío será devuelto a nuestros almacenes. El cliente deberá coordinar el retiro o solicitar un nuevo envío, sujeto a costos adicionales.
 •	Si el cliente requiere una entrega fuera del horario de 9 a.m. a 6 p.m., debe coordinarlo previamente. Este servicio está sujeto a disponibilidad y costos adicionales.

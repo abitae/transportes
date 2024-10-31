@@ -34,6 +34,7 @@ class RegisterLive extends Component
     public CustomerForm $customerForm, $customerFormDest, $customerFact;
     public EncomiendaForm $encomiendaForm;
     public $cantidad;
+    public $und_medida = 'UND';
     public $description;
     public $peso;
     public $amount;
@@ -83,6 +84,7 @@ class RegisterLive extends Component
 
         $headers_paquetes = [
             ['key' => 'cantidad', 'label' => 'Cantidad', 'class' => ''],
+            ['key' => 'und_medida', 'label' => 'Unidad', 'class' => ''],
             ['key' => 'description', 'label' => 'Descripcion', 'class' => ''],
             ['key' => 'peso', 'label' => 'Peso', 'class' => ''],
             ['key' => 'amount', 'label' => 'P.UNIT', 'class' => ''],
@@ -167,12 +169,15 @@ class RegisterLive extends Component
     {
         if (!is_null($this->cantidad) and !is_null($this->description) and !is_null($this->peso) and !is_null($this->amount)) {
             $paquete = new Paquete();
+            $paquete->id = $this->paquetes->count() + 1;
             $paquete->cantidad = $this->cantidad;
+            $paquete->und_medida = $this->und_medida;
             $paquete->description = $this->description;
             $paquete->peso = $this->peso;
             $paquete->amount = $this->amount;
             $paquete->sub_total = $this->amount * $this->cantidad;
-            $this->paquetes->push($paquete->toArray());
+            $this->paquetes->push($paquete);
+            dump($this->paquetes);
         } else {
             $this->error('Error, verifique los datos!');
         }
@@ -180,7 +185,7 @@ class RegisterLive extends Component
     public function restPaquete($index)
     {
         dump($index);
-        $this->paquetes->forget($index);
+        //$this->paquetes->forget($index);
     }
     public function resetPaquete()
     {
@@ -226,7 +231,7 @@ class RegisterLive extends Component
         $this->encomiendaForm->estado_pago = $this->estado_pago;
         $this->encomiendaForm->tipo_pago = 'efectivo';
         if ($this->encomiendaForm->estado_pago == 2) {
-            $this->encomiendaForm->tipo_comprobante = 3;
+            $this->encomiendaForm->tipo_comprobante = 'TICKET';
         } else {
             $this->encomiendaForm->tipo_comprobante = $this->tipo_comprobante;
         }
@@ -234,22 +239,17 @@ class RegisterLive extends Component
         $this->encomiendaForm->glosa = $this->glosa;
         $this->encomiendaForm->observation = $this->observation;
         $this->encomiendaForm->estado_encomienda = 'REGISTRADO';
-
         $this->encomiendaForm->pin = $this->pin1;
-
         $this->encomiendaForm->isHome = $this->isHome;
-
         $this->encomiendaForm->isReturn = $this->isReturn;
         $this->encomienda = $this->encomiendaForm->store($this->paquetes);
         if (!is_null($this->encomienda)) {
             $this->success('Genial, ingresado correctamente!');
             $this->modalConfimation = false;
-
             $this->entryForm->caja_id = $this->caja->id;
             $this->entryForm->monto_entry = $this->encomiendaForm->monto;
             $this->entryForm->description = $this->encomiendaForm->code;
             $this->entryForm->tipo = 'ENVIO ENCOMIENDA';
-
             if ($this->entryForm->store()) {
                 $this->entryForm->reset();
                 $this->encomiendaForm->reset();
