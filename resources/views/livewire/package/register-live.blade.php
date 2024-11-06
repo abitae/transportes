@@ -121,13 +121,11 @@
                 <div class="grid grid-cols-8 gap-1">
                     <div class="col-span-8">
                         <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped
-                            @row-click="alert($event.detail.description)">
+                            @row-click="$wire.restPaquete($event.detail.id)">
                             <x-slot:empty>
                                 <x-mary-icon name="o-cube" label="No se encontro registros." />
                             </x-slot:empty>
-                            @scope('actions', $pack)
-                            <x-mary-button icon="o-trash" wire:click="restPaquete({{ $pack->id }})" spinner class="btn-xs" />
-                            @endscope
+                            
                         </x-mary-table>
                     </div>
                 </div>

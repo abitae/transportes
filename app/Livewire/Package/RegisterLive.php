@@ -58,6 +58,7 @@ class RegisterLive extends Component
     public $modalFinal = false;
     public EntryCajaForm $entryForm;
     public $encomienda;
+    public array $selected = [];
     public function mount()
     {
         $this->caja = Caja::where('user_id', Auth::user()->id)
@@ -67,6 +68,7 @@ class RegisterLive extends Component
             $this->redirectRoute('caja.index');
         }
         $this->paquetes = collect([]);
+        $this->paquetes->keyBy('id');
         $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
         $this->estado_pago = 1;
         $this->tipo_comprobante = 3;
@@ -83,6 +85,7 @@ class RegisterLive extends Component
         ];
 
         $headers_paquetes = [
+            
             ['key' => 'cantidad', 'label' => 'Cantidad', 'class' => ''],
             ['key' => 'und_medida', 'label' => 'Unidad', 'class' => ''],
             ['key' => 'description', 'label' => 'Descripcion', 'class' => ''],
@@ -167,25 +170,26 @@ class RegisterLive extends Component
     }
     public function addPaquete()
     {
+        $id = $this->paquetes->count();
+        //$paquete = null;
         if (!is_null($this->cantidad) and !is_null($this->description) and !is_null($this->peso) and !is_null($this->amount)) {
             $paquete = new Paquete();
-            $paquete->id = $this->paquetes->count() + 1;
+            $paquete->id = $id + 1;
             $paquete->cantidad = $this->cantidad;
             $paquete->und_medida = $this->und_medida;
             $paquete->description = $this->description;
             $paquete->peso = $this->peso;
             $paquete->amount = $this->amount;
             $paquete->sub_total = $this->amount * $this->cantidad;
-            $this->paquetes->push($paquete);
-            dump($this->paquetes);
+            $this->paquetes->push($paquete->toArray());
         } else {
             $this->error('Error, verifique los datos!');
         }
     }
-    public function restPaquete($index)
+    public function restPaquete($id)
     {
-        dump($index);
-        //$this->paquetes->forget($index);
+        //dump($this->paquetes);
+        $this->paquetes->pull($id-1);
     }
     public function resetPaquete()
     {

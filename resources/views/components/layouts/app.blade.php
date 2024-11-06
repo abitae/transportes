@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
-    <link rel="icon" href="img/logo01.ico"> 
+    <link rel="icon" href="img/logo01.ico">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.6/build/vanilla-calendar.min.js"></script>
@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    {{-- It will not apply locale yet  --}}
+    {{-- It will not apply locale yet --}}
     <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
     <script>
         flatpickr.localize(flatpickr.l10ns.es);
@@ -35,13 +35,14 @@
             </label>
 
             {{-- Brand --}}
-            <img src="{{ asset('img/logo01.png') }}" alt ='Infinity.ut' class='w-auto h-10'>
-            
+            <img src="{{ asset('img/logo01.png') }}" alt='Infinity.ut' class='w-auto h-10'>
+
         </x-slot:brand>
 
         {{-- Right side actions --}}
         <x-slot:actions>
-            <x-mary-icon name="s-home" class="text-xl text-center text-green-500 w-9 h-9" label="{{ auth()->user()->sucursal->name }}" />
+            <x-mary-icon name="s-home" class="text-xl text-center text-green-500 w-9 h-9"
+                label="{{ auth()->user()->sucursal->name }}" />
             <x-mary-theme-toggle darkTheme="dark" lightTheme="light" />
             <x-mary-button label="Messages" icon="o-envelope" link="###" class="btn-ghost btn-sm" responsive />
             <x-mary-button icon="o-bell" class="relative btn-circle">
@@ -53,12 +54,11 @@
                 </x-slot:trigger>
                 <x-mary-menu-item icon="o-user" title="Perfil" />
                 @if ($user = auth()->user())
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <x-mary-menu-item icon="o-power" title="Cerrar" :href="route('logout')"
-                            onclick="event.preventDefault();
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <x-mary-menu-item icon="o-power" title="Cerrar" :href="route('logout')" onclick="event.preventDefault();
                                                 this.closest('form').submit();" />
-                    </form>
+                </form>
                 @endif
             </x-mary-dropdown>
         </x-slot:actions>
@@ -69,26 +69,35 @@
             <x-mary-menu activate-by-route>
                 <x-mary-menu-item title="Caja" icon="o-banknotes" link="{{ route('caja.index') }}" />
                 <x-mary-menu-separator />
-                <x-mary-menu-sub title="Paquetes" icon="o-cog-6-tooth">
-                    <x-mary-menu-item title="Registrar paquetes" icon="o-banknotes"
+                <x-mary-menu-sub title="Paquetes" icon="s-truck">
+                    <x-mary-menu-item title="Registrar paquetes" icon="o-cursor-arrow-rays"
                         link="{{ route('package.register') }}" />
-                    <x-mary-menu-item title="Enviar paquetes" icon="o-banknotes" link="{{ route('package.send') }}" />
-                    <x-mary-menu-item title="Recibir paquetes" icon="o-banknotes"
+                    <x-mary-menu-item title="Enviar paquetes" icon="c-arrow-up-tray"
+                        link="{{ route('package.send') }}" />
+                    <x-mary-menu-item title="Recibir paquetes" icon="c-arrow-down-tray"
                         link="{{ route('package.receive') }}" />
-                    <x-mary-menu-item title="Entregar paquetes" icon="o-banknotes"
+                    <x-mary-menu-item title="Entregar paquetes" icon="o-cursor-arrow-ripple"
                         link="{{ route('package.deliver') }}" />
-                        <x-mary-menu-item title="Paquetes entregados" icon="o-banknotes"
+                    <x-mary-menu-item title="Paquetes entregados" icon="o-arrow-path"
                         link="{{ route('package.record') }}" />
-                    <x-mary-menu-item title="Clientes" icon="o-wifi" link="{{ route('package.customer') }}" />
+                    <x-mary-menu-item title="Clientes" icon="o-user-group" link="{{ route('package.customer') }}" />
+                </x-mary-menu-sub>
+                <x-mary-menu-separator />
+                <x-mary-menu-sub title="Facturacion" icon="s-banknotes">
+                    <x-mary-menu-item title="Facturas" icon="o-ticket" link="{{ route('config.sucursal') }}" />
+                    <x-mary-menu-item title="Boletas" icon="c-ticket" link="{{ route('config.user') }}" />
+                    <x-mary-menu-item title="Guias" icon="s-ticket" link="{{ route('config.role') }}" />
                 </x-mary-menu-sub>
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Configuracion" icon="o-cog-6-tooth">
-                    <x-mary-menu-item title="Sucursales" icon="s-briefcase" link="{{ route('config.sucursal') }}" />
-                    <x-mary-menu-item title="Usuarios" icon="s-briefcase" link="{{ route('config.user') }}" />
-                    <x-mary-menu-item title="Roles" icon="s-briefcase" link="{{ route('config.role') }}" />
-                    <x-mary-menu-item title="Vehiculos" icon="s-briefcase" link="{{ route('config.vehiculo') }}" />
-                    <x-mary-menu-item title="Choferes" icon="s-briefcase" link="{{ route('config.transportista') }}" />
+                    <x-mary-menu-item title="Sucursales" icon="o-home-modern" link="{{ route('config.sucursal') }}" />
+                    <x-mary-menu-item title="Usuarios" icon="o-user" link="{{ route('config.user') }}" />
+                    <x-mary-menu-item title="Roles" icon="o-users" link="{{ route('config.role') }}" />
+                    <x-mary-menu-item title="Vehiculos" icon="m-truck" link="{{ route('config.vehiculo') }}" />
+                    <x-mary-menu-item title="Choferes" icon="o-user-circle"
+                        link="{{ route('config.transportista') }}" />
                 </x-mary-menu-sub>
+
                 <x-mary-menu-separator />
                 <x-mary-menu-item title="Messages" icon="o-envelope" link="###" />
             </x-mary-menu>
@@ -100,4 +109,5 @@
     <x-mary-toast />
     <x-mary-spotlight />
 </body>
+
 </html>
