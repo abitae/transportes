@@ -276,21 +276,31 @@
 
         <x-mary-card shadow>
             <div
-                class="grid content-center justify-center grid-cols-2 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
-                <div>Imprimir ticket
+                class="grid grid-cols-3 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
+                <div>Imprimir recibo
                     <br>
                     <x-mary-button icon="o-printer" wire:click="printTicket" spinner
                         class="text-white bg-purple-500 btn-xl" />
+                </div>
+                <div>Imprimir guia
+                    <br>
+                    <x-mary-button icon="o-printer" wire:click="printSticker" spinner
+                        class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>Imprimir sticker
                     <br>
                     <x-mary-button icon="o-printer" wire:click="printSticker" spinner
                         class="text-white bg-green-500 btn-xl" />
                 </div>
-                <div>Nueva encomienda
+                <div>
                     <br>
                     <x-mary-button icon="o-newspaper" wire:click="redirectionRegister" spinner
                         class="text-white bg-sky-500 btn-xl" />
+                </div>
+                <div>Lista de encomiendas
+                    <br>
+                    <x-mary-button icon="o-list-bullet" wire:click="redirectionSend" spinner
+                        class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>Lista de encomiendas
                     <br>
