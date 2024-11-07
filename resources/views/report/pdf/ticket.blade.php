@@ -82,7 +82,7 @@
         <th colspan="2" style="text-align: center">{{ $envio->tipo_comprobante }}</th>
       </tr>
       <tr>
-        <th colspan="2" class="text-center titulo"> Guía Elect: {{ $envio->code }} </th>
+        <th colspan="2" class="text-center titulo"> CODE: {{ $envio->code }} </th>
       </tr>
       <tr>
         <th colspan="2" class="text-center titulo"> Doc. Traslado: {{ $envio->doc_traslado ?? ''}} </th>
