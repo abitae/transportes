@@ -211,8 +211,8 @@ class RegisterLive extends Component
     public function confirmEncomienda()
     {
         $cod = Sucursal::where('id', Auth::user()->sucursal->id)->first()->code;
-        $correlativo = count(Encomienda::all()) + 1;
-        $this->encomiendaForm->code = $cod . '-' . Auth::user()->id . $correlativo; // Carbon::now()->setTimezone('America/Lima')->format('md-His') . '-' . rand(100, 999);
+        $correlativo = count(Encomienda::all()) + 1 ;
+        $this->encomiendaForm->code = $cod.'-' . Auth::user()->id .$correlativo;
         $this->encomiendaForm->user_id = Auth::user()->id;
         $this->encomiendaForm->transportista_id = $this->transportista_id;
         $this->encomiendaForm->vehiculo_id = $this->vehiculo_id;
@@ -231,7 +231,7 @@ class RegisterLive extends Component
 
         $this->encomiendaForm->monto = $this->paquetes->sum('sub_total');
         $this->encomiendaForm->estado_pago = $this->estado_pago;
-        $this->encomiendaForm->tipo_pago = 'efectivo';
+        $this->encomiendaForm->tipo_pago = 'EFECTIVO';
         if ($this->encomiendaForm->estado_pago == 'CONTRA ENTREGA') {
             $this->encomiendaForm->tipo_comprobante = 'TICKET';
         } else {
@@ -264,10 +264,10 @@ class RegisterLive extends Component
         } else {
             $this->error('Error, verifique los datos!');
         }
-
     }
     public function printTicket()
     {
+        dump($this->encomienda);
         $width = 78;
         $heigh = 250;
         $paper_format = array(0, 0, 220, 710);
@@ -297,5 +297,4 @@ class RegisterLive extends Component
     {
         $this->redirectRoute('package.send');
     }
-
 }
