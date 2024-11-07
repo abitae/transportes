@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Configuration\Company;
 use App\Models\Configuration\Sucursal;
 use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
@@ -21,6 +22,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        Company::factory()->create(
+            [
+                'ruc' => '20568031734',
+                'razonSocial' => 'CORPORACIÓN LOGÍSTICO BRAYAN BRUHS EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA',
+                'nombreComercial' => 'CORPORACIÓN LOGÍSTICO BRAYAN BRUHS EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA',
+                'address' => 'PJ. LOS PEDREGALES MZA. D LOTE. 4 GRU.SECTOR 3 LOS PEDREGAL   JUNíN -  HUANCAYO  -  EL TAMBO',
+                'email' => 'abel.arana@gmail.com',
+                'telephone' => '947199138',
+                'logo_path' =>
+            ]
+        );
         Sucursal::factory()->create(
             [
                 'code' => 'H28',
@@ -232,7 +244,7 @@ class DatabaseSeeder extends Seeder
         Transportista::factory(10)->create();
         Vehiculo::factory(10)->create();
 
-        Encomienda::factory(1000)->create();
-        Paquete::factory(10000)->create();
+        Encomienda::factory(10)->create();
+        Paquete::factory(100)->create();
     }
 }

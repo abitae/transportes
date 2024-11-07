@@ -12,8 +12,8 @@ use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
 use App\Models\Package\Encomienda;
 use App\Models\Package\Paquete;
+use App\Traits\InvoiceTrait;
 use App\Traits\LogCustom;
-use App\Traits\SearchDocument;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -24,8 +24,8 @@ use Mary\Traits\Toast;
 class RegisterLive extends Component
 {
     use LogCustom;
-    //use SearchDocument;
     use Toast;
+    use InvoiceTrait;
     use WithPagination, WithoutUrlPagination;
     public int $step = 1;
     public $title = 'Registro';
@@ -83,7 +83,7 @@ class RegisterLive extends Component
         ];
 
         $headers_paquetes = [
-            
+
             ['key' => 'cantidad', 'label' => 'Cantidad', 'class' => ''],
             ['key' => 'und_medida', 'label' => 'Unidad', 'class' => ''],
             ['key' => 'description', 'label' => 'Descripcion', 'class' => ''],
@@ -187,7 +187,7 @@ class RegisterLive extends Component
     public function restPaquete($id)
     {
         //dump($this->paquetes);
-        $this->paquetes->pull($id-1);
+        $this->paquetes->pull($id - 1);
     }
     public function resetPaquete()
     {
@@ -211,8 +211,8 @@ class RegisterLive extends Component
     public function confirmEncomienda()
     {
         $cod = Sucursal::where('id', Auth::user()->sucursal->id)->first()->code;
-        $correlativo = count(Encomienda::all()) + 1 ;
-        $this->encomiendaForm->code = $cod.'-' . Auth::user()->id .$correlativo; // Carbon::now()->setTimezone('America/Lima')->format('md-His') . '-' . rand(100, 999);
+        $correlativo = count(Encomienda::all()) + 1;
+        $this->encomiendaForm->code = $cod . '-' . Auth::user()->id . $correlativo; // Carbon::now()->setTimezone('America/Lima')->format('md-His') . '-' . rand(100, 999);
         $this->encomiendaForm->user_id = Auth::user()->id;
         $this->encomiendaForm->transportista_id = $this->transportista_id;
         $this->encomiendaForm->vehiculo_id = $this->vehiculo_id;
@@ -245,22 +245,22 @@ class RegisterLive extends Component
         $this->encomiendaForm->isHome = $this->isHome;
         $this->encomiendaForm->isReturn = $this->isReturn;
         $this->encomienda = $this->encomiendaForm->store($this->paquetes);
-        if (!is_null($this->encomienda)) {
-            $this->success('Genial, ingresado correctamente!');
-            $this->modalConfimation = false;
+        if (!is_null($this->encomienda)) {      
             $this->entryForm->caja_id = $this->caja->id;
             $this->entryForm->monto_entry = $this->encomiendaForm->monto;
             $this->entryForm->description = $this->encomiendaForm->code;
             $this->entryForm->tipo = $this->encomiendaForm->tipo_comprobante;
             if ($this->entryForm->store()) {
                 $this->entryForm->reset();
+                $this->storeInvoce($this->encomienda);// Genera recibo
                 $this->encomiendaForm->reset();
             } else {
                 $this->error('Error, verifique los datos!');
                 return 0;
             }
-            $this->modalConfimation = false;
-            $this->modalFinal = true;
+            $this->success('Genial, ingresado correctamente!');
+            //$this->modalConfimation = false;
+            //$this->modalFinal = true;
         } else {
             $this->error('Error, verifique los datos!');
         }
@@ -275,7 +275,7 @@ class RegisterLive extends Component
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
-        }, 'T'.$envio->code . '.pdf');
+        }, 'T' . $envio->code . '.pdf');
     }
     public function printSticker()
     {
@@ -287,7 +287,7 @@ class RegisterLive extends Component
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
-        }, 'S'.$envio->code . '.pdf');
+        }, 'S' . $envio->code . '.pdf');
     }
     public function redirectionRegister()
     {
