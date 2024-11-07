@@ -24,7 +24,7 @@ use Mary\Traits\Toast;
 class RegisterLive extends Component
 {
     use LogCustom;
-    use SearchDocument;
+    //use SearchDocument;
     use Toast;
     use WithPagination, WithoutUrlPagination;
     public int $step = 1;
@@ -45,8 +45,8 @@ class RegisterLive extends Component
     public $pin1;
     public $pin2;
     public $doc_traslado;
-    public $estado_pago;
-    public $tipo_comprobante;
+    public $estado_pago = 'PAGADO';
+    public $tipo_comprobante = 'TICKET';
     public $glosa;
     public $observation;
     public $transportista_id;
@@ -70,8 +70,6 @@ class RegisterLive extends Component
         $this->paquetes = collect([]);
         $this->paquetes->keyBy('id');
         $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
-        $this->estado_pago = 1;
-        $this->tipo_comprobante = 3;
         $this->transportista_id = Transportista::where('isActive', true)->first()->id;
         $this->vehiculo_id = Vehiculo::where('isActive', true)->first()->id;
 
@@ -96,13 +94,13 @@ class RegisterLive extends Component
         $sucursales = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->get();
 
         $pagos = [
-            ['id' => 1, 'name' => 'PAGADO'],
-            ['id' => 2, 'name' => 'CONTRA ENTREGA'],
+            ['id' => 'PAGADO', 'name' => 'PAGADO'],
+            ['id' => 'CONTRA ENTREGA', 'name' => 'CONTRA ENTREGA'],
         ];
         $comprobantes = [
-            ['id' => 1, 'name' => 'BOLETA'],
-            ['id' => 2, 'name' => 'FACTURA'],
-            ['id' => 3, 'name' => 'TICKET'],
+            ['id' => 'BOLETA', 'name' => 'BOLETA'],
+            ['id' => 'FACTURA', 'name' => 'FACTURA'],
+            ['id' => 'TICKET', 'name' => 'TICKET'],
         ];
         $transportistas = Transportista::where('isActive', true)->get();
         $vehiculos = Vehiculo::where('isActive', true)->get();
@@ -234,7 +232,7 @@ class RegisterLive extends Component
         $this->encomiendaForm->monto = $this->paquetes->sum('sub_total');
         $this->encomiendaForm->estado_pago = $this->estado_pago;
         $this->encomiendaForm->tipo_pago = 'efectivo';
-        if ($this->encomiendaForm->estado_pago == 2) {
+        if ($this->encomiendaForm->estado_pago == 'CONTRA ENTREGA') {
             $this->encomiendaForm->tipo_comprobante = 'TICKET';
         } else {
             $this->encomiendaForm->tipo_comprobante = $this->tipo_comprobante;
@@ -253,7 +251,7 @@ class RegisterLive extends Component
             $this->entryForm->caja_id = $this->caja->id;
             $this->entryForm->monto_entry = $this->encomiendaForm->monto;
             $this->entryForm->description = $this->encomiendaForm->code;
-            $this->entryForm->tipo = 'ENVIO ENCOMIENDA';
+            $this->entryForm->tipo = $this->encomiendaForm->tipo_comprobante;
             if ($this->entryForm->store()) {
                 $this->entryForm->reset();
                 $this->encomiendaForm->reset();
@@ -275,7 +273,6 @@ class RegisterLive extends Component
         $paper_format = array(0, 0, 220, 710);
         $envio = $this->encomienda;
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
-
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
         }, 'T'.$envio->code . '.pdf');
@@ -291,10 +288,6 @@ class RegisterLive extends Component
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
         }, 'S'.$envio->code . '.pdf');
-    }
-    public function correlativoAction(Sucursal $sucursal)
-    {
-
     }
     public function redirectionRegister()
     {

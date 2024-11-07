@@ -121,29 +121,31 @@
             </div>
         </div>
     </x-mary-card>
+    @isset($encomienda)
     <x-mary-modal wire:model="modalDeliver" persistent class="backdrop-blur" box-class="max-h-full max-w-128 ">
         <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="ENTREGAR ENCOMIENDA" />
         <x-mary-form wire:submit.prevent="deliverPaquetes">
             <div class="border border-green-500 rounded-lg">
                 <div class="grid grid-cols-4 p-2">
-
                     <div class="grid col-span-4 pt-2">
                         <x-mary-input label="Numero documento" inline wire:model='document' />
                     </div>
+
+                    @if (!$this->encomienda->isHome)
                     <div class="grid col-span-4 pt-2">
                         <x-mary-icon name="o-hashtag" label="PING" />
                         <x-mary-pin ida='pin01' wire:model="pin" size="3" numeric />
                     </div>
+                    @endif
                 </div>
                 <x-slot:actions>
                     <x-mary-button label="Cancel" @click="$wire.modalDeliver = false" class="bg-red-500" />
-                    <x-mary-button type="submit" spinner="{{ !isset($customerForm->sucursal) ? 'create' : 'edit' }}"
-                        label="Save" class="bg-blue-500" />
+                    <x-mary-button type="submit" spinner="deliverPaquetes" label="Save" class="bg-blue-500" />
                 </x-slot:actions>
             </div>
         </x-mary-form>
     </x-mary-modal>
-    @isset($encomienda)
+
     <x-mary-drawer wire:model="showDrawer" title="Detalle de encomienda" subtitle="Code {{ $encomienda->code }}"
         separator with-close-button close-on-escape class="w-11/12 lg:w-2/3" right>
         <x-mary-card shadow>

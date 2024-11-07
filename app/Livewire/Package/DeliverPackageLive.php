@@ -86,6 +86,9 @@ class DeliverPackageLive extends Component
     public function deliverPaquetes()
     {
         //dd($this->encomienda);
+        if ($this->encomienda->isHome){
+            $this->pin = 123;
+        }
         if ($this->encomienda->destinatario->code == $this->document and $this->encomienda->pin == $this->pin) {
 
             $this->customerFact->setCustomer($this->encomienda->destinatario);

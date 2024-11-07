@@ -23,7 +23,7 @@ class CajaForm extends Form
             $caja = Caja::create([
                 'user_id' => Auth::user()->id,
                 'monto_apertura' => $this->monto_apertura,
-                'monto_cierre' => 0,
+                'monto_cierre' => $this->monto_apertura,
                 'isActive' => true,
             ]);
             $this->infoLog('Caja store');
@@ -35,16 +35,15 @@ class CajaForm extends Form
     }
     public function update(Caja $caja)
     {
-        //$this->monto_cierre = $caja->entries->sum('monto_entry') - $caja->exits->sum('monto_exit');
         try {
             $caja->update([
                 'monto_cierre' => $this->monto_cierre,
                 'isActive' => false,
             ]);
-            $this->infoLog('Caja store');
+            $this->infoLog('Caja update');
             return true;
         } catch (\Exception $e) {
-            $this->errorLog('Caja store', $e);
+            $this->errorLog('Caja update', $e);
             return false;
         }
     }

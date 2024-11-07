@@ -231,11 +231,11 @@
                             <x-mary-icon name="s-envelope" class="text-blue-500 text-md" label="DETALLE PAGO" />
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$pagos" option-value="id"
                                 option-label="name" wire:model.live="estado_pago" />
-                            @if ($estado_pago==1)
+                            @if ($estado_pago=='PAGADO')
                             <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="TIPO COMPROBANTE" />
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$comprobantes"
                                 option-value="id" option-label="name" wire:model.live="tipo_comprobante" />
-                            @if ($tipo_comprobante!=3)
+                            @if ($tipo_comprobante!='TICKET')
                             <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="DETALLE COMPROBANTE" />
                             <div class="grid grid-cols-4 gap-2 p-2 border rounded-lg border-sky-500">
                                 <div class="grid col-span-4 pt-2">

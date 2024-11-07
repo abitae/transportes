@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Forms;
 
-use App\Models\Caja\EntryCaja;
+use App\Traits\CajaTrait;
 use App\Traits\LogCustom;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -10,6 +10,7 @@ use Livewire\Form;
 class EntryCajaForm extends Form
 {
     use LogCustom;
+    use CajaTrait;
 
     #[Validate('required')]
     public $caja_id = '';
@@ -23,12 +24,7 @@ class EntryCajaForm extends Form
     {
         try {
             $this->validate();
-            EntryCaja::create([
-                'caja_id' => $this->caja_id,
-                'monto_entry' => $this->monto_entry,
-                'description' => $this->description,
-                'tipo' => $this->tipo,
-            ]);
+            $this->cajaEntry($this->caja_id,$this->monto_entry,$this->description,$this->tipo);
             $this->infoLog('EntryCaja store');
             return true;
         } catch (\Exception $e) {

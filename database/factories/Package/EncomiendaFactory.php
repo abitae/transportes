@@ -33,7 +33,7 @@ class EncomiendaFactory extends Factory
             'customer_fact_id' => $this->faker->randomElement(Customer::pluck('id')->toArray()),
             'cantidad' => 2,
             'monto' => $this->faker->randomFloat(2, 1, 1000),
-            'estado_pago' => $this->faker->randomElement([1, 2]),
+            'estado_pago' => $this->faker->randomElement(['PAGADO', 'CONTRA ENTREGA']),
             'tipo_pago' => $this->faker->randomElement(['Efectivo', 'Transferencia', 'Tarjeta de crédito']),
             'tipo_comprobante' => $this->faker->randomElement(['BOLETA', 'FACTURA', 'TICKET']),
             'doc_traslado' => $this->faker->randomNumber(8, false),

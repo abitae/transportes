@@ -54,6 +54,7 @@
                 @php
                 $headersEgreso = [
                 ['key' => 'id', 'label' => '#', 'class' => 'bg-red-500 w-1'],
+                ['key' => 'tipo', 'label' => 'Tipo', 'class' => ''],
                 ['key' => 'description', 'label' => 'Descripcion', 'class' => ''],
                 ['key' => 'monto_exit', 'label' => 'Monto', 'class' => ''],
                 ];

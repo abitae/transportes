@@ -6,8 +6,8 @@ use App\Livewire\Forms\CajaForm;
 use App\Livewire\Forms\EntryCajaForm;
 use App\Livewire\Forms\ExitCajaForm;
 use App\Models\Caja\Caja;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Carbon\Carbon;
+use App\Traits\CajaTrait;
+use App\Traits\UtilsTrait;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -17,6 +17,7 @@ use Mary\Traits\Toast;
 class CajaLive extends Component
 {
     use Toast;
+    use CajaTrait, UtilsTrait;
     use WithPagination, WithoutUrlPagination;
     public CajaForm $cajaForm;
     public EntryCajaForm $entryForm;
@@ -35,19 +36,17 @@ class CajaLive extends Component
     public int $perPage = 10;
     public function mount()
     {
-        $this->caja = Caja::where('user_id', Auth::user()->id)
-            ->where('isActive', true)
-            ->latest()->first();
+        $this->fechaActual = $this->dateNow('Y-m-d');
+        $this->caja = $this->cajaIsActive(Auth::user());
         if ($this->caja) {
             $this->openCaja = true;
         }
     }
     public function render()
     {
-        $cajas = Caja::where('user_id', Auth::user()->id)
-            ->latest()->paginate($this->perPage);
-        $this->fechaActual = Carbon::now()->format('Y-m-d');
-        return view('livewire.caja.caja-live',compact('cajas'));
+        $cajas = $this->cajaListPaginate(Auth::user(), $this->perPage);
+
+        return view('livewire.caja.caja-live', compact('cajas'));
     }
     public function openModal()
     {
@@ -92,7 +91,6 @@ class CajaLive extends Component
     }
     public function exitCaja()
     {
-
         if ($this->openCaja) {
             $this->exitForm->caja_id = $this->caja->id;
             if ($this->exitForm->store()) {
@@ -107,14 +105,6 @@ class CajaLive extends Component
     }
     public function printCaja(Caja $caja)
     {
-        $width = 78;
-        $heigh = 250;
-        $paper_format = array(0, 0, ($width / 25.4) * 72, ($heigh / 25.4) * 72);
-        
-        $pdf = Pdf::setPaper($paper_format,'portrait')->loadView('report.pdf.caja', compact('caja'));
-        //return $pdf->stream();
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, $caja->id . '.pdf');
+        return $this->cajaPrint($caja);
     }
 }
