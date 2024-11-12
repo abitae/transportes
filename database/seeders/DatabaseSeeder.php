@@ -10,7 +10,6 @@ use App\Models\Package\Customer;
 use App\Models\Package\Encomienda;
 use App\Models\Package\Paquete;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -30,7 +29,13 @@ class DatabaseSeeder extends Seeder
                 'address' => 'PJ. LOS PEDREGALES MZA. D LOTE. 4 GRU.SECTOR 3 LOS PEDREGAL   JUNíN -  HUANCAYO  -  EL TAMBO',
                 'email' => 'abel.arana@gmail.com',
                 'telephone' => '947199138',
-                'logo_path' =>
+                'logo_path' => '/img/logo.png',
+                'sol_user' => 'MODDATOS',
+                'sol_pass' => 'MODDATOS',
+                'cert_path' => '',
+                'client_id' => 'test-85e5b0ae-255c-4891-a595-0b98c65c9854',
+                'client_secret' => 'test-Hty/M6QshYvPgItX2P0+Kw==',
+                'production' => false,
             ]
         );
         Sucursal::factory()->create(

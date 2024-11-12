@@ -90,6 +90,7 @@
                 </x-mary-menu-sub>
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Configuracion" icon="o-cog-6-tooth">
+                    <x-mary-menu-item title="Company" icon="o-home" link="{{ route('config.company') }}" />
                     <x-mary-menu-item title="Sucursales" icon="o-home-modern" link="{{ route('config.sucursal') }}" />
                     <x-mary-menu-item title="Usuarios" icon="o-user" link="{{ route('config.user') }}" />
                     <x-mary-menu-item title="Roles" icon="o-users" link="{{ route('config.role') }}" />

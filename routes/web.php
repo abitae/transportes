@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WebsiteController;
 use App\Livewire\Caja\CajaLive;
 use App\Livewire\Componentes;
+use App\Livewire\Configuration\CompanyLive;
 use App\Livewire\Configuration\RoleLive;
 use App\Livewire\Configuration\SucursalLive;
 use App\Livewire\Configuration\TransportistaLive;
@@ -50,6 +51,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/transportistas', TransportistaLive::class)->name('config.transportista');
     Route::get('/user', UserLive::class)->name('config.user');
     Route::get('/role', RoleLive::class)->name('config.role');
+    Route::get('/company', CompanyLive::class)->name('config.company');
 });
 Route::middleware('auth')->group(function () {
     Route::get('/customer', CustomerLive::class)->name('package.customer');
