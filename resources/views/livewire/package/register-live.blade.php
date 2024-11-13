@@ -272,30 +272,24 @@
         </div>
     </x-mary-modal>
     <x-mary-modal wire:model="modalFinal" persistent class="backdrop-blur" box-class="w-full">
-
-
         <x-mary-card shadow>
             <div
                 class="grid grid-cols-3 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
                 <div>Imprimir recibo
                     <br>
-                    <x-mary-button icon="o-printer" wire:click="printTicket" spinner
-                        class="text-white bg-purple-500 btn-xl" />
+                    {{ $encomienda->tiket }}
                 </div>
                 <div>Imprimir guia
                     <br>
-                    <x-mary-button icon="o-printer" wire:click="printSticker" spinner
-                        class="text-white bg-blue-500 btn-xl" />
+
                 </div>
                 <div>Imprimir sticker
                     <br>
-                    <x-mary-button icon="o-printer" wire:click="printSticker" spinner
-                        class="text-white bg-green-500 btn-xl" />
+
                 </div>
-                <div>
+                <div>Imprimir sticker
                     <br>
-                    <x-mary-button icon="o-newspaper" wire:click="redirectionRegister" spinner
-                        class="text-white bg-sky-500 btn-xl" />
+
                 </div>
                 <div>Lista de encomiendas
                     <br>

@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('encomienda_id');
+            $table->foreign('encomienda_id')->references('id')->on('encomiendas');
             $table->string('tipoDoc');
             $table->string('tipoOperacion');
             $table->string('serie');

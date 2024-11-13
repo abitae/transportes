@@ -14,7 +14,6 @@ use App\Models\Package\Encomienda;
 use App\Models\Package\Paquete;
 use App\Traits\InvoiceTrait;
 use App\Traits\LogCustom;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -206,7 +205,6 @@ class RegisterLive extends Component
             $this->error('Error, verifique los datos!');
         }
     }
-
     public function confirmEncomienda()
     {
         $cod = Sucursal::where('id', Auth::user()->sucursal->id)->first()->code;
@@ -262,30 +260,6 @@ class RegisterLive extends Component
         } else {
             $this->error('Error, verifique los datos!');
         }
-    }
-    public function printTicket()
-    {
-        dump($this->encomienda);
-        $width = 78;
-        $heigh = 250;
-        $paper_format = array(0, 0, 220, 710);
-        $envio = $this->encomienda;
-        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.ticket.80mm', compact('envio'));
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'T' . $envio->code . '.pdf');
-    }
-    public function printSticker()
-    {
-        $width = 78;
-        $heigh = 250;
-        $paper_format = array(0, 0, 220, 710);
-        $envio = $this->encomienda;
-        $pdf = Pdf::loadView('report.pdf.sticker', compact('envio'));
-
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'S' . $envio->code . '.pdf');
     }
     public function redirectionRegister()
     {
