@@ -58,7 +58,6 @@ class RegisterLive extends Component
     public $modalFinal = false;
     public EntryCajaForm $entryForm;
     public $encomienda;
-    public array $selected = [];
     public function mount()
     {
         $this->caja = Caja::where('user_id', Auth::user()->id)
@@ -256,11 +255,10 @@ class RegisterLive extends Component
                 $this->encomiendaForm->reset();
             } else {
                 $this->error('Error, verifique los datos!');
-                return 0;
             }
             $this->success('Genial, ingresado correctamente!');
-            //$this->modalConfimation = false;
-            //$this->modalFinal = true;
+            $this->modalConfimation = false;
+            $this->modalFinal = true;
         } else {
             $this->error('Error, verifique los datos!');
         }
@@ -272,7 +270,7 @@ class RegisterLive extends Component
         $heigh = 250;
         $paper_format = array(0, 0, 220, 710);
         $envio = $this->encomienda;
-        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
+        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.ticket.80mm', compact('envio'));
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
         }, 'T' . $envio->code . '.pdf');

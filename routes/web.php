@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\pdfController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WebsiteController;
 use App\Livewire\Caja\CajaLive;
@@ -10,6 +11,7 @@ use App\Livewire\Configuration\SucursalLive;
 use App\Livewire\Configuration\TransportistaLive;
 use App\Livewire\Configuration\UserLive;
 use App\Livewire\Configuration\VehiculoLive;
+use App\Livewire\Facturacion\TicketLive;
 use App\Livewire\Home\DashboardLive;
 use App\Livewire\Package\CustomerLive;
 use App\Livewire\Package\DeliverPackageLive;
@@ -61,4 +63,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/deliver_package', DeliverPackageLive::class)->name('package.deliver');
     Route::get('/record_package', RecordPackageLive::class)->name('package.record');
 });
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/ticket', TicketLive::class)->name('facturacion.ticket');
+});
+
+Route::get('/ticket/80mm/{ticket}', [pdfController::class, 'print80mm']);
+Route::get('/ticket/a4/{ticket}', [pdfController::class, 'printA4']);
+
 require __DIR__ . '/auth.php';

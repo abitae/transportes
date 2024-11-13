@@ -2,6 +2,7 @@
 
 namespace App\Models\Package;
 
+use App\Models\Facturacion\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,5 +25,9 @@ class Customer extends Model
     public function encomiendas_destinatario()
     {
         return $this->hasMany(Encomienda::class, 'customer_dest_id','id');
+    }
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
     }
 }

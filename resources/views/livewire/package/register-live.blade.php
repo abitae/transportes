@@ -267,7 +267,7 @@
             </div>
             <x-slot:actions>
                 <x-mary-button label="Cancel" @click="$wire.modalConfimation = false" />
-                <x-mary-button wire:click='confirmEncomienda' label="Confirm" class="btn-primary" />
+                <x-mary-button wire:click='confirmEncomienda' wire: label="Confirm" class="btn-primary" spinner/>
             </x-slot:actions>
         </div>
     </x-mary-modal>

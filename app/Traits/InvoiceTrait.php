@@ -7,12 +7,15 @@ use App\Models\Facturacion\InvoiceDetail;
 use App\Models\Facturacion\Ticket;
 use App\Models\Facturacion\TicketDetail;
 use App\Models\Package\Encomienda;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Spatie\LaravelPdf\Enums\Format;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 trait InvoiceTrait
 {
-    function storeInvoce(Encomienda $encomienda)
+    public function storeInvoce(Encomienda $encomienda)
     {
-        
+
         switch ($encomienda->tipo_comprobante) {
             case 'TICKET':
                 $this->setTicket($encomienda);
@@ -28,9 +31,10 @@ trait InvoiceTrait
                 break;
             default:
                 break;
-        } 
+        }
     }
-    private function setTicket(Encomienda $encomienda) {
+    private function setTicket(Encomienda $encomienda)
+    {
         $company = Company::first();
         $montoTotalIncIGV = $encomienda->paquetes->sum('sub_total');
         $mtoOperGravadas = round($montoTotalIncIGV / 1.18, 2);
@@ -73,10 +77,13 @@ trait InvoiceTrait
                     'mtoPrecioUnitario' => $paquete->amount,
                 ]);
             }
+            //$this->saveTicket2($ticket);
+            //$this->saveA4($ticket);
         }
     }
-    private function setBoleta(Encomienda $encomienda) {
-        dump($encomienda,'Boleta');
+    private function setBoleta(Encomienda $encomienda)
+    {
+        dump($encomienda, 'Boleta');
         $company = Company::first();
         $montoTotalIncIGV = $encomienda->paquetes->sum('sub_total');
         $mtoOperGravadas = round($montoTotalIncIGV / 1.18, 2);
@@ -121,7 +128,8 @@ trait InvoiceTrait
             }
         }
     }
-    private function setTFactura(Encomienda $encomienda) {
+    private function setTFactura(Encomienda $encomienda)
+    {
         $company = Company::first();
         $montoTotalIncIGV = $encomienda->paquetes->sum('sub_total');
         $mtoOperGravadas = round($montoTotalIncIGV / 1.18, 2);
@@ -166,7 +174,8 @@ trait InvoiceTrait
             }
         }
     }
-    private function setGuiTrans(Encomienda $encomienda) {
+    private function setGuiTrans(Encomienda $encomienda)
+    {
         $company = Company::first();
         $montoTotalIncIGV = $encomienda->paquetes->sum('sub_total');
         $mtoOperGravadas = round($montoTotalIncIGV / 1.18, 2);
@@ -211,5 +220,24 @@ trait InvoiceTrait
             }
         }
     }
-}
 
+    private function saveTicket2(Ticket $ticket)
+    {
+        
+        $pdf = FacadePdf::loadView('pdfs.ticket.80mm', $ticket->toArray());
+        return $pdf->stream('invoice.pdf');
+    }
+    private function saveTicket(Ticket $ticket)
+    {
+
+        Pdf::view('pdfs.ticket.80mm', ['ticket' => $ticket])
+            ->paperSize(80, 500, 'mm')
+            ->save('storage/ticket/80mm/' . $ticket->id . '.pdf');
+    }
+    private function saveA4(Ticket $ticket)
+    {
+        Pdf::view('pdfs.ticket.a4', ['ticket' => $ticket])
+            ->format(Format::A4) 
+            ->save('storage/ticket/a4/' . $ticket->id . '.pdf');
+    }
+}
