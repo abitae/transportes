@@ -11,6 +11,7 @@ use App\Livewire\Configuration\SucursalLive;
 use App\Livewire\Configuration\TransportistaLive;
 use App\Livewire\Configuration\UserLive;
 use App\Livewire\Configuration\VehiculoLive;
+use App\Livewire\Facturacion\InvoiceLive;
 use App\Livewire\Facturacion\TicketLive;
 use App\Livewire\Home\DashboardLive;
 use App\Livewire\Package\CustomerLive;
@@ -67,9 +68,13 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/ticket', TicketLive::class)->name('facturacion.ticket');
+    Route::get('/invoice', InvoiceLive::class)->name('facturacion.invoice');
 });
 
-Route::get('/ticket/80mm/{ticket}', [pdfController::class, 'print80mm']);
-Route::get('/ticket/a4/{ticket}', [pdfController::class, 'printA4']);
+Route::get('/ticket/80mm/{ticket}', [pdfController::class, 'ticket80mm']);
+Route::get('/ticket/a4/{ticket}', [pdfController::class, 'ticketA4']);
+
+Route::get('/invoice/80mm/{invoice}', [pdfController::class, 'invoice80mm']);
+Route::get('/invoice/a4/{invoice}', [pdfController::class, 'invoiceA4']);
 
 require __DIR__ . '/auth.php';

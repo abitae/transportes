@@ -192,7 +192,7 @@
             @endif
         </x-slot:actions>
     </x-mary-card>
-    
+
     <x-mary-modal wire:model="modalConfimation" persistent class="backdrop-blur" box-class="max-w-full max-h-full">
         <div class="grid grid-cols-8 gap-1 p-2 border rounded-lg border-sky-500">
             <div class="grid col-span-4">
@@ -298,20 +298,26 @@
             <div class="grid grid-cols-3 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
                 <div>RECIBO
                     <br>
+                    @if ($this->encomienda->ticket)
                     <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
-                        link="/ticket/a4/{{ $this->encomienda->ticket->id }}" spinner
+                        link="/ticket/80mm/{{ $this->encomienda->ticket->id }}" spinner
                         class="text-white bg-green-500 btn-xl" />
+                    @endif
+                    @if ($this->encomienda->invoice)
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                        link="/invoice/80mm/{{ $this->encomienda->invoice->id }}" spinner
+                        class="text-white bg-green-500 btn-xl" />
+                    @endif
+
                 </div>
                 <div>GUIA
                     <br>
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
-                        link="/ticket/80mm/{{ $this->encomienda->ticket->id }}" spinner
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate link="/ticket/80mm/1" spinner
                         class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>STICKER
                     <br>
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
-                        link="/ticket/a4/{{ $this->encomienda->ticket->id }}" spinner
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate link="/ticket/a4/1" spinner
                         class="text-white bg-orange-500 btn-xl" />
                 </div>
                 <div>NUEVO

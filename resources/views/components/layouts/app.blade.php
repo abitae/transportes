@@ -63,7 +63,6 @@
             </x-mary-dropdown>
         </x-slot:actions>
     </x-mary-nav>
-
     <x-mary-main with-nav full-width>
         <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100">
             <x-mary-menu activate-by-route>
@@ -84,7 +83,7 @@
                 </x-mary-menu-sub>
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Facturacion" icon="s-banknotes">
-                    <x-mary-menu-item title="Facturas" icon="o-ticket" link="{{ route('config.sucursal') }}" />
+                    <x-mary-menu-item title="Facturas" icon="o-ticket" link="{{ route('facturacion.invoice') }}" />
                     <x-mary-menu-item title="Ticket" icon="c-ticket" link="{{ route('facturacion.ticket') }}" />
                     <x-mary-menu-item title="Guias" icon="s-ticket" link="{{ route('config.role') }}" />
                 </x-mary-menu-sub>

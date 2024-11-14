@@ -5,6 +5,7 @@ namespace App\Models\Package;
 use App\Models\Configuration\Sucursal;
 use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
+use App\Models\Facturacion\Invoice;
 use App\Models\Facturacion\Ticket;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -72,5 +73,9 @@ class Encomienda extends Model
     public function ticket()
     {
         return $this->hasOne(Ticket::class);
+    }
+    public function invoice()
+    {
+        return $this->hasOne(Invoice::class);
     }
 }

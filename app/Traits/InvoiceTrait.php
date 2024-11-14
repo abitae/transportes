@@ -78,7 +78,7 @@ trait InvoiceTrait
         if ($encomienda->tipo_comprobante == 'BOLETA') {
             $invoice = Invoice::create([
                 'encomienda_id' => $encomienda->id,
-                'tipoDoc' => 'TICKET',
+                'tipoDoc' => 'BOLETA',
                 'tipoOperacion' => '0',
                 'serie' => '001',
                 'correlativo' => $correlativo + 1,
