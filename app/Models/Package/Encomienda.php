@@ -69,7 +69,7 @@ class Encomienda extends Model
     {
         return $this->hasMany(Paquete::class);
     }
-    public function tiket()
+    public function ticket()
     {
         return $this->hasOne(Ticket::class);
     }

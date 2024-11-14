@@ -52,7 +52,7 @@
                 <x-slot:trigger>
                     <x-mary-button icon="o-user" class="relative btn-circle" responsive no-wire-navigate />
                 </x-slot:trigger>
-                <x-mary-menu-item icon="o-user" title="Perfil" />
+                <x-mary-menu-item icon="o-user" title="Perfil" :href="route('profile.edit')"/>
                 @if ($user = auth()->user())
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

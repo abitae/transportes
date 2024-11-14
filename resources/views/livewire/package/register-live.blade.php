@@ -1,5 +1,5 @@
 <div>
-    <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow>
+    <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow progress-indicator>
         <x-slot:menu>
             <x-mary-button wire:click='openModal' responsive icon="o-plus" label="Nuevo envio"
                 class="text-white shadow-xl bg-sky-500" />
@@ -125,7 +125,7 @@
                             <x-slot:empty>
                                 <x-mary-icon name="o-cube" label="No se encontro registros." />
                             </x-slot:empty>
-                            
+
                         </x-mary-table>
                     </div>
                 </div>
@@ -192,12 +192,13 @@
             @endif
         </x-slot:actions>
     </x-mary-card>
+    
     <x-mary-modal wire:model="modalConfimation" persistent class="backdrop-blur" box-class="max-w-full max-h-full">
         <div class="grid grid-cols-8 gap-1 p-2 border rounded-lg border-sky-500">
             <div class="grid col-span-4">
                 <div class="grid grid-cols-8 border rounded-lg border-sky-500">
                     <div class="grid col-span-8">
-                        <x-mary-card shadow>
+                        <x-mary-card shadow separator>
                             <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
                             <div class="grid grid-cols-5 grid-rows-3 gap-1 rounded">
                                 <div class="col-span-3">{{ $this->customerForm->name ?? 'name' }}</div>
@@ -218,7 +219,13 @@
                             </div>
                             <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
                             <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped>
+
                             </x-mary-table>
+                            <div class="flex justify-end">
+                                <x-mary-icon class="w-12 h-12 p-2 text-white bg-orange-500 rounded-full"
+                                    name="o-currency-dollar" label="TOTAL: {{ $paquetes->sum('sub_total') }}" />
+                            </div>
+
                         </x-mary-card>
 
                     </div>
@@ -241,8 +248,22 @@
                                 <div class="grid col-span-4 pt-2">
                                     <x-mary-input label="Numero de documento" wire:model='customerFact.code'>
                                         <x-slot:prepend>
+                                            @php
+                                            if ($tipo_comprobante!='FACTURA') {
+                                            $docsfact = [
+                                            ['id' => 'dni', 'name' => 'DNI'],
+                                            ['id' => 'ruc', 'name' => 'RUC'],
+                                            ];
+                                            }else {
+                                            $docsfact = [
+
+                                            ['id' => 'ruc', 'name' => 'RUC'],
+                                            ];
+                                            }
+
+                                            @endphp
                                             <x-mary-select wire:model='customerFact.type_code' icon="o-user"
-                                                :options="$docs" class="rounded-e-none" />
+                                                :options="$docsfact" class="rounded-e-none" />
                                         </x-slot:prepend>
                                         <x-slot:append>
                                             <x-mary-button wire:click='searchFacturacion' icon="o-magnifying-glass"
@@ -267,42 +288,52 @@
             </div>
             <x-slot:actions>
                 <x-mary-button label="Cancel" @click="$wire.modalConfimation = false" />
-                <x-mary-button wire:click='confirmEncomienda' wire: label="Confirm" class="btn-primary" spinner/>
+                <x-mary-button wire:click='confirmEncomienda' wire: label="Confirm" class="btn-primary" spinner />
             </x-slot:actions>
         </div>
     </x-mary-modal>
-    <x-mary-modal wire:model="modalFinal" persistent class="backdrop-blur" box-class="w-full">
+    @if ($this->encomienda)
+    <x-mary-modal wire:model.live="modalFinal" persistent class="backdrop-blur" box-class="w-full">
         <x-mary-card shadow>
-            <div
-                class="grid grid-cols-3 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
-                <div>Imprimir recibo
+            <div class="grid grid-cols-3 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
+                <div>RECIBO
                     <br>
-                    {{ $encomienda->tiket }}
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                        link="/ticket/a4/{{ $this->encomienda->ticket->id }}" spinner
+                        class="text-white bg-green-500 btn-xl" />
                 </div>
-                <div>Imprimir guia
+                <div>GUIA
                     <br>
-
-                </div>
-                <div>Imprimir sticker
-                    <br>
-
-                </div>
-                <div>Imprimir sticker
-                    <br>
-
-                </div>
-                <div>Lista de encomiendas
-                    <br>
-                    <x-mary-button icon="o-list-bullet" wire:click="redirectionSend" spinner
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                        link="/ticket/80mm/{{ $this->encomienda->ticket->id }}" spinner
                         class="text-white bg-blue-500 btn-xl" />
                 </div>
-                <div>Lista de encomiendas
+                <div>STICKER
                     <br>
-                    <x-mary-button icon="o-list-bullet" wire:click="redirectionSend" spinner
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                        link="/ticket/a4/{{ $this->encomienda->ticket->id }}" spinner
+                        class="text-white bg-orange-500 btn-xl" />
+                </div>
+                <div>NUEVO
+                    <br>
+                    <x-mary-button icon="o-clipboard" link="{{ route('package.register') }}" spinner
                         class="text-white bg-blue-500 btn-xl" />
+                </div>
+                <div>LISTA
+                    <br>
+                    <x-mary-button icon="s-list-bullet" link="{{ route('package.send') }}" spinner
+                        class="text-white bg-blue-500 btn-xl" />
+                </div>
+                <div>ENTREGAR
+                    <br>
+                    <x-mary-button icon="o-cursor-arrow-ripple" link="{{ route('package.deliver') }}" no-wire-navigate
+                        spinner class="text-white bg-blue-500 btn-xl" />
                 </div>
             </div>
         </x-mary-card>
 
     </x-mary-modal>
+    @endif
+
+
 </div>

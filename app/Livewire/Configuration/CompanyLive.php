@@ -47,12 +47,16 @@ class CompanyLive extends Component
             $this->company->logo_path = $this->logo->store('company/logo');
             $this->company->save();
             $this->success('Genial, guardado correctamente!');
+        } else {
+            $this->error('Error, verifique los datos!');
         }
         if (gettype($this->certificado) != 'string' and $this->certificado != null) {
             Storage::delete($this->company->cert_path);
             $this->company->cert_path = $this->certificado->store('company/certificado');
             $this->company->save();
             $this->success('Genial, guardado correctamente!');
+        } else {
+            $this->error('Error, verifique los datos!');
         }
     }
 }

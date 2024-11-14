@@ -208,8 +208,8 @@ class RegisterLive extends Component
     public function confirmEncomienda()
     {
         $cod = Sucursal::where('id', Auth::user()->sucursal->id)->first()->code;
-        $correlativo = count(Encomienda::all()) + 1 ;
-        $this->encomiendaForm->code = $cod.'-' . Auth::user()->id .$correlativo;
+        $correlativo = count(Encomienda::all()) + 1;
+        $this->encomiendaForm->code = $cod . '-' . Auth::user()->id . $correlativo;
         $this->encomiendaForm->user_id = Auth::user()->id;
         $this->encomiendaForm->transportista_id = $this->transportista_id;
         $this->encomiendaForm->vehiculo_id = $this->vehiculo_id;
@@ -242,14 +242,18 @@ class RegisterLive extends Component
         $this->encomiendaForm->isHome = $this->isHome;
         $this->encomiendaForm->isReturn = $this->isReturn;
         $this->encomienda = $this->encomiendaForm->store($this->paquetes);
-        if (!is_null($this->encomienda)) {      
+        if (!is_null($this->encomienda)) {
             $this->entryForm->caja_id = $this->caja->id;
             $this->entryForm->monto_entry = $this->encomiendaForm->monto;
             $this->entryForm->description = $this->encomiendaForm->code;
             $this->entryForm->tipo = $this->encomiendaForm->tipo_comprobante;
             if ($this->entryForm->store()) {
                 $this->entryForm->reset();
-                $this->storeInvoce($this->encomienda);// Genera recibo
+
+                //Generacion de documento PDF
+                $this->storeInvoce($this->encomienda); // Genera recibo
+                //$this->storeGuia($this->encomienda); // Genera guia transportista
+
                 $this->encomiendaForm->reset();
             } else {
                 $this->error('Error, verifique los datos!');
@@ -268,5 +272,9 @@ class RegisterLive extends Component
     public function redirectionSend()
     {
         $this->redirectRoute('package.send');
+    }
+    public function openModal()
+    {
+        $this->modalFinal = true;
     }
 }
