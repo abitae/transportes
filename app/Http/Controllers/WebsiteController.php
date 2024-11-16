@@ -11,7 +11,8 @@ class WebsiteController extends Controller
     public function index()
     {
         $sucursales = Sucursal::where('isActive', 1)->get();
-        return view('web.index', compact('sucursales'));
+
+        return view('web2.index', compact('sucursales'));
     }
 
     public function contact()
