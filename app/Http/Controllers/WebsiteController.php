@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Configuration\Sucursal;
-use App\Models\Package\Encomienda;
+use App\Models\Frontend\Message;
 use Illuminate\Http\Request;
 
 class WebsiteController extends Controller
@@ -15,26 +15,29 @@ class WebsiteController extends Controller
         return view('web2.index', compact('sucursales'));
     }
 
+    public function abount()
+    {
+        return view('web2.nosotros');
+    }
     public function contact()
     {
-        return view('web.contact');
+        return view('web2.contact');
     }
-
+    public function contactForm(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'phone' => 'required',
+            'select' => 'required',
+            'message' => 'required',
+        ]);
+        Message::create($validated);
+        return view('web2.contact');
+    }
     public function servicios()
     {
         return view('web.services');
     }
-    public function trancking(Request $request)
-    {
-        $codeTracking = $request->codeTracking;
-        $recipientDni = $request->recipientDni;
-        $shipment = Encomienda::with('remitente')->where('code', $codeTracking)->where('isActive', 1)->first();
-        //dump($encomienda);
-        //$shipment = Shipment::with(['sucursal', 'sucursal_destino', 'detalle_envio'])->where('id_generado', $codeTracking)->where('documento_destinatario', $recipientDni)->first();
-        if (!$shipment) {
-            return back();
-        }
 
-        return view('web.tracking', compact('shipment'));
-    }
 }

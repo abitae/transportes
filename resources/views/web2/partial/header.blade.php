@@ -84,10 +84,6 @@
                                                     <a href="/nosotros">Nosotros</a>
                                                 </li>
                                                 <li>
-                                                    <a href="/servicios">Servicios</a>
-                                                </li>
-
-                                                <li>
                                                     <a href="/contacto">Contacto</a>
                                                 </li>
                                             </ul>

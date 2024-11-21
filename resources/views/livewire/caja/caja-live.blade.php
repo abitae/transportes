@@ -120,7 +120,7 @@
             </div>
         </x-mary-form>
     </x-mary-modal>
-
+    
     <x-mary-modal wire:model="modalExit" persistent class="backdrop-blur" box-class="max-h-full max-w-128 ">
         <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="REGISTRO EGRESO" />
         <x-mary-form wire:submit="exitCaja">

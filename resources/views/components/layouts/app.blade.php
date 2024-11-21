@@ -44,9 +44,13 @@
             <x-mary-icon name="s-home" class="text-xl text-center text-green-500 w-9 h-9"
                 label="{{ auth()->user()->sucursal->name }}" />
             <x-mary-theme-toggle darkTheme="dark" lightTheme="light" />
-            <x-mary-button label="Messages" icon="o-envelope" link="###" class="btn-ghost btn-sm" responsive />
-            <x-mary-button icon="o-bell" class="relative btn-circle">
-                <x-mary-badge value="2" class="absolute badge-error -right-2 -top-2" />
+            <x-mary-button label="Messages" icon="o-envelope" link="/message" class="btn-ghost btn-sm" responsive />
+            <x-mary-button icon="o-bell" class="relative btn-circle" link="/message">
+                @php
+                    $messages = App\Models\Frontend\Message::where('isActive', true)->get()->count();
+                @endphp
+                <x-mary-badge value="{{ $messages }}" class="absolute badge-error -right-2 -top-2" />
+                
             </x-mary-button>
             <x-mary-dropdown>
                 <x-slot:trigger>
@@ -99,7 +103,7 @@
                 </x-mary-menu-sub>
 
                 <x-mary-menu-separator />
-                <x-mary-menu-item title="Messages" icon="o-envelope" link="###" />
+                <x-mary-menu-item title="Messages" icon="o-envelope" link="{{ route('message.frontend') }}" />
             </x-mary-menu>
         </x-slot:sidebar>
         <x-slot:content>

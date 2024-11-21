@@ -13,6 +13,7 @@ use App\Livewire\Configuration\UserLive;
 use App\Livewire\Configuration\VehiculoLive;
 use App\Livewire\Facturacion\InvoiceLive;
 use App\Livewire\Facturacion\TicketLive;
+use App\Livewire\Frontend\MessageLive;
 use App\Livewire\Home\DashboardLive;
 use App\Livewire\Package\CustomerLive;
 use App\Livewire\Package\DeliverPackageLive;
@@ -23,8 +24,12 @@ use App\Livewire\Package\SendPackageLive;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WebsiteController::class, 'index'])->name('index');
+Route::get('/nosotros', [WebsiteController::class, 'abount'])->name('abount');
 Route::get('/servicios', [WebsiteController::class, 'servicios'])->name('servicios');
 Route::get('/contacto', [WebsiteController::class, 'contact'])->name('contacto');
+
+Route::post('/contactoform', [WebsiteController::class, 'contactForm'])->name('contacto.form');
+
 Route::get('/rotulo', [WebsiteController::class, 'rotulo'])->name('rotulo');
 Route::get('/search-tracking', [WebsiteController::class, 'trancking'])->name('search-tracking');
 
@@ -63,6 +68,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/receive_package', ReceivePackageLive::class)->name('package.receive');
     Route::get('/deliver_package', DeliverPackageLive::class)->name('package.deliver');
     Route::get('/record_package', RecordPackageLive::class)->name('package.record');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/message', MessageLive::class)->name('message.frontend');
 });
 
 
