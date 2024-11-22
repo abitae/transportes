@@ -88,9 +88,8 @@ class SunatService
             ->setDetraccion(
                 // MONEDA SIEMPRE EN SOLES
                     (new Detraction())
-                        // Carnes y despojos comestibles
-                        ->setCodBienDetraccion('014') // catalog. 54
-                        // Deposito en cuenta
+                        ->setCodBienDetraccion('021') // catalog. 54
+
                         ->setCodMedioPago('001') // catalog. 59
                         ->setCtaBanco('0004-3342343243')
                         ->setPercent(4.00)

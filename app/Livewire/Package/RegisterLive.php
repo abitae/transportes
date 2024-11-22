@@ -228,7 +228,7 @@ class RegisterLive extends Component
 
         $this->encomiendaForm->monto = $this->paquetes->sum('sub_total');
         $this->encomiendaForm->estado_pago = $this->estado_pago;
-        $this->encomiendaForm->tipo_pago = 'EFECTIVO';
+        $this->encomiendaForm->tipo_pago = 'Contado';
         if ($this->encomiendaForm->estado_pago == 'CONTRA ENTREGA') {
             $this->encomiendaForm->tipo_comprobante = 'TICKET';
         } else {
