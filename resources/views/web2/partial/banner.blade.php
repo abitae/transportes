@@ -20,62 +20,10 @@
             <div class="banner-two__content-bottom wow fadeInRight" data-wow-delay="0ms"
                 data-wow-duration="1500ms">
                 <div class="text-box">
-                    <p>If you have a parcel and want to know its latest update, then check the latest update
-                        with your parcel ID in the form below. Don't forget to select the correct category to
-                        search. Thank You.</p>
+                    <p>Si tienes un paquete y quieres saber cuál es su última actualización, consulta la última actualización
+                        con el ID de tu paquete en el formulario que aparece a continuación. Gracias.</p>
                 </div>
-
-                <div class="banner-two__tab-box tabs-box">
-                    
-
-                    <div class="tabs-content">
-
-                        <!--tab-->
-                        <div class="tab" id="air">
-                            <div class="banner-two__tab-form-box">
-                                <form class="banner-two__tab-form mc-form" data-url="MC_FORM_URL"
-                                    novalidate="novalidate">
-                                    <div class="banner-two__tab-form-input-box">
-                                        <input type="email" placeholder="Enter Transport Id" name="EMAIL">
-                                        <button type="submit" class="banner-two__tab-form-btn"><span
-                                                class="icon-search"></span></button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!--tab-->
-
-                        <!--tab-->
-                        <div class="tab active-tab" id="road">
-                            <div class="banner-two__tab-form-box">
-                                <form class="banner-two__tab-form mc-form" data-url="MC_FORM_URL"
-                                    novalidate="novalidate">
-                                    <div class="banner-two__tab-form-input-box">
-                                        <input type="email" placeholder="Traking" name="EMAIL">
-                                        <button type="submit" class="banner-two__tab-form-btn"><span
-                                                class="icon-search"></span></button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!--tab-->
-
-                        <!--tab-->
-                        <div class="tab" id="ocean">
-                            <div class="banner-two__tab-form-box">
-                                <form class="banner-two__tab-form mc-form" data-url="MC_FORM_URL"
-                                    novalidate="novalidate">
-                                    <div class="banner-two__tab-form-input-box">
-                                        <input type="email" placeholder="Enter Transport Id" name="EMAIL">
-                                        <button type="submit" class="banner-two__tab-form-btn"><span
-                                                class="icon-search"></span></button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <!--tab-->
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>

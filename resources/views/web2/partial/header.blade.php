@@ -106,7 +106,7 @@
                                     </div>
 
                                     <div class="btn-box">
-                                        <a class="thm-btn" href="/traking">Traking
+                                        <a class="thm-btn" href="/tracking">Traking
                                             <i class="icon-right-arrow21"></i>
                                             <span class="hover-btn hover-bx"></span>
                                             <span class="hover-btn hover-bx2"></span>

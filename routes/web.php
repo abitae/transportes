@@ -27,17 +27,13 @@ Route::get('/', [WebsiteController::class, 'index'])->name('index');
 Route::get('/nosotros', [WebsiteController::class, 'abount'])->name('abount');
 Route::get('/servicios', [WebsiteController::class, 'servicios'])->name('servicios');
 Route::get('/contacto', [WebsiteController::class, 'contact'])->name('contacto');
+Route::get('/tracking', [WebsiteController::class, 'tracking'])->name('tracking');
+Route::post('/tracking', [WebsiteController::class, 'trackingSearch'])->name('tracking.search');
 
 Route::post('/contactoform', [WebsiteController::class, 'contactForm'])->name('contacto.form');
 
-Route::get('/rotulo', [WebsiteController::class, 'rotulo'])->name('rotulo');
-Route::get('/search-tracking', [WebsiteController::class, 'trancking'])->name('search-tracking');
 
-Route::post('subscribe-newsletter', 'WebsiteController@subscribeNewsletter');
-Route::get('/libro-de-reclamaciones', "LibroDeReclamacionController@complaintsBook")->name('libro-de-reclamaciones');
-Route::get("/lista-sucursales", "LibroDeReclamacionController@getListBranchOffices");
-Route::post("/registrar-reclamacion", "LibroDeReclamacionController@registerClaim");
-Route::get('/cotizacion/{view}', "CotizacionController@quotation")->name('cotizacion');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardLive::class)->name('dashboard');
