@@ -252,7 +252,6 @@ class RegisterLive extends Component
 
                 //Generacion de documento PDF
                 $this->storeInvoce($this->encomienda); // Genera recibo
-                $this->setGuiTrans($this->encomienda); // Genera guia transportista
 
                 $this->encomiendaForm->reset();
             } else {

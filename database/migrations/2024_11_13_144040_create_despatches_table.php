@@ -23,18 +23,35 @@ return new class extends Migration
             $table->unsignedBigInteger('company_id');
             $table->foreign('company_id')->references('id')->on('companies');
 
-            $table->string('formaPago_moneda');
-            $table->string('formaPago_tipo');
-            $table->string('tipoMoneda');
-            
-            $table->unsignedBigInteger('client_id');
-            $table->foreign('client_id')->references('id')->on('customers');
-            $table->decimal('mtoOperGravadas',8,2);
-            $table->decimal('mtoIGV',8,2);
-            $table->decimal('totalImpuestos',8,2);
-            $table->decimal('valorVenta',8,2);
-            $table->decimal('subTotal',8,2);
-            $table->decimal('mtoImpVenta',8,2);
+            $table->unsignedBigInteger('flete_id');
+            $table->foreign('flete_id')->references('id')->on('customers');
+
+            $table->unsignedBigInteger('remitente_id');
+            $table->foreign('remitente_id')->references('id')->on('customers');
+
+            $table->unsignedBigInteger('destinatario_id');
+            $table->foreign('destinatario_id')->references('id')->on('customers');
+
+            $table->string('codTraslado');
+            $table->string('modTraslado');
+            $table->string('fecTraslado');
+            $table->string('pesoTotal');
+            $table->string('undPesoTotal');
+
+            $table->string('llegada_ubigueo');
+            $table->string('llegada_direccion');
+
+            $table->string('partida_ubigueo');
+            $table->string('partida_direccion');
+
+            $table->string('chofer_tipoDoc');
+            $table->string('chofer_nroDoc');
+            $table->string('chofer_licencia');
+            $table->string('chofer_nombres');
+            $table->string('chofer_apellidos');
+
+            $table->string('vehiculo_placa');
+
             $table->timestamps();
         });
     }

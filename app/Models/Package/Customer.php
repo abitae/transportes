@@ -2,6 +2,7 @@
 
 namespace App\Models\Package;
 
+use App\Models\Facturacion\Despatche;
 use App\Models\Facturacion\Invoice;
 use App\Models\Facturacion\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,11 +22,11 @@ class Customer extends Model
     ];
     public function encomiendas_remitente()
     {
-        return $this->hasMany(Encomienda::class, 'customer_id','id');
+        return $this->hasMany(Encomienda::class, 'customer_id', 'id');
     }
     public function encomiendas_destinatario()
     {
-        return $this->hasMany(Encomienda::class, 'customer_dest_id','id');
+        return $this->hasMany(Encomienda::class, 'customer_dest_id', 'id');
     }
     public function tickets()
     {
@@ -35,4 +36,18 @@ class Customer extends Model
     {
         return $this->hasMany(Invoice::class);
     }
+
+    public function despach_flete()
+    {
+        return $this->hasMany(Despatche::class, 'flete_id', 'id');
+    }
+    public function despach_remitente()
+    {
+        return $this->hasMany(Despatche::class, 'remitente_id', 'id');
+    }
+    public function despach_destinatario()
+    {
+        return $this->hasMany(Despatche::class, 'destinatario_id', 'id');
+    }
+
 }
