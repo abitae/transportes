@@ -23,4 +23,8 @@ class TicketDetail extends Model
         'totalImpuestos',
         'mtoPrecioUnitario',
     ];
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class);
+    }
 }

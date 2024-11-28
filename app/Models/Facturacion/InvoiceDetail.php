@@ -23,4 +23,8 @@ class InvoiceDetail extends Model
         'totalImpuestos',
         'mtoPrecioUnitario',
     ];
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class);
+    }
 }

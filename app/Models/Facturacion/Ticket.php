@@ -42,4 +42,8 @@ class Ticket extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+    public function details()
+    {
+        return $this->hasMany(TicketDetail::class);
+    }
 }

@@ -19,18 +19,12 @@ class pdfController extends Controller
         ->paperSize(80, 500, 'mm')
         ->name('invoice-2023-04-10.pdf');
     }
-    public function ticketA4(Ticket $ticket)
-    {
-        return pdf()
-        ->view('pdfs.ticket.a4', compact('ticket'))
-        ->format(Format::A4)
-        ->name('invoice-2023-04-10.pdf');
-    }
+    
     public function invoice80mm(Invoice $invoice){
 
         return pdf()
         ->view('pdfs.invoice.80mm', compact('invoice'))
-        ->paperSize(80, 500, 'mm')
+        //->paperSize(80, 500, 'mm')
         ->name('invoice-2023-04-10.pdf');
     }
     public function invoiceA4(Invoice $invoice)
@@ -42,13 +36,6 @@ class pdfController extends Controller
     }
     //-------------------------------------------------------
     public function guia80mm(Invoice $invoice)
-    {
-        return pdf()
-        ->view('pdfs.invoice.a4', compact('invoice'))
-        ->format(Format::A4)
-        ->name('invoice-2023-04-10.pdf');
-    }
-    public function sticketA5(Invoice $invoice)
     {
         return pdf()
         ->view('pdfs.invoice.a4', compact('invoice'))

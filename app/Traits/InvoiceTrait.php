@@ -12,13 +12,13 @@ trait InvoiceTrait
 {
     public function storeInvoce(Encomienda $encomienda)
     {
-        //dump($encomienda);
+       
         if ($encomienda->tipo_comprobante == 'TICKET') {
             $this->setTicket($encomienda);
         } else {
             $this->setInvoice($encomienda);
         }
-        //$this->setGuiTrans($encomienda);
+        
     }
     private function setTicket(Encomienda $encomienda)
     {

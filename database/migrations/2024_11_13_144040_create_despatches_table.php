@@ -16,15 +16,17 @@ return new class extends Migration
             $table->unsignedBigInteger('encomienda_id');
             $table->foreign('encomienda_id')->references('id')->on('encomiendas');
             $table->string('tipoDoc');
-            $table->string('tipoOperacion');
             $table->string('serie');
             $table->string('correlativo');
             $table->string('fechaEmision');
+            
+            $table->unsignedBigInteger('company_id');
+            $table->foreign('company_id')->references('id')->on('companies');
+
             $table->string('formaPago_moneda');
             $table->string('formaPago_tipo');
             $table->string('tipoMoneda');
-            $table->unsignedBigInteger('company_id');
-            $table->foreign('company_id')->references('id')->on('companies');
+            
             $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('customers');
             $table->decimal('mtoOperGravadas',8,2);

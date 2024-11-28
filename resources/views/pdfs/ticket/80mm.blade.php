@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ticket de Factura - Perú</title>
+    <title>{{ $ticket->serie }}-{{ $ticket->correlativo }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -32,48 +32,34 @@
             background-color: #ffffff;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
-
-        .bordered-box {
-            border: 2px solid #000;
-            padding: 1rem;
-            /* Doble tamaño */
-            text-align: center;
-            margin-top: 1rem;
-        }
     </style>
 </head>
 
 <body>
     <div class="ticket">
         <!-- Logo y datos de la empresa centrados -->
-        <div class="mb-4 text-center">
-
+        <div class="mb-1 text-center">
             <div class="text-sm">
-                <img src="https://via.placeholder.com/100x60.png?text=Logo" alt="Logo de la Empresa"
+                <img src="{{ env('APP_URL') }}/{{ $ticket->company->logo_path }}" alt="Logo de la Empresa"
                     class="w-auto h-16 mx-auto mb-2">
-                <p class="text-lg font-bold">Compañía XYZ S.A.C.</p>
-                <p>RUC: 98765432109</p>
-                <p>Dirección: Av. Principal 456, Lima, Perú</p>
-                <p>Teléfono: (01) 123-4567</p>
-                <p>Email: contacto@xyz.com</p>
+                <p>R.U.C.: {{ $ticket->company->ruc }}</p>
+                <p>{{ $ticket->company->address }}</p>
+                <p>Telf: {{ $ticket->company->telephone }}</p>
+                <p>Email: {{ $ticket->company->email }}</p>
             </div>
         </div>
 
         <!-- Título de la Factura y Número de Serie en un recuadro -->
-        <div class="mb-4 bordered-box">
-            <h1 class="text-xl font-bold">FACTURA</h1>
-            <p class="text-sm">Serie: F001</p>
-            <p class="text-sm">Correlativo: 123456</p>
+        <div class="mb-1 border-t border-gray-400">
+            <h1 class="text-xs font-semibold">TICKET</h1>
+            <p class="text-sm font-semibold">{{ $ticket->serie }} - {{ $ticket->correlativo }}</p>
         </div>
 
         <!-- Información del Cliente -->
-        <section class="mb-4 text-sm">
-            <p class="font-semibold">Para:</p>
-            <p>Cliente Ejemplo</p>
-            <p>DNI/RUC: 12345678</p>
-            <p>Dirección: Calle Secundaria 789, Lima, Perú</p>
-            <p>Teléfono: (01) 765-4321</p>
-            <p>Email: cliente@ejemplo.com</p>
+        <section class="mb-1 text-xs border-t border-gray-400">
+            <p>Razón Social: {{ $ticket->client->name }}</p>
+            <p>{{ strtoupper($ticket->client->type_code) }}: {{ $ticket->client->code }}</p>
+            <p>Dirección: {{ $ticket->client->address }}</p>
         </section>
 
         <!-- Detalle de la Factura -->
@@ -88,42 +74,42 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @forelse ($ticket->details as $detail)
                     <tr>
-                        <td class="px-2 py-1 border">Producto A</td>
-                        <td class="px-2 py-1 text-right border">2</td>
-                        <td class="px-2 py-1 text-right border">50.00</td>
-                        <td class="px-2 py-1 text-right border">100.00</td>
+                        <td class="px-2 py-1 border">{{ $detail->descripcion }}</td>
+                        <td class="px-2 py-1 text-right border">{{ $detail->cantidad }}</td>
+                        <td class="px-2 py-1 text-right border">{{ $detail->mtoPrecioUnitario }}</td>
+                        <td class="px-2 py-1 text-right border">{{ number_format($detail->mtoPrecioUnitario *
+                            $detail->cantidad,2) }}</td>
                     </tr>
-                    <tr>
-                        <td class="px-2 py-1 border">Servicio B</td>
-                        <td class="px-2 py-1 text-right border">1</td>
-                        <td class="px-2 py-1 text-right border">150.00</td>
-                        <td class="px-2 py-1 text-right border">150.00</td>
-                    </tr>
+                    @empty
+
+                    @endforelse
                 </tbody>
             </table>
         </section>
 
         <!-- Totales -->
         <section class="mb-4 text-sm">
-            <div class="flex justify-between">
-                <span class="font-semibold">Subtotal:</span>
-                <span>S/. 250.00</span>
+            <div class="flex justify-between border-t border-gray-400">
+                <span class="font-semibold">Gravada:</span>
+                <span>S/ {{ $ticket->valorVenta }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="font-semibold">IGV (18%):</span>
-                <span>S/. 45.00</span>
+                <span>S/ {{ $ticket->mtoIGV }}</span>
             </div>
             <div class="flex justify-between pt-1 mt-1 font-semibold border-t border-gray-400">
                 <span>Total:</span>
-                <span>S/. 295.00</span>
+                <span>S/ {{ $ticket->mtoImpVenta }}</span>
             </div>
         </section>
 
         <!-- Código QR -->
         <section class="mt-4 text-center">
             <!-- Imagen de ejemplo para el código QR -->
-            <img src="https://via.placeholder.com/100x100.png?text=QR+Code" alt="Código QR" class="mx-auto">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/500px-Codigo_QR.svg.png?20080824194905"
+                alt="Código QR" class="w-16 mx-auto">
         </section>
 
         <!-- Pie de página -->
