@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('despatche_details', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('ticket_id');
-            $table->foreign('ticket_id')->references('id')->on('tickets');
+            $table->unsignedBigInteger('despatche_id');
+            $table->foreign('despatche_id')->references('id')->on('despatches');
             $table->string('tipAfeIgv');
             $table->string('codProducto');
             $table->string('unidad');

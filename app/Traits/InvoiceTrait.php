@@ -3,6 +3,7 @@ namespace App\Traits;
 
 use App\Models\Configuration\Company;
 use App\Models\Facturacion\Despatche;
+use App\Models\Facturacion\DespatcheDetail;
 use App\Models\Facturacion\Invoice;
 use App\Models\Facturacion\InvoiceDetail;
 use App\Models\Facturacion\Ticket;
@@ -160,7 +161,23 @@ trait InvoiceTrait
             'chofer_apellidos' => 'ABC-123',
             'vehiculo_placa' => 'Arana Flores',
         ]);
-        dump($despatch);
-
+        foreach ($encomienda->paquetes as $paquete) {
+            $mtoValorUnitario = round($paquete->amount / 1.18, 2);
+            DespatcheDetail::create([
+                'despatche_id' => $despatch->id,
+                'tipAfeIgv' => '10',
+                'codProducto' => $paquete->id,
+                'unidad' => 'NIU',
+                'descripcion' => 'Servicio de traslado ' . $paquete->description,
+                'cantidad' => $paquete->cantidad,
+                'mtoValorUnitario' => $mtoValorUnitario,
+                'mtoValorVenta' => $mtoValorUnitario * $paquete->cantidad,
+                'mtoBaseIgv' => $mtoValorUnitario * $paquete->cantidad,
+                'porcentajeIgv' => 18,
+                'igv' => ($paquete->amount - $mtoValorUnitario) * $paquete->cantidad,
+                'totalImpuestos' => ($paquete->amount - $mtoValorUnitario) * $paquete->cantidad,
+                'mtoPrecioUnitario' => $paquete->amount,
+            ]);
+        }
     }
 }

@@ -89,7 +89,7 @@
                 <x-mary-menu-sub title="Facturacion" icon="s-banknotes">
                     <x-mary-menu-item title="Facturas" icon="o-ticket" link="{{ route('facturacion.invoice') }}" />
                     <x-mary-menu-item title="Ticket" icon="c-ticket" link="{{ route('facturacion.ticket') }}" />
-                    <x-mary-menu-item title="Guias" icon="s-ticket" link="{{ route('config.role') }}" />
+                    <x-mary-menu-item title="Guias" icon="s-ticket" link="{{ route('facturacion.despache') }}" />
                 </x-mary-menu-sub>
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Configuracion" icon="o-cog-6-tooth">

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Facturacion\Despatche;
 use App\Models\Facturacion\Invoice;
 use App\Models\Facturacion\Ticket;
 
 use Spatie\LaravelPdf\Enums\Format;
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use function Spatie\LaravelPdf\Support\pdf;
 
 class pdfController extends Controller
@@ -17,7 +17,7 @@ class pdfController extends Controller
         return pdf()
         ->view('pdfs.ticket.80mm', compact('ticket'))
         ->paperSize(80, 500, 'mm')
-        ->name('invoice-2023-04-10.pdf');
+        ->name('invoice.pdf');
     }
     
     public function invoice80mm(Invoice $invoice){
@@ -25,21 +25,28 @@ class pdfController extends Controller
         return pdf()
         ->view('pdfs.invoice.80mm', compact('invoice'))
         //->paperSize(80, 500, 'mm')
-        ->name('invoice-2023-04-10.pdf');
+        ->name('invoice.pdf');
     }
     public function invoiceA4(Invoice $invoice)
     {
         return pdf()
         ->view('pdfs.invoice.a4', compact('invoice'))
         ->format(Format::A4)
-        ->name('invoice-2023-04-10.pdf');
+        ->name('invoice.pdf');
     }
     //-------------------------------------------------------
-    public function guia80mm(Invoice $invoice)
+    public function despache80mm(Despatche $despache)
     {
         return pdf()
-        ->view('pdfs.invoice.a4', compact('invoice'))
+        ->view('pdfs.despache.80mm', compact('despache'))
         ->format(Format::A4)
-        ->name('invoice-2023-04-10.pdf');
+        ->name('despache.pdf');
+    }
+    public function despacheA4(Despatche $despache)
+    {
+        return pdf()
+        ->view('pdfs.despache.a4', compact('despache'))
+        //->format(Format::A4)
+        ->name('despache.pdf');
     }
 }

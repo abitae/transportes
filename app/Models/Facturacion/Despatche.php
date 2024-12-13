@@ -52,4 +52,9 @@ class Despatche extends Model
     {
         return $this->belongsTo(Customer::class, 'destinatario_id', 'id');
     }
+    public function details()
+    {
+        return $this->hasMany(DespatcheDetail::class);
+    }
+
 }

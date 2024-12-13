@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $invoice->serie }}-{{ $invoice->correlativo }}</title>
+    <title>{{ $despache->serie }}-{{ $despache->correlativo }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -39,27 +39,27 @@
         <!-- Logo y datos de la empresa centrados -->
         <div class="mb-1 text-center">
             <div class="text-sm">
-                <img src="{{ env('APP_URL') }}/{{ $invoice->company->logo_path }}" alt="Logo"
+                <img src="{{ env('APP_URL') }}/{{ $despache->company->logo_path }}" alt="Logo"
                     class="w-auto h-16 mx-auto mb-2">
-                <p>R.U.C.: {{ $invoice->company->ruc }}</p>
-                <p>{{ $invoice->company->address }}</p>
-                <p>Telf: {{ $invoice->company->telephone }}</p>
-                <p>Email: {{ $invoice->company->email }}</p>
+                <p>R.U.C.: {{ $despache->company->ruc }}</p>
+                <p>{{ $despache->company->address }}</p>
+                <p>Telf: {{ $despache->company->telephone }}</p>
+                <p>Email: {{ $despache->company->email }}</p>
             </div>
         </div>
 
         <!-- Título de la Factura y Número de Serie en un recuadro -->
         <div class="mb-1 border-t border-gray-400">
-            <h1 class="text-xs font-semibold">{{ $invoice->tipoDoc == '01' ? 'FACTURA ELECTRONICA' : 'BOLETA
+            <h1 class="text-xs font-semibold">{{ $despache->tipoDoc == '01' ? 'FACTURA ELECTRONICA' : 'BOLETA
                 ELECTRONICA' }}</h1>
-            <p class="text-sm font-semibold">{{ $invoice->serie }} - {{ $invoice->correlativo }}</p>
+            <p class="text-sm font-semibold">{{ $despache->serie }} - {{ $despache->correlativo }}</p>
         </div>
 
         <!-- Información del Cliente -->
         <section class="mb-1 text-xs border-t border-gray-400">
-            <p>Razón Social: {{ $invoice->client->name }}</p>
-            <p>{{ strtoupper($invoice->client->type_code) }}: {{ $invoice->client->code }}</p>
-            <p>Dirección: {{ $invoice->client->address }}</p>
+            <p>Razón Social: {{ $despache->remitente->name }}</p>
+            <p>{{ strtoupper($despache->remitente->type_code) }}: {{ $despache->remitente->code }}</p>
+            <p>Dirección: {{ $despache->remitente->address }}</p>
         </section>
 
         <!-- Detalle de la Factura -->
@@ -74,7 +74,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($invoice->details as $detail)
+                    @forelse ($despache->details as $detail)
                     <tr>
                         <td class="px-2 py-1 border">{{ $detail->descripcion }}</td>
                         <td class="px-2 py-1 text-right border">{{ $detail->cantidad }}</td>
@@ -93,15 +93,15 @@
         <section class="mb-4 text-sm">
             <div class="flex justify-between border-t border-gray-400">
                 <span class="font-semibold">Gravada:</span>
-                <span>S/ {{ $invoice->valorVenta }}</span>
+                <span>S/ {{ $despache->valorVenta }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="font-semibold">IGV (18%):</span>
-                <span>S/ {{ $invoice->mtoIGV }}</span>
+                <span>S/ {{ $despache->mtoIGV }}</span>
             </div>
             <div class="flex justify-between pt-1 mt-1 font-semibold border-t border-gray-400">
                 <span>Total:</span>
-                <span>S/ {{ $invoice->mtoImpVenta }}</span>
+                <span>S/ {{ $despache->mtoImpVenta }}</span>
             </div>
         </section>
 
