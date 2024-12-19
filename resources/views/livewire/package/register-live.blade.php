@@ -312,13 +312,19 @@
                 </div>
                 <div>GUIA
                     <br>
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate link="/ticket/80mm/1" spinner
+                    @if ($this->encomienda->despatche)
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                        link="/despache/80mm/{{ $this->encomienda->despatche->id }}" spinner
                         class="text-white bg-blue-500 btn-xl" />
+                    @endif
                 </div>
                 <div>STICKER
                     <br>
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate link="/ticket/a4/1" spinner
+                    @if ($this->encomienda->despatche)
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                        link="/sticker/a5/{{ $this->encomienda->id }}" spinner
                         class="text-white bg-orange-500 btn-xl" />
+                    @endif
                 </div>
                 <div>NUEVO
                     <br>

@@ -5,6 +5,7 @@ namespace App\Models\Package;
 use App\Models\Configuration\Sucursal;
 use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
+use App\Models\Facturacion\Despatche;
 use App\Models\Facturacion\Invoice;
 use App\Models\Facturacion\Ticket;
 use App\Models\User;
@@ -70,6 +71,7 @@ class Encomienda extends Model
     {
         return $this->hasMany(Paquete::class);
     }
+
     public function ticket()
     {
         return $this->hasOne(Ticket::class);
@@ -78,4 +80,9 @@ class Encomienda extends Model
     {
         return $this->hasOne(Invoice::class);
     }
+    public function despatche()
+    {
+        return $this->hasOne(Despatche::class);
+    }
+
 }

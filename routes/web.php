@@ -87,4 +87,6 @@ Route::get('/invoice/a4/{invoice}', [pdfController::class, 'invoiceA4']);
 Route::get('/despache/80mm/{despache}', [pdfController::class, 'despache80mm']);
 Route::get('/despache/a4/{despache}', [pdfController::class, 'despacheA4']);
 
+Route::get('/sticker/a5/{encomienda}', [pdfController::class, 'stickerA5']);
+
 require __DIR__ . '/auth.php';

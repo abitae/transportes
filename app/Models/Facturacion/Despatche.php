@@ -4,6 +4,7 @@ namespace App\Models\Facturacion;
 
 use App\Models\Configuration\Company;
 use App\Models\Package\Customer;
+use App\Models\Package\Encomienda;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -55,6 +56,10 @@ class Despatche extends Model
     public function details()
     {
         return $this->hasMany(DespatcheDetail::class);
+    }
+    public function encomienda()
+    {
+        return $this->belongsTo(Encomienda::class);
     }
 
 }

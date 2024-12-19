@@ -50,8 +50,7 @@
 
         <!-- Título de la Factura y Número de Serie en un recuadro -->
         <div class="mb-1 border-t border-gray-400">
-            <h1 class="text-xs font-semibold">{{ $despache->tipoDoc == '01' ? 'FACTURA ELECTRONICA' : 'BOLETA
-                ELECTRONICA' }}</h1>
+            <h1 class="text-xs font-semibold">GUIA REMICION ELECTRONICA</h1>
             <p class="text-sm font-semibold">{{ $despache->serie }} - {{ $despache->correlativo }}</p>
         </div>
 
