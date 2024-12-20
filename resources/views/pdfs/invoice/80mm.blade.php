@@ -17,6 +17,7 @@
                 margin: 0;
             }
         }
+
         body {
             margin: 0;
             font-family: 'Arial', sans-serif;
@@ -38,7 +39,7 @@
     <div class="ticket">
         <!-- Logo y datos de la empresa centrados -->
         <div class="mb-1 text-center">
-            <div class="text-sm">
+            <div class="text-xs">
                 <img src="{{ env('APP_URL') }}/{{ $invoice->company->logo_path }}" alt="Logo"
                     class="w-auto h-16 mx-auto mb-2">
                 <p>R.U.C.: {{ $invoice->company->ruc }}</p>
@@ -49,7 +50,7 @@
         </div>
 
         <!-- Título de la Factura y Número de Serie en un recuadro -->
-        <div class="mb-1 border-t border-gray-400">
+        <div class="mb-1 text-center border-t border-gray-400">
             <h1 class="text-xs font-semibold">{{ $invoice->tipoDoc == '01' ? 'FACTURA ELECTRONICA' : 'BOLETA
                 ELECTRONICA' }}</h1>
             <p class="text-sm font-semibold">{{ $invoice->serie }} - {{ $invoice->correlativo }}</p>
@@ -57,20 +58,21 @@
 
         <!-- Información del Cliente -->
         <section class="mb-1 text-xs border-t border-gray-400">
-            <p>Razón Social: {{ $invoice->client->name }}</p>
+            <p>ADQUIRIENTE</p>
             <p>{{ strtoupper($invoice->client->type_code) }}: {{ $invoice->client->code }}</p>
-            <p>Dirección: {{ $invoice->client->address }}</p>
+            <p>{{ $invoice->client->name }}</p>
+            <p>{{ $invoice->client->address }}</p>
         </section>
 
         <!-- Detalle de la Factura -->
         <section class="mb-4">
-            <table class="w-full text-sm border-collapse">
+            <table class="w-full text-xs border-collapse">
                 <thead>
                     <tr class="bg-gray-100">
-                        <th class="px-2 py-1 text-left border">Descripción</th>
-                        <th class="px-2 py-1 text-right border">Cant</th>
-                        <th class="px-2 py-1 text-right border">Precio</th>
-                        <th class="px-2 py-1 text-right border">Total</th>
+                        <th class="px-2 py-1 text-left border">DESCRIPCION</th>
+                        <th class="px-2 py-1 text-right border">CANT</th>
+                        <th class="px-2 py-1 text-right border">P/U</th>
+                        <th class="px-2 py-1 text-right border">TOTAL</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,7 +92,7 @@
         </section>
 
         <!-- Totales -->
-        <section class="mb-4 text-sm">
+        <section class="mb-4 text-xs">
             <div class="flex justify-between border-t border-gray-400">
                 <span class="font-semibold">Gravada:</span>
                 <span>S/ {{ $invoice->valorVenta }}</span>
@@ -115,7 +117,6 @@
         <!-- Pie de página -->
         <footer class="mt-4 text-xs text-center">
             <p>Gracias por su compra.</p>
-            <p>Esta factura ha sido generada según las normas peruanas.</p>
         </footer>
     </div>
 </body>

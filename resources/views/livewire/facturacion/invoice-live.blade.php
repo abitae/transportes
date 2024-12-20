@@ -6,14 +6,13 @@
         </x-slot:menu>
         @php
         $headers = [
-        ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1'],
+        ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1 text-white'],
         ['key' => 'document', 'label' => 'Documento', 'class' => ''],
-        ['key' => 'fecha', 'label' => 'Fecha documento', 'class' => ''],
         ['key' => 'cliente', 'label' => 'Cliente', 'class' => ''],
         ['key' => 'mtoImpVenta', 'label' => 'Monto', 'class' => ''],
-        ['key' => 'pdf_a4', 'label' => 'PDF A4', 'class' => ''],
-        ['key' => 'pdf_ticket', 'label' => 'PDF TICKET', 'class' => ''],
-        ['key' => 'option', 'label' => 'Opciones', 'class' => ''],
+        ['key' => 'pdf', 'label' => 'PDF A4', 'class' => ''],
+        ['key' => 'xml', 'label' => 'XML', 'class' => ''],
+        ['key' => 'cdr', 'label' => 'CDR', 'class' => ''],
         ];
         @endphp
         <x-mary-table :headers="$headers" :rows="$invoices" striped with-pagination per-page="perPage"
@@ -22,9 +21,8 @@
             @php
             $valor = $stuff->serie.'-'.$stuff->correlativo;
             @endphp
-            <x-mary-badge :value="$valor" class="badge-primary" />
-            @endscope
-            @scope('cell_fecha', $stuff)
+            <x-mary-badge :value="$valor" class="bg-purple-500" />
+            <br>
             {{ $stuff->created_at->format('d-m-Y H:i A') }}
             @endscope
             @scope('cell_cliente', $stuff)
@@ -32,13 +30,15 @@
             <br>
             {{ $stuff->client->name }}
             @endscope
-            @scope('cell_pdf_a4', $stuff)
-            <x-mary-button icon="o-document-chart-bar" target="_blank" no-wire-navigate link="/invoice/a4/{{ $stuff->id }}" spinner
-                class="text-white bg-purple-500 btn-xs" />
+            @scope('cell_pdf', $stuff)
+            <x-mary-button icon="o-document-chart-bar" target="_blank" no-wire-navigate
+                link="/invoice/a4/{{ $stuff->id }}" spinner class="text-white bg-purple-500 btn-xs" />
+            <x-mary-button icon="o-ticket" target="_blank" no-wire-navigate link="/invoice/80mm/{{ $stuff->id }}"
+                spinner class="text-white bg-green-500 btn-xs" />
             @endscope
-            @scope('cell_pdf_ticket', $stuff)
-            <x-mary-button icon="o-ticket" target="_blank" no-wire-navigate link="/invoice/80mm/{{ $stuff->id }}" spinner
-                class="text-white bg-green-500 btn-xs" />
+            @scope('cell_xml', $stuff)
+            <x-mary-button icon="o-arrow-down-tray" target="_blank" wire:click="xml({{ $stuff->id }})" no-wire-navigate spinner
+                class="text-white bg-purple-500 btn-xs" />
             @endscope
         </x-mary-table>
     </x-mary-card>

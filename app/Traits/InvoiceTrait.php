@@ -103,7 +103,7 @@ trait InvoiceTrait
             'formaPago_tipo' => $encomienda->tipo_pago,
             'tipoMoneda' => 'PEN',
             'company_id' => $company->id,
-            'client_id' => $encomienda->customer_id,
+            'client_id' => $encomienda->customer_fact_id,
             'mtoOperGravadas' => $mtoOperGravadas,
             'mtoIGV' => $igv,
             'totalImpuestos' => $igv,

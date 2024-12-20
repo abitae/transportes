@@ -115,7 +115,9 @@
                                     spinner class="text-white bg-green-500 btn-xs" />
 
                             </div>
-                            <div class="row-start-2">4</div>
+                            <div class="row-start-2">
+                                
+                            </div>
                             <div class="row-start-2">
                                 <x-mary-button icon="o-no-symbol" wire:click="enableEncomienda({{ $stuff->id }})"
                                     spinner
@@ -125,26 +127,26 @@
                             <div>
                                 @if ($stuff->ticket)
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
-                                    link="/ticket/80mm/{{ $stuff->id }}" spinner
+                                    link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
                                     class="text-white bg-green-500 btn-xs" />
                                 @endif
                                 @if ($stuff->invoice)
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
-                                    link="/invoice/80mm/{{ $stuff->id }}" spinner
+                                    link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
                                     class="text-white bg-green-500 btn-xs" />
                                 @endif
                             </div>
                             <div class="row-start-3">
-                                <x-mary-button icon="o-printer" target="_blank" no-wire-navigate link="/despache/80mm/{{ $stuff->id }}"
+                                <x-mary-button icon="o-printer" target="_blank" no-wire-navigate link="/despache/80mm/{{ $stuff->despatche->id }}"
                                     spinner class="text-white bg-blue-500 btn-xs" />
                             </div>
                             <div class="row-start-3">
-                                <x-mary-button icon="o-printer" wire:click="printSticker({{ $stuff->id }})" spinner
-                                    class="text-white bg-green-500 btn-xs" />
+                                
+                                <x-mary-button icon="o-printer" target="_blank" no-wire-navigate link="/sticker/a5/{{ $stuff->id }}"
+                                    spinner class="text-white bg-orange-500 btn-xs" />
                             </div>
                             <div class="row-start-3">
-                                <x-mary-button icon="o-printer" wire:click="printTicket({{ $stuff->id }})" spinner
-                                    class="text-white bg-purple-500 btn-xs" />
+                                
                             </div>
                         </div>
 
