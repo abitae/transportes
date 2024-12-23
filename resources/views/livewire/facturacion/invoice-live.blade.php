@@ -21,7 +21,7 @@
             @php
             $valor = $stuff->serie.'-'.$stuff->correlativo;
             @endphp
-            <x-mary-badge :value="$valor" class="bg-purple-500" />
+            <x-mary-badge :value="$valor" class="bg-cyan-500" />
             <br>
             {{ $stuff->created_at->format('d-m-Y H:i A') }}
             @endscope
@@ -37,8 +37,12 @@
                 spinner class="text-white bg-green-500 btn-xs" />
             @endscope
             @scope('cell_xml', $stuff)
-            <x-mary-button icon="o-arrow-down-tray" target="_blank" wire:click="xml({{ $stuff->id }})" no-wire-navigate spinner
-                class="text-white bg-purple-500 btn-xs" />
+            <x-mary-button icon="o-document-arrow-down" target="_blank" wire:click="xml({{ $stuff->id }})"
+                no-wire-navigate spinner class="text-white bg-cyan-500 btn-xs" />
+            @endscope
+            @scope('cell_cdr', $stuff)
+            <x-mary-button icon="s-document-check" target="_blank" wire:click="xml({{ $stuff->id }})"
+                no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
             @endscope
         </x-mary-table>
     </x-mary-card>
