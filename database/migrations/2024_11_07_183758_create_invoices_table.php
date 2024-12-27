@@ -33,6 +33,8 @@ return new class extends Migration
             $table->decimal('valorVenta',8,2);
             $table->decimal('subTotal',8,2);
             $table->decimal('mtoImpVenta',8,2);
+            $table->string('xml_path')->nullable();
+            $table->string('xml_hash')->nullable();
             $table->timestamps();
         });
     }

@@ -29,6 +29,8 @@ class Invoice extends Model
         'valorVenta',
         'subTotal',
         'mtoImpVenta',
+        'xml_path',
+        'xml_hash',
     ];
     public function company()
     {
