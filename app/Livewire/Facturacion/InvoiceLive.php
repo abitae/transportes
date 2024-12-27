@@ -34,7 +34,10 @@ class InvoiceLive extends Component
         $invoce = $sunat->getInvoce($invoice);
         $xml = $see->getXmlSigned($invoce);
         $hash = (new XmlUtils())->getHashSign($xml);
-        Storage::disk('public')->put('xml/example2.xml', $xml);
+        $invoice->xml_hash = $hash;
+        $invoice->xml_path='xml/'.$invoice->company->ruc.'-'.$invoice->tipoDoc.'-'.$invoice->serie.'-'.$invoice->correlativo.'.xml';
+        $invoice->save();
+        Storage::disk('public')->put('xml/'.$invoice->company->ruc.'-'.$invoice->tipoDoc.'-'.$invoice->serie.'-'.$invoice->correlativo.'.xml', $xml);
         return $xml;
     }
 }
