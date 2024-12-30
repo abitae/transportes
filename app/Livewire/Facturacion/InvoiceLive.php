@@ -42,7 +42,11 @@ class InvoiceLive extends Component
     }
     public function xmlDownload(Invoice $invoice)
     {
-        return Storage::disk('public')->download($invoice->xml_path);
+        if(Storage::exists($invoice->xml_path))
+        {
+            return Storage::disk('public')->download($invoice->xml_path);
+        }
+        
     }
     public function sendXmlFile(Invoice $invoice)
     {
@@ -66,7 +70,10 @@ class InvoiceLive extends Component
     }
     public function downloadCdrFile(Invoice $invoice)
     {
-        return Storage::disk('public')->download($invoice->cdr_path);
+        if(Storage::exists($invoice->cdr_path))
+        {
+            return Storage::disk('public')->download($invoice->cdr_path);
+        }
     }
 
 }

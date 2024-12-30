@@ -8,11 +8,10 @@
         $headers = [
         ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1'],
         ['key' => 'document', 'label' => 'Documento', 'class' => ''],
-        ['key' => 'fecha', 'label' => 'Fecha documento', 'class' => ''],
         ['key' => 'remitente', 'label' => 'Remitente', 'class' => ''],
-        ['key' => 'pdf_a4', 'label' => 'PDF A4', 'class' => ''],
-        ['key' => 'pdf_ticket', 'label' => 'PDF TICKET', 'class' => ''],
-        ['key' => 'option', 'label' => 'Opciones', 'class' => ''],
+        ['key' => 'pdf', 'label' => 'PDF A4', 'class' => ''],
+        ['key' => 'xml', 'label' => 'XML', 'class' => ''],
+        ['key' => 'cdr', 'label' => 'CDR', 'class' => ''],
         ];
         @endphp
         <x-mary-table :headers="$headers" :rows="$despaches" striped with-pagination per-page="perPage"
@@ -21,23 +20,42 @@
             @php
             $valor = $stuff->serie.'-'.$stuff->correlativo;
             @endphp
-            <x-mary-badge :value="$valor" class="badge-primary" />
-            @endscope
-            @scope('cell_fecha', $stuff)
-            {{ $stuff->created_at->format('d-m-Y H:i A') }}
-            @endscope
-            @scope('cell_remitente', $stuff)
-            {{ $stuff->remitente->code }}
+            <x-mary-badge :value="$valor" class="bg-cyan-500" />
             <br>
-            {{ $stuff->remitente->name }}
+            <div class="text-xs">{{ $stuff->created_at->format('d-m-Y H:i A') }}</div>
             @endscope
-            @scope('cell_pdf_a4', $stuff)
-            <x-mary-button icon="o-document-chart-bar" target="_blank" no-wire-navigate link="/despache/a4/{{ $stuff->id }}" spinner
-                class="text-white bg-purple-500 btn-xs" />
+
+            @scope('cell_remitente', $stuff)
+            <div class="text-xs">{{ $stuff->remitente->code }}</div>
+            <div class="text-xs">{{ $stuff->remitente->name }}</div>
             @endscope
-            @scope('cell_pdf_ticket', $stuff)
-            <x-mary-button icon="o-ticket" target="_blank" no-wire-navigate link="/despache/80mm/{{ $stuff->id }}" spinner
-                class="text-white bg-green-500 btn-xs" />
+            @scope('cell_pdf', $stuff)
+            <x-mary-button icon="o-document-chart-bar" target="_blank" no-wire-navigate
+                link="/despache/a4/{{ $stuff->id }}" spinner class="text-white bg-purple-500 btn-xs" />
+            <x-mary-button icon="o-ticket" target="_blank" no-wire-navigate link="/despache/80mm/{{ $stuff->id }}"
+                spinner class="text-white bg-green-500 btn-xs" />
+            @endscope
+            @scope('cell_xml', $stuff)
+
+            @if ($stuff->xml_path and $stuff->xml_hash)
+            <x-mary-button icon="o-document-arrow-down" target="_blank" wire:click="xmlDownload({{ $stuff->id }})"
+                no-wire-navigate spinner class="text-white bg-cyan-500 btn-xs" />
+            @else
+            <x-mary-button icon="o-arrow-path" target="_blank" wire:click="xmlGenerate({{ $stuff->id }})"
+                no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
+            @endif
+
+
+
+            @endscope
+            @scope('cell_cdr', $stuff)
+            @if ($stuff->cdr_path)
+            <x-mary-button icon="o-document-arrow-down" target="_blank" wire:click="downloadCdrFile({{ $stuff->id }})"
+                no-wire-navigate spinner class="text-white bg-blue-500 btn-xs" />
+            @else
+            <x-mary-button icon="o-arrow-path" target="_blank" wire:click="sendXmlFile({{ $stuff->id }})"
+                no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
+            @endif
             @endscope
         </x-mary-table>
     </x-mary-card>

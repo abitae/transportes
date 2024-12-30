@@ -51,7 +51,12 @@ return new class extends Migration
             $table->string('chofer_apellidos');
 
             $table->string('vehiculo_placa');
-
+            $table->string('xml_path')->nullable();
+            $table->string('xml_hash')->nullable();
+            $table->string('cdr_description')->nullable();
+            $table->string('cdr_code')->nullable();
+            $table->string('cdr_note')->nullable();
+            $table->string('cdr_path')->nullable();
             $table->timestamps();
         });
     }

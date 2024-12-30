@@ -28,8 +28,6 @@
             @endscope
             @scope('cell_cliente', $stuff)
             <div class="text-xs">{{ $stuff->client->code }}</div>
-
-            <br>
             <div class="text-xs">{{ $stuff->client->name }}</div>
             @endscope
             @scope('cell_mtoImpVenta', $stuff)
@@ -55,7 +53,7 @@
 
             @endscope
             @scope('cell_cdr', $stuff)
-            @if ($stuff->xml_path and $stuff->xml_hash)
+            @if ($stuff->cdr_path)
             <x-mary-button icon="o-document-arrow-down" target="_blank" wire:click="downloadCdrFile({{ $stuff->id }})"
                 no-wire-navigate spinner class="text-white bg-blue-500 btn-xs" />
             @else

@@ -36,6 +36,12 @@ class Despatche extends Model
         'chofer_nombres',
         'chofer_apellidos',
         'vehiculo_placa',
+        'xml_path',
+        'xml_hash',
+        'cdr_description',
+        'cdr_code',
+        'cdr_note',
+        'cdr_path', 
     ];
     public function company()
     {

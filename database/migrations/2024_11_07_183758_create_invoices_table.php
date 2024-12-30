@@ -35,10 +35,10 @@ return new class extends Migration
             $table->decimal('mtoImpVenta',8,2);
             $table->string('xml_path')->nullable();
             $table->string('xml_hash')->nullable();
-            $table->string('xml_path')->nullable();
-            $table->string('xml_hash')->nullable();
-            $table->string('xml_path')->nullable();
-            $table->string('xml_hash')->nullable();
+            $table->string('cdr_description')->nullable();
+            $table->string('cdr_code')->nullable();
+            $table->string('cdr_note')->nullable();
+            $table->string('cdr_path')->nullable();
             $table->timestamps();
         });
     }
