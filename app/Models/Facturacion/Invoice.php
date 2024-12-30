@@ -31,6 +31,10 @@ class Invoice extends Model
         'mtoImpVenta',
         'xml_path',
         'xml_hash',
+        'cdr_description',
+        'cdr_code',
+        'cdr_note',
+        'cdr_path', 
     ];
     public function company()
     {

@@ -23,12 +23,17 @@
             @endphp
             <x-mary-badge :value="$valor" class="bg-cyan-500" />
             <br>
-            {{ $stuff->created_at->format('d-m-Y H:i A') }}
+            <div class="text-xs">{{ $stuff->created_at->format('d-m-Y H:i A') }}</div>
+
             @endscope
             @scope('cell_cliente', $stuff)
-            {{ $stuff->client->code }}
+            <div class="text-xs">{{ $stuff->client->code }}</div>
+
             <br>
-            {{ $stuff->client->name }}
+            <div class="text-xs">{{ $stuff->client->name }}</div>
+            @endscope
+            @scope('cell_mtoImpVenta', $stuff)
+            <div class="text-xs">S/{{ $stuff->mtoImpVenta }}</div>
             @endscope
             @scope('cell_pdf', $stuff)
             <x-mary-button icon="o-document-chart-bar" target="_blank" no-wire-navigate
@@ -37,12 +42,27 @@
                 spinner class="text-white bg-green-500 btn-xs" />
             @endscope
             @scope('cell_xml', $stuff)
-            <x-mary-button icon="o-document-arrow-down" target="_blank" wire:click="xml({{ $stuff->id }})"
+
+            @if ($stuff->xml_path and $stuff->xml_hash)
+            <x-mary-button icon="o-document-arrow-down" target="_blank" wire:click="xmlDownload({{ $stuff->id }})"
                 no-wire-navigate spinner class="text-white bg-cyan-500 btn-xs" />
+            @else
+            <x-mary-button icon="o-arrow-path" target="_blank" wire:click="xmlGenerate({{ $stuff->id }})"
+                no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
+            @endif
+
+
+
             @endscope
             @scope('cell_cdr', $stuff)
-            <x-mary-button icon="s-document-check" target="_blank" wire:click="xml({{ $stuff->id }})"
-                no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
+            @if ($stuff->xml_path and $stuff->xml_hash)
+            <x-mary-button icon="o-document-arrow-down" target="_blank" wire:click="downloadCdrFile({{ $stuff->id }})"
+                no-wire-navigate spinner class="text-white bg-blue-500 btn-xs" />
+            @else
+            <x-mary-button icon="o-arrow-path" target="_blank" wire:click="sendXmlFile({{ $stuff->id }})" no-wire-navigate
+                    spinner class="text-white bg-orange-500 btn-xs" />
+            @endif
+            
             @endscope
         </x-mary-table>
     </x-mary-card>
