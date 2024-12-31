@@ -38,7 +38,6 @@ class InvoiceLive extends Component
         $invoice->xml_path='xml/'.$invoice->company->ruc.'-'.$invoice->tipoDoc.'-'.$invoice->serie.'-'.$invoice->correlativo.'.xml';
         $invoice->save();
         Storage::disk('public')->put('xml/'.$invoice->company->ruc.'-'.$invoice->tipoDoc.'-'.$invoice->serie.'-'.$invoice->correlativo.'.xml', $xml);
-        //return $xml;
     }
     public function xmlDownload(Invoice $invoice)
     {

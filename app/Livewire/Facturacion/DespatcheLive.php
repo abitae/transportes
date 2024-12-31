@@ -54,13 +54,14 @@ class DespatcheLive extends Component
         
         $despatch = $sunat->getDespatch($despatche);
         $api = $sunat->getSeeApi($company);
-        dd($api);
+        //dd($api);
         $result = $api->send($despatch);
 
-       dd($result->isSuccess());
+       //dd($result->isSuccess());
         $response['sunatResponse'] = $sunat->sunatResponse($result);
         $response['xml'] = $api->getLastXml();
         $response['hash'] = (new XmlUtils())->getHashSign($response['xml']);
+        dd($response);
         return response()->json($response, 200);
     }
     public function downloadCdrFile(Despatche $despatche)
