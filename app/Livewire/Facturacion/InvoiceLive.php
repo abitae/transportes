@@ -35,17 +35,16 @@ class InvoiceLive extends Component
         $xml = $see->getXmlSigned($invoce);
         $hash = (new XmlUtils())->getHashSign($xml);
         $invoice->xml_hash = $hash;
-        $invoice->xml_path='xml/'.$invoice->company->ruc.'-'.$invoice->tipoDoc.'-'.$invoice->serie.'-'.$invoice->correlativo.'.xml';
+        $invoice->xml_path = 'xml/' . $invoice->company->ruc . '-' . $invoice->tipoDoc . '-' . $invoice->serie . '-' . $invoice->correlativo . '.xml';
         $invoice->save();
-        Storage::disk('public')->put('xml/'.$invoice->company->ruc.'-'.$invoice->tipoDoc.'-'.$invoice->serie.'-'.$invoice->correlativo.'.xml', $xml);
+        Storage::disk('public')->put('xml/' . $invoice->company->ruc . '-' . $invoice->tipoDoc . '-' . $invoice->serie . '-' . $invoice->correlativo . '.xml', $xml);
     }
     public function xmlDownload(Invoice $invoice)
     {
-        if(Storage::exists($invoice->xml_path))
-        {
-            return Storage::disk('public')->download($invoice->xml_path);
+        if (Storage::exists($invoice->xml_path)) {
+            return response()->download(storage_path('app/public/' . $invoice->xml_path));
         }
-        
+
     }
     public function sendXmlFile(Invoice $invoice)
     {
@@ -54,24 +53,24 @@ class InvoiceLive extends Component
         $see = $sunat->getSee($company);
         $xml = Storage::disk('public')->get($invoice->xml_path);
         $result = $see->sendXmlFile($xml);
-        if ($result->isSuccess()) {
-            $cdr = $result->getCdrResponse();
-            $invoice->cdr_description = $cdr->getDescription();
-            $invoice->cdr_code = $cdr->getCode();
-            $invoice->cdr_note = $cdr->getNotes();
-            $invoice->cdr_path = 'cdr/'.$invoice->company->ruc.'-'.$invoice->tipoDoc.'-'.$invoice->serie.'-'.$invoice->correlativo.'.zip';
+        $response = $sunat->sunatResponse($result);
+        if ($response['success']) {
+            $invoice->cdr_description = $response['cdrResponse']['description'];
+            $invoice->cdr_code = $response['cdrResponse']['code'];
+            $invoice->cdr_note = $response['cdrResponse']['notes'];
+            $invoice->cdr_path = 'cdr/' . 'R-' . $invoice->company->ruc . '-' . $invoice->tipoDoc . '-' . $invoice->serie . '-' . $invoice->correlativo . '.zip';
             $invoice->save();
-            Storage::disk('public')->put('cdr/'.$invoice->company->ruc.'-'.$invoice->tipoDoc.'-'.$invoice->serie.'-'.$invoice->correlativo.'.zip', $result->getCdrZip());
+            Storage::disk('public')->put('cdr/' . 'R-' . $invoice->company->ruc . '-' . $invoice->tipoDoc . '-' . $invoice->serie . '-' . $invoice->correlativo . '.zip', $response['cdrResponse']['cdrZip']);
             $this->toast('success', 'Factura enviada a la sunat');
         } else {
             $this->toast('error', 'Error al enviar la factura a la sunat');
         }
+
     }
     public function downloadCdrFile(Invoice $invoice)
     {
-        if(Storage::exists($invoice->cdr_path))
-        {
-            return Storage::disk('public')->download($invoice->cdr_path);
+        if (Storage::exists($invoice->cdr_path)) {
+            return response()->download(storage_path('app/public/' . $invoice->cdr_path));
         }
     }
 

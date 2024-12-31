@@ -15,10 +15,8 @@ use Greenter\Model\Despatch\Driver;
 use Greenter\Model\Despatch\Shipment;
 use Greenter\Model\Despatch\Transportist;
 use Greenter\Model\Despatch\Vehicle;
-use Greenter\Model\Sale\Detraction;
 use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
 use Greenter\Model\Sale\Invoice;
-use Greenter\Model\Sale\Legend;
 use Greenter\Model\Sale\Note;
 use Greenter\Model\Sale\SaleDetail;
 use Greenter\Report\HtmlReport;
@@ -86,25 +84,25 @@ class SunatService
             ->setClient($this->getClient($data->client))
             //detraccion
             /* ->setDetraccion(
-                // MONEDA SIEMPRE EN SOLES
-                (new Detraction())
-                    ->setCodBienDetraccion('021') // catalog. 54
+        // MONEDA SIEMPRE EN SOLES
+        (new Detraction())
+        ->setCodBienDetraccion('021') // catalog. 54
 
-                    ->setCodMedioPago('001') // catalog. 59
-                    ->setCtaBanco('0004-3342343243')
-                    ->setPercent(4.00)
-                    ->setMount(37.76)
-            ) */
+        ->setCodMedioPago('001') // catalog. 59
+        ->setCtaBanco('0004-3342343243')
+        ->setPercent(4.00)
+        ->setMount(37.76)
+        ) */
             //Montos Operaciones
             ->setMtoOperGravadas($data->mtoOperGravadas)
             /* ->setMtoOperExoneradas($data['mtoOperExoneradas'])
-            ->setMtoOperInafectas($data['mtoOperInafecto'])
-            ->setMtoOperExportacion($data['mtoOperExportacion'])
-            ->setMtoOperGratuitas($data['mtoOperGratuitas']) */
+        ->setMtoOperInafectas($data['mtoOperInafecto'])
+        ->setMtoOperExportacion($data['mtoOperExportacion'])
+        ->setMtoOperGratuitas($data['mtoOperGratuitas']) */
             //Impuestos
             ->setMtoIGV($data->mtoIGV)
             /* ->setMtoIGVGratuitas($data['mtoIGVGratuitas'])
-            ->setIcbper($data['icbper']) */
+        ->setIcbper($data['icbper']) */
             ->setTotalImpuestos($data->totalImpuestos)
             //Totales
             ->setValorVenta($data->valorVenta)
@@ -242,12 +240,12 @@ class SunatService
     {
         $gree_legends = [
             ["code" => "1000",
-            "value"=> "SON DOSCIENTOS TREINTA Y SEIS CON 00/100 SOLES"]
+                "value" => "SON DOSCIENTOS TREINTA Y SEIS CON 00/100 SOLES"],
         ];
         /* foreach ($datas as $data) {
-            $gree_legends[] = (new Legend())
-                ->setCode($data['code'] ?? null) // Monto en letras - Catalog. 52
-                ->setValue($data['value'] ?? null);
+        $gree_legends[] = (new Legend())
+        ->setCode($data['code'] ?? null) // Monto en letras - Catalog. 52
+        ->setValue($data['value'] ?? null);
         } */
         return $gree_legends;
     }
@@ -331,6 +329,7 @@ class SunatService
     public function sunatResponse($result)
     {
         $response['success'] = $result->isSuccess();
+        //dd($response);
         if (!$response['success']) {
 
             $response['error'] = [
@@ -350,6 +349,7 @@ class SunatService
         ];
         // Guardamos el CDR
         //file_put_contents('R-' . $invoice->getName() . '.zip', $result->getCdrZip());
+        //Storage::disk('public')->put('cdr/'.'R-' .$invoice->company->ruc.'-'.$invoice->tipoDoc.'-'.$invoice->serie.'-'.$invoice->correlativo.'.zip', $result->getCdrZip());
 
         return $response;
     }
