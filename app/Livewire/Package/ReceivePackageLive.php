@@ -50,6 +50,7 @@ class ReceivePackageLive extends Component
             ->where('sucursal_id', $this->sucursal_id)
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'ENVIADO')
+            ->where('isHome', false)
             ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
             )->paginate($this->perPage, '*', 'page');
         return view('livewire.package.receive-package-live', compact('encomiendas', 'sucursals'));
@@ -60,6 +61,9 @@ class ReceivePackageLive extends Component
             $this->numElementos = count($this->selected);
             $this->sucursal_rem = Sucursal::findOrFail($this->sucursal_id);
             $this->modalEnvio = !$this->modalEnvio;
+        }
+        else {
+            $this->error('Seleccione al menos un paquete!');
         }
     }
     public function receivePaquetes()
@@ -81,29 +85,5 @@ class ReceivePackageLive extends Component
         $this->encomienda = $encomienda;
         $this->showDrawer = true;
     }
-    public function printTicket(Encomienda $envio)
-    {
-        $width = 78;
-        $heigh = 250;
-        $paper_format = array(0, 0, 220, 710);
-        
-        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
-
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'T'.$envio->code . '.pdf');
-    }
-    public function printSticker(Encomienda $envio)
-    {
-        $width = 78;
-        $heigh = 250;
-        $paper_format = array(0, 0, 220, 710);
-        
-        $pdf = Pdf::loadView('report.pdf.sticker', compact('envio'));
-
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'S'.$envio->code . '.pdf');
-    }
-
+    
 }

@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Package;
 
-use App\Livewire\Forms\CustomerForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
@@ -13,13 +12,13 @@ use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
 use Mary\Traits\Toast;
 
-class DeliverPackageLive extends Component
+class HomePackageLive extends Component
 {
     use LogCustom;
     use Toast;
     use WithPagination, WithoutUrlPagination;
-    public $title = 'Entrega paquetes';
-    public $sub_title = 'Modulo de entrega de paquetes';
+    public $title = 'Entrega paquetes destino';
+    public $sub_title = 'Modulo de entrega de paquetes domicilio';
     public $search = '';
     public $perPage = 10;
     public $date_ini;
@@ -56,9 +55,10 @@ class DeliverPackageLive extends Component
             ->where('sucursal_id', $this->sucursal_id)
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'RECIBIDO')
+            ->where('isHome', true)
             ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
             )->paginate($this->perPage, '*', 'page');
-        return view('livewire.package.deliver-package-live', compact('encomiendas', 'sucursals'));
+        return view('livewire.package.home-package-live', compact('encomiendas', 'sucursals'));
     }
     public function detailEncomienda(Encomienda $encomienda)
     {

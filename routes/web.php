@@ -18,6 +18,7 @@ use App\Livewire\Frontend\MessageLive;
 use App\Livewire\Home\DashboardLive;
 use App\Livewire\Package\CustomerLive;
 use App\Livewire\Package\DeliverPackageLive;
+use App\Livewire\Package\HomePackageLive;
 use App\Livewire\Package\ReceivePackageLive;
 use App\Livewire\Package\RecordPackageLive;
 use App\Livewire\Package\RegisterLive;
@@ -65,6 +66,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/receive_package', ReceivePackageLive::class)->name('package.receive');
     Route::get('/deliver_package', DeliverPackageLive::class)->name('package.deliver');
     Route::get('/record_package', RecordPackageLive::class)->name('package.record');
+    Route::get('/home_package', HomePackageLive::class)->name('package.home');
 });
 
 Route::middleware('auth')->group(function () {

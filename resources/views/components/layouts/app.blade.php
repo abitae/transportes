@@ -47,16 +47,16 @@
             <x-mary-button label="Messages" icon="o-envelope" link="/message" class="btn-ghost btn-sm" responsive />
             <x-mary-button icon="o-bell" class="relative btn-circle" link="/message">
                 @php
-                    $messages = App\Models\Frontend\Message::where('isActive', true)->get()->count();
+                $messages = App\Models\Frontend\Message::where('isActive', true)->get()->count();
                 @endphp
                 <x-mary-badge value="{{ $messages }}" class="absolute badge-error -right-2 -top-2" />
-                
+
             </x-mary-button>
             <x-mary-dropdown>
                 <x-slot:trigger>
                     <x-mary-button icon="o-user" class="relative btn-circle" responsive no-wire-navigate />
                 </x-slot:trigger>
-                <x-mary-menu-item icon="o-user" title="Perfil" :href="route('profile.edit')"/>
+                <x-mary-menu-item icon="o-user" title="Perfil" :href="route('profile.edit')" />
                 @if ($user = auth()->user())
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -81,6 +81,8 @@
                         link="{{ route('package.receive') }}" />
                     <x-mary-menu-item title="Entregar paquetes" icon="o-cursor-arrow-ripple"
                         link="{{ route('package.deliver') }}" />
+                    <x-mary-menu-item title="Paquetes domicilio" icon="o-cursor-arrow-ripple"
+                        link="{{ route('package.home') }}" />
                     <x-mary-menu-item title="Paquetes entregados" icon="o-arrow-path"
                         link="{{ route('package.record') }}" />
                     <x-mary-menu-item title="Clientes" icon="o-user-group" link="{{ route('package.customer') }}" />

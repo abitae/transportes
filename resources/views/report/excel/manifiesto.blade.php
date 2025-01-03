@@ -96,7 +96,7 @@
                 {{ $encomiendaLibre->isReturn ? 'SI' : 'NO' }}
             </td>
             <td>
-                {{ $encomiendaLibre->estado_pago = 2 ? 'CONTRA ENTREGA' : 'PAGADO'}}
+                {{ $encomiendaLibre->estado_pago}}
             </td>
         </tr>
         @endforeach
@@ -143,10 +143,56 @@
                 {{ $encomienda->isReturn ? 'SI' : 'NO' }}
             </td>
             <td>
-                {{ $encomiendaLibre->estado_pago = 2 ? 'CONTRA ENTREGA' : 'PAGADO'}}
+                {{ $encomienda->estado_pago}}
             </td>
         </tr>
         @endforeach
     </tbody>
 </table>
 
+<table>
+    <thead>
+        <tr>
+            <th>NRO GUIA</th>
+            <th>GUIA CLIENTE</th>
+            <th>DESTINATARIO</th>
+            <th>TELEFONO</th>
+            <th>REMITENTE</th>
+            <th>CANTIDAD</th>
+            <th>PAQUETES</th>
+            <th>MONTO</th>
+            <th>RETORNO</th>
+            <th>PAGO</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($encomiendasIsReturn as $encomiendaReturn)
+        <tr>
+            <td>{{ $encomiendaReturn->code }}</td>
+            <td>{{ $encomiendaReturn->doc_traslado ?? 'S/D' }}</td>
+            <td>{{ $encomiendaReturn->remitente->name }}</td>
+            <td>{{ $encomiendaReturn->remitente->phone }}</td>
+            <td>{{ $encomiendaReturn->destinatario->name }}</td>
+            <td>{{ $encomiendaReturn->cantidad }}</td>
+            <td>
+                @php
+                $packs = '';
+                @endphp
+                @forelse ($encomiendaReturn->paquetes as $paquete)
+                {{ $packs.''.$paquete->description.'('.$paquete->cantidad.')'.'('.$paquete->amount.')-' }}
+                @empty
+                @endforelse
+            </td>
+            <td>
+                {{ $encomiendaReturn->monto }}
+            </td>
+            <td>
+                {{ $encomiendaReturn->isReturn ? 'SI' : 'NO' }}
+            </td>
+            <td>
+                {{ $encomiendaReturn->estado_pago}}
+            </td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>

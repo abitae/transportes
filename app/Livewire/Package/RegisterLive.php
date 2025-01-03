@@ -89,7 +89,7 @@ class RegisterLive extends Component
             ['key' => 'amount', 'label' => 'P.UNIT', 'class' => ''],
             ['key' => 'sub_total', 'label' => 'MONTO', 'class' => ''],
         ];
-        $sucursales = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->get();
+        $sucursales = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->get();
 
         $pagos = [
             ['id' => 'PAGADO', 'name' => 'PAGADO'],

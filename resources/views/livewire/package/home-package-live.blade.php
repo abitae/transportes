@@ -2,6 +2,7 @@
     <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator>
         <x-slot:menu>
             <x-mary-input label="Buscar envio" inline wire:model.live='search' />
+            
         </x-slot:menu>
         <div class="grid grid-cols-6 gap-1 shadow-xl">
             <div class="grid col-span-2">

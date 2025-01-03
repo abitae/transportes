@@ -65,7 +65,7 @@
                                 {{ strtoupper($stuff->destinatario->name)}}
                             </div>
                             <div>
-                                
+
                                 <x-mary-badge :value="$stuff->sucursal_destinatario->name"
                                     class="text-xs text-white bg-green-500" />
 
@@ -98,29 +98,49 @@
                             class="w-min-full {{ !$stuff->isReturn ? 'bg-red-500': 'bg-green-500' }}" />
                         @endscope
                         @scope('cell_actions', $stuff)
-                        <div class="grid grid-cols-1 grid-rows-3 gap-1">
-                            <div>
+                        <div class="grid grid-cols-4 grid-rows-3 gap-1">
+                            <div class="col-span-4">
                                 <x-mary-badge :value="strtoupper($stuff->code)"
                                     class="w-full text-xs {{ $stuff->estado_pago == 2 ? 'bg-red-500': 'bg-green-500' }}" />
                             </div>
-                            <div>
-    
+                            <div class="row-start-2">
                                 <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
                                     class="text-white btn-xs bg-cyan-500" />
-                                <x-mary-button icon="o-printer" wire:click="printTicket({{ $stuff->id }})" spinner
-                                    class="text-white bg-purple-500 btn-xs" />
-                                <x-mary-button icon="o-printer" wire:click="printSticker({{ $stuff->id }})" spinner
-                                    class="text-white bg-green-500 btn-xs" />
                             </div>
-                            <div>
-                                <x-mary-button icon="o-no-symbol" wire:click="enableEncomienda({{ $stuff->id }})"
-                                    spinner
-                                    wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
-                                    class="text-white bg-red-500 btn-xs" />
+                            <div class="row-start-2">
+                                
+
+                            </div>
+                            <div class="row-start-2">
+                                
+                            </div>
+                            <div class="row-start-2">
+
+                            </div>
+                            <div class="row-start-3">
+                                @if ($stuff->ticket)
+                                <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                                    link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
+                                    class="text-white bg-green-500 btn-xs" />
+                                @endif
+                                @if ($stuff->invoice)
+                                <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                                    link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
+                                    class="text-white bg-green-500 btn-xs" />
+                                @endif
+                            </div>
+                            <div class="row-start-3">
+                                <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                                    link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
+                                    class="text-white bg-blue-500 btn-xs" />
+                            </div>
+                            <div class="row-start-3">
+
+                            </div>
+                            <div class="row-start-3">
 
                             </div>
                         </div>
-
                         @endscope
                     </x-mary-table>
                 </x-mary-card>

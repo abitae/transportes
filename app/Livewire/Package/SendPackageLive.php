@@ -58,7 +58,7 @@ class SendPackageLive extends Component
     }
     public function render()
     {
-        $sucursals = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->get();
+        $sucursals = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->get();
 
         $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
             ->where('isActive', $this->isActive)
@@ -80,6 +80,9 @@ class SendPackageLive extends Component
             $this->numElementos = count($this->selected);
             $this->sucursal_dest = Sucursal::findOrFail($this->sucursal_dest_id);
             $this->modalEnvio = !$this->modalEnvio;
+        }
+        else {
+            $this->error('Seleccione al menos un paquete!');
         }
     }
     public function sendPaquetes()
@@ -103,6 +106,9 @@ class SendPackageLive extends Component
                 $this->error('Error, verifique los datos!');
             }
         }
+        else {
+            $this->error('Seleccione un vehiculo y transportista!');
+        }
     }
     public function enableEncomienda(Encomienda $encomienda)
     {
@@ -119,32 +125,6 @@ class SendPackageLive extends Component
     {
         $this->encomienda = $encomienda;
         $this->showDrawer = true;
-    }
-
-    
-    public function printTicket(Encomienda $envio)
-    {
-        $width = 78;
-        $heigh = 250;
-        $paper_format = array(0, 0, 220, 710);
-        
-        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
-
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'T'.$envio->code . '.pdf');
-    }
-    public function printSticker(Encomienda $envio)
-    {
-        $width = 78;
-        $heigh = 250;
-        $paper_format = array(0, 0, 220, 710);
-        
-        $pdf = Pdf::loadView('report.pdf.sticker', compact('envio'));
-
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'S'.$envio->code . '.pdf');
     }
     public function editEncomienda(Encomienda $encomienda)
     {
