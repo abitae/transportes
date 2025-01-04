@@ -15,11 +15,10 @@ trait InvoiceTrait
     public function storeInvoce(Encomienda $encomienda)
     {
 
-        if ($encomienda->tipo_comprobante == 'TICKET') {
-            $this->setTicket($encomienda);
-        } else {
-            $this->setInvoice($encomienda);
+        if ($encomienda->tipo_comprobante != 'TICKET') {
+            $this->setInvoice($encomienda); // Genera factura o boleta
         }
+        $this->setTicket($encomienda); // Genera ticket
         $this->setGuiTrans($encomienda); // Genera guia transportista
 
     }
@@ -30,45 +29,45 @@ trait InvoiceTrait
         $mtoOperGravadas = round($montoTotalIncIGV / 1.18, 2);
         $igv = $montoTotalIncIGV - $mtoOperGravadas;
         $correlativo = Ticket::all()->count();
-        if ($encomienda->tipo_comprobante == 'TICKET') {
-            $ticket = Ticket::create([
-                'encomienda_id' => $encomienda->id,
-                'tipoDoc' => 'TICKET',
-                'tipoOperacion' => '0',
-                'serie' => '001',
-                'correlativo' => $correlativo + 1,
-                'fechaEmision' => $encomienda->created_at,
-                'formaPago_moneda' => 'PEN',
-                'formaPago_tipo' => $encomienda->tipo_pago,
-                'tipoMoneda' => 'PEN',
-                'company_id' => $company->id,
-                'client_id' => $encomienda->customer_id,
-                'mtoOperGravadas' => $mtoOperGravadas,
-                'mtoIGV' => $igv,
-                'totalImpuestos' => $igv,
-                'valorVenta' => $mtoOperGravadas,
-                'subTotal' => $montoTotalIncIGV,
-                'mtoImpVenta' => $montoTotalIncIGV, //venta total inc IGV
+
+        $ticket = Ticket::create([
+            'encomienda_id' => $encomienda->id,
+            'tipoDoc' => 'TICKET',
+            'tipoOperacion' => '0',
+            'serie' => $encomienda->sucursal_remitente->code,
+            'correlativo' => $encomienda->code,
+            'fechaEmision' => $encomienda->created_at,
+            'formaPago_moneda' => 'PEN',
+            'formaPago_tipo' => $encomienda->tipo_pago,
+            'tipoMoneda' => 'PEN',
+            'company_id' => $company->id,
+            'client_id' => $encomienda->customer_id,
+            'mtoOperGravadas' => $mtoOperGravadas,
+            'mtoIGV' => $igv,
+            'totalImpuestos' => $igv,
+            'valorVenta' => $mtoOperGravadas,
+            'subTotal' => $montoTotalIncIGV,
+            'mtoImpVenta' => $montoTotalIncIGV, //venta total inc IGV
+        ]);
+        foreach ($encomienda->paquetes as $paquete) {
+            $mtoValorUnitario = round($paquete->amount / 1.18, 2);
+            TicketDetail::create([
+                'ticket_id' => $ticket->id,
+                'tipAfeIgv' => '10',
+                'codProducto' => $paquete->id,
+                'unidad' => 'NIU',
+                'descripcion' => 'Servicio de traslado ' . $paquete->description,
+                'cantidad' => $paquete->cantidad,
+                'mtoValorUnitario' => $mtoValorUnitario,
+                'mtoValorVenta' => $mtoValorUnitario * $paquete->cantidad,
+                'mtoBaseIgv' => $mtoValorUnitario * $paquete->cantidad,
+                'porcentajeIgv' => 18,
+                'igv' => ($paquete->amount - $mtoValorUnitario) * $paquete->cantidad,
+                'totalImpuestos' => ($paquete->amount - $mtoValorUnitario) * $paquete->cantidad,
+                'mtoPrecioUnitario' => $paquete->amount,
             ]);
-            foreach ($encomienda->paquetes as $paquete) {
-                $mtoValorUnitario = round($paquete->amount / 1.18, 2);
-                TicketDetail::create([
-                    'ticket_id' => $ticket->id,
-                    'tipAfeIgv' => '10',
-                    'codProducto' => $paquete->id,
-                    'unidad' => 'NIU',
-                    'descripcion' => 'Servicio de traslado ' . $paquete->description,
-                    'cantidad' => $paquete->cantidad,
-                    'mtoValorUnitario' => $mtoValorUnitario,
-                    'mtoValorVenta' => $mtoValorUnitario * $paquete->cantidad,
-                    'mtoBaseIgv' => $mtoValorUnitario * $paquete->cantidad,
-                    'porcentajeIgv' => 18,
-                    'igv' => ($paquete->amount - $mtoValorUnitario) * $paquete->cantidad,
-                    'totalImpuestos' => ($paquete->amount - $mtoValorUnitario) * $paquete->cantidad,
-                    'mtoPrecioUnitario' => $paquete->amount,
-                ]);
-            }
         }
+
     }
     private function setInvoice(Encomienda $encomienda)
     {
@@ -136,7 +135,7 @@ trait InvoiceTrait
         //dump($company);
         $correlativo = Despatche::all()->count();
         $despatch = Despatche::create([
-            'encomienda_id'=> $encomienda->id,
+            'encomienda_id' => $encomienda->id,
             'tipoDoc' => '31',
             'serie' => 'V001',
             'correlativo' => $correlativo + 1,

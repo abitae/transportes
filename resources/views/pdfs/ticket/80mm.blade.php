@@ -39,9 +39,10 @@
     <div class="ticket">
         <!-- Logo y datos de la empresa centrados -->
         <div class="mb-1 text-center">
-            <div class="text-sm">
+            <div class="text-xs">
                 <img src="{{ env('APP_URL') }}/{{ $ticket->company->logo_path }}" alt="Logo de la Empresa"
                     class="w-auto h-16 mx-auto mb-2">
+                <p class="font-semibold">CORPORACION LOGISTICA BRAYAN BRUSH</p>
                 <p>R.U.C.: {{ $ticket->company->ruc }}</p>
                 <p>{{ $ticket->company->address }}</p>
                 <p>Telf: {{ $ticket->company->telephone }}</p>
@@ -50,11 +51,15 @@
         </div>
 
         <!-- Título de la Factura y Número de Serie en un recuadro -->
-        <div class="mb-1 border-t border-gray-400">
+        <div class="mb-1 text-center border-t border-gray-400">
             <h1 class="text-xs font-semibold">TICKET</h1>
-            <p class="text-sm font-semibold">{{ $ticket->serie }} - {{ $ticket->correlativo }}</p>
+            <p class="text-sm font-semibold">{{ $ticket->correlativo }}</p>
         </div>
-
+        <section class="mb-1 text-xs border-t border-gray-400">
+            <p>Fecha Emición: {{ $ticket->fechaEmision }}</p>
+            <p>Fecha Traslado: {{ $ticket->fecTraslado }}</p>
+        </section>
+       
         <!-- Información del Cliente -->
         <section class="mb-1 text-xs border-t border-gray-400">
             <p>Razón Social: {{ $ticket->client->name }}</p>

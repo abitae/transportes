@@ -35,7 +35,7 @@
                         </x-slot:empty>
                         @scope('cell_estado', $stuff)
                         <x-mary-badge :value="strtoupper('P')"
-                            class="w-min-full {{ $stuff->estado_pago == 2 ? 'bg-red-500': 'bg-green-500' }}" />
+                            class="w-min-full {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
                         <br>
                         <x-mary-badge :value="strtoupper('D')"
                             class="w-min-full {{ !$stuff->isHome ? 'bg-red-500': 'bg-green-500' }}" />
@@ -97,7 +97,7 @@
                         <div class="grid grid-cols-4 grid-rows-3 gap-1">
                             <div class="col-span-4">
                                 <x-mary-badge :value="strtoupper($stuff->code)"
-                                    class="w-full text-xs {{ $stuff->estado_pago == 2 ? 'bg-red-500': 'bg-green-500' }}" />
+                                    class="w-full text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
                             </div>
                             <div class="row-start-2">
                                 <x-mary-button icon="c-bars-arrow-up" wire:click="openModal({{ $stuff->id }})" spinner
@@ -119,24 +119,26 @@
                                 @if ($stuff->ticket)
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
                                     link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
-                                    class="text-white bg-green-500 btn-xs" />
+                                    class="text-white bg-cyan-500 btn-xs" />
                                 @endif
+
+                            </div>
+                            <div class="row-start-3">
                                 @if ($stuff->invoice)
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
                                     link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
                                     class="text-white bg-green-500 btn-xs" />
                                 @endif
+
                             </div>
                             <div class="row-start-3">
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
                                     link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
                                     class="text-white bg-blue-500 btn-xs" />
-                            </div>
-                            <div class="row-start-3">
 
                             </div>
                             <div class="row-start-3">
-
+                                
                             </div>
                         </div>
                         @endscope

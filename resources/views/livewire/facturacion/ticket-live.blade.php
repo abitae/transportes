@@ -19,10 +19,7 @@
         <x-mary-table :headers="$headers" :rows="$tickets" striped with-pagination per-page="perPage"
             :per-page-values="[5, 20, 10, 50]">
             @scope('cell_document', $stuff)
-            @php
-            $valor = $stuff->serie.'-'.$stuff->correlativo;
-            @endphp
-            <x-mary-badge :value="$valor" class="badge-primary" />
+            <x-mary-badge :value="$stuff->correlativo" class="badge-primary" />
             @endscope
             @scope('cell_fecha', $stuff)
             {{ $stuff->created_at->format('d-m-Y H:i A') }}

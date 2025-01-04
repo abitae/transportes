@@ -18,6 +18,7 @@ class DeliverPackageLive extends Component
     use LogCustom;
     use Toast;
     use WithPagination, WithoutUrlPagination;
+    public CustomerForm $customerFact;
     public $title = 'Entrega paquetes';
     public $sub_title = 'Modulo de entrega de paquetes';
     public $search = '';
@@ -33,7 +34,7 @@ class DeliverPackageLive extends Component
     public $pin;
     public $showDrawer;
     public $estado_pago;
-    public $tipo_comprobante;
+    public $tipo_comprobante = 'TICKET';
     public $caja;
     public bool $modalConfimation;
     public function mount()
@@ -47,7 +48,6 @@ class DeliverPackageLive extends Component
         $this->sucursal_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
         $this->date_ini = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
         $this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
-        $this->tipo_comprobante = 3;
     }
     public function render()
     {
@@ -56,6 +56,7 @@ class DeliverPackageLive extends Component
             ->where('sucursal_id', $this->sucursal_id)
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'RECIBIDO')
+            ->where('isHome', false)
             ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
             )->paginate($this->perPage, '*', 'page');
         return view('livewire.package.deliver-package-live', compact('encomiendas', 'sucursals'));
@@ -66,10 +67,10 @@ class DeliverPackageLive extends Component
         $this->showDrawer = true;
     }
 
-    public function openModal($id)
+    public function openModal(Encomienda $encomienda)
     {
         $this->modalDeliver = !$this->modalDeliver;
-        $this->encomienda = Encomienda::find($id);
+        $this->encomienda = $encomienda;
     }
     public function deliverPaquetes()
     {
@@ -79,7 +80,7 @@ class DeliverPackageLive extends Component
         }
         if ($this->encomienda->destinatario->code == $this->document and $this->encomienda->pin == $this->pin) {
 
-            $this->customerFact->setCustomer($this->encomienda->destinatario);
+            //$this->customerFact->setCustomer($this->encomienda->destinatario);
             $this->estado_pago = $this->encomienda->estado_pago;
             $this->modalDeliver = false;
             $this->modalConfimation = true;
@@ -89,16 +90,8 @@ class DeliverPackageLive extends Component
     }
     public function confirmEncomienda()
     {
-        try {
-            $envio = $this->encomienda;
-            $this->encomienda->update(
-                ['estado_encomienda' => 'ENTREGADO']
-            );
-            $this->modalConfimation = false;
-        } catch (\Throwable $th) {
-            $this->error('Error, verifique los datos!');
-            return 0;
-        }
+        dump($this->encomienda, $this->estado_pago, $this->tipo_comprobante);
+        
 
     }
 }

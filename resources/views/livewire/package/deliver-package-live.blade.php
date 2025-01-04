@@ -34,7 +34,7 @@
                         </x-slot:empty>
                         @scope('cell_estado', $stuff)
                         <x-mary-badge :value="strtoupper('P')"
-                            class="w-min-full {{ $stuff->estado_pago == 2 ? 'bg-red-500': 'bg-green-500' }}" />
+                            class="w-min-full {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
                         <br>
                         <x-mary-badge :value="strtoupper('D')"
                             class="w-min-full {{ !$stuff->isHome ? 'bg-red-500': 'bg-green-500' }}" />
@@ -96,12 +96,12 @@
                         <div class="grid grid-cols-4 grid-rows-3 gap-1">
                             <div class="col-span-4">
                                 <x-mary-badge :value="strtoupper($stuff->code)"
-                                    class="w-full text-xs {{ $stuff->estado_pago == 2 ? 'bg-red-500': 'bg-green-500' }}" />
+                                    class="w-full text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
                             </div>
                             <div class="row-start-2">
                                 <x-mary-button icon="c-bars-arrow-up" wire:click="openModal({{ $stuff->id }})" spinner
                                     class="text-white bg-yellow-500 btn-xs" />
-                                
+
                             </div>
                             <div class="row-start-2">
                                 <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
@@ -109,7 +109,7 @@
 
                             </div>
                             <div class="row-start-2">
-                                
+
                             </div>
                             <div class="row-start-2">
 
@@ -118,20 +118,22 @@
                                 @if ($stuff->ticket)
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
                                     link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
-                                    class="text-white bg-green-500 btn-xs" />
+                                    class="text-white bg-cyan-500 btn-xs" />
                                 @endif
+
+                            </div>
+                            <div class="row-start-3">
                                 @if ($stuff->invoice)
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
                                     link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
                                     class="text-white bg-green-500 btn-xs" />
                                 @endif
+
                             </div>
                             <div class="row-start-3">
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
                                     link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
                                     class="text-white bg-blue-500 btn-xs" />
-                            </div>
-                            <div class="row-start-3">
 
                             </div>
                             <div class="row-start-3">
@@ -139,7 +141,7 @@
                             </div>
                         </div>
                         @endscope
-                        
+
                     </x-mary-table>
                 </x-mary-card>
             </div>
@@ -164,10 +166,11 @@
                 </div>
                 <x-slot:actions>
                     <x-mary-button label="Cancel" @click="$wire.modalDeliver = false" class="bg-red-500" />
-                    <x-mary-button type="submit" spinner="deliverPaquetes" label="Save" class="bg-blue-500" />
+                    <x-mary-button type="submit" spinner="deliverPaquetes" label="Entregar" class="bg-blue-500" />
                 </x-slot:actions>
             </div>
         </x-mary-form>
+        <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="deuda pendiente" />
     </x-mary-modal>
 
     <x-mary-drawer wire:model="showDrawer" title="Detalle de encomienda" subtitle="Code {{ $encomienda->code }}"
@@ -242,13 +245,13 @@
             </div>
             @php
             $pagos = [
-            ['id' => 1, 'name' => 'PAGADO'],
-            ['id' => 2, 'name' => 'CONTRA ENTREGA'],
+            ['id' => 'PAGADO', 'name' => 'PAGADO'],
+            ['id' => 'CONTRA ENTREGA', 'name' => 'CONTRA ENTREGA'],
             ];
             $comprobantes = [
-            ['id' => 1, 'name' => 'BOLETA'],
-            ['id' => 2, 'name' => 'FACTURA'],
-            ['id' => 3, 'name' => 'TICKET'],
+            ['id' => 'BOLETA', 'name' => 'BOLETA'],
+            ['id' => 'FACTURA', 'name' => 'FACTURA'],
+            ['id' => 'TICKET', 'name' => 'TICKET'],
             ];
             $docs = [
             ['id' => 'dni', 'name' => 'DNI'],
@@ -265,11 +268,11 @@
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$pagos" option-value="id"
                                 option-label="name" wire:model.live="estado_pago" disabled />
 
-                            @if ($estado_pago==2)
+                            @if ($estado_pago=='CONTRA ENTREGA')
                             <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="TIPO COMPROBANTE" />
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$comprobantes"
                                 option-value="id" option-label="name" wire:model.live="tipo_comprobante" />
-                            @if ($tipo_comprobante!=3)
+                            @if ($tipo_comprobante!='TICKET')
                             <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="DETALLE COMPROBANTE" />
                             <div class="grid grid-cols-4 gap-2 p-2 border rounded-lg border-sky-500">
                                 <div class="grid col-span-4 pt-2">

@@ -112,7 +112,6 @@ class SendPackageLive extends Component
     }
     public function enableEncomienda(Encomienda $encomienda)
     {
-        //dump($encomienda);
         try {
             $encomienda->isActive = !$encomienda->isActive;
             $encomienda->save();

@@ -50,7 +50,6 @@ class ReceivePackageLive extends Component
             ->where('sucursal_id', $this->sucursal_id)
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'ENVIADO')
-            ->where('isHome', false)
             ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
             )->paginate($this->perPage, '*', 'page');
         return view('livewire.package.receive-package-live', compact('encomiendas', 'sucursals'));

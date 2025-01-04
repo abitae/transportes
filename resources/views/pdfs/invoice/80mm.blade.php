@@ -42,6 +42,7 @@
             <div class="text-xs">
                 <img src="{{ env('APP_URL') }}/{{ $invoice->company->logo_path }}" alt="Logo"
                     class="w-auto h-16 mx-auto mb-2">
+                <p class="font-semibold">CORPORACION LOGISTICA BRAYAN BRUSH</p>
                 <p>R.U.C.: {{ $invoice->company->ruc }}</p>
                 <p>{{ $invoice->company->address }}</p>
                 <p>Telf: {{ $invoice->company->telephone }}</p>

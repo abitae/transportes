@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Package;
 
+use App\Livewire\Forms\CustomerForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
@@ -17,6 +18,7 @@ class HomePackageLive extends Component
     use LogCustom;
     use Toast;
     use WithPagination, WithoutUrlPagination;
+    public CustomerForm $customerFact;
     public $title = 'Entrega paquetes destino';
     public $sub_title = 'Modulo de entrega de paquetes domicilio';
     public $search = '';

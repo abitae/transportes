@@ -296,7 +296,7 @@
     <x-mary-modal wire:model.live="modalFinal" persistent class="backdrop-blur" box-class="w-full">
         <x-mary-card shadow>
             <div class="grid grid-cols-3 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
-                <div>RECIBO
+                <div>TICKET
                     <br>
                     @if ($this->encomienda->ticket)
                     <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
@@ -304,9 +304,10 @@
                         class="text-white bg-green-500 btn-xl" />
                     @endif
                     @if ($this->encomienda->invoice)
+                    RECIBO
                     <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
                         link="/invoice/80mm/{{ $this->encomienda->invoice->id }}" spinner
-                        class="text-white bg-green-500 btn-xl" />
+                        class="text-white bg-cyan-500 btn-xl" />
                     @endif
 
                 </div>
