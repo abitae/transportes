@@ -295,6 +295,7 @@
     @if ($this->encomienda)
     <x-mary-modal wire:model.live="modalFinal" persistent class="backdrop-blur" box-class="w-full">
         <x-mary-card shadow>
+            
             <div class="grid grid-cols-3 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
                 <div>TICKET
                     <br>
