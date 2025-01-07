@@ -7,6 +7,7 @@ use App\Livewire\Caja\CajaLive;
 use App\Livewire\Componentes;
 use App\Livewire\Configuration\CompanyLive;
 use App\Livewire\Configuration\RoleLive;
+use App\Livewire\Configuration\SucursalConfigurationLive;
 use App\Livewire\Configuration\SucursalLive;
 use App\Livewire\Configuration\TransportistaLive;
 use App\Livewire\Configuration\UserLive;
@@ -24,6 +25,7 @@ use App\Livewire\Package\ReceivePackageLive;
 use App\Livewire\Package\RecordPackageLive;
 use App\Livewire\Package\RegisterLive;
 use App\Livewire\Package\SendPackageLive;
+use App\Models\Configuration\SucursalConfiguration;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WebsiteController::class, 'index'])->name('index');
@@ -59,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/user', UserLive::class)->name('config.user');
     Route::get('/role', RoleLive::class)->name('config.role');
     Route::get('/company', CompanyLive::class)->name('config.company');
+    Route::get('/configuration', SucursalConfigurationLive::class)->name('config.configuration');
 });
 Route::middleware('auth')->group(function () {
     Route::get('/customer', CustomerLive::class)->name('package.customer');

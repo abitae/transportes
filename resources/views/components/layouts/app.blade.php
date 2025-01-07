@@ -71,6 +71,7 @@
         <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100">
             <x-mary-menu activate-by-route>
                 <x-mary-menu-item title="Caja" icon="o-banknotes" link="{{ route('caja.index') }}" />
+                <x-mary-menu-item title="Configuracion sucursal" icon="o-banknotes" link="{{ route('config.configuration') }}" />
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Paquetes" icon="s-truck">
                     <x-mary-menu-item title="Registrar paquetes" icon="o-cursor-arrow-rays"

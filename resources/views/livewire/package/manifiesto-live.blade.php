@@ -10,7 +10,7 @@
         ['key' => 'fecha', 'label' => 'Fecha', 'class' => ''],
         ['key' => 'sucursal', 'label' => 'Sucursal', 'class' => ''],
         
-
+        ['key' => 'destino', 'label' => 'Destino', 'class' => ''],
         ['key' => 'excel', 'label' => 'Excel', 'class' => ''],
         ];
         @endphp
@@ -24,14 +24,13 @@
             @scope('cell_sucursal', $stuff)
             <div class="text-xs">{{ $stuff->sucursal->name }}</div>
             @endscope
-           
-            @scope('cell_excel', $stuff)
-
-            <x-mary-button icon="o-arrow-path" target="_blank" wire:click="excelGenerate({{ $stuff->id }})"
-                no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
-
+            @scope('cell_destino', $stuff)
+            <div class="text-xs">{{ $stuff->destino->name }}</div>
             @endscope
-
+            @scope('cell_excel', $stuff)
+            <x-mary-button icon="o-document-arrow-down" target="_blank" wire:click="excelGenerate({{ $stuff->id }})"
+                no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
+            @endscope
         </x-mary-table>
     </x-mary-card>
 </div>

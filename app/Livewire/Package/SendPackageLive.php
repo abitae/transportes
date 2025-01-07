@@ -103,6 +103,7 @@ class SendPackageLive extends Component
                 $this->selected = [];
                 Manifiesto::create([
                     'sucursal_id' => Auth::user()->sucursal->id,
+                    'sucursal_destino_id' => $this->sucursal_dest_id,
                     'ids' => json_encode($ids),
                 ]);
                 return Excel::download(new ManifiestoExport($ids), 'manifiesto.xlsx');

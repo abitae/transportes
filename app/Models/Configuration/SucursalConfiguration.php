@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Models\Package;
+namespace App\Models\Configuration;
 
-use App\Models\Configuration\Sucursal;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Manifiesto extends Model
+class SucursalConfiguration extends Model
 {
     use HasFactory;
     protected $fillable = [
         'sucursal_id',
         'sucursal_destino_id',
-        'ids',
+        'vehiculo_id',
+        'transportista_id',
+        'date_config',
+        'isActive'
     ];
     public function sucursal()
     {
@@ -21,5 +23,13 @@ class Manifiesto extends Model
     public function destino()
     {
         return $this->belongsTo(Sucursal::class, 'sucursal_destino_id');
+    }
+    public function vehiculo()
+    {
+        return $this->belongsTo(Vehiculo::class, 'sucursal_destino_id');
+    }
+    public function transportista()
+    {
+        return $this->belongsTo(Transportista::class, 'sucursal_destino_id');
     }
 }

@@ -20,4 +20,8 @@ class Transportista extends Model
     {
         return $this->hasMany(Encomienda::class);
     }
+    public function sucursal_configurations()
+    {
+        return $this->hasMany(SucursalConfiguration::class);
+    }
 }

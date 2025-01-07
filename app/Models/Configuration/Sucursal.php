@@ -35,4 +35,8 @@ class Sucursal extends Model
     {
         return $this->hasMany(Manifiesto::class);
     }
+    public function sucursal_configurations()
+    {
+        return $this->hasMany(SucursalConfiguration::class);
+    }
 }

@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('manifiestos', function (Blueprint $table) {
+        Schema::create('sucursal_configurations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sucursal_id')->constrained('sucursals')->onDelete('cascade');
             $table->foreignId('sucursal_destino_id')->constrained('sucursals')->onDelete('cascade');
-            $table->json('ids');
+            $table->foreignId('vehiculo_id')->constrained('vehiculos')->onDelete('cascade');
+            $table->foreignId('transportista_id')->constrained('transportistas')->onDelete('cascade');
+            $table->date('date_config');
+            $table->boolean('isActive');
             $table->timestamps();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('manifiestos');
+        Schema::dropIfExists('sucursal_configurations');
     }
 };
