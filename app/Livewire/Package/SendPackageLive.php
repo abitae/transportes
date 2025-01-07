@@ -10,8 +10,8 @@ use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
 use App\Models\Package\Encomienda;
+use App\Models\Package\Manifiesto;
 use App\Traits\LogCustom;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -101,6 +101,10 @@ class SendPackageLive extends Component
                 $this->modalEnvio = false;
                 $ids = $this->selected;
                 $this->selected = [];
+                Manifiesto::create([
+                    'sucursal_id' => Auth::user()->sucursal->id,
+                    'ids' => json_encode($ids),
+                ]);
                 return Excel::download(new ManifiestoExport($ids), 'manifiesto.xlsx');
             } else {
                 $this->error('Error, verifique los datos!');

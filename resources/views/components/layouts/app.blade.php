@@ -86,6 +86,7 @@
                     <x-mary-menu-item title="Paquetes entregados" icon="o-arrow-path"
                         link="{{ route('package.record') }}" />
                     <x-mary-menu-item title="Clientes" icon="o-user-group" link="{{ route('package.customer') }}" />
+                    <x-mary-menu-item title="Manifiesto" icon="o-user-group" link="{{ route('package.maniesto') }}" />
                 </x-mary-menu-sub>
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Facturacion" icon="s-banknotes">
