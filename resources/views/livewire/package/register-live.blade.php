@@ -135,7 +135,7 @@
                 <div class="grid grid-cols-8 gap-1">
                     <div class="grid col-span-3">
                         <x-mary-select label="Sucursal" icon="o-user" :options="$sucursales" class="rounded-r-lg"
-                            wire:model="sucursal_dest_id" />
+                            wire:model.live="sucursal_dest_id" />
                     </div>
                     <div class="grid col-span-1">
 
@@ -171,12 +171,11 @@
                             hint="Max 1000 chars" rows="2" inline class="rounded-r-lg" />
                     </div>
                     <div class="grid col-span-4">
-                        <x-mary-choices-offline label="Transportista" wire:model="transportista_id"
-                            :options="$transportistas" single searchable />
+                        <x-mary-select label="Transportista" icon="o-user" :options="$transportistas" wire:model.live="transportista_id" inline />
+
                     </div>
                     <div class="grid col-span-4">
-                        <x-mary-choices-offline label="Vehiculo" wire:model="vehiculo_id" :options="$vehiculos" single
-                            searchable />
+                        <x-mary-select label="Vehiculo" icon="o-user" :options="$vehiculos" wire:model.live="vehiculo_id" inline />
                     </div>
                 </div>
             </x-mary-step>

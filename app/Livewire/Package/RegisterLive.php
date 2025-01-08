@@ -7,6 +7,7 @@ use App\Livewire\Forms\EncomiendaForm;
 use App\Livewire\Forms\EntryCajaForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
+use App\Models\Configuration\SucursalConfiguration;
 use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
@@ -68,12 +69,12 @@ class RegisterLive extends Component
         $this->paquetes = collect([]);
         $this->paquetes->keyBy('id');
         $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
-        $this->transportista_id = Transportista::where('isActive', true)->first()->id;
-        $this->vehiculo_id = Vehiculo::where('isActive', true)->first()->id;
-
     }
     public function render()
     {
+        $this->transportista_id = SucursalConfiguration::where('isActive', true)->where('sucursal_id', Auth::user()->sucursal->id)->where('sucursal_destino_id', $this->sucursal_dest_id)->first()->transportista_id;
+        $this->vehiculo_id = SucursalConfiguration::where('isActive', true)->where('sucursal_id', Auth::user()->sucursal->id)->where('sucursal_destino_id', $this->sucursal_dest_id)->first()->vehiculo_id;
+
         $docs = [
             ['id' => 'dni', 'name' => 'DNI'],
             ['id' => 'ruc', 'name' => 'RUC'],
@@ -89,7 +90,10 @@ class RegisterLive extends Component
             ['key' => 'amount', 'label' => 'P.UNIT', 'class' => ''],
             ['key' => 'sub_total', 'label' => 'MONTO', 'class' => ''],
         ];
-        $sucursales = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->get();
+        $p = SucursalConfiguration::where('isActive', true)
+            ->where('sucursal_id', Auth::user()->sucursal->id)
+            ->pluck('sucursal_destino_id');
+        $sucursales = Sucursal::where('isActive', true)->whereIn('id', $p )->get();
 
         $pagos = [
             ['id' => 'PAGADO', 'name' => 'PAGADO'],

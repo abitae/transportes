@@ -26,10 +26,10 @@ class SucursalConfiguration extends Model
     }
     public function vehiculo()
     {
-        return $this->belongsTo(Vehiculo::class, 'sucursal_destino_id');
+        return $this->belongsTo(Vehiculo::class);
     }
     public function transportista()
     {
-        return $this->belongsTo(Transportista::class, 'sucursal_destino_id');
+        return $this->belongsTo(Transportista::class);
     }
 }

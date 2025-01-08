@@ -6,6 +6,7 @@ use App\Exports\ManifiestoExport;
 use App\Livewire\Forms\CustomerForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
+use App\Models\Configuration\SucursalConfiguration;
 use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
@@ -54,11 +55,25 @@ class SendPackageLive extends Component
         }
         $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
         $this->date_ini = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
-        $this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
+        $this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d H:i');
     }
     public function render()
     {
-        $sucursals = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->get();
+        $this->transportista_id = SucursalConfiguration::where('isActive', true)
+            ->where('sucursal_id', Auth::user()->sucursal->id)
+            ->where('sucursal_destino_id', $this->sucursal_dest_id)
+            ->first()
+            ->transportista_id;
+        $this->vehiculo_id = SucursalConfiguration::where('isActive', true)
+            ->where('sucursal_id', Auth::user()->sucursal->id)
+            ->where('sucursal_destino_id', $this->sucursal_dest_id)
+            ->first()
+            ->vehiculo_id;
+        $p = SucursalConfiguration::where('isActive', true)
+            ->where('sucursal_id', Auth::user()->sucursal->id)
+            ->pluck('sucursal_destino_id');
+
+        $sucursals = Sucursal::where('isActive', true)->whereIn('id', $p )->get();
 
         $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
             ->where('isActive', $this->isActive)
@@ -80,8 +95,7 @@ class SendPackageLive extends Component
             $this->numElementos = count($this->selected);
             $this->sucursal_dest = Sucursal::findOrFail($this->sucursal_dest_id);
             $this->modalEnvio = !$this->modalEnvio;
-        }
-        else {
+        } else {
             $this->error('Seleccione al menos un paquete!');
         }
     }
@@ -89,14 +103,14 @@ class SendPackageLive extends Component
     {
         if (!is_null($this->vehiculo_id) and !is_null($this->transportista_id)) {
 
-            $retorno = Encomienda::where('isActive', true)
+            $num_encomiendas_enviadas = Encomienda::where('isActive', true)
                 ->whereIn('id', $this->selected)->update([
                 'estado_encomienda' => 'ENVIADO',
                 'updated_at' => $this->date_traslado,
                 'vehiculo_id' => $this->vehiculo_id,
                 'transportista_id' => $this->transportista_id,
             ]);
-            if (count($this->selected) == $retorno) {
+            if (count($this->selected) == $num_encomiendas_enviadas) {
                 $this->success('Genial, ingresado correctamente!');
                 $this->modalEnvio = false;
                 $ids = $this->selected;
@@ -106,12 +120,16 @@ class SendPackageLive extends Component
                     'sucursal_destino_id' => $this->sucursal_dest_id,
                     'ids' => json_encode($ids),
                 ]);
+                SucursalConfiguration::where('sucursal_id', Auth::user()->sucursal->id)
+                    ->where('sucursal_destino_id', $this->sucursal_dest_id)
+                    ->update([
+                        'isActive' => false,
+                    ]);
                 return Excel::download(new ManifiestoExport($ids), 'manifiesto.xlsx');
             } else {
                 $this->error('Error, verifique los datos!');
             }
-        }
-        else {
+        } else {
             $this->error('Seleccione un vehiculo y transportista!');
         }
     }
@@ -139,7 +157,7 @@ class SendPackageLive extends Component
     {
         if ($this->customerFormDest->code and $this->customerFormDest->type_code) {
             $this->encomienda->customer_dest_id = Customer::where('code', $this->customerFormDest->code)->where('type_code', $this->customerFormDest->type_code)->first()->id;
-            
+
             $this->encomienda->isHome = $this->isHome;
             $this->customerFormDest->update();
             $this->encomienda->save();

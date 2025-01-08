@@ -169,16 +169,14 @@
                             Sucursal de destino : {{ $this->sucursal_dest->name ?? 'Sucursal destino' }}
                         </x-mary-card>
                         <div class="grid col-span-4">
-                            <x-mary-datetime label="Fecha y hora de traslado" wire:model.live="date_traslado"
+                            <x-mary-datetime label="Fecha y hora de traslado" wire:model="date_traslado"
                                 icon="o-calendar" type="datetime-local" />
                         </div>
                         <div class="grid col-span-4">
-                            <x-mary-choices-offline label="Transportista" wire:model="transportista_id"
-                                :options="$transportistas" single searchable />
+                            <x-mary-select label="Transportista" icon="o-user" :options="$transportistas" wire:model.live="transportista_id" />
                         </div>
                         <div class="grid col-span-4">
-                            <x-mary-choices-offline label="Vehiculos" wire:model="vehiculo_id" :options="$vehiculos"
-                                single searchable />
+                            <x-mary-select label="Vehiculo" icon="o-user" :options="$vehiculos" wire:model.live="vehiculo_id" />
                         </div>
                     </div>
                 </div>
