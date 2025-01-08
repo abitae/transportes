@@ -30,14 +30,14 @@ class SendPackageLive extends Component
     public $search = '';
     public $perPage = 100;
     public array $selected = [];
-    public int $sucursal_dest_id;
+    public int $sucursal_dest_id = 0;
     public $date_ini;
     public $date_traslado;
     public $modalEnvio = false;
     public $numElementos;
     public Sucursal $sucursal_dest;
-    public $transportista_id;
-    public $vehiculo_id;
+    public $transportista_id = 1;
+    public $vehiculo_id = 1;
     public $isActive = true;
     public bool $showDrawer = false;
     public Encomienda $encomienda;
@@ -53,12 +53,31 @@ class SendPackageLive extends Component
         if (!$this->caja) {
             $this->redirectRoute('caja.index');
         }
-        $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
+
         $this->date_ini = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
         $this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d H:i');
+        //Ids sucursales activos por sucursal segun configuracion
+        $p = SucursalConfiguration::where('isActive', true)
+            ->where('sucursal_id', Auth::user()->sucursal->id)
+            ->pluck('sucursal_destino_id');
+        //Sucursales activas segun configuracion
+        $this->sucursal_dest_id = Sucursal::where('isActive', true)
+            ->whereIn('id', $p)
+            ->first()
+            ->id;
     }
     public function render()
     {
+        //Ids sucursales activos por sucursal segun configuracion
+        $p = SucursalConfiguration::where('isActive', true)
+            ->where('sucursal_id', Auth::user()->sucursal->id)
+            ->pluck('sucursal_destino_id');
+        //Sucursales activas segun configuracion
+        $sucursals = Sucursal::where('isActive', true)
+            ->whereIn('id', $p)
+            ->get();
+
+        //Transportista y vehiculo segun configuracion
         $this->transportista_id = SucursalConfiguration::where('isActive', true)
             ->where('sucursal_id', Auth::user()->sucursal->id)
             ->where('sucursal_destino_id', $this->sucursal_dest_id)
@@ -69,11 +88,6 @@ class SendPackageLive extends Component
             ->where('sucursal_destino_id', $this->sucursal_dest_id)
             ->first()
             ->vehiculo_id;
-        $p = SucursalConfiguration::where('isActive', true)
-            ->where('sucursal_id', Auth::user()->sucursal->id)
-            ->pluck('sucursal_destino_id');
-
-        $sucursals = Sucursal::where('isActive', true)->whereIn('id', $p )->get();
 
         $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
             ->where('isActive', $this->isActive)
@@ -86,7 +100,6 @@ class SendPackageLive extends Component
 
         $transportistas = Transportista::where('isActive', true)->get();
         $vehiculos = Vehiculo::where('isActive', true)->get();
-
         return view('livewire.package.send-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
     }
     public function openModal()
@@ -125,6 +138,18 @@ class SendPackageLive extends Component
                     ->update([
                         'isActive' => false,
                     ]);
+                $p = SucursalConfiguration::where('isActive', true)
+                    ->where('sucursal_id', Auth::user()->sucursal->id)
+                    ->pluck('sucursal_destino_id');
+                //Sucursales activas segun configuracion
+                $sucursals = Sucursal::where('isActive', true)
+                    ->whereIn('id', $p)
+                    ->get();
+                //Sucursal destino
+                $this->sucursal_dest_id = Sucursal::where('isActive', true)
+                    ->whereIn('id', $p)
+                    ->first()
+                    ->id;
                 return Excel::download(new ManifiestoExport($ids), 'manifiesto.xlsx');
             } else {
                 $this->error('Error, verifique los datos!');

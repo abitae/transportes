@@ -68,21 +68,44 @@ class RegisterLive extends Component
         }
         $this->paquetes = collect([]);
         $this->paquetes->keyBy('id');
-        $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
+        $p = SucursalConfiguration::where('isActive', true)
+            ->where('sucursal_id', Auth::user()->sucursal->id)
+            ->pluck('sucursal_destino_id');
+        //Sucursales activas segun configuracion
+        $this->sucursal_dest_id = Sucursal::where('isActive', true)
+            ->whereIn('id', $p)
+            ->first()
+            ->id;
     }
     public function render()
     {
-        $this->transportista_id = SucursalConfiguration::where('isActive', true)->where('sucursal_id', Auth::user()->sucursal->id)->where('sucursal_destino_id', $this->sucursal_dest_id)->first()->transportista_id;
-        $this->vehiculo_id = SucursalConfiguration::where('isActive', true)->where('sucursal_id', Auth::user()->sucursal->id)->where('sucursal_destino_id', $this->sucursal_dest_id)->first()->vehiculo_id;
+        //Ids sucursales activos por sucursal segun configuracion
+        $p = SucursalConfiguration::where('isActive', true)
+            ->where('sucursal_id', Auth::user()->sucursal->id)
+            ->pluck('sucursal_destino_id');
+        //Sucursales activas segun configuracion
+        $sucursals = Sucursal::where('isActive', true)
+            ->whereIn('id', $p)
+            ->get();
+        //Sucursal destino
 
+        //Transportista y vehiculo segun configuracion
+        $this->transportista_id = SucursalConfiguration::where('isActive', true)
+            ->where('sucursal_id', Auth::user()->sucursal->id)
+            ->where('sucursal_destino_id', $this->sucursal_dest_id)
+            ->first()
+            ->transportista_id;
+        $this->vehiculo_id = SucursalConfiguration::where('isActive', true)
+            ->where('sucursal_id', Auth::user()->sucursal->id)
+            ->where('sucursal_destino_id', $this->sucursal_dest_id)
+            ->first()
+            ->vehiculo_id;
         $docs = [
             ['id' => 'dni', 'name' => 'DNI'],
             ['id' => 'ruc', 'name' => 'RUC'],
             ['id' => 'ce', 'name' => 'CE'],
         ];
-
         $headers_paquetes = [
-
             ['key' => 'cantidad', 'label' => 'Cantidad', 'class' => ''],
             ['key' => 'und_medida', 'label' => 'Unidad', 'class' => ''],
             ['key' => 'description', 'label' => 'Descripcion', 'class' => ''],
@@ -93,8 +116,7 @@ class RegisterLive extends Component
         $p = SucursalConfiguration::where('isActive', true)
             ->where('sucursal_id', Auth::user()->sucursal->id)
             ->pluck('sucursal_destino_id');
-        $sucursales = Sucursal::where('isActive', true)->whereIn('id', $p )->get();
-
+        $sucursales = Sucursal::where('isActive', true)->whereIn('id', $p)->get();
         $pagos = [
             ['id' => 'PAGADO', 'name' => 'PAGADO'],
             ['id' => 'CONTRA ENTREGA', 'name' => 'CONTRA ENTREGA'],
