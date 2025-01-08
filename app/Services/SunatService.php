@@ -37,7 +37,7 @@ class SunatService
         $see->setClaveSOL($company->ruc, $company->sol_user, $company->sol_pass);
         return $see;
     }
-    //Api de Guias de Remicion/Transportista
+    //Api de Guias de Remicion
     public function getSeeApi($company)
     {
         $api = new Api(

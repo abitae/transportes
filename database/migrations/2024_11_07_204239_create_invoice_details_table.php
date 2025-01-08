@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('codProducto');
             $table->string('unidad');
             $table->string('descripcion');
-            $table->unsignedInteger('cantidad');
+            $table->decimal('cantidad',8,2);
             $table->decimal('mtoValorUnitario',8,2);
             $table->decimal('mtoValorVenta',8,2);
             $table->decimal('mtoBaseIgv',8,2);

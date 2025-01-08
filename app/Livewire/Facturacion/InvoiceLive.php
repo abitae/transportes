@@ -26,12 +26,10 @@ class InvoiceLive extends Component
     public function xmlGenerate(Invoice $invoice)
     {
         $company = $invoice->company;
-        //dd($company);
         $sunat = new SunatService();
-        //creo la configuracion see
         $see = $sunat->getSee($company);
-        //dd($see);
         $invoce = $sunat->getInvoce($invoice);
+        
         $xml = $see->getXmlSigned($invoce);
         $hash = (new XmlUtils())->getHashSign($xml);
         $invoice->xml_hash = $hash;
@@ -44,7 +42,6 @@ class InvoiceLive extends Component
         if (Storage::exists($invoice->xml_path)) {
             return response()->download(storage_path('app/public/' . $invoice->xml_path));
         }
-
     }
     public function sendXmlFile(Invoice $invoice)
     {
@@ -52,8 +49,10 @@ class InvoiceLive extends Component
         $sunat = new SunatService();
         $see = $sunat->getSee($company);
         $xml = Storage::disk('public')->get($invoice->xml_path);
+
         $result = $see->sendXmlFile($xml);
         $response = $sunat->sunatResponse($result);
+        dd($response);
         if ($response['success']) {
             $invoice->cdr_description = $response['cdrResponse']['description'];
             $invoice->cdr_code = $response['cdrResponse']['code'];

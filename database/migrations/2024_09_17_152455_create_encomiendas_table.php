@@ -35,7 +35,7 @@ return new class extends Migration
             $table->foreign('customer_fact_id')->references('id')->on('customers');
            
            
-            $table->integer('cantidad');
+            $table->decimal('cantidad', 8, 2);
             $table->decimal('monto', 8, 2);
 
             $table->string('estado_pago');

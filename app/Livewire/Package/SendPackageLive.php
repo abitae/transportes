@@ -61,10 +61,14 @@ class SendPackageLive extends Component
             ->where('sucursal_id', Auth::user()->sucursal->id)
             ->pluck('sucursal_destino_id');
         //Sucursales activas segun configuracion
-        $this->sucursal_dest_id = Sucursal::where('isActive', true)
-            ->whereIn('id', $p)
-            ->first()
-            ->id;
+        if (!$this->caja or $p->isEmpty()) {
+            $this->redirectRoute('caja.index');
+        } else {
+            $this->sucursal_dest_id = Sucursal::where('isActive', true)
+                ->whereIn('id', $p)
+                ->first()
+                ->id;
+        }
     }
     public function render()
     {

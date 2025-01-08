@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('paquetes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('encomienda_id')->constrained('encomiendas')->onDelete('cascade');
-            $table->integer('cantidad')->unsigned();
+            $table->decimal('cantidad', 8, 2);
             $table->string('und_medida');
             $table->string('description');
             $table->string('peso');

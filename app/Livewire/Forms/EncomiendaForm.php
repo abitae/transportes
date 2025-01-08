@@ -61,10 +61,20 @@ class EncomiendaForm extends Form
                 'isReturn' => $this->isReturn,
                 'isHome' => $this->isHome,
             ]);
+
             foreach ($paquetes as $paquete) {
-                $paquetesKey->push(collect($paquete)->put('encomienda_id', $encomienda->id));
+                
+                Paquete::create([
+                    'cantidad' => $paquete['cantidad'],
+                    'und_medida' => $paquete['und_medida'],
+                    'description' => $paquete['description'],
+                    'peso' => $paquete['peso'],
+                    'amount' => $paquete['amount'],
+                    'sub_total' => $paquete['sub_total'],
+                    'encomienda_id' => $encomienda->id,
+                ]);
             }
-            Paquete::upsert($paquetesKey->toArray(), null, null);
+            dump($paquetes);
             $this->infoLog('Encomienda store' . $encomienda->id);
             return $encomienda;
         } catch (\Exception $e) {

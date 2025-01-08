@@ -63,19 +63,23 @@ class RegisterLive extends Component
         $this->caja = Caja::where('user_id', Auth::user()->id)
             ->where('isActive', true)
             ->latest()->first();
-        if (!$this->caja) {
-            $this->redirectRoute('caja.index');
-        }
+
         $this->paquetes = collect([]);
         $this->paquetes->keyBy('id');
+
         $p = SucursalConfiguration::where('isActive', true)
             ->where('sucursal_id', Auth::user()->sucursal->id)
             ->pluck('sucursal_destino_id');
         //Sucursales activas segun configuracion
-        $this->sucursal_dest_id = Sucursal::where('isActive', true)
-            ->whereIn('id', $p)
-            ->first()
-            ->id;
+        //dd(!$p->isEmpty(), !$this->caja);
+        if (!$this->caja or $p->isEmpty()) {
+            $this->redirectRoute('caja.index');
+        } else {
+            $this->sucursal_dest_id = Sucursal::where('isActive', true)
+                ->whereIn('id', $p)
+                ->first()
+                ->id;
+        }
     }
     public function render()
     {
@@ -210,7 +214,6 @@ class RegisterLive extends Component
     }
     public function restPaquete($id)
     {
-        //dump($this->paquetes);
         $this->paquetes->pull($id - 1);
     }
     public function resetPaquete()
