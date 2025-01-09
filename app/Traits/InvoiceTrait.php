@@ -14,7 +14,6 @@ trait InvoiceTrait
 {
     public function storeInvoce(Encomienda $encomienda)
     {
-
         if ($encomienda->tipo_comprobante != 'TICKET') {
             $this->setInvoice($encomienda); // Genera factura o boleta
         }
@@ -33,7 +32,7 @@ trait InvoiceTrait
         $ticket = Ticket::create([
             'encomienda_id' => $encomienda->id,
             'tipoDoc' => 'TICKET',
-            'tipoOperacion' => '0',
+            'tipoOperacion' => 'TICKET',
             'serie' => $encomienda->sucursal_remitente->code,
             'correlativo' => $encomienda->code,
             'fechaEmision' => $encomienda->created_at,
@@ -77,12 +76,12 @@ trait InvoiceTrait
         $igv = $montoTotalIncIGV - $mtoOperGravadas;
 
         if ($encomienda->tipo_comprobante == 'BOLETA') {
-            $serie = 'B001';
+            $serie = 'B021';
             $tipoDoc = '03';
             $tipoOperacion = '0101';
             $correlativo = Invoice::where('tipoDoc', '03')->count();
         } else {
-            $serie = 'F001';
+            $serie = 'F021';
             $correlativo = Invoice::where('tipoDoc', '01')->count();
             $tipoDoc = '01';
             if ($montoTotalIncIGV >= 400) {

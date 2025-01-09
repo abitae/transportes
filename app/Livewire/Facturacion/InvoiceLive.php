@@ -52,7 +52,7 @@ class InvoiceLive extends Component
 
         $result = $see->sendXmlFile($xml);
         $response = $sunat->sunatResponse($result);
-        dd($response);
+        //dd($response);
         if ($response['success']) {
             $invoice->cdr_description = $response['cdrResponse']['description'];
             $invoice->cdr_code = $response['cdrResponse']['code'];
