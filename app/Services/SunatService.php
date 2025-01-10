@@ -15,6 +15,7 @@ use Greenter\Model\Despatch\Driver;
 use Greenter\Model\Despatch\Shipment;
 use Greenter\Model\Despatch\Transportist;
 use Greenter\Model\Despatch\Vehicle;
+use Greenter\Model\Sale\Detraction;
 use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
 use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\Note;
@@ -25,6 +26,7 @@ use Greenter\See;
 use Greenter\Ws\Services\SunatEndpoints;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Monolog\Handler\IFTTTHandler;
 
 class SunatService
 {
@@ -82,17 +84,6 @@ class SunatService
             ->setTipoMoneda($data->tipoMoneda ?? null) // Sol - Catalog. 02
             ->setCompany($this->getCompany($data->company))
             ->setClient($this->getClient($data->client))
-            //detraccion
-            /* ->setDetraccion(
-        // MONEDA SIEMPRE EN SOLES
-        (new Detraction())
-        ->setCodBienDetraccion('021') // catalog. 54
-
-        ->setCodMedioPago('001') // catalog. 59
-        ->setCtaBanco('0004-3342343243')
-        ->setPercent(4.00)
-        ->setMount(37.76)
-        ) */
             //Montos Operaciones
             ->setMtoOperGravadas($data->mtoOperGravadas)
             /* ->setMtoOperExoneradas($data['mtoOperExoneradas'])
@@ -114,6 +105,16 @@ class SunatService
             ->setDetails($this->getDetails($data->details))
             //Leyendas
             ->setLegends($this->getLegends($data['legends']));
+        //detraccion
+        if ($data->tipoOperacion = '1001') {
+        $invoice->setDetraccion(
+            (new Detraction())
+                ->setCodBienDetraccion('021') // catalog. 54 Momovimiento de carga
+                ->setCodMedioPago('001') // catalog. 59 Deposito en cuenta
+                ->setCtaBanco('0004-3342343243')
+                ->setPercent(10.00)
+                ->setMount(37.76));
+        }
 
         return $invoice;
     }
