@@ -33,7 +33,9 @@ return new class extends Migration
             $table->decimal('valorVenta', 8, 2);
             $table->decimal('subTotal', 8, 2);
             $table->decimal('mtoImpVenta', 8, 2);
-            $table->decimal('setMount', 8, 2)->nullable();
+            $table->string('monto_letras');//monto en letras
+            $table->decimal('setPercent', 8, 2)->nullable();//porcentaje detraccion
+            $table->decimal('setMount', 8, 2)->nullable();//monto detraccion
             $table->string('xml_path')->nullable();
             $table->string('xml_hash')->nullable();
             $table->string('cdr_description')->nullable();
