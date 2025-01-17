@@ -78,12 +78,12 @@ trait InvoiceTrait
         $formatter        = new NumeroALetras();
         $monto_letras     = $formatter->toInvoice($montoTotalIncIGV, 2, 'SOLES');
         if ($encomienda->tipo_comprobante == 'BOLETA') {
-            $serie         = 'B01';
+            $serie         = 'B001';
             $tipoDoc       = '03';
             $tipoOperacion = '0101';
             $correlativo   = Invoice::where('tipoDoc', '03')->count();
         } else {
-            $serie       = 'F01';
+            $serie       = 'F001';
             $correlativo = Invoice::where('tipoDoc', '01')->count();
             $tipoDoc     = '01';
 

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Services;
 
 use App\Models\Facturacion\Despatche;
@@ -29,17 +28,17 @@ class SunatServiceGre
             $company->production ?
             [
                 'auth' => 'https://api-seguridad.sunat.gob.pe/v1',
-                'cpe' => 'https://api-cpe.sunat.gob.pe/v1',
+                'cpe'  => 'https://api-cpe.sunat.gob.pe/v1',
             ] : [
                 'auth' => 'https://gre-test.nubefact.com/v1',
-                'cpe' => 'https://gre-test.nubefact.com/v1',
+                'cpe'  => 'https://gre-test.nubefact.com/v1',
             ]
         );
         $api->setBuilderOptions([
             'strict_variables' => true,
-            'optimization' => 0,
-            'debug' => true,
-            'cache' => false,
+            'optimization'     => 0,
+            'debug'            => true,
+            'cache'            => false,
         ])->setApiCredentials(
             $company->production ? $company->client_id : "test-85e5b0ae-255c-4891-a595-0b98c65c9854",
             $company->production ? $company->client_secret : "test-Hty/M6QshYvPgItX2P0+Kw=="
@@ -54,52 +53,49 @@ class SunatServiceGre
     }
 
     //Guias de Transportista
-    public function getDespatch(Despatche $data)
+    public function getDespatch(Despatche $despatche)
     {
 
-        if ($data->flete->type_code == 'ruc') {
-            $pagaflete = (new Client())
-                ->setTipoDoc('6' ?? null)
-                ->setNumDoc($data->flete->code ?? null)
-                ->setRznSocial($data->flete->name ?? null);
-        } else {
-            $pagaflete = (new Client())
-                ->setTipoDoc('1' ?? null)
-                ->setNumDoc($data->flete->code ?? null)
-                ->setRznSocial($data->flete->name ?? null);
-        }
+        $pagaflete = new Client();
+        $pagaflete->setTipoDoc("6")
+            ->setNumDoc("10436493903")
+            ->setRznSocial("Abel Arana");
         $item = new AdditionalDoc();
         $item->setTipo("01")
             ->setTipoDesc("Factura")
             ->setNro("F001-00000007")
             ->setEmisor("1043649390");
         $relDoc[] = $item;
-        if ($data->destinatario->type_code == 'ruc') {
-            $destinatario = (new Client())
-                ->setTipoDoc('6' ?? null)
-                ->setNumDoc($data->destinatario->code ?? null)
-                ->setRznSocial($data->destinatario->name ?? null);
-        } else {
-            $destinatario = (new Client())
-                ->setTipoDoc('1' ?? null)
-                ->setNumDoc($data->destinatario->code ?? null)
-                ->setRznSocial($data->destinatario->name ?? null);
-        }
-        //dd($destinatario);
+        $destinatario=new Client();
+        $destinatario->setTipoDoc('6')
+        ->setNumDoc('10436493903')
+        ->setRznSocial('Abel Arana');
         return (new Despatch)
             ->setVersion('2022')
             ->setTipoDoc('31')
             ->setSerie('V001')
             ->setCorrelativo('123')
-            ->setFechaEmision(new DateTime($data->fechaEmision ?? null))
+            ->setFechaEmision(new DateTime($despatche->fechaEmision ?? null))
             ->setPagaFlete($pagaflete) //*******  */
             ->setCompany($this->getGRECompany())
             ->setDestinatario($destinatario)
-            ->setEnvio($this->getEnvio($data))
+            ->setEnvio($this->getEnvio($despatche))
             ->setObservacion('glosa')
             ->setAddDocs($relDoc)
-            ->setDetails($this->getDespatchDetails($data['details']))
+            ->setDetails($this->getDespatchDetails($despatche['details']))
         ;
+    }
+    public function getFlete($data)
+    {
+       
+            $flete = (new Client())
+                ->setTipoDoc('6' ?? null)
+                ->setNumDoc("10436493903" ?? null)
+                ->setRznSocial("Abel Arana" ?? null);
+        
+        
+
+        return $flete;
     }
     public function getGRECompany(): Company
     {
@@ -144,25 +140,17 @@ class SunatServiceGre
         //dd($data);
         $indicadores[] = "SUNAT_Envio_IndicadorPagadorFlete_Remitente";
         $transp = new Transportist();
-        $transp->setTipoDoc($data->chofer_tipoDoc)
-            ->setNumDoc($data->chofer_nroDoc)
-            ->setRznSocial($data->chofer_nombres . ' ' . $data->chofer_apellidos)
-            ->setNroMtc($data->vehiculo_placa);
-        if ($data->flete->type_code == 'ruc') {
-            $remitente = (new Client())
-                ->setTipoDoc('6' ?? null)
-                ->setNumDoc($data->flete->code ?? null)
-                ->setRznSocial($data->flete->name ?? null);
-        } else {
-            $remitente = (new Client())
-                ->setTipoDoc('1' ?? null)
-                ->setNumDoc($data->flete->code ?? null)
-                ->setRznSocial($data->flete->name ?? null);
-        }
-
+        $transp->setTipoDoc('6')
+            ->setNumDoc("20541528092")
+            ->setRznSocial("Abel Arana")
+            ->setNroMtc("123456");
+        $remitente = new Client();
+        $remitente->setTipoDoc("6")
+            ->setNumDoc("10436493901")
+            ->setRznSocial("Abel Arana");
         $shipment = (new Shipment)
-            ->setCodTraslado('01') //catalogo 20 sunat
-            ->setModTraslado('02') //catalogo 18 sunat
+            ->setCodTraslado('01')                                       //catalogo 20 sunat
+            ->setModTraslado('02')                                       //catalogo 18 sunat
             ->setFecTraslado(new DateTime($data['fecTraslado'] ?? null)) // Zona horaria: Lima
             ->setPesoTotal($data->pesoTotal ?? null)
             ->setUndPesoTotal($data->undPesoTotal ?? null) //catalogo 02 sunat
@@ -184,30 +172,26 @@ class SunatServiceGre
             ->setRznSocial($data['rznSocial'] ?? null)
             ->setNroMtc($data['nroMtc'] ?? null);
     }
-    public function getVehiculo($vehiculos)
+    public function getVehiculo($data)
     {
-        $vehiculos = collect($vehiculos);
-        $secundarios = [];
-        foreach ($vehiculos->slice(1) as $item) {
-            $secundarios[] = (new Vehicle())
-                ->setPlaca($item['placa'] ?? null);
-        }
+        //dd($data->vehiculo_placa);
 
+        $secundarios = [];
         return (new Vehicle())
-            ->setPlaca($vehiculos->first()['placa'] ?? null)
+            ->setPlaca('ABC123' ?? null)
             ->setSecundarios($secundarios);
     }
     public function getChoferes($choferes)
     {
-        $choferes = collect($choferes);
-        $drivers = [];
+        $choferes  = collect($choferes);
+        $drivers   = [];
         $drivers[] = (new Driver)
             ->setTipo('Principal')
-            ->setTipoDoc($choferes->first()['tipoDoc'] ?? null)
-            ->setNroDoc($choferes->first()['nroDoc'] ?? null)
-            ->setLicencia($choferes->first()['licencia'] ?? null)
-            ->setNombres($choferes->first()['nombres'] ?? null)
-            ->setApellidos($choferes->first()['apellidos'] ?? null);
+            ->setTipoDoc('1' ?? null)
+            ->setNroDoc('43649390' ?? null)
+            ->setLicencia('A43649390' ?? null)
+            ->setNombres('Abel Arana' ?? null)
+            ->setApellidos('Arana Cortez' ?? null);
         foreach ($choferes->slice(1) as $item) {
             $drivers[] = (new Driver)
                 ->setTipo('Secundario')
@@ -217,27 +201,30 @@ class SunatServiceGre
                 ->setNombres($item['nombres'] ?? null)
                 ->setApellidos($item['apellidos'] ?? null);
         }
+        //dd($drivers);
         return $drivers;
     }
     public function getDespatchDetails($details)
     {
+        //dd($details);
         $green_details = [];
         foreach ($details as $data) {
             $green_details[] = (new DespatchDetail())
-                ->setCantidad($data['cantidad'] ?? null)
-                ->setUnidad($data['unidad'] ?? null) // Unidad - Catalog. 03
-                ->setDescripcion($data['descripcion'] ?? null)
-                ->setCodigo($data['codigo'] ?? null);
+                ->setCantidad($data->cantidad ?? null)
+                ->setUnidad($data->unidad ?? null) // Unidad - Catalog. 03
+                ->setDescripcion($data->descripcion ?? null)
+                ->setCodigo($data->codProducto ?? null);
         }
+        //dd($green_details);
         return $green_details;
     }
     public function sunatResponse($result)
     {
         $response['success'] = $result->isSuccess();
-        if (!$response['success']) {
+        if (! $response['success']) {
 
             $response['error'] = [
-                'code' => $result->getError()->getCode(),
+                'code'    => $result->getError()->getCode(),
                 'message' => $result->getError()->getMessage(),
             ];
             return $response;
@@ -246,10 +233,10 @@ class SunatServiceGre
         $cdr = $result->getCdrResponse();
 
         $response['cdrResponse'] = [
-            'code' => (int) $cdr->getCode(),
+            'code'        => (int) $cdr->getCode(),
             'description' => $cdr->getDescription(),
-            'notes' => $cdr->getNotes(),
-            'cdrZip' => base64_encode($result->getCdrZip()),
+            'notes'       => $cdr->getNotes(),
+            'cdrZip'      => base64_encode($result->getCdrZip()),
         ];
         // Guardamos el CDR
         //file_put_contents('R-' . $invoice->getName() . '.zip', $result->getCdrZip());

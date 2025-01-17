@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Livewire\Facturacion;
 
 use App\Models\Facturacion\Despatche;
@@ -15,9 +14,9 @@ class DespatcheLive extends Component
 {
     use Toast;
     use WithPagination, WithoutUrlPagination;
-    public string $title = 'Guia de Transportista';
+    public string $title     = 'Guia de Transportista';
     public string $sub_title = 'Modulo de facturacion';
-    public int $perPage = 10;
+    public int $perPage      = 10;
     public function render()
     {
         $despaches = Despatche::latest()->paginate($this->perPage);
@@ -31,9 +30,9 @@ class DespatcheLive extends Component
         //creo la configuracion see
         $api = $sunat->getSee($company);
         //dd($see);
-        $despatch = $sunat->getDespatch($despatche);
-        $xml = $api->getXmlSigned($despatch);
-        $hash = (new XmlUtils())->getHashSign($xml);
+        $despatch            = $sunat->getDespatch($despatche);
+        $xml                 = $api->getXmlSigned($despatch);
+        $hash                = (new XmlUtils())->getHashSign($xml);
         $despatche->xml_hash = $hash;
         $despatche->xml_path = 'xml/' . $despatche->company->ruc . '-' . $despatche->tipoDoc . '-' . $despatche->serie . '-' . $despatche->correlativo . '.xml';
         $despatche->save();
@@ -43,31 +42,34 @@ class DespatcheLive extends Component
     public function xmlDownload(Despatche $despatche)
     {
         if (Storage::exists($despatche->xml_path)) {
-            return Storage::disk('public')->download($despatche->xml_path);
+            return response()->download(storage_path('app/public/' . $despatche->xml_path));
+
         }
     }
     public function sendXmlFile(Despatche $despatche)
     {
+        //dd($despatche);
         $company = $despatche->company;
+        //dd($company);
         $sunat = new SunatServiceGre();
-
-        
+        //creo la configuracion see
         $despatch = $sunat->getDespatch($despatche);
+        //dd($despatch);
         $api = $sunat->getSeeApi($company);
         //dd($api);
         $result = $api->send($despatch);
-
-       //dd($result->isSuccess());
+        dd($result->isSuccess(), $result->getError());
+        $ticket = $result->getTicket();
+        $result = $api->getStatus($ticket);
         $response['sunatResponse'] = $sunat->sunatResponse($result);
-        $response['xml'] = $api->getLastXml();
-        $response['hash'] = (new XmlUtils())->getHashSign($response['xml']);
-        dd($response);
-        return response()->json($response, 200);
+
+        dump($response['sunatResponse']);
+
     }
     public function downloadCdrFile(Despatche $despatche)
     {
         if (Storage::exists($despatche->cdr_path)) {
-            return Storage::disk('public')->download($despatche->cdr_path);
+            return response()->download(storage_path('app/public/' . $despatche->cdr_path));
         }
     }
 }
