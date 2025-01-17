@@ -74,7 +74,7 @@ class EncomiendaForm extends Form
                     'encomienda_id' => $encomienda->id,
                 ]);
             }
-            dump($paquetes);
+            //dump($paquetes);
             $this->infoLog('Encomienda store' . $encomienda->id);
             return $encomienda;
         } catch (\Exception $e) {

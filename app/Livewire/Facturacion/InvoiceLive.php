@@ -49,8 +49,9 @@ class InvoiceLive extends Component
         $sunat = new SunatService();
         $see = $sunat->getSee($company);
         $xml = Storage::disk('public')->get($invoice->xml_path);
-
+        //dd($invoice->xml_path);
         $result = $see->sendXmlFile($xml);
+        //dd($result);
         $response = $sunat->sunatResponse($result);
         //dd($response);
         if ($response['success']) {

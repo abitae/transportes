@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Services;
 
 use App\Models\Configuration\Company as ModelsCompany;
@@ -26,7 +25,6 @@ use Greenter\See;
 use Greenter\Ws\Services\SunatEndpoints;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Monolog\Handler\IFTTTHandler;
 
 class SunatService
 {
@@ -46,17 +44,17 @@ class SunatService
             $company->production ?
             [
                 'auth' => 'https://api-seguridad.sunat.gob.pe/v1',
-                'cpe' => 'https://api-cpe.sunat.gob.pe/v1',
+                'cpe'  => 'https://api-cpe.sunat.gob.pe/v1',
             ] : [
                 'auth' => 'https://gre-test.nubefact.com/v1',
-                'cpe' => 'https://gre-test.nubefact.com/v1',
+                'cpe'  => 'https://gre-test.nubefact.com/v1',
             ]
         );
         $api->setBuilderOptions([
             'strict_variables' => true,
-            'optimization' => 0,
-            'debug' => true,
-            'cache' => false,
+            'optimization'     => 0,
+            'debug'            => true,
+            'cache'            => false,
         ])->setApiCredentials(
             $company->production ? $company->client_id : "test-85e5b0ae-255c-4891-a595-0b98c65c9854",
             $company->production ? $company->client_secret : "test-Hty/M6QshYvPgItX2P0+Kw=="
@@ -76,12 +74,12 @@ class SunatService
         $invoice = (new Invoice())
             ->setUblVersion($data['ublVersion'] ?? '2.1')
             ->setTipoOperacion($data->tipoOperacion ?? null) // Venta - Catalog. 51
-            ->setTipoDoc($data->tipoDoc ?? null) // Factura - Catalog. 01
+            ->setTipoDoc($data->tipoDoc ?? null)             // Factura - Catalog. 01
             ->setSerie($data->serie ?? null)
             ->setCorrelativo($data->correlativo ?? null)
             ->setFechaEmision(new DateTime($data->fechaEmision) ?? null) // Zona horaria: Lima
-            ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
-            ->setTipoMoneda($data->tipoMoneda ?? null) // Sol - Catalog. 02
+            ->setFormaPago(new FormaPagoContado())                       // FormaPago: Contado
+            ->setTipoMoneda($data->tipoMoneda ?? null)                   // Sol - Catalog. 02
             ->setCompany($this->getCompany($data->company))
             ->setClient($this->getClient($data->client))
             //Montos Operaciones
@@ -104,18 +102,18 @@ class SunatService
             //Productos
             ->setDetails($this->getDetails($data->details))
             //Leyendas
-            ->setLegends($this->getLegends($data['legends']));
+            ->setLegends($this->getLegends($data));
         //detraccion
-        if ($data->tipoOperacion = '1001') {
-        $invoice->setDetraccion(
-            (new Detraction())
-                ->setCodBienDetraccion('021') // catalog. 54 Momovimiento de carga
-                ->setCodMedioPago('001') // catalog. 59 Deposito en cuenta
-                ->setCtaBanco('0004-3342343243')
-                ->setPercent(10.00)
-                ->setMount(37.76));
+        if ($data->tipoOperacion == '1001') {
+            $invoice->setDetraccion(
+                (new Detraction())
+                    ->setCodBienDetraccion('021') // catalog. 54 Momovimiento de carga
+                    ->setCodMedioPago('001')      // catalog. 59 Deposito en cuenta
+                    ->setCtaBanco('0004-3342343243')
+                    ->setPercent($data->setPercent)
+                    ->setMount($data->setMount));
         }
-
+        //dd($invoice);
         return $invoice;
     }
     //Notas de Credito/Debito
@@ -237,17 +235,27 @@ class SunatService
         }
         return $green_details;
     }
-    public function getLegends($datas)
+    public function getLegends($data)
     {
-        $gree_legends = [
-            ["code" => "1000",
-                "value" => "SON DOSCIENTOS TREINTA Y SEIS CON 00/100 SOLES"],
-        ];
-        /* foreach ($datas as $data) {
-        $gree_legends[] = (new Legend())
-        ->setCode($data['code'] ?? null) // Monto en letras - Catalog. 52
-        ->setValue($data['value'] ?? null);
-        } */
+
+        if ($data->tipoOperacion == '1001') {
+            $gree_legends = [
+                ["code" => "1000",
+                    "value" => $data->monto_letras],
+                [
+                    "code"  => "2006",
+                    "value" => "Operación sujeta a detracción",
+                ],
+            ];
+            
+        } else {
+            $gree_legends = [
+                ["code" => "1000",
+                    "value" => $data->monto_letras],
+            ];
+
+        }
+        
         return $gree_legends;
     }
     //guias
@@ -255,8 +263,8 @@ class SunatService
     {
 
         $shipment = (new Shipment)
-            ->setCodTraslado($data['codTraslado'] ?? null) //catalogo 20 sunat
-            ->setModTraslado($data['modTraslado'] ?? null) //catalogo 18 sunat
+            ->setCodTraslado($data['codTraslado'] ?? null)               //catalogo 20 sunat
+            ->setModTraslado($data['modTraslado'] ?? null)               //catalogo 18 sunat
             ->setFecTraslado(new DateTime($data['fecTraslado'] ?? null)) // Zona horaria: Lima
             ->setPesoTotal($data['pesoTotal'] ?? null)
             ->setUndPesoTotal($data['undPesoTotal'] ?? null) //catalogo 02 sunat
@@ -281,7 +289,7 @@ class SunatService
     }
     public function getVehiculo($vehiculos)
     {
-        $vehiculos = collect($vehiculos);
+        $vehiculos   = collect($vehiculos);
         $secundarios = [];
         foreach ($vehiculos->slice(1) as $item) {
             $secundarios[] = (new Vehicle())
@@ -294,8 +302,8 @@ class SunatService
     }
     public function getChoferes($choferes)
     {
-        $choferes = collect($choferes);
-        $drivers = [];
+        $choferes  = collect($choferes);
+        $drivers   = [];
         $drivers[] = (new Driver)
             ->setTipo('Principal')
             ->setTipoDoc($choferes->first()['tipoDoc'] ?? null)
@@ -331,10 +339,10 @@ class SunatService
     {
         $response['success'] = $result->isSuccess();
         //dd($response);
-        if (!$response['success']) {
+        if (! $response['success']) {
 
             $response['error'] = [
-                'code' => $result->getError()->getCode(),
+                'code'    => $result->getError()->getCode(),
                 'message' => $result->getError()->getMessage(),
             ];
             return $response;
@@ -343,10 +351,10 @@ class SunatService
         $cdr = $result->getCdrResponse();
 
         $response['cdrResponse'] = [
-            'code' => (int) $cdr->getCode(),
+            'code'        => (int) $cdr->getCode(),
             'description' => $cdr->getDescription(),
-            'notes' => $cdr->getNotes(),
-            'cdrZip' => base64_encode($result->getCdrZip()),
+            'notes'       => $cdr->getNotes(),
+            'cdrZip'      => base64_encode($result->getCdrZip()),
         ];
         // Guardamos el CDR
         //file_put_contents('R-' . $invoice->getName() . '.zip', $result->getCdrZip());
@@ -356,19 +364,19 @@ class SunatService
     }
     public function getHtmlReport2($invoice)
     {
-        $report = new HtmlReport();
+        $report   = new HtmlReport();
         $resolver = new DefaultTemplateResolver();
         $report->setTemplate($resolver->getTemplate($invoice));
-        $ruc = $invoice->getCompany()->getRuc();
+        $ruc     = $invoice->getCompany()->getRuc();
         $company = ModelsCompany::where('ruc', $ruc)
             ->where('user_id', Auth::user()->id)
             ->first();
         $params = [
             'system' => [
                 'logo' => Storage::get($company->logo_path), // Logo de Empresa
-                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=', // Valor Resumen
+                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=',    // Valor Resumen
             ],
-            'user' => [
+            'user'   => [
                 'header' => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
                 'extras' => [
                     // Leyendas adicionales
@@ -384,23 +392,23 @@ class SunatService
     public function getHtmlReport($invoice)
     {
         $twigOptions = [
-            'cache' => __DIR__ . '/cache',
+            'cache'            => __DIR__ . '/cache',
             'strict_variables' => true,
         ];
-        $report = new HtmlReport('report', $twigOptions);
+        $report   = new HtmlReport('report', $twigOptions);
         $resolver = new DefaultTemplateResolver();
         $report->setTemplate($resolver->getTemplate($invoice));
         //$report->setTemplate('factura.html.twig');
-        $ruc = $invoice->getCompany()->getRuc();
+        $ruc     = $invoice->getCompany()->getRuc();
         $company = ModelsCompany::where('ruc', $ruc)
             ->where('user_id', Auth::user()->id)
             ->first();
         $params = [
             'system' => [
                 'logo' => Storage::get($company->logo_path), // Logo de Empresa
-                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=', // Valor Resumen
+                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=',    // Valor Resumen
             ],
-            'user' => [
+            'user'   => [
                 'header' => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
                 'extras' => [
                     // Leyendas adicionales
@@ -417,9 +425,9 @@ class SunatService
     public function generatePdfReport($invoice)
     {
         $htmlReport = new HtmlReport();
-        $resolver = new DefaultTemplateResolver();
+        $resolver   = new DefaultTemplateResolver();
         $htmlReport->setTemplate($resolver->getTemplate($invoice));
-        $ruc = $invoice->getCompany()->getRuc();
+        $ruc     = $invoice->getCompany()->getRuc();
         $company = ModelsCompany::where('ruc', $ruc)
             ->where('user_id', Auth::user()->id)
             ->first();
@@ -434,9 +442,9 @@ class SunatService
         $params = [
             'system' => [
                 'logo' => Storage::get($company->logo_path), // Logo de Empresa
-                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=', // Valor Resumen
+                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=',    // Valor Resumen
             ],
-            'user' => [
+            'user'   => [
                 'header' => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
                 'extras' => [
                     // Leyendas adicionales

@@ -35,6 +35,9 @@ class Invoice extends Model
         'cdr_code',
         'cdr_note',
         'cdr_path', 
+        'monto_letras',
+        'setPercent',
+        'setMount',
     ];
     public function company()
     {
