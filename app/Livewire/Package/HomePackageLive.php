@@ -93,15 +93,37 @@ class HomePackageLive extends Component
 
     public function confirmEncomienda()
     {
-        try {
-            $envio = $this->encomienda;
-            $this->encomienda->update(
-                ['estado_encomienda' => 'ENTREGADO']
-            );
-            $this->modalConfimation = false;
-        } catch (\Throwable $th) {
-            $this->error('Error, verifique los datos!');
-            return 0;
+        if ($this->estado_pago == 'PAGADO') {
+            $this->updateEncomiendaStatus('ENTREGADO');
+            $this->toast('success', 'Paquete entregado correctamente');
+        } elseif ($this->tipo_comprobante != 'TICKET') {
+            $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
+            $this->setInvoice($this->encomienda);
+            $this->entryForm->fill([
+                'caja_id' => $this->caja->id,
+                'monto_entry' => $this->encomienda->monto,
+                'description' => $this->encomienda->code,
+                'tipo' => $this->encomienda->tipo_comprobante,
+            ]);
+            if ($this->entryForm->store()) {
+                $this->entryForm->reset();
+            } else {
+                $this->error('Error, verifique los datos!');
+            }
         }
+        $this->modalConfimation = false;
+    }
+    private function updateEncomiendaStatus($status, $tipo_comprobante = null)
+    {
+        $this->encomienda->estado_encomienda = $status;
+        if ($tipo_comprobante) {
+            $this->encomienda->tipo_comprobante = $tipo_comprobante;
+        }
+        $this->encomienda->save();
+    }
+
+    public function searchFacturacion()
+    {
+        $this->customerFact->store();
     }
 }

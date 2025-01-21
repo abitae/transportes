@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Traits;
 
 use App\Models\Configuration\Company;
@@ -76,7 +77,6 @@ trait InvoiceTrait
 
     private function setInvoice(Encomienda $encomienda)
     {
-        $company = Company::first();
         $montoTotalIncIGV = $encomienda->paquetes->sum('sub_total');
         $mtoOperGravadas = round($montoTotalIncIGV / 1.18, 2);
         $igv = $montoTotalIncIGV - $mtoOperGravadas;

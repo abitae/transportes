@@ -10,8 +10,7 @@ use Livewire\Form;
 
 class CustomerForm extends Form
 {
-    use LogCustom;
-    use SearchDocument;
+    use LogCustom, SearchDocument;
 
     public ?Customer $customer;
     public $customer_id;
@@ -29,6 +28,7 @@ class CustomerForm extends Form
     #[Validate('')]
     public $address = '';
     public $isActive = true;
+
     public function setCustomer(Customer $customer)
     {
         $this->customer = $customer;
@@ -39,80 +39,86 @@ class CustomerForm extends Form
         $this->email = $customer->email;
         $this->address = $customer->address;
     }
+
     public function store()
     {
         try {
             $data = $this->search($this->type_code, $this->code);
             if ($data['encontrado']) {
-                if ($this->type_code == 'dni') {
-                    $this->name = ($data['data']->nombre);
-                } elseif ($this->type_code == 'ruc') {
-                    $this->name = ($data['data']->razon_social);
-                    $this->address = $data['data']->direccion;
-                }
+                $this->populateCustomerData($data['data']);
                 $customer = Customer::firstOrCreate(
-                    ['type_code' => $this->type_code,
-                        'code' => $this->code],
-                    ['name' => $this->name,
-                        'phone' => $this->phone,
-                        'email' => $this->email,
-                        'address' => $this->address]
+                    ['type_code' => $this->type_code, 'code' => $this->code],
+                    ['name' => $this->name, 'phone' => $this->phone, 'email' => $this->email, 'address' => $this->address]
                 );
-                $this->phone = $customer->phone;
-                $this->email = $customer->email;
-                $this->address = $customer->address;
-                $this->customer_id = $customer->id;
+                $this->updateCustomerFields($customer);
                 $this->infoLog('Customer store ' . $this->code);
                 return true;
-            } else {
-                return false;
             }
+            return false;
         } catch (\Exception $e) {
             $this->errorLog('Customer store', $e);
             return false;
         }
     }
+
     public function update()
     {
         try {
             $this->validate();
             $customer = Customer::updateOrCreate(
-                ['type_code' => $this->type_code,
-                    'code' => $this->code],
-                ['name' => $this->name,
-                    'phone' => $this->phone,
-                    'email' => $this->email,
-                    'address' => $this->address]
+                ['type_code' => $this->type_code, 'code' => $this->code],
+                ['name' => $this->name, 'phone' => $this->phone, 'email' => $this->email, 'address' => $this->address]
             );
-            $this->infoLog('Customer update' . $this->code);
+            $this->infoLog('Customer update ' . $this->code);
             return true;
         } catch (\Exception $e) {
             $this->errorLog('Customer update', $e);
             return false;
         }
     }
+
     public function destroy($id)
     {
-        try {
-            $customer = Customer::find($id);
+        return $this->performAction($id, function ($customer) {
             $customer->delete();
-            $this->infoLog('Customer update' . $this->code);
-            return true;
-        } catch (\Exception $e) {
-            $this->errorLog('Customer update', $e);
-            return false;
+        }, 'Customer destroy');
+    }
+
+    public function estado($id)
+    {
+        return $this->performAction($id, function ($customer) {
+            $customer->isActive = !$customer->isActive;
+            $customer->save();
+        }, 'Customer estado');
+    }
+
+    private function populateCustomerData($data)
+    {
+        if ($this->type_code == 'dni') {
+            $this->name = $data->nombre;
+        } elseif ($this->type_code == 'ruc') {
+            $this->name = $data->razon_social;
+            $this->address = $data->direccion;
         }
     }
-    public function estado($id)
+
+    private function updateCustomerFields(Customer $customer)
+    {
+        $this->phone = $customer->phone;
+        $this->email = $customer->email;
+        $this->address = $customer->address;
+        $this->customer_id = $customer->id;
+    }
+
+    private function performAction($id, callable $action, $logMessage)
     {
         try {
             $customer = Customer::find($id);
-            $customer->isActive = !$customer->isActive;
-            $customer->save();
-            $this->infoLog('Customer update' . $this->code);
+            $action($customer);
+            $this->infoLog($logMessage . ' ' . $this->code);
             return true;
         } catch (\Exception $e) {
-            $this->errorLog('Customer update', $e);
+            $this->errorLog($logMessage, $e);
             return false;
         }
     }

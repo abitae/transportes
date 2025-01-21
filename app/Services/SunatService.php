@@ -68,92 +68,65 @@ class SunatService
         return $api;
     }
     //Facturas/Boletas
+    private function setCommonInvoiceData($invoice, $data)
+    {
+        return $invoice
+            ->setUblVersion($data['ublVersion'] ?? '2.1')
+            ->setTipoDoc($data['tipoDoc'] ?? null)
+            ->setSerie($data['serie'] ?? null)
+            ->setCorrelativo($data['correlativo'] ?? null)
+            ->setFechaEmision(new DateTime($data['fechaEmision']) ?? null)
+            ->setTipoMoneda($data['tipoMoneda'] ?? null)
+            ->setCompany($this->getCompany($data['company']))
+            ->setClient($this->getClient($data['client']))
+            ->setMtoOperGravadas($data['mtoOperGravadas'])
+            ->setMtoIGV($data['mtoIGV'])
+            ->setTotalImpuestos($data['totalImpuestos'])
+            ->setValorVenta($data['valorVenta'])
+            ->setSubTotal($data['subTotal'])
+            ->setRedondeo($data['redondeo'])
+            ->setMtoImpVenta($data['mtoImpVenta'])
+            ->setDetails($this->getDetails($data['details']))
+            ->setLegends($this->getLegends($data));
+    }
+
     public function getInvoce($data)
     {
-        //dd($data);
         $invoice = (new Invoice())
-            ->setUblVersion($data['ublVersion'] ?? '2.1')
-            ->setTipoOperacion($data->tipoOperacion ?? null) // Venta - Catalog. 51
-            ->setTipoDoc($data->tipoDoc ?? null)             // Factura - Catalog. 01
-            ->setSerie($data->serie ?? null)
-            ->setCorrelativo($data->correlativo ?? null)
-            ->setFechaEmision(new DateTime($data->fechaEmision) ?? null) // Zona horaria: Lima
-            ->setFormaPago(new FormaPagoContado())                       // FormaPago: Contado
-            ->setTipoMoneda($data->tipoMoneda ?? null)                   // Sol - Catalog. 02
-            ->setCompany($this->getCompany($data->company))
-            ->setClient($this->getClient($data->client))
-            //Montos Operaciones
-            ->setMtoOperGravadas($data->mtoOperGravadas)
-            /* ->setMtoOperExoneradas($data['mtoOperExoneradas'])
-        ->setMtoOperInafectas($data['mtoOperInafecto'])
-        ->setMtoOperExportacion($data['mtoOperExportacion'])
-        ->setMtoOperGratuitas($data['mtoOperGratuitas']) */
-            //Impuestos
-            ->setMtoIGV($data->mtoIGV)
-            /* ->setMtoIGVGratuitas($data['mtoIGVGratuitas'])
-        ->setIcbper($data['icbper']) */
-            ->setTotalImpuestos($data->totalImpuestos)
-            //Totales
-            ->setValorVenta($data->valorVenta)
-            ->setSubTotal($data->subTotal)
-            ->setRedondeo($data->redondeo)
-            ->setMtoImpVenta($data->mtoImpVenta)
+            ->setTipoOperacion($data->tipoOperacion ?? null)
+            ->setFormaPago(new FormaPagoContado());
 
-            //Productos
-            ->setDetails($this->getDetails($data->details))
-            //Leyendas
-            ->setLegends($this->getLegends($data));
-        //detraccion
+        $invoice = $this->setCommonInvoiceData($invoice, $data);
+
         if ($data->tipoOperacion == '1001') {
             $invoice->setDetraccion(
                 (new Detraction())
-                    ->setCodBienDetraccion('021') // catalog. 54 Momovimiento de carga
-                    ->setCodMedioPago('001')      // catalog. 59 Deposito en cuenta
+                    ->setCodBienDetraccion('021')
+                    ->setCodMedioPago('001')
                     ->setCtaBanco('0004-3342343243')
                     ->setPercent($data->setPercent)
-                    ->setMount($data->setMount));
+                    ->setMount($data->setMount)
+            );
         }
-        //dd($invoice);
+
         return $invoice;
     }
     //Notas de Credito/Debito
     public function getNote($data)
     {
-        return (new Note())
-            ->setUblVersion($data['ublVersion'] ?? '2.1')
-            ->setTipoDoc($data['tipoDoc'] ?? null) // Factura - Catalog. 01
-            ->setSerie($data['serie'] ?? null)
-            ->setCorrelativo($data['correlativo'] ?? null)
-            ->setFechaEmision(new DateTime($data['fechaEmision']) ?? null) // Zona horaria: Lima
+        $note = (new Note())
             ->setTipDocAfectado($data['tipDocAfectado'] ?? null)
             ->setNumDocfectado($data['numDocfectado'] ?? null)
             ->setCodMotivo($data['codMotivo'] ?? null)
             ->setDesMotivo($data['desMotivo'] ?? null)
-            ->setTipoMoneda($data['tipoMoneda'] ?? null)
-            ->setCompany($this->getCompany($data['company']) ?? null)
-            ->setClient($this->getClient($data['client']) ?? null)
-
-            //Montos Operaciones
-            ->setMtoOperGravadas($data['mtoOperGravadas'])
             ->setMtoOperExoneradas($data['mtoOperExoneradas'])
             ->setMtoOperInafectas($data['mtoOperInafecto'])
             ->setMtoOperExportacion($data['mtoOperExportacion'])
             ->setMtoOperGratuitas($data['mtoOperGratuitas'])
-            //Impuestos
-            ->setMtoIGV($data['mtoIGV'])
             ->setMtoIGVGratuitas($data['mtoIGVGratuitas'])
-            ->setIcbper($data['icbper'])
-            ->setTotalImpuestos($data['totalImpuestos'])
-            //Totales
-            ->setValorVenta($data['valorVenta'])
-            ->setSubTotal($data['subTotal'])
-            ->setRedondeo($data['redondeo'])
-            ->setMtoImpVenta($data['mtoImpVenta'])
+            ->setIcbper($data['icbper']);
 
-            //Productos
-            ->setDetails($this->getDetails($data['details']))
-            //Leyendas
-            ->setLegends($this->getLegends($data['legends']));
+        return $this->setCommonInvoiceData($note, $data);
     }
     //Guias de Remicion/Transportista
     public function getDespatch($data)
@@ -172,7 +145,6 @@ class SunatService
     }
     public function getCompany($data)
     {
-        //dd($data);
         $company = (new Company())
             ->setRuc($data->ruc ?? null)
             ->setRazonSocial($data->razonSocial ?? null)
@@ -182,7 +154,6 @@ class SunatService
     }
     public function getAddress($data)
     {
-        // Emisor
         $address = (new Address())
             ->setUbigueo('150101')
             ->setDepartamento('LIMA')
@@ -193,25 +164,23 @@ class SunatService
             ->setCodLocal('0000'); // Codigo de establecimiento asignado por SUNAT, 0000 por defecto.
         return $address;
     }
+    private function setCommonClientData($client, $data)
+    {
+        return $client
+            ->setNumDoc($data->code ?? $data->numDoc ?? null)
+            ->setRznSocial($data->name ?? null)
+            ->setAddress($this->getAddress($data->address));
+    }
+
     public function getClient($data)
     {
-        // Cliente
-        //dd($data);
+        $client = new Client();
         if ($data->type_code == 'ruc') {
-            $client = (new Client())
-                ->setTipoDoc('6' ?? null)
-                ->setNumDoc($data->code ?? null)
-                ->setRznSocial($data->name ?? null)
-                ->setAddress($this->getAddress($data->address));
+            $client->setTipoDoc('6' ?? null);
         } else {
-            $client = (new Client())
-                ->setTipoDoc('1' ?? null)
-                ->setNumDoc($data->numDoc ?? null)
-                ->setRznSocial($data->name ?? null)
-                ->setAddress($this->getAddress($data->address));
+            $client->setTipoDoc('1' ?? null);
         }
-        //dd($client);
-        return $client;
+        return $this->setCommonClientData($client, $data);
     }
     public function getDetails($datas)
     {
@@ -237,25 +206,14 @@ class SunatService
     }
     public function getLegends($data)
     {
+        $gree_legends = [
+            ["code" => "1000", "value" => $data->monto_letras],
+        ];
 
         if ($data->tipoOperacion == '1001') {
-            $gree_legends = [
-                ["code" => "1000",
-                    "value" => $data->monto_letras],
-                [
-                    "code"  => "2006",
-                    "value" => "Operación sujeta a detracción",
-                ],
-            ];
-            
-        } else {
-            $gree_legends = [
-                ["code" => "1000",
-                    "value" => $data->monto_letras],
-            ];
-
+            $gree_legends[] = ["code" => "2006", "value" => "Operación sujeta a detracción"];
         }
-        
+
         return $gree_legends;
     }
     //guias
@@ -338,9 +296,7 @@ class SunatService
     public function sunatResponse($result)
     {
         $response['success'] = $result->isSuccess();
-        //dd($response);
         if (! $response['success']) {
-
             $response['error'] = [
                 'code'    => $result->getError()->getCode(),
                 'message' => $result->getError()->getMessage(),
@@ -356,9 +312,6 @@ class SunatService
             'notes'       => $cdr->getNotes(),
             'cdrZip'      => base64_encode($result->getCdrZip()),
         ];
-        // Guardamos el CDR
-        //file_put_contents('R-' . $invoice->getName() . '.zip', $result->getCdrZip());
-        //Storage::disk('public')->put('cdr/'.'R-' .$invoice->company->ruc.'-'.$invoice->tipoDoc.'-'.$invoice->serie.'-'.$invoice->correlativo.'.zip', $result->getCdrZip());
 
         return $response;
     }
@@ -398,7 +351,6 @@ class SunatService
         $report   = new HtmlReport('report', $twigOptions);
         $resolver = new DefaultTemplateResolver();
         $report->setTemplate($resolver->getTemplate($invoice));
-        //$report->setTemplate('factura.html.twig');
         $ruc     = $invoice->getCompany()->getRuc();
         $company = ModelsCompany::where('ruc', $ruc)
             ->where('user_id', Auth::user()->id)
@@ -431,18 +383,10 @@ class SunatService
         $company = ModelsCompany::where('ruc', $ruc)
             ->where('user_id', Auth::user()->id)
             ->first();
-        //$report = new PdfReport($htmlReport);
-        //$report->setOptions([
-        //   'no-outline',
-        //    'viewport-size' => '1280x1024',
-        //    'page-width' => '21cm',
-        //    'page-height' => '29.7cm',
-        //]);
-        //$report->setBinPath(env('WKHTMLTOPDF_PATH')); // Ruta relativa o absoluta de wkhtmltopdf
         $params = [
             'system' => [
                 'logo' => Storage::get($company->logo_path), // Logo de Empresa
-                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=',    // Valor Resumen
+                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=',
             ],
             'user'   => [
                 'header' => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
@@ -454,7 +398,5 @@ class SunatService
                 'footer' => '<p>Nro Resolucion: <b>3232323</b></p>',
             ],
         ];
-        //$pdf = $report->render($invoice, $params);
-        //Storage::put('invoice/' . $invoice->getName() . '.pdf', $pdf);
     }
 }

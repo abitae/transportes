@@ -1,11 +1,12 @@
 <?php
-
 namespace App\Livewire\Package;
 
 use App\Livewire\Forms\CustomerForm;
+use App\Livewire\Forms\EntryCajaForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
+use App\Traits\InvoiceTrait;
 use App\Traits\LogCustom;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -15,9 +16,9 @@ use Mary\Traits\Toast;
 
 class DeliverPackageLive extends Component
 {
-    use LogCustom;
-    use Toast;
-    use WithPagination, WithoutUrlPagination;
+    use LogCustom, Toast, WithPagination, WithoutUrlPagination, InvoiceTrait;
+
+    public EntryCajaForm $entryForm;
     public CustomerForm $customerFact;
     public $title = 'Entrega paquetes';
     public $sub_title = 'Modulo de entrega de paquetes';
@@ -37,6 +38,7 @@ class DeliverPackageLive extends Component
     public $tipo_comprobante = 'TICKET';
     public $caja;
     public bool $modalConfimation;
+
     public function mount()
     {
         $this->caja = Caja::where('user_id', Auth::user()->id)
@@ -45,22 +47,28 @@ class DeliverPackageLive extends Component
         if (!$this->caja) {
             $this->redirectRoute('caja.index');
         }
-        $this->sucursal_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
-        $this->date_ini = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
-        $this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
+        $this->sucursal_id = Sucursal::where('isActive', true)
+            ->whereNotIn('id', [Auth::user()->sucursal->id])
+            ->first()->id;
+        $this->date_ini = now()->setTimezone('America/Lima')->format('Y-m-d');
+        $this->date_traslado = now()->setTimezone('America/Lima')->format('Y-m-d');
     }
+
     public function render()
     {
-        $sucursals = Sucursal::where('isActive', true)->whereNot('id', [Auth::user()->sucursal->id])->get();
+        $sucursals = Sucursal::where('isActive', true)
+            ->whereNot('id', [Auth::user()->sucursal->id])
+            ->get();
         $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
             ->where('sucursal_id', $this->sucursal_id)
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'RECIBIDO')
             ->where('isHome', false)
-            ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
-            )->paginate($this->perPage, '*', 'page');
+            ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%'))
+            ->paginate($this->perPage, '*', 'page');
         return view('livewire.package.deliver-package-live', compact('encomiendas', 'sucursals'));
     }
+
     public function detailEncomienda(Encomienda $encomienda)
     {
         $this->encomienda = $encomienda;
@@ -72,26 +80,56 @@ class DeliverPackageLive extends Component
         $this->modalDeliver = !$this->modalDeliver;
         $this->encomienda = $encomienda;
     }
+
     public function deliverPaquetes()
     {
-        //dd($this->encomienda);
         if ($this->encomienda->isHome) {
             $this->pin = 123;
         }
-        if ($this->encomienda->destinatario->code == $this->document and $this->encomienda->pin == $this->pin) {
-
-            //$this->customerFact->setCustomer($this->encomienda->destinatario);
+        if ($this->encomienda->destinatario->code == $this->document && $this->encomienda->pin == $this->pin) {
+            $this->customerFact->setCustomer($this->encomienda->destinatario);
             $this->estado_pago = $this->encomienda->estado_pago;
             $this->modalDeliver = false;
             $this->modalConfimation = true;
         } else {
-
+            $this->toast('error', 'Datos incorrectos');
         }
     }
+
     public function confirmEncomienda()
     {
-        dump($this->encomienda, $this->estado_pago, $this->tipo_comprobante);
-        
+        if ($this->estado_pago == 'PAGADO') {
+            $this->updateEncomiendaStatus('ENTREGADO');
+            $this->toast('success', 'Paquete entregado correctamente');
+        } elseif ($this->tipo_comprobante != 'TICKET') {
+            $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
+            $this->setInvoice($this->encomienda);
+            $this->entryForm->fill([
+                'caja_id' => $this->caja->id,
+                'monto_entry' => $this->encomienda->monto,
+                'description' => $this->encomienda->code,
+                'tipo' => $this->encomienda->tipo_comprobante,
+            ]);
+            if ($this->entryForm->store()) {
+                $this->entryForm->reset();
+            } else {
+                $this->error('Error, verifique los datos!');
+            }
+        }
+        $this->modalConfimation = false;
+    }
 
+    private function updateEncomiendaStatus($status, $tipo_comprobante = null)
+    {
+        $this->encomienda->estado_encomienda = $status;
+        if ($tipo_comprobante) {
+            $this->encomienda->tipo_comprobante = $tipo_comprobante;
+        }
+        $this->encomienda->save();
+    }
+
+    public function searchFacturacion()
+    {
+        $this->customerFact->store();
     }
 }

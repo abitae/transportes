@@ -224,13 +224,13 @@
             </div>
             @php
             $pagos = [
-            ['id' => 1, 'name' => 'PAGADO'],
-            ['id' => 2, 'name' => 'CONTRA ENTREGA'],
+            ['id' => 'PAGADO', 'name' => 'PAGADO'],
+            ['id' => 'CONTRA ENTREGA', 'name' => 'CONTRA ENTREGA'],
             ];
             $comprobantes = [
-            ['id' => 1, 'name' => 'BOLETA'],
-            ['id' => 2, 'name' => 'FACTURA'],
-            ['id' => 3, 'name' => 'TICKET'],
+            ['id' => 'BOLETA', 'name' => 'BOLETA'],
+            ['id' => 'FACTURA', 'name' => 'FACTURA'],
+            ['id' => 'TICKET', 'name' => 'TICKET'],
             ];
             $docs = [
             ['id' => 'dni', 'name' => 'DNI'],
@@ -245,18 +245,30 @@
                             <x-mary-icon name="s-envelope" class="text-blue-500 text-md" label="DETALLE PAGO" />
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$pagos" option-value="id"
                                 option-label="name" wire:model.live="estado_pago" disabled />
-                            @if ($estado_pago==2)
+                                @if ($estado_pago=='CONTRA ENTREGA')
                             <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="TIPO COMPROBANTE" />
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$comprobantes"
                                 option-value="id" option-label="name" wire:model.live="tipo_comprobante" />
-                            @if ($tipo_comprobante!=3)
+                                @if ($tipo_comprobante!='TICKET')
                             <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="DETALLE COMPROBANTE" />
                             <div class="grid grid-cols-4 gap-2 p-2 border rounded-lg border-sky-500">
                                 <div class="grid col-span-4 pt-2">
                                     <x-mary-input label="Numero de documento" wire:model.live='customerFact.code'>
                                         <x-slot:prepend>
+                                            @php
+                                            if ($tipo_comprobante!='FACTURA') {
+                                            $docsfact = [
+                                            ['id' => 'dni', 'name' => 'DNI'],
+                                            ['id' => 'ruc', 'name' => 'RUC'],
+                                            ];
+                                            }else {
+                                            $docsfact = [
+                                            ['id' => 'ruc', 'name' => 'RUC'],
+                                            ];
+                                            }
+                                            @endphp
                                             <x-mary-select wire:model.live='customerFact.type_code' icon="o-user"
-                                                :options="$docs" class="rounded-e-none" />
+                                                :options="$docsfact" class="rounded-e-none" />
                                         </x-slot:prepend>
                                         <x-slot:append>
                                             <x-mary-button wire:click='searchFacturacion' icon="o-magnifying-glass"

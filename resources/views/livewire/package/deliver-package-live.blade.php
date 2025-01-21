@@ -256,8 +256,20 @@
                                 <div class="grid col-span-4 pt-2">
                                     <x-mary-input label="Numero de documento" wire:model.live='customerFact.code'>
                                         <x-slot:prepend>
+                                            @php
+                                            if ($tipo_comprobante!='FACTURA') {
+                                            $docsfact = [
+                                            ['id' => 'dni', 'name' => 'DNI'],
+                                            ['id' => 'ruc', 'name' => 'RUC'],
+                                            ];
+                                            }else {
+                                            $docsfact = [
+                                            ['id' => 'ruc', 'name' => 'RUC'],
+                                            ];
+                                            }
+                                            @endphp
                                             <x-mary-select wire:model.live='customerFact.type_code' icon="o-user"
-                                                :options="$docs" class="rounded-e-none" />
+                                                :options="$docsfact" class="rounded-e-none" />
                                         </x-slot:prepend>
                                         <x-slot:append>
                                             <x-mary-button wire:click='searchFacturacion' icon="o-magnifying-glass"

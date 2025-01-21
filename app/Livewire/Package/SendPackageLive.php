@@ -146,13 +146,16 @@ class SendPackageLive extends Component
                 $p = SucursalConfiguration::where('isActive', true)
                     ->where('sucursal_id', Auth::user()->sucursal->id)
                     ->pluck('sucursal_destino_id');
+                if ($p->isEmpty()) {
+                    return redirect()->route('caja.index');
+                }else{
+                    $this->sucursal_dest_id = Sucursal::where('isActive', true)
+                        ->whereIn('id', $p)
+                        ->first()
+                        ->id;
+                }
 
-                $this->sucursal_dest_id = Sucursal::where('isActive', true)
-                    ->whereIn('id', $p)
-                    ->first()
-                    ->id;
-
-                return Excel::download(new ManifiestoExport($ids), 'manifiesto.xlsx');
+               
             } else {
                 $this->error('Error, verifique los datos!');
             }
