@@ -1,25 +1,21 @@
 <div>
     <x-mary-card title="{{ $title }}" subtitle="{{ $sub_title }}" separator>
         <x-slot:menu>
-
-
+            <!-- Opcional: agregar elementos de menú aquí -->
         </x-slot:menu>
         @php
         $headers = [
-        ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1 text-white'],
-        ['key' => 'fecha', 'label' => 'Fecha', 'class' => ''],
-        ['key' => 'sucursal', 'label' => 'Sucursal', 'class' => ''],
-        
-        ['key' => 'destino', 'label' => 'Destino', 'class' => ''],
-        ['key' => 'excel', 'label' => 'Excel', 'class' => ''],
+            ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1 text-white'],
+            ['key' => 'fecha', 'label' => 'Fecha', 'class' => ''],
+            ['key' => 'sucursal', 'label' => 'Sucursal', 'class' => ''],
+            ['key' => 'destino', 'label' => 'Destino', 'class' => ''],
+            ['key' => 'excel', 'label' => 'Excel', 'class' => ''],
         ];
         @endphp
         <x-mary-table :headers="$headers" :rows="$manifiestos" striped with-pagination per-page="perPage"
             :per-page-values="[5, 20, 10, 50]">
             @scope('cell_fecha', $stuff)
-
             <div class="text-xs">{{ $stuff->created_at->format('d-m-Y H:i A') }}</div>
-
             @endscope
             @scope('cell_sucursal', $stuff)
             <div class="text-xs">{{ $stuff->sucursal->name }}</div>

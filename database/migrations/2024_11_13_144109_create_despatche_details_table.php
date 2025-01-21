@@ -13,20 +13,19 @@ return new class extends Migration
     {
         Schema::create('despatche_details', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('despatche_id');
-            $table->foreign('despatche_id')->references('id')->on('despatches');
+            $table->foreignId('despatche_id')->constrained('despatches');
             $table->string('tipAfeIgv');
             $table->string('codProducto');
             $table->string('unidad');
             $table->string('descripcion');
-            $table->decimal('cantidad',8,2);
-            $table->decimal('mtoValorUnitario',8,2);
-            $table->decimal('mtoValorVenta',8,2);
-            $table->decimal('mtoBaseIgv',8,2);
-            $table->decimal('porcentajeIgv',8,2);
-            $table->decimal('igv',8,2);
-            $table->decimal('totalImpuestos',8,2);
-            $table->decimal('mtoPrecioUnitario',8,2);
+            $table->decimal('cantidad', 8, 2);
+            $table->decimal('mtoValorUnitario', 8, 2);
+            $table->decimal('mtoValorVenta', 8, 2);
+            $table->decimal('mtoBaseIgv', 8, 2);
+            $table->decimal('porcentajeIgv', 8, 2);
+            $table->decimal('igv', 8, 2);
+            $table->decimal('totalImpuestos', 8, 2);
+            $table->decimal('mtoPrecioUnitario', 8, 2);
             $table->timestamps();
         });
     }

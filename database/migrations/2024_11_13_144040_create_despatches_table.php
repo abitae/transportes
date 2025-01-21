@@ -13,43 +13,29 @@ return new class extends Migration
     {
         Schema::create('despatches', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('encomienda_id');
-            $table->foreign('encomienda_id')->references('id')->on('encomiendas');
+            $table->foreignId('encomienda_id')->constrained('encomiendas');
             $table->string('tipoDoc');
             $table->string('serie');
             $table->string('correlativo');
             $table->string('fechaEmision');
-            
-            $table->unsignedBigInteger('company_id');
-            $table->foreign('company_id')->references('id')->on('companies');
-
-            $table->unsignedBigInteger('flete_id');
-            $table->foreign('flete_id')->references('id')->on('customers');
-
-            $table->unsignedBigInteger('remitente_id');
-            $table->foreign('remitente_id')->references('id')->on('customers');
-
-            $table->unsignedBigInteger('destinatario_id');
-            $table->foreign('destinatario_id')->references('id')->on('customers');
-
+            $table->foreignId('company_id')->constrained('companies');
+            $table->foreignId('flete_id')->constrained('customers');
+            $table->foreignId('remitente_id')->constrained('customers');
+            $table->foreignId('destinatario_id')->constrained('customers');
             $table->string('codTraslado');
             $table->string('modTraslado');
             $table->string('fecTraslado');
             $table->string('pesoTotal');
             $table->string('undPesoTotal');
-
             $table->string('llegada_ubigueo');
             $table->string('llegada_direccion');
-
             $table->string('partida_ubigueo');
             $table->string('partida_direccion');
-
             $table->string('chofer_tipoDoc');
             $table->string('chofer_nroDoc');
             $table->string('chofer_licencia');
             $table->string('chofer_nombres');
             $table->string('chofer_apellidos');
-
             $table->string('vehiculo_placa');
             $table->string('xml_path')->nullable();
             $table->string('xml_hash')->nullable();

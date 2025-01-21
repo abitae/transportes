@@ -33,10 +33,9 @@ class DespatcheLive extends Component
         $despatch = $sunat->getDespatch($despatche);
         $xml = $api->getXmlSigned($despatch);
         $hash = (new XmlUtils())->getHashSign($xml);
-        $despatche->update([
-            'xml_hash' => $hash,
-            'xml_path' => 'xml/' . $despatche->company->ruc . '-' . $despatche->tipoDoc . '-' . $despatche->serie . '-' . $despatche->correlativo . '.xml'
-        ]);
+        $despatche->xml_hash = $hash;
+        $despatche->xml_path = 'xml/' . $despatche->company->ruc . '-' . $despatche->tipoDoc . '-' . $despatche->serie . '-' . $despatche->correlativo . '.xml';
+        $despatche->save();
         Storage::disk('public')->put($despatche->xml_path, $xml);
     }
 
@@ -61,9 +60,8 @@ class DespatcheLive extends Component
             $response = $sunat->sunatResponse($statusResult);
 
             if ($response['success']) {
-                $despatche->update([
-                    'cdr_path' => 'cdr/' . 'R-' . $despatche->company->ruc . '-' . $despatche->tipoDoc . '-' . $despatche->serie . '-' . $despatche->correlativo . '.zip'
-                ]);
+                $despatche->cdr_path = 'cdr/' . 'R-' . $despatche->company->ruc . '-' . $despatche->tipoDoc . '-' . $despatche->serie . '-' . $despatche->correlativo . '.zip';
+                $despatche->save();
                 Storage::disk('public')->put($despatche->cdr_path, $response['cdrResponse']['cdrZip']);
                 $this->toast('success', 'Guia enviada a la sunat');
             } else {

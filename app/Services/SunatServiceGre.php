@@ -168,6 +168,7 @@ class SunatServiceGre
 
     public function sunatResponse($result)
     {
+        dd($result);
         $response['success'] = $result->isSuccess();
         if (!$response['success']) {
             $response['error'] = [
