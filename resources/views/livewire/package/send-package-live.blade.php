@@ -23,7 +23,7 @@
                 <x-mary-card shadow separator>
                     @php
                     $headers = [
-                    ['key' => 'actions', 'label' => 'Action', 'class' => ''],
+                    ['key' => 'actions', 'label' => 'Acción', 'class' => ''],
                     ['key' => 'estado', 'label' => 'Estado', 'class' => ''],
                     ['key' => 'remitente', 'label' => 'Remitente', 'class' => ''],
                     ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
@@ -36,7 +36,7 @@
                         with-pagination per-page="perPage" :row-decoration="$row_decoration"
                         :per-page-values="[100, 150, 200]">
                         <x-slot:empty>
-                            <x-mary-icon name="o-cube" label="No se encontro registros." />
+                            <x-mary-icon name="o-cube" label="No se encontraron registros." />
                         </x-slot:empty>
                         @scope('cell_remitente', $stuff)
                         <div class="grid grid-cols-1 grid-rows-4 gap-1 text-xs">
@@ -149,13 +149,13 @@
             </div>
         </div>
     </x-mary-card>
-    <x-mary-modal wire:model="modalEnvio" persistent class="backdrop-blur" box-class="max-h-full max-w-128 ">
+    <x-mary-modal wire:model="modalEnvio" persistent class="backdrop-blur" box-class="max-h-full max-w-128">
         <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="ENVIAR PAQUETES" />
         <x-mary-form wire:submit.prevent="sendPaquetes">
             <div class="p-2 border border-green-500 rounded-lg">
                 <div class="grid grid-cols-4 gap-1">
                     <div class="grid col-span-4">
-                        <x-mary-card title="{{ $this->numElementos ?? 0 }}" subtitle="Paquetes selecionados" shadow
+                        <x-mary-card title="{{ $this->numElementos ?? 0 }}" subtitle="Paquetes seleccionados" shadow
                             separator>
                             Sucursal de destino : {{ $this->sucursal_dest->name ?? 'Sucursal destino' }}
                         </x-mary-card>
@@ -172,8 +172,8 @@
                     </div>
                 </div>
                 <x-slot:actions>
-                    <x-mary-button label="Cancel" wire:click="openModal()" class="bg-red-500" />
-                    <x-mary-button type="submit" spinner="sendPaquetes" label="Save" class="bg-blue-500" />
+                    <x-mary-button label="Cancelar" wire:click="openModal()" class="bg-red-500" />
+                    <x-mary-button type="submit" spinner="sendPaquetes" label="Guardar" class="bg-blue-500" />
                 </x-slot:actions>
             </div>
         </x-mary-form>
@@ -204,7 +204,7 @@
             @php
             $headers_paquets = [
             ['key' => 'cantidad', 'label' => 'Cantidad', 'class' => ''],
-            ['key' => 'description', 'label' => 'Descripcion', 'class' => ''],
+            ['key' => 'description', 'label' => 'Descripción', 'class' => ''],
             ['key' => 'peso', 'label' => 'Peso', 'class' => ''],
             ['key' => 'amount', 'label' => 'P.UNIT', 'class' => ''],
             ['key' => 'sub_total', 'label' => 'MONTO', 'class' => ''],
@@ -214,7 +214,7 @@
             </x-mary-table>
         </x-mary-card>
     </x-mary-drawer>
-    <x-mary-modal wire:model="editModal" persistent class="backdrop-blur" box-class="max-h-full max-w-256 ">
+    <x-mary-modal wire:model="editModal" persistent class="backdrop-blur" box-class="max-h-full max-w-256">
         <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="EDITAR ENCOMIENDA" />
         <x-mary-form wire:submit.prevent="updateEncomienda">
             <div class="p-2 border border-green-500 rounded-lg">
@@ -249,7 +249,7 @@
                     </div>
                     @if ($isHome)
                     <div class="grid col-span-3">
-                        <x-mary-input label="Direccion" wire:model='customerFormDest.address' />
+                        <x-mary-input label="Dirección" wire:model='customerFormDest.address' />
                     </div>
                     <div class="grid col-span-1">
                         <x-mary-input label="Celular" wire:model='customerFormDest.phone' />
@@ -257,8 +257,8 @@
                     @endif
                 </div>
                 <x-slot:actions>
-                    <x-mary-button label="Cancel" @click="$wire.editModal = false" class="bg-red-500" />
-                    <x-mary-button type="submit" spinner="updateEncomienda" label="Save" class="bg-blue-500" />
+                    <x-mary-button label="Cancelar" @click="$wire.editModal = false" class="bg-red-500" />
+                    <x-mary-button type="submit" spinner="updateEncomienda" label="Guardar" class="bg-blue-500" />
                 </x-slot:actions>
             </div>
         </x-mary-form>

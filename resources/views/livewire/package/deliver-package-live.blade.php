@@ -18,7 +18,7 @@
                 <x-mary-card shadow separator>
                     @php
                     $headers = [
-                    ['key' => 'actions', 'label' => 'Action', 'class' => ''],
+                    ['key' => 'actions', 'label' => 'Acción', 'class' => ''],
                     ['key' => 'estado', 'label' => 'Estado', 'class' => ''],
                     ['key' => 'remitente', 'label' => 'Remitente', 'class' => ''],
                     ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
@@ -29,7 +29,7 @@
                     <x-mary-table :headers="$headers" :rows="$encomiendas" with-pagination per-page="perPage"
                         :row-decoration="$row_decoration" :per-page-values="[100, 150, 200]">
                         <x-slot:empty>
-                            <x-mary-icon name="o-cube" label="No se encontro registros." />
+                            <x-mary-icon name="o-cube" label="No se encontraron registros." />
                         </x-slot:empty>
                         @scope('cell_estado', $stuff)
                         <x-mary-badge :value="strtoupper('P')"
