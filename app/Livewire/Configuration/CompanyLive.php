@@ -33,7 +33,6 @@ class CompanyLive extends Component
     }
     public function save()
     {
-        //dump($this->companyForm);
         if ($this->companyForm->update()) {
             $this->success('Genial, guardado correctamente!');
         } else {
@@ -42,17 +41,15 @@ class CompanyLive extends Component
     }
     public function saveArchive()
     {
-        if (gettype($this->logo) != 'string' and $this->logo != null) {
-            Storage::delete($this->company->logo_path);
-            $this->company->logo_path = $this->logo->store('company/logo');
-            $this->company->save();
-            $this->success('Genial, guardado correctamente!');
-        } else {
-            $this->error('Error, verifique los datos!');
-        }
-        if (gettype($this->certificado) != 'string' and $this->certificado != null) {
-            Storage::delete($this->company->cert_path);
-            $this->company->cert_path = $this->certificado->store('company/certificado');
+        $this->saveFile($this->logo, 'logo_path', 'company/logo');
+        $this->saveFile($this->certificado, 'cert_path', 'company/certificado');
+    }
+
+    private function saveFile($file, $pathField, $directory)
+    {
+        if (gettype($file) != 'string' && $file != null) {
+            Storage::delete($this->company->$pathField);
+            $this->company->$pathField = $file->store($directory);
             $this->company->save();
             $this->success('Genial, guardado correctamente!');
         } else {

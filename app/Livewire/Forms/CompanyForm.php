@@ -14,6 +14,7 @@ class CompanyForm extends Form
 {
     use WithFileUploads;
     use LogCustom;
+
     public ?Company $company;
     #[Validate(['required', 'string', 'max:11', 'min:11'])]
     public $ruc = '';
@@ -35,55 +36,32 @@ class CompanyForm extends Form
     public $client_secret = '';
     public $production = 0;
 
-    public function setCompany(Company $company){
+    public function setCompany(Company $company)
+    {
         $this->company = $company;
-        $this->ruc = $company->ruc;
-        $this->razonSocial = $company->razonSocial;
-        $this->address = $company->address;
-        $this->email = $company->email;
-        $this->telephone = $company->telephone;
-        $this->sol_user = $company->sol_user;
-        $this->sol_pass = $company->sol_pass;
-        $this->client_id = $company->client_id;
-        $this->client_secret = $company->client_secret;
-        $this->production = $company->production;
+        $this->fill($company->toArray());
     }
+
     public function store()
+    {
+        return $this->saveCompany(new Company());
+    }
+
+    public function update()
+    {
+        return $this->saveCompany($this->company);
+    }
+
+    private function saveCompany(Company $company)
     {
         try {
             $this->validate();
-            $company = Company::create($this->validate());
-            $this->infoLog('Company store ' . Auth::user()->name);
+            $company->fill($this->validate())->save();
+            $this->infoLog('Company ' . ($company->exists ? 'update' : 'store') . ' ' . Auth::user()->name);
             return true;
         } catch (\Exception $e) {
-            $this->errorLog('Company store', $e);
+            $this->errorLog('Company ' . ($company->exists ? 'update' : 'store'), $e);
             return false;
         }
     }
-    public function update()
-    {
-        try {
-
-            $this->company->update(
-                [
-                    'ruc' => $this->ruc,
-                    'razonSocial' => $this->razonSocial,
-                    'address' => $this->address,
-                    'email' => $this->email,
-                    'telephone' => $this->telephone,
-                    'sol_user' => $this->sol_user,
-                    'sol_pass' => $this->sol_pass,
-                    'client_id' => $this->client_id,
-                    'client_secret' => $this->client_secret,
-                    'production' => $this->production,
-                ]
-            );
-            $this->infoLog('Company update ' . Auth::user()->name);
-            return true;
-        } catch (\Exception $e) {
-            $this->errorLog('Company update', $e);
-            return false;
-        }
-    }
-
 }

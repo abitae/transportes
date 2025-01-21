@@ -6,43 +6,17 @@
             <x-mary-button wire:click='save' responsive label="Guardar" class="text-white bg-sky-500" />
         </x-slot:menu>
         <div class="grid grid-cols-2 grid-rows-6 gap-1">
-            <div>
-                <x-mary-input label="Numero de documento" wire:model='companyForm.ruc'>
-                </x-mary-input>
-            </div>
-            <div>
-                <x-mary-input label="Razon Social" wire:model='companyForm.razonSocial'>
-                </x-mary-input>
-            </div>
+            <x-mary-input label="Numero de documento" wire:model='companyForm.ruc' />
+            <x-mary-input label="Razon Social" wire:model='companyForm.razonSocial' />
             <div class="col-span-2">
-                <x-mary-input label="Direccion" wire:model='companyForm.address'>
-                </x-mary-input>
+                <x-mary-input label="Direccion" wire:model='companyForm.address' />
             </div>
-            <div>
-                <x-mary-input label="Email" wire:model='companyForm.email'>
-                </x-mary-input>
-            </div>
-            <div>
-                <x-mary-input label="Telefono" wire:model='companyForm.telephone'>
-                </x-mary-input>
-            </div>
-            <div>
-                <x-mary-input label="sol_user" wire:model='companyForm.sol_user'>
-                </x-mary-input>
-            </div>
-            <div>
-                <x-mary-input type='password' label="sol_pass" wire:model='companyForm.sol_pass'>
-                </x-mary-input>
-            </div>
-            <div>
-                <x-mary-input label="client_id" wire:model='companyForm.client_id'>
-                </x-mary-input>
-            </div>
-            <div>
-                <x-mary-input type='password' label="client_secret" wire:model='companyForm.client_secret'>
-                </x-mary-input>
-            </div>
-
+            <x-mary-input label="Email" wire:model='companyForm.email' />
+            <x-mary-input label="Telefono" wire:model='companyForm.telephone' />
+            <x-mary-input label="sol_user" wire:model='companyForm.sol_user' />
+            <x-mary-input type='password' label="sol_pass" wire:model='companyForm.sol_pass' />
+            <x-mary-input label="client_id" wire:model='companyForm.client_id' />
+            <x-mary-input type='password' label="client_secret" wire:model='companyForm.client_secret' />
         </div>
         <x-mary-icon name="o-envelope" class="w-12 h-12 p-2 text-white bg-orange-500 rounded-full" />
         <x-mary-form wire:submit="saveArchive" separator>
