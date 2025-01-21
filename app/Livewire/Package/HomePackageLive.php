@@ -15,9 +15,8 @@ use Mary\Traits\Toast;
 
 class HomePackageLive extends Component
 {
-    use LogCustom;
-    use Toast;
-    use WithPagination, WithoutUrlPagination;
+    use LogCustom, Toast, WithPagination, WithoutUrlPagination;
+
     public CustomerForm $customerFact;
     public $title = 'Entrega paquetes destino';
     public $sub_title = 'Modulo de entrega de paquetes domicilio';
@@ -37,6 +36,7 @@ class HomePackageLive extends Component
     public $tipo_comprobante;
     public $caja;
     public bool $modalConfimation;
+
     public function mount()
     {
         $this->caja = Caja::where('user_id', Auth::user()->id)
@@ -50,6 +50,7 @@ class HomePackageLive extends Component
         $this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
         $this->tipo_comprobante = 3;
     }
+
     public function render()
     {
         $sucursals = Sucursal::where('isActive', true)->whereNot('id', [Auth::user()->sucursal->id])->get();
@@ -62,6 +63,7 @@ class HomePackageLive extends Component
             )->paginate($this->perPage, '*', 'page');
         return view('livewire.package.home-package-live', compact('encomiendas', 'sucursals'));
     }
+
     public function detailEncomienda(Encomienda $encomienda)
     {
         $this->encomienda = $encomienda;
@@ -73,14 +75,13 @@ class HomePackageLive extends Component
         $this->modalDeliver = !$this->modalDeliver;
         $this->encomienda = Encomienda::find($id);
     }
+
     public function deliverPaquetes()
     {
-        //dd($this->encomienda);
         if ($this->encomienda->isHome) {
             $this->pin = 123;
         }
-        if ($this->encomienda->destinatario->code == $this->document and $this->encomienda->pin == $this->pin) {
-
+        if ($this->encomienda->destinatario->code == $this->document && $this->encomienda->pin == $this->pin) {
             $this->customerFact->setCustomer($this->encomienda->destinatario);
             $this->estado_pago = $this->encomienda->estado_pago;
             $this->modalDeliver = false;
@@ -89,6 +90,7 @@ class HomePackageLive extends Component
 
         }
     }
+
     public function confirmEncomienda()
     {
         try {
@@ -101,6 +103,5 @@ class HomePackageLive extends Component
             $this->error('Error, verifique los datos!');
             return 0;
         }
-
     }
 }

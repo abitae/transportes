@@ -68,10 +68,8 @@
                                 {{ strtoupper($stuff->destinatario->name)}}
                             </div>
                             <div>
-
                                 <x-mary-badge :value="$stuff->sucursal_destinatario->name"
                                     class="text-xs text-white bg-green-500" />
-
                             </div>
                             <div>
                                 <x-mary-badge :value="$stuff->sucursal_destinatario->created_at->format('d/m/Y')"
@@ -113,7 +111,6 @@
                             <div class="row-start-2">
                                 <x-mary-button icon="o-pencil-square" wire:click="editEncomienda({{ $stuff->id }})"
                                     spinner class="text-white bg-green-500 btn-xs" />
-
                             </div>
                             <div class="row-start-2">
                                 <x-mary-button icon="o-no-symbol" wire:click="enableEncomienda({{ $stuff->id }})"
@@ -121,16 +118,12 @@
                                     wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
                                     class="text-white bg-red-500 btn-xs" />
                             </div>
-                            <div class="row-start-2">
-
-                            </div>
                             <div class="row-start-3">
                                 @if ($stuff->ticket)
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
                                     link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
                                     class="text-white bg-cyan-500 btn-xs" />
                                 @endif
-
                             </div>
                             <div class="row-start-3">
                                 @if ($stuff->invoice)
@@ -138,13 +131,11 @@
                                     link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
                                     class="text-white bg-green-500 btn-xs" />
                                 @endif
-
                             </div>
                             <div class="row-start-3">
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
                                     link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
                                     class="text-white bg-blue-500 btn-xs" />
-
                             </div>
                             <div class="row-start-3">
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
@@ -237,7 +228,6 @@
                                 ['id' => 'ruc', 'name' => 'RUC'],
                                 ['id' => 'ce', 'name' => 'CE'],
                                 ];
-
                                 @endphp
                                 <x-mary-select wire:model='customerFormDest.type_code' icon="o-user" :options="$docs"
                                     class="rounded-e-none" />
@@ -249,9 +239,7 @@
                         </x-mary-input>
                     </div>
                     <div class="grid col-span-4">
-                        <x-mary-input label="Nombre/Raz. Social" wire:model='customerFormDest.name'>
-
-                        </x-mary-input>
+                        <x-mary-input label="Nombre/Raz. Social" wire:model='customerFormDest.name' />
                     </div>
                     <div class="grid col-span-4">
                         <hr />
@@ -261,13 +249,10 @@
                     </div>
                     @if ($isHome)
                     <div class="grid col-span-3">
-                        <x-mary-input label="Direccion" wire:model='customerFormDest.address'>
-
-                        </x-mary-input>
+                        <x-mary-input label="Direccion" wire:model='customerFormDest.address' />
                     </div>
                     <div class="grid col-span-1">
-                        <x-mary-input label="Celular" wire:model='customerFormDest.phone'>
-                        </x-mary-input>
+                        <x-mary-input label="Celular" wire:model='customerFormDest.phone' />
                     </div>
                     @endif
                 </div>
@@ -279,6 +264,4 @@
         </x-mary-form>
     </x-mary-modal>
     @endisset
-
-
 </div>

@@ -24,21 +24,14 @@
                         </x-mary-input>
                     </div>
                     <div class="grid col-span-2">
-                        <x-mary-input label="Nombre/Raz. Social" wire:model='customerForm.name'>
-
-                        </x-mary-input>
+                        <x-mary-input label="Nombre/Raz. Social" wire:model='customerForm.name' />
                     </div>
                     <div class="grid col-span-3">
-                        <x-mary-input label="Direccion" wire:model='customerForm.address'>
-
-                        </x-mary-input>
+                        <x-mary-input label="Direccion" wire:model='customerForm.address' />
                     </div>
                     <div class="grid col-span-1">
-                        <x-mary-input label="Celular" wire:model='customerForm.phone'>
-
-                        </x-mary-input>
+                        <x-mary-input label="Celular" wire:model='customerForm.phone' />
                     </div>
-
                 </div>
             </x-mary-step>
             <x-mary-step step="2" text="Destinatario">
@@ -56,9 +49,7 @@
                         </x-mary-input>
                     </div>
                     <div class="grid col-span-2">
-                        <x-mary-input label="Nombre/Raz. Social" wire:model='customerFormDest.name'>
-
-                        </x-mary-input>
+                        <x-mary-input label="Nombre/Raz. Social" wire:model='customerFormDest.name' />
                     </div>
                     <div class="grid col-span-8">
                         <hr />
@@ -68,22 +59,15 @@
                     </div>
                     @if ($isHome)
                     <div class="grid col-span-3">
-                        <x-mary-input label="Direccion" wire:model='customerFormDest.address'>
-
-                        </x-mary-input>
+                        <x-mary-input label="Direccion" wire:model='customerFormDest.address' />
                     </div>
                     <div class="grid col-span-1">
-                        <x-mary-input label="Celular" wire:model='customerFormDest.phone'>
-
-                        </x-mary-input>
+                        <x-mary-input label="Celular" wire:model='customerFormDest.phone' />
                     </div>
                     @endif
-
-
                 </div>
             </x-mary-step>
             <x-mary-step step="3" text="Paquetes">
-
                 <div class="grid grid-cols-8 grid-rows-1 gap-1">
                     <div>
                         <x-mary-input label="CANT." wire:model="cantidad" class="text-xs rounded-r-lg" />
@@ -125,11 +109,9 @@
                             <x-slot:empty>
                                 <x-mary-icon name="o-cube" label="No se encontro registros." />
                             </x-slot:empty>
-
                         </x-mary-table>
                     </div>
                 </div>
-
             </x-mary-step>
             <x-mary-step step="4" text="Destino" data-content="✓" step-classes="!step-success">
                 <div class="grid grid-cols-8 gap-1">
@@ -138,7 +120,6 @@
                             wire:model.live="sucursal_dest_id" />
                     </div>
                     <div class="grid col-span-1">
-
                     </div>
                     <div class="grid col-span-2">
                         @if (!$isHome)
@@ -172,7 +153,6 @@
                     </div>
                     <div class="grid col-span-4">
                         <x-mary-select label="Transportista" icon="o-user" :options="$transportistas" wire:model.live="transportista_id" inline />
-
                     </div>
                     <div class="grid col-span-4">
                         <x-mary-select label="Vehiculo" icon="o-user" :options="$vehiculos" wire:model.live="vehiculo_id" inline />
@@ -218,15 +198,12 @@
                             </div>
                             <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
                             <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped>
-
                             </x-mary-table>
                             <div class="flex justify-end">
                                 <x-mary-icon class="w-12 h-12 p-2 text-white bg-orange-500 rounded-full"
                                     name="o-currency-dollar" label="TOTAL: {{ $paquetes->sum('sub_total') }}" />
                             </div>
-
                         </x-mary-card>
-
                     </div>
                 </div>
             </div>
@@ -255,11 +232,9 @@
                                             ];
                                             }else {
                                             $docsfact = [
-
                                             ['id' => 'ruc', 'name' => 'RUC'],
                                             ];
                                             }
-
                                             @endphp
                                             <x-mary-select wire:model='customerFact.type_code' icon="o-user"
                                                 :options="$docsfact" class="rounded-e-none" />
@@ -294,7 +269,6 @@
     @if ($this->encomienda)
     <x-mary-modal wire:model.live="modalFinal" persistent class="backdrop-blur" box-class="w-full">
         <x-mary-card shadow>
-            
             <div class="grid grid-cols-3 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
                 <div>TICKET
                     <br>
@@ -309,7 +283,6 @@
                         link="/invoice/80mm/{{ $this->encomienda->invoice->id }}" spinner
                         class="text-white bg-cyan-500 btn-xl" />
                     @endif
-
                 </div>
                 <div>GUIA
                     <br>
@@ -344,9 +317,6 @@
                 </div>
             </div>
         </x-mary-card>
-
     </x-mary-modal>
     @endif
-
-
 </div>

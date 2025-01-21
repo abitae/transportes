@@ -2,7 +2,6 @@
     <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator>
         <x-slot:menu>
             <x-mary-input label="Buscar envio" inline wire:model.live='search' />
-            
         </x-slot:menu>
         <div class="grid grid-cols-6 gap-1 shadow-xl">
             <div class="grid col-span-2">
@@ -12,7 +11,6 @@
             <div class="grid col-span-2">
                 <x-mary-datetime label="Fecha" wire:model.live="date_ini" icon="o-calendar" inline />
             </div>
-
         </div>
         <x-mary-menu-separator />
         <div class="grid grid-cols-4 gap-1 shadow-xl">
@@ -102,18 +100,10 @@
                             <div class="row-start-2">
                                 <x-mary-button icon="c-bars-arrow-up" wire:click="openModal({{ $stuff->id }})" spinner
                                     class="text-white bg-yellow-500 btn-xs" />
-                                
                             </div>
                             <div class="row-start-2">
                                 <x-mary-button icon="s-bars-3" wire:click="detailEncomienda({{ $stuff->id }})" spinner
                                     class="text-white btn-xs bg-cyan-500" />
-
-                            </div>
-                            <div class="row-start-2">
-                                
-                            </div>
-                            <div class="row-start-2">
-
                             </div>
                             <div class="row-start-3">
                                 @if ($stuff->ticket)
@@ -121,7 +111,6 @@
                                     link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
                                     class="text-white bg-cyan-500 btn-xs" />
                                 @endif
-
                             </div>
                             <div class="row-start-3">
                                 @if ($stuff->invoice)
@@ -129,20 +118,14 @@
                                     link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
                                     class="text-white bg-green-500 btn-xs" />
                                 @endif
-
                             </div>
                             <div class="row-start-3">
                                 <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
                                     link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
                                     class="text-white bg-blue-500 btn-xs" />
-
-                            </div>
-                            <div class="row-start-3">
-                                
                             </div>
                         </div>
                         @endscope
-                        
                     </x-mary-table>
                 </x-mary-card>
             </div>
@@ -157,7 +140,6 @@
                     <div class="grid col-span-4 pt-2">
                         <x-mary-input label="Numero documento" inline wire:model='document' />
                     </div>
-
                     @if (!$this->encomienda->isHome)
                     <div class="grid col-span-4 pt-2">
                         <x-mary-icon name="o-hashtag" label="PING" />
@@ -172,7 +154,6 @@
             </div>
         </x-mary-form>
     </x-mary-modal>
-
     <x-mary-drawer wire:model="showDrawer" title="Detalle de encomienda" subtitle="Code {{ $encomienda->code }}"
         separator with-close-button close-on-escape class="w-11/12 lg:w-2/3" right>
         <x-mary-card shadow>
@@ -235,11 +216,9 @@
                                 <div class="col-span-3">{{ $encomienda->sucursal_destino->name ?? 'sucursal' }}</div>
                             </div>
                             <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
-
                             <x-mary-table :headers="$headers_paquets" :rows="$encomienda->paquetes" striped>
                             </x-mary-table>
                         </x-mary-card>
-
                     </div>
                 </div>
             </div>
@@ -264,10 +243,8 @@
                     <div class="grid col-span-8 space-y-2">
                         <x-mary-card shadow>
                             <x-mary-icon name="s-envelope" class="text-blue-500 text-md" label="DETALLE PAGO" />
-
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$pagos" option-value="id"
                                 option-label="name" wire:model.live="estado_pago" disabled />
-
                             @if ($estado_pago==2)
                             <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="TIPO COMPROBANTE" />
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$comprobantes"

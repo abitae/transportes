@@ -16,65 +16,76 @@ use Mary\Traits\Toast;
 
 class CajaLive extends Component
 {
-    use Toast;
-    use CajaTrait, UtilsTrait;
-    use WithPagination, WithoutUrlPagination;
+    use Toast, CajaTrait, UtilsTrait, WithPagination, WithoutUrlPagination;
+
     public CajaForm $cajaForm;
     public EntryCajaForm $entryForm;
     public ExitCajaForm $exitForm;
     public string $title = 'Caja';
     public string $sub_title = 'Modulo de caja';
 
-    public bool $showHistory = false; //caja inicial cerrada
-    public bool $openCaja = false; //caja inicial cerrada
-    public bool $modalCaja = false; //modal cerrado
-    public bool $modalEntry = false; //modal cerrado
-    public bool $modalExit = false; //modal cerrado
+    public bool $showHistory = false;
+    public bool $openCaja = false;
+    public bool $modalCaja = false;
+    public bool $modalEntry = false;
+    public bool $modalExit = false;
 
     public $fechaActual;
     public $caja;
     public int $perPage = 10;
+
     public function mount()
     {
         $this->fechaActual = $this->dateNow('Y-m-d');
         $this->caja = $this->cajaIsActive(Auth::user());
-        if ($this->caja) {
-            $this->openCaja = true;
-        }
+        $this->openCaja = (bool) $this->caja;
     }
+
     public function render()
     {
         $cajas = $this->cajaListPaginate(Auth::user(), $this->perPage);
-
         return view('livewire.caja.caja-live', compact('cajas'));
     }
+
     public function openModal()
     {
         $this->cajaForm->reset();
         $this->modalCaja = true;
     }
+
     public function save()
     {
         if ($this->openCaja) {
-            if ($this->cajaForm->update($this->caja) and $this->cajaForm->monto_cierre == ($this->caja->monto_apertura + $this->caja->entries->sum('monto_entry') - $this->caja->exits->sum('monto_exit'))) {
-                $this->success('Genial, actualizado correctamente!');
-                $this->modalCaja = false;
-                $this->openCaja = false;
-            } else {
-                $this->error('Error, verifique los datos!');
-            }
+            $this->updateCaja();
         } else {
-            $this->caja = $this->cajaForm->store();
-            if ($this->caja) {
-                $this->success('Genial, guardado correctamente!');
-                $this->modalCaja = false;
-                $this->openCaja = true;
-            } else {
-                $this->error('Error, verifique los datos!');
-                $this->modalEntry = false;
-            }
+            $this->storeCaja();
         }
     }
+
+    private function updateCaja()
+    {
+        if ($this->cajaForm->update($this->caja) && $this->cajaForm->monto_cierre == ($this->caja->monto_apertura + $this->caja->entries->sum('monto_entry') - $this->caja->exits->sum('monto_exit'))) {
+            $this->success('Genial, actualizado correctamente!');
+            $this->modalCaja = false;
+            $this->openCaja = false;
+        } else {
+            $this->error('Error, verifique los datos!');
+        }
+    }
+
+    private function storeCaja()
+    {
+        $this->caja = $this->cajaForm->store();
+        if ($this->caja) {
+            $this->success('Genial, guardado correctamente!');
+            $this->modalCaja = false;
+            $this->openCaja = true;
+        } else {
+            $this->error('Error, verifique los datos!');
+            $this->modalEntry = false;
+        }
+    }
+
     public function entryCaja()
     {
         if ($this->openCaja) {
@@ -89,6 +100,7 @@ class CajaLive extends Component
             }
         }
     }
+
     public function exitCaja()
     {
         if ($this->openCaja) {
@@ -103,6 +115,7 @@ class CajaLive extends Component
             }
         }
     }
+
     public function printCaja(Caja $caja)
     {
         return $this->cajaPrint($caja);

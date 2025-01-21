@@ -15,10 +15,8 @@ class EncomiendaForm extends Form
     public $user_id;
     public $transportista_id;
     public $vehiculo_id;
-
     public $customer_id;
     public $sucursal_id;
-
     public $customer_dest_id;
     public $sucursal_dest_id;
     public $customer_fact_id;
@@ -34,11 +32,11 @@ class EncomiendaForm extends Form
     public $pin;
     public $isReturn;
     public $isHome;
+
     public function store($paquetes)
     {
         try {
-            $paquetesKey = collect([]);
-            $encomienda = Encomienda::create([
+            $encomiendaData = [
                 'code' => $this->code,
                 'user_id' => $this->user_id,
                 'transportista_id' => $this->transportista_id,
@@ -60,27 +58,19 @@ class EncomiendaForm extends Form
                 'pin' => $this->pin,
                 'isReturn' => $this->isReturn,
                 'isHome' => $this->isHome,
-            ]);
+            ];
+
+            $encomienda = Encomienda::create($encomiendaData);
 
             foreach ($paquetes as $paquete) {
-                
-                Paquete::create([
-                    'cantidad' => $paquete['cantidad'],
-                    'und_medida' => $paquete['und_medida'],
-                    'description' => $paquete['description'],
-                    'peso' => $paquete['peso'],
-                    'amount' => $paquete['amount'],
-                    'sub_total' => $paquete['sub_total'],
-                    'encomienda_id' => $encomienda->id,
-                ]);
+                Paquete::create(array_merge($paquete, ['encomienda_id' => $encomienda->id]));
             }
-            //dump($paquetes);
+
             $this->infoLog('Encomienda store' . $encomienda->id);
             return $encomienda;
         } catch (\Exception $e) {
             $this->errorLog('Encomienda store', $e);
             return null;
         }
-
     }
 }
