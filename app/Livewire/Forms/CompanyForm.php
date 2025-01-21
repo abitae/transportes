@@ -34,21 +34,15 @@ class CompanyForm extends Form
     public $client_id = '';
     #[Validate(['required', 'string'])]
     public $client_secret = '';
-    public $production = 0;
 
     public function setCompany(Company $company)
     {
         $this->company = $company;
         $this->fill($company->toArray());
     }
-
-    public function store()
-    {
-        return $this->saveCompany(new Company());
-    }
-
     public function update()
     {
+        //($this->company);
         return $this->saveCompany($this->company);
     }
 

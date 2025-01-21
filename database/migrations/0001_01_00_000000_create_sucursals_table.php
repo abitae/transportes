@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('sucursals', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
+            $table->string('serie')->nullable();
+            $table->string('color')->nullable();
             $table->string('name');
             $table->string('address');
             $table->string('phone');
             $table->string('email');
+            
             $table->boolean('isActive')->default(true);
             $table->timestamps();
         });

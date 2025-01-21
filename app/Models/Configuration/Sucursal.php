@@ -17,6 +17,8 @@ class Sucursal extends Model
         'address',
         'phone',
         'email',
+        'serie',
+        'color',
         'isActive',
     ];
     public function encomiendas_remitente()

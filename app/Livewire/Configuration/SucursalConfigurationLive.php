@@ -11,6 +11,8 @@ use Livewire\Component;
 
 class SucursalConfigurationLive extends Component
 {
+    public $title = 'Configuracion';
+    public $sub_title = 'Configuracion de sucursal';
     public $sucursal_destino_id, $vehiculo_id, $transportista_id, $date_config;
     public function render()
     {

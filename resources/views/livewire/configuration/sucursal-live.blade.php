@@ -24,9 +24,10 @@
                         ['key' => 'id', 'label' => '#', 'class' => 'bg-blue-500 w-1'],
                         ['key' => 'code', 'label' => 'Code', 'class' => ''],
                         ['key' => 'name', 'label' => 'Name', 'class' => ''],
+                        ['key' => 'serie', 'label' => 'Serie', 'class' => ''],
+                        ['key' => 'color', 'label' => 'Color', 'class' => ''],
                         ['key' => 'address', 'label' => 'Direccion', 'class' => ''],
                         ['key' => 'phone', 'label' => 'Telefono', 'class' => ''],
-                        ['key' => 'email', 'label' => 'Email', 'class' => ''],
                         ['key' => 'isActive', 'label' => 'isActive', 'class' => ''],
                     ];
                     $row_decoration = [
@@ -69,6 +70,12 @@
                     </div>
                     <div class="grid col-span-4 pt-2">
                         <x-mary-input label="Nombre" inline wire:model='sucursalForm.name' />
+                    </div>
+                    <div class="grid col-span-4 pt-2">
+                        <x-mary-input label="Serie" inline wire:model='sucursalForm.serie' />
+                    </div>
+                    <div class="grid col-span-4 pt-2">
+                        <x-mary-colorpicker wire:model="sucursalForm.color" />
                     </div>
                     <div class="grid col-span-4 pt-2">
                         <x-mary-input label="Direccion" inline wire:model='sucursalForm.address' />

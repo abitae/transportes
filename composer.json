@@ -15,7 +15,7 @@
         "livewire/volt": "^1.6",
         "luecano/numero-a-letras": "^4.0",
         "maatwebsite/excel": "^3.1",
-        "robsontenorio/mary": "^1.35",
+        "robsontenorio/mary": "^1.41",
         "spatie/browsershot": "^4.3",
         "spatie/laravel-pdf": "^1.5",
         "spatie/laravel-permission": "^6.9"
