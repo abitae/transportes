@@ -228,7 +228,9 @@ class RegisterLive extends Component
         $this->encomienda = $this->encomiendaForm->store($this->paquetes);
         
         if ($this->encomienda) {
-            $this->storeEntry();
+            if ($this->encomienda->estado_pago != 'CONTRA ENTREGA') {
+                $this->storeEntry();
+            }
             $this->storeInvoce($this->encomienda);
             $this->resetForms();
             $this->success('Genial, ingresado correctamente!');

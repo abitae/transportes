@@ -198,22 +198,32 @@
                         <x-mary-card shadow>
                             <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
                             <div class="grid grid-cols-5 grid-rows-3 gap-1 bg-green-200 rounded">
-                                <div class="col-span-3">{{ $encomienda->remitente->name ?? 'name' }}</div>
-                                <div class="row-start-2">{{ strtoupper($encomienda->remitente->type_code) ?? 'type_code'
+                                <div class="col-span-3">{{ $encomienda->remitente->name ?? 'name' }}
+                                </div>
+                                <div class="row-start-2">{{
+                                    strtoupper($encomienda->remitente->type_code) ?? 'type_code'
                                     }}
                                 </div>
-                                <div class="row-start-2">{{ $encomienda->remitente->code ?? 'code' }}</div>
-                                <div class="row-start-2">{{ $encomienda->remitente->phone ?? 'phone' }}</div>
-                                <div class="col-span-3">{{ $encomienda->sucursal_remitente->name ?? 'sucursal' }}</div>
+                                <div class="row-start-2">{{ $encomienda->remitente->code ?? 'code' }}
+                                </div>
+                                <div class="row-start-2">{{ $encomienda->remitente->phone ?? 'phone' }}
+                                </div>
+                                <div class="col-span-3">{{ $encomienda->sucursal_remitente->name ??
+                                    'sucursal' }}</div>
                             </div>
                             <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="DESTINATARIO" />
                             <div class="grid grid-cols-5 grid-rows-3 gap-1 bg-red-100 rounded">
-                                <div class="col-span-3">{{ $encomienda->destinatario->name ?? 'name' }}</div>
-                                <div class="row-start-2">{{ strtoupper($encomienda->destinatario->type_code) ??
+                                <div class="col-span-3">{{ $encomienda->destinatario->name ?? 'name' }}
+                                </div>
+                                <div class="row-start-2">{{
+                                    strtoupper($encomienda->destinatario->type_code) ??
                                     'type_code' }}</div>
-                                <div class="row-start-2">{{ $encomienda->destinatario->code ?? 'code' }}</div>
-                                <div class="row-start-2">{{ $encomienda->destinatario->phone ?? 'phone' }}</div>
-                                <div class="col-span-3">{{ $encomienda->sucursal_destino->name ?? 'sucursal' }}</div>
+                                <div class="row-start-2">{{ $encomienda->destinatario->code ?? 'code' }}
+                                </div>
+                                <div class="row-start-2">{{ $encomienda->destinatario->phone ?? 'phone'
+                                    }}</div>
+                                <div class="col-span-3">{{ $encomienda->sucursal_destino->name ??
+                                    'sucursal' }}</div>
                             </div>
                             <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
                             <x-mary-table :headers="$headers_paquets" :rows="$encomienda->paquetes" striped>
@@ -245,11 +255,11 @@
                             <x-mary-icon name="s-envelope" class="text-blue-500 text-md" label="DETALLE PAGO" />
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$pagos" option-value="id"
                                 option-label="name" wire:model.live="estado_pago" disabled />
-                                @if ($estado_pago=='CONTRA ENTREGA')
+                            @if ($estado_pago=='CONTRA ENTREGA')
                             <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="TIPO COMPROBANTE" />
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$comprobantes"
                                 option-value="id" option-label="name" wire:model.live="tipo_comprobante" />
-                                @if ($tipo_comprobante!='TICKET')
+                            @if ($tipo_comprobante!='TICKET')
                             <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="DETALLE COMPROBANTE" />
                             <div class="grid grid-cols-4 gap-2 p-2 border rounded-lg border-sky-500">
                                 <div class="grid col-span-4 pt-2">

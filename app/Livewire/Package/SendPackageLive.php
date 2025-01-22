@@ -12,6 +12,7 @@ use App\Models\Package\Encomienda;
 use App\Models\Package\Manifiesto;
 use App\Traits\CajaTrait;
 use App\Traits\LogCustom;
+use App\Traits\UtilsTrait;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -21,7 +22,7 @@ use Mary\Traits\Toast;
 class SendPackageLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
-    use CajaTrait;
+    use CajaTrait, UtilsTrait;
     public $title                = 'Enviar paquetes';
     public $sub_title            = 'Modulo de envio de paquetes';
     public $search               = '';
