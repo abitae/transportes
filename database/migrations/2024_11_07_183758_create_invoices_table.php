@@ -42,6 +42,8 @@ return new class extends Migration
             $table->string('cdr_code')->nullable();
             $table->string('cdr_note')->nullable();
             $table->string('cdr_path')->nullable();
+            $table->string('errorCode')->nullable();
+            $table->string('errorMessage')->nullable();
             $table->timestamps();
         });
     }

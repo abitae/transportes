@@ -14,24 +14,29 @@
             </x-slot:actions>
         </x-mary-form>
     </x-mary-card>
-    @php
-    $headers = [
-    ['key' => 'id', 'label' => '#'],
-    ['key' => 'destino', 'label' => 'DESTINO'],
-    ['key' => 'transportista', 'label' => 'TRANSPORTISTA'],
-    ['key' => 'vehiculo', 'label' => 'VEHICULO'],
-    ];
-    @endphp
-
-    <x-mary-table :headers="$headers" :rows="$configurations" striped class="mt-6">
-        @scope('cell_destino', $config)
-        <p>{{ $config->destino->name }}</p> 
-        @endscope
-        @scope('cell_transportista', $config)
-        <x-mary-badge :value="$config->transportista->name" class="badge-primary" />
-        @endscope
-        @scope('cell_vehiculo', $config)
-        <x-mary-badge :value="$config->vehiculo->name" class="badge-primary" />
-        @endscope
-    </x-mary-table>
+    <div class="grid grid-cols-4 space-x-2">
+        <div class="grid col-span-4 pt-2">
+            @php
+            $headers = [
+            ['key' => 'id', 'label' => '#'],
+            ['key' => 'destino', 'label' => 'DESTINO'],
+            ['key' => 'transportista', 'label' => 'TRANSPORTISTA'],
+            ['key' => 'vehiculo', 'label' => 'VEHICULO'],
+            ];
+            @endphp
+            <x-mary-card shadow separator>
+                <x-mary-table :headers="$headers" :rows="$configurations" striped class="mt-6">
+                    @scope('cell_destino', $config)
+                    <p>{{ $config->destino->name }}</p>
+                    @endscope
+                    @scope('cell_transportista', $config)
+                    <x-mary-badge :value="$config->transportista->name" class="badge-primary" />
+                    @endscope
+                    @scope('cell_vehiculo', $config)
+                    <x-mary-badge :value="$config->vehiculo->name" class="badge-primary" />
+                    @endscope
+                </x-mary-table>
+            </x-mary-card>
+        </div>
+    </div>
 </div>

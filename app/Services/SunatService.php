@@ -68,6 +68,27 @@ class SunatService
         return $api;
     }
     //Facturas/Boletas
+    public function getInvoce($data)
+    {
+        $invoice = (new Invoice())
+            ->setTipoOperacion($data->tipoOperacion ?? null)
+            ->setFormaPago(new FormaPagoContado());
+
+        $invoice = $this->setCommonInvoiceData($invoice, $data);
+
+        if ($data->tipoOperacion == '1001') {
+            $invoice->setDetraccion(
+                (new Detraction())
+                    ->setCodBienDetraccion('021')
+                    ->setCodMedioPago('001')
+                    ->setCtaBanco('0004-3342343243')
+                    ->setPercent($data->setPercent)
+                    ->setMount($data->setMount)
+            );
+        }
+
+        return $invoice;
+    }
     private function setCommonInvoiceData($invoice, $data)
     {
         return $invoice
@@ -90,27 +111,6 @@ class SunatService
             ->setLegends($this->getLegends($data));
     }
 
-    public function getInvoce($data)
-    {
-        $invoice = (new Invoice())
-            ->setTipoOperacion($data->tipoOperacion ?? null)
-            ->setFormaPago(new FormaPagoContado());
-
-        $invoice = $this->setCommonInvoiceData($invoice, $data);
-
-        if ($data->tipoOperacion == '1001') {
-            $invoice->setDetraccion(
-                (new Detraction())
-                    ->setCodBienDetraccion('021')
-                    ->setCodMedioPago('001')
-                    ->setCtaBanco('0004-3342343243')
-                    ->setPercent($data->setPercent)
-                    ->setMount($data->setMount)
-            );
-        }
-
-        return $invoice;
-    }
     //Notas de Credito/Debito
     public function getNote($data)
     {
@@ -164,14 +164,6 @@ class SunatService
             ->setCodLocal('0000'); // Codigo de establecimiento asignado por SUNAT, 0000 por defecto.
         return $address;
     }
-    private function setCommonClientData($client, $data)
-    {
-        return $client
-            ->setNumDoc($data->code ?? $data->numDoc ?? null)
-            ->setRznSocial($data->name ?? null)
-            ->setAddress($this->getAddress($data->address));
-    }
-
     public function getClient($data)
     {
         $client = new Client();
@@ -181,6 +173,13 @@ class SunatService
             $client->setTipoDoc('1' ?? null);
         }
         return $this->setCommonClientData($client, $data);
+    }
+    private function setCommonClientData($client, $data)
+    {
+        return $client
+            ->setNumDoc($data->code ?? $data->numDoc ?? null)
+            ->setRznSocial($data->name ?? null)
+            ->setAddress($this->getAddress($data->address));
     }
     public function getDetails($datas)
     {
@@ -344,35 +343,28 @@ class SunatService
     }
     public function getHtmlReport($invoice)
     {
-        $twigOptions = [
-            'cache'            => __DIR__ . '/cache',
-            'strict_variables' => true,
-        ];
-        $report   = new HtmlReport('report', $twigOptions);
+        $report = new HtmlReport();
         $resolver = new DefaultTemplateResolver();
         $report->setTemplate($resolver->getTemplate($invoice));
-        $ruc     = $invoice->getCompany()->getRuc();
+        $ruc = $invoice->getCompany()->getRuc();
         $company = ModelsCompany::where('ruc', $ruc)
             ->where('user_id', Auth::user()->id)
             ->first();
         $params = [
             'system' => [
-                'logo' => Storage::get($company->logo_path), // Logo de Empresa
-                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=',    // Valor Resumen
+                'logo' => Storage::get($company->logo_path),
+                'hash' => 'qqnr2dN4p/HmaEA/CJuVGo7dv5g=',
             ],
-            'user'   => [
-                'header' => 'Telf: <b>(01) 123375</b>', // Texto que se ubica debajo de la dirección de empresa
+            'user' => [
+                'header' => 'Telf: <b>(01) 123375</b>',
                 'extras' => [
-                    // Leyendas adicionales
                     ['name' => 'CONDICION DE PAGO', 'value' => 'Efectivo'],
                     ['name' => 'VENDEDOR', 'value' => 'GITHUB SELLER'],
                 ],
                 'footer' => '<p>Nro Resolucion: <b>3232323</b></p>',
             ],
         ];
-
-        $html = $report->render($invoice, $params);
-        return $html;
+        return $report->render($invoice, $params);
     }
     public function generatePdfReport($invoice)
     {

@@ -38,6 +38,8 @@ class Invoice extends Model
         'monto_letras',
         'setPercent',
         'setMount',
+        'errorCode',
+        'errorMessage'
     ];
     public function company()
     {
