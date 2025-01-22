@@ -1,8 +1,6 @@
 <?php
-
 namespace App\Livewire\Package;
 
-use App\Exports\ManifiestoExport;
 use App\Livewire\Forms\CustomerForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
@@ -12,23 +10,23 @@ use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
 use App\Models\Package\Encomienda;
 use App\Models\Package\Manifiesto;
+use App\Traits\CajaTrait;
 use App\Traits\LogCustom;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
-use Maatwebsite\Excel\Facades\Excel;
 use Mary\Traits\Toast;
 
 class SendPackageLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
-
-    public $title = 'Enviar paquetes';
-    public $sub_title = 'Modulo de envio de paquetes';
-    public $search = '';
-    public $perPage = 100;
-    public array $selected = [];
+    use CajaTrait;
+    public $title                = 'Enviar paquetes';
+    public $sub_title            = 'Modulo de envio de paquetes';
+    public $search               = '';
+    public $perPage              = 100;
+    public array $selected       = [];
     public int $sucursal_dest_id = 0;
     public $date_ini;
     public $date_traslado;
@@ -36,28 +34,25 @@ class SendPackageLive extends Component
     public $numElementos;
     public Sucursal $sucursal_dest;
     public $transportista_id = 1;
-    public $vehiculo_id = 1;
-    public $isActive = true;
-    public bool $showDrawer = false;
+    public $vehiculo_id      = 1;
+    public $isActive         = true;
+    public bool $showDrawer  = false;
     public Encomienda $encomienda;
     public $caja;
     public $editModal = false;
-    public $isHome = false;
+    public $isHome    = false;
     public CustomerForm $customerFormDest;
 
     public function mount()
     {
-        $this->caja = Caja::where('user_id', Auth::user()->id)
-            ->where('isActive', true)
-            ->latest()
-            ->first();
+        $this->caja = $this->cajaIsActive(Auth::user());
 
-        if (!$this->caja) {
+        if (! $this->caja) {
             return redirect()->route('caja.index');
         }
 
-        $this->date_ini = now()->setTimezone('America/Lima')->format('Y-m-d');
-        $this->date_traslado = now()->setTimezone('America/Lima')->format('Y-m-d H:i');
+        $this->date_ini      = $this->dateNow('Y-m-d');
+        $this->date_traslado = $this->dateNow('Y-m-d H:i');
 
         $p = SucursalConfiguration::where('isActive', true)
             ->where('sucursal_id', Auth::user()->sucursal->id)
@@ -89,7 +84,7 @@ class SendPackageLive extends Component
             ->first();
 
         $this->transportista_id = $config->transportista_id;
-        $this->vehiculo_id = $config->vehiculo_id;
+        $this->vehiculo_id      = $config->vehiculo_id;
 
         $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
             ->where('isActive', $this->isActive)
@@ -101,17 +96,17 @@ class SendPackageLive extends Component
             ->paginate($this->perPage, '*', 'page');
 
         $transportistas = Transportista::where('isActive', true)->get();
-        $vehiculos = Vehiculo::where('isActive', true)->get();
+        $vehiculos      = Vehiculo::where('isActive', true)->get();
 
         return view('livewire.package.send-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
     }
 
     public function openModal()
     {
-        if (!empty($this->selected)) {
-            $this->numElementos = count($this->selected);
+        if (! empty($this->selected)) {
+            $this->numElementos  = count($this->selected);
             $this->sucursal_dest = Sucursal::findOrFail($this->sucursal_dest_id);
-            $this->modalEnvio = !$this->modalEnvio;
+            $this->modalEnvio    = ! $this->modalEnvio;
         } else {
             $this->error('Seleccione al menos un paquete!');
         }
@@ -124,20 +119,20 @@ class SendPackageLive extends Component
                 ->whereIn('id', $this->selected)
                 ->update([
                     'estado_encomienda' => 'ENVIADO',
-                    'updated_at' => $this->date_traslado,
-                    'vehiculo_id' => $this->vehiculo_id,
-                    'transportista_id' => $this->transportista_id,
+                    'updated_at'        => $this->date_traslado,
+                    'vehiculo_id'       => $this->vehiculo_id,
+                    'transportista_id'  => $this->transportista_id,
                 ]);
 
             if (count($this->selected) == $num_encomiendas_enviadas) {
                 $this->success('Genial, ingresado correctamente!');
                 $this->modalEnvio = false;
-                $ids = $this->selected;
-                $this->selected = [];
+                $ids              = $this->selected;
+                $this->selected   = [];
                 Manifiesto::create([
-                    'sucursal_id' => Auth::user()->sucursal->id,
+                    'sucursal_id'         => Auth::user()->sucursal->id,
                     'sucursal_destino_id' => $this->sucursal_dest_id,
-                    'ids' => json_encode($ids),
+                    'ids'                 => json_encode($ids),
                 ]);
                 SucursalConfiguration::where('sucursal_id', Auth::user()->sucursal->id)
                     ->where('sucursal_destino_id', $this->sucursal_dest_id)
@@ -148,14 +143,13 @@ class SendPackageLive extends Component
                     ->pluck('sucursal_destino_id');
                 if ($p->isEmpty()) {
                     return redirect()->route('caja.index');
-                }else{
+                } else {
                     $this->sucursal_dest_id = Sucursal::where('isActive', true)
                         ->whereIn('id', $p)
                         ->first()
                         ->id;
                 }
 
-               
             } else {
                 $this->error('Error, verifique los datos!');
             }
@@ -167,7 +161,7 @@ class SendPackageLive extends Component
     public function enableEncomienda(Encomienda $encomienda)
     {
         try {
-            $encomienda->isActive = !$encomienda->isActive;
+            $encomienda->isActive = ! $encomienda->isActive;
             $encomienda->save();
             $this->success('Genial, ingresado correctamente!');
         } catch (\Exception $e) {
@@ -184,7 +178,7 @@ class SendPackageLive extends Component
     public function editEncomienda(Encomienda $encomienda)
     {
         $this->encomienda = $encomienda;
-        $this->editModal = true;
+        $this->editModal  = true;
     }
 
     public function updateEncomienda()

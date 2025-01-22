@@ -13,6 +13,7 @@ use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
 use App\Models\Package\Encomienda;
 use App\Models\Package\Paquete;
+use App\Traits\CajaTrait;
 use App\Traits\InvoiceTrait;
 use App\Traits\LogCustom;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +25,7 @@ use Mary\Traits\Toast;
 class RegisterLive extends Component
 {
     use LogCustom, Toast, InvoiceTrait, WithPagination, WithoutUrlPagination;
-
+    use CajaTrait;
     public int $step = 1;
     public $title = 'Registro';
     public $sub_title = 'Registrar paquetes de envio';
@@ -41,7 +42,7 @@ class RegisterLive extends Component
 
     public function mount()
     {
-        $this->caja = Caja::where('user_id', Auth::user()->id)->where('isActive', true)->latest()->first();
+        $this->caja = $this->cajaIsActive(Auth::user());
         $this->paquetes = collect([])->keyBy('id');
 
         $sucursalConfig = SucursalConfiguration::where('isActive', true)->where('sucursal_id', Auth::user()->sucursal->id);

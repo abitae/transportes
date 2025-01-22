@@ -14,10 +14,9 @@ trait CajaTrait
      */
     function cajaIsActive(User $user)
     {
-        $caja = Caja::where('user_id', $user->id)
+        return Caja::where('user_id', $user->id)
             ->where('isActive', true)
             ->latest()->first();
-        return $caja;
     }
     /*
      *   Función para obtener la caja cerrada
@@ -32,34 +31,29 @@ trait CajaTrait
      */
     function cajaEntry(int $caja_id, float $monto, string $description, string $tipo)
     {
-        try {
-            $entryCaja = EntryCaja::create([
-                'caja_id' => $caja_id,
-                'monto_entry' => $monto,
-                'description' => $description,
-                'tipo' => $tipo,
-            ]);
-            return $entryCaja;
-        } catch (\Exception $e) {
-            $this->errorLog('CajaTrait cajaEntry', $e);
-            return null;
-        }
+        return $this->createCajaEntryOrExit(EntryCaja::class, $caja_id, $monto, $description, $tipo);
     }
     /*
      *   Función para agregar exit
      */
     function cajaExit(int $caja_id, float $monto, string $description, string $tipo)
     {
+        return $this->createCajaEntryOrExit(ExitCaja::class, $caja_id, $monto, $description, $tipo);
+    }
+    /*
+     *   Función para crear entrada o salida de caja
+     */
+    private function createCajaEntryOrExit($model, int $caja_id, float $monto, string $description, string $tipo)
+    {
         try {
-            $exitCaja = ExitCaja::create([
+            return $model::create([
                 'caja_id' => $caja_id,
                 'monto_entry' => $monto,
                 'description' => $description,
                 'tipo' => $tipo,
             ]);
-            return $exitCaja;
         } catch (\Exception $e) {
-            $this->errorLog('CajaTrait cajaExit', $e);
+            $this->errorLog('CajaTrait ' . class_basename($model), $e);
             return null;
         }
     }
@@ -73,7 +67,6 @@ trait CajaTrait
         $paper_format = array(0, 0, ($width / 25.4) * 72, ($heigh / 25.4) * 72);
 
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.caja', compact('caja'));
-        //return $pdf->stream();
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
         }, $caja->id . '.pdf');

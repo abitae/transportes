@@ -7,6 +7,6 @@ trait UtilsTrait
 {
     function dateNow(String $format)
     {
-       return Carbon::now()->format($format);
+       return now()->setTimezone('America/Lima')->format($format);
     }
 }
