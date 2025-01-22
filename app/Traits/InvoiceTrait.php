@@ -34,7 +34,7 @@ trait InvoiceTrait
             'encomienda_id' => $encomienda->id,
             'tipoDoc' => 'TICKET',
             'tipoOperacion' => 'TICKET',
-            'serie' => $encomienda->sucursal_remitente->code,
+            'serie' => $encomienda->code,
             'correlativo' => Ticket::count() + 1,
             'fechaEmision' => $encomienda->created_at,
             'formaPago_moneda' => 'PEN',
