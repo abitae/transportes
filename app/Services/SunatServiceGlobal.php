@@ -1,7 +1,11 @@
 <?php
+
 namespace App\Services;
 
+use Greenter\Api;
+use Greenter\Model\Client\Client;
 
+use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
 use Greenter\See;
 use Greenter\Ws\Services\SunatEndpoints;
 use Illuminate\Support\Facades\Storage;
@@ -17,228 +21,321 @@ class SunatServiceGlobal
         return $see;
     }
 
+    public function getSeeApi($company)
+    {
+        $api = new Api(
+            $company->production ? [
+                'auth' => 'https://api-seguridad.sunat.gob.pe/v1',
+                'cpe' => 'https://api-cpe.sunat.gob.pe/v1',
+            ] : [
+                'auth' => 'https://gre-test.nubefact.com/v1',
+                'cpe' => 'https://gre-test.nubefact.com/v1',
+            ]
+        );
+        $api->setBuilderOptions([
+            'strict_variables' => true,
+            'optimization' => 0,
+            'debug' => true,
+            'cache' => false,
+        ])->setApiCredentials(
+            $company->production ? $company->client_id : "test-85e5b0ae-255c-4891-a595-0b98c65c9854",
+            $company->production ? $company->client_secret : "test-Hty/M6QshYvPgItX2P0+Kw=="
+        )->setClaveSOL(
+            $company->ruc,
+            $company->production ? $company->sol_user : 'MODDATOS',
+            $company->production ? $company->sol_pass : 'MODDATOS'
+        )->setCertificate(
+            Storage::get($company->cert_path)
+        );
+        return $api;
+    }
+
     public function getInvoce($invoice): \Greenter\Model\Sale\Invoice
     {
         $invoice = new \Greenter\Model\Sale\Invoice();
-
-        $invoice->setUblVersion('2.1');
-        $invoice->setFecVencimiento(new \DateTime());
-        $invoice->setTipoOperacion('0101'); //CATALOGO 51
-        $invoice->setTipoDoc('01'); //CATALOGO 01 
-        $invoice->setSerie('F001');
-        $invoice->setCorrelativo('1');
-        $invoice->setFechaEmision(new \DateTime());
-        $invoice->setFormaPago(new FormaPagoContado()); // new FormaPagoCredito(236)
-
-        $invoice->setCuotas([]);
-
-
-        $invoice->setTipoMoneda('PEN');
-
-        $invoice->setCompany(new \Greenter\Model\Company\Company());
-        $invoice->setClient(new \Greenter\Model\Client\Client());
-
-        $invoice->setMtoOperGravadas(200);
-        $invoice->setMtoOperExoneradas(100);
-        $invoice->setMtoIGV(36);
-        $invoice->setTotalImpuestos(36);
-        $invoice->setValorVenta(300);
-        $invoice->setSubTotal(336);
-        $invoice->setMtoImpVenta(336);
-        $invoice->setDetails([]);
-        $invoice->setLegends([]);
-
-        //Detraccion
-        $invoice->setDetraccion(null);
-
-
-        $invoice->setSumOtrosCargos(0);
-        $invoice->setMtoOperInafectas(0);
-        $invoice->setMtoOperExportacion(0);
-        $invoice->setMtoOperGratuitas(0);
-        $invoice->setMtoIGVGratuitas(0);
-        $invoice->setMtoBaseIvap(0);
-        $invoice->setMtoIvap(0);
-        $invoice->setMtoBaseIsc(0);
-        $invoice->setMtoBaseOth(0);
-        $invoice->setMtoOtrosTributos(0);
-        $invoice->setIcbper(0);
-        $invoice->setRedondeo(0);
-        $invoice->setGuias([]);
-        $invoice->setRelDocs([]);
-        $invoice->setCompra(null);
-        
-        $invoice->setSumDsctoGlobal(0);
-        $invoice->setMtoDescuentos(0);
-        $invoice->setSumOtrosDescuentos(0);
-        $invoice->setDescuentos([]);
-        $invoice->setCargos([]);
-        $invoice->setMtoCargos(0);
-        $invoice->setTotalAnticipos(0);
-        $invoice->setPerception(null);
-        $invoice->setGuiaEmbebida(null);
-        $invoice->setAnticipos([]);
-        
-        $invoice->setSeller(null);
-
-        $invoice->setObservacion('');                                         // Observaciones
-        $invoice->setDireccionEntrega(new \Greenter\Model\Company\Address()); // Direccion de entrega
+        $invoice->setUblVersion('2.1')
+            ->setFecVencimiento(new \DateTime())
+            ->setTipoOperacion('0101')
+            ->setTipoDoc('01')
+            ->setSerie('F001')
+            ->setCorrelativo('1')
+            ->setFechaEmision(new \DateTime())
+            ->setFormaPago(new FormaPagoContado())
+            ->setTipoMoneda('PEN')
+            ->setCompany($this->getCompany())
+            ->setClient($this->getClient())
+            ->setMtoOperGravadas(200)
+            ->setMtoOperExoneradas(100)
+            ->setMtoIGV(36)
+            ->setTotalImpuestos(36)
+            ->setValorVenta(300)
+            ->setSubTotal(336)
+            ->setMtoImpVenta(336)
+            ->setDetails([])
+            ->setLegends([])
+            ->setObservacion('')
+            ->setDireccionEntrega(new \Greenter\Model\Company\Address());
 
         return $invoice;
     }
+
     public function getCompany(): \Greenter\Model\Company\Company
     {
-        $company = new \Greenter\Model\Company\Company();
-        $company->setRuc('20123456789');
-        $company->setRazonSocial('ACME SAC');
-        $company->setNombreComercial('ACME');
-        $company->setAddress(new \Greenter\Model\Company\Address());
-        $company->setEmail('');
-        $company->setTelephone('');
-        return $company;
+        return (new \Greenter\Model\Company\Company())
+            ->setRuc('20123456789')
+            ->setRazonSocial('ACME SAC')
+            ->setNombreComercial('ACME')
+            ->setAddress(new \Greenter\Model\Company\Address());
     }
+
     public function getClient(): \Greenter\Model\Client\Client
     {
-        $client = new \Greenter\Model\Client\Client();
-        $client->setTipoDoc('6');
-        $client->setNumDoc('20123456789');
-        $client->setRznSocial('EMPRESA SAC');
-        $client->setAddress(new \Greenter\Model\Company\Address());
-        $client->setEmail('');
-        $client->setTelephone('');
-        return $client;
+        return (new \Greenter\Model\Client\Client())
+            ->setTipoDoc('6')
+            ->setNumDoc('20123456789')
+            ->setRznSocial('EMPRESA SAC')
+            ->setAddress(new \Greenter\Model\Company\Address());
     }
+
     public function getAddress(): \Greenter\Model\Company\Address
     {
-        $address = new \Greenter\Model\Company\Address();
-        $address->setUbigueo('150101');
-        $address->setCodigoPais('PE');
-        $address->setDepartamento('LIMA');
-        $address->setProvincia('LIMA');
-        $address->setDistrito('LIMA');
-        $address->setUrbanizacion('');
-        $address->setDireccion('AV. LIMA 123');
-        $address->setCodLocal('0000');
-        return $address;
+        return (new \Greenter\Model\Company\Address())
+            ->setUbigueo('150101')
+            ->setCodigoPais('PE')
+            ->setDepartamento('LIMA')
+            ->setProvincia('LIMA')
+            ->setDistrito('LIMA')
+            ->setDireccion('AV. LIMA 123')
+            ->setCodLocal('0000');
     }
+
     public function getDetails(): array
     {
-        $details = [];
-        $item    = new \Greenter\Model\Sale\SaleDetail();
-        $item->setCodProducto('P001');
-        $item->setUnidad('NIU');
-        $item->setDescripcion('PRODUCTO 1');
-        $item->setCantidad(2);
-        $item->setMtoValorUnitario(50);
-        $item->setMtoValorVenta(100);
-        $item->setMtoBaseIgv(100);
-        $item->setPorcentajeIgv(18.00);
-        $item->setCodProdSunat('');
-        $item->setCodProdGS1('');
-        $item->setIgv(18);
-        $item->setTipAfeIgv('10'); // Catalog: 07
-        $item->setTotalImpuestos(18);
-        $item->setMtoPrecioUnitario(56);
+        $item = (new \Greenter\Model\Sale\SaleDetail())
+            ->setCodProducto('P001')
+            ->setUnidad('NIU')
+            ->setDescripcion('PRODUCTO 1')
+            ->setCantidad(2)
+            ->setMtoValorUnitario(50)
+            ->setMtoValorVenta(100)
+            ->setMtoBaseIgv(100)
+            ->setPorcentajeIgv(18.00)
+            ->setIgv(18)
+            ->setTipAfeIgv('10')
+            ->setTotalImpuestos(18)
+            ->setMtoPrecioUnitario(56);
 
-        $item->setCargos([]);
-        $item->setDescuentos([]);
-        $item->setDescuento(0);
-        $item->setMtoBaseIsc(0);
-        $item->setPorcentajeIsc(0);
-        $item->setIsc(0);
-        $item->setTipSisIsc('');
-        $item->setMtoBaseOth(0);
-        $item->setPorcentajeOth(0);
-        $item->setOtroTributo(0);
-        $item->setIcbper(0);
-        $item->setFactorIcbper(0);
-        $item->setMtoValorGratuito(0);
-        $item->setAtributos([]);
-
-        $details[] = $item;
-        return $details;
+        return [$item];
     }
+
     public function getLegends(): array
     {
-        $legends = [];
-        $legend  = new \Greenter\Model\Sale\Legend();
+        $legend = (new \Greenter\Model\Sale\Legend())
+            ->setCode('1000')
+            ->setValue('SON CIEN CON 00/100 SOLES');
 
-        $legend->setCode('1000');
-        $legend->setValue('SON CIEN CON 00/100 SOLES');
-
-        $legends[] = $legend;
-
-        $legend->setCode('1000');
-        $legend->setValue('SON CIEN CON 00/100 SOLES');
-
-        $legends[] = $legend;
-        return $legends;
+        return [$legend];
     }
+
     public function getDetraccion(): \Greenter\Model\Sale\Detraction
     {
-        $detraction = new \Greenter\Model\Sale\Detraction();
-        $detraction->setCodBienDetraccion('014'); // catalog. 54
-        $detraction->setCodMedioPago('001');      // catalog. 59
-        $detraction->setCtaBanco('0004-3342343243');
-        $detraction->setPercent(4.00);
-        $detraction->setMount(37.76);
-        return $detraction;
+        return (new \Greenter\Model\Sale\Detraction())
+            ->setCodBienDetraccion('014')
+            ->setCodMedioPago('001')
+            ->setCtaBanco('0004-3342343243')
+            ->setPercent(4.00)
+            ->setMount(37.76);
     }
+
     public function getNote(): \Greenter\Model\Sale\Note
     {
-        $note = new \Greenter\Model\Sale\Note();
-        $note->setUblVersion('2.1');
-        $note->setTipoDoc('07');
-        $note->setSerie('FF01');
-        $note->setCorrelativo('123');
-        $note->setFechaEmision(new \DateTime());
-        $note->setTipDocAfectado('01');// Tipo Doc: Factura
-        $note->setNumDocfectado('F001-1'); // Factura: Serie-Correlativo
-        $note->setCodMotivo('01'); // Catalogo 09
-        $note->setDesMotivo('Anulacion de la operacion');
-
-        $note->setTipoMoneda('PEN');
-
-        $note->setCompany(new \Greenter\Model\Company\Company());
-        $note->setClient(new \Greenter\Model\Client\Client());
-        $note->setMtoOperGravadas(100);
-        $note->setMtoOperExoneradas(0);
-        $note->setMtoOperInafectas(0);
-        $note->setMtoOperExportacion(0);
-        $note->setMtoIGV(18);
-        $note->setMtoISC(0);
-        $note->setMtoOtrosTributos(0);
-        $note->setMtoImpVenta(118);
-        $note->setDetails([]);
-        $note->setLegends([]);
-        $note->setGuias([]);
-        $note->setRelDocs([]);
-        $note->setCompra(null);
-
-        return $note;
+        return (new \Greenter\Model\Sale\Note())
+            ->setUblVersion('2.1')
+            ->setTipoDoc('07')
+            ->setSerie('FF01')
+            ->setCorrelativo('123')
+            ->setFechaEmision(new \DateTime())
+            ->setTipDocAfectado('01')
+            ->setNumDocfectado('F001-1')
+            ->setCodMotivo('01')
+            ->setDesMotivo('Anulacion de la operacion')
+            ->setTipoMoneda('PEN')
+            ->setCompany(new \Greenter\Model\Company\Company())
+            ->setClient(new \Greenter\Model\Client\Client())
+            ->setMtoOperGravadas(100)
+            ->setMtoIGV(18)
+            ->setMtoImpVenta(118)
+            ->setDetails([])
+            ->setLegends([]);
     }
-    public function Despatch() : \Greenter\Model\Despatch\Despatch 
+
+    public function Despatch(): \Greenter\Model\Despatch\Despatch
     {
+        return (new \Greenter\Model\Despatch\Despatch())
+            ->setVersion('2022')
+            ->setTipoDoc('09')
+            ->setSerie('T001')
+            ->setCorrelativo('1')
+            ->setFechaEmision(new \DateTime())
+            ->setCompany($this->getGRECompany())
+            ->setDestinatario(new \Greenter\Model\Client\Client())
+            ->setEnvio(new \Greenter\Model\Despatch\Shipment())
+            ->setDetails($this->getDespatchDetail());
+    }
+
+    public function getGRECompany(): \Greenter\Model\Company\Company
+    {
+        return (new \Greenter\Model\Company\Company())
+            ->setRuc('20123456789')
+            ->setRazonSocial('ACME SAC');
+    }
+
+    public function getEnvio(): \Greenter\Model\Despatch\Shipment
+    {
+        return (new \Greenter\Model\Despatch\Shipment())
+            ->setModTraslado('01')
+            ->setCodTraslado('01')
+            ->setFecTraslado(new \DateTime())
+            ->setPesoTotal(10)
+            ->setUndPesoTotal('KGM')
+            ->setLlegada(new \Greenter\Model\Despatch\Direction('150101', 'AV LIMA'))
+            ->setPartida(new \Greenter\Model\Despatch\Direction('150203', 'AV ITALIA'))
+            ->setTransportista($this->getTransportista());
+    }
+
+    public function getTransportista(): \Greenter\Model\Despatch\Transportist
+    {
+        return (new \Greenter\Model\Despatch\Transportist())
+            ->setTipoDoc('6')
+            ->setNumDoc('20123456789')
+            ->setRznSocial('EMPRESA SAC')
+            ->setNroMtc('0001');
+    }
+
+    public function getDespatchDetail(): array
+    {
+        $item = (new \Greenter\Model\Despatch\DespatchDetail())
+            ->setCantidad(2)
+            ->setUnidad('ZZ')
+            ->setDescripcion('PROD 1')
+            ->setCodigo('PROD1');
+
+        return [$item];
+    }
+
+    public function getDespatchTransport(): \Greenter\Model\Despatch\Despatch
+    {
+        $pagaflete = (new Client())
+            ->setTipoDoc("6")
+            ->setNumDoc("10436493903")
+            ->setRznSocial("Abel Arana");
+
+        $destinatario = (new Client())
+            ->setTipoDoc('6')
+            ->setNumDoc('10436493903')
+            ->setRznSocial('Abel Arana');
+
+        $item = (new \Greenter\Model\Despatch\AdditionalDoc())
+            ->setTipo("01")
+            ->setTipoDesc("Factura")
+            ->setNro("F001-00000007")
+            ->setEmisor("1043649390");
         $despatch = new \Greenter\Model\Despatch\Despatch();
-        $despatch->setTipoDoc('09');
-        $despatch->setSerie('T001');
+        
+        $despatch->setVersion('2022');
+        $despatch->setTipoDoc('31');
+        $despatch->setSerie('V001');
         $despatch->setCorrelativo('1');
         $despatch->setFechaEmision(new \DateTime());
         $despatch->setCompany($this->getGRECompany());
-        $despatch->setDestinatario(new \Greenter\Model\Client\Client());
-        $despatch->setDetails([]);
+        $despatch->setDestinatario($destinatario);
+        $despatch->setEnvio(new \Greenter\Model\Despatch\Shipment());
+        $despatch->setObservacion('OBSERVACION');
+        $despatch->setAddDocs([$item]);
+        $despatch->setDetails($this->getDespatchDetail());
+        $despatch->setPagaFlete($pagaflete);
         return $despatch;
     }
-    public function getGRECompany(): \Greenter\Model\Company\Company
+
+    public function getDespatchEnvio(): \Greenter\Model\Despatch\Shipment
     {
-        $company = new \Greenter\Model\Company\Company();
-        $company->setRuc('20123456789');
-        $company->setRazonSocial('ACME SAC');
-        $company->setNombreComercial('ACME');
-        $company->setAddress(new \Greenter\Model\Company\Address());
-        $company->setEmail('');
-        $company->setTelephone('');
-        return $company;
+        $indicadores = ["SUNAT_Envio_IndicadorPagadorFlete_Remitente"];
+        $remitente = (new Client())
+            ->setTipoDoc("6")
+            ->setNumDoc("10436493901")
+            ->setRznSocial("Abel Arana");
+
+        $shipment = new \Greenter\Model\Despatch\Shipment();
+        $shipment->setModTraslado('01');
+        $shipment->setCodTraslado('01');
+        $shipment->setFecTraslado(new \DateTime());
+        $shipment->setPesoTotal(10);
+        $shipment->setUndPesoTotal('KGM');
+        $shipment->setLlegada(new \Greenter\Model\Despatch\Direction('150101', 'AV LIMA'));
+        $shipment->setPartida(new \Greenter\Model\Despatch\Direction('150203', 'AV ITALIA'));
+        $shipment->setTransportista($this->getTransportista());
+        $shipment->setVehiculo($this->getVehiculos());
+        $shipment->setChoferes($this->getChoferes());
+        $shipment->setIndicador($indicadores);
+        $shipment->setRemitente($remitente);
+        return $shipment;
     }
 
+    public function getVehiculos(): \Greenter\Model\Despatch\Vehicle
+    {
+        $vehiculos = collect([
+            ['placa' => 'A1'],
+            ['placa' => 'A2'],
+            ['placa' => 'A3'],
+        ]);
+
+        $secundarios = $vehiculos->slice(1)->map(function ($item) {
+            return (new \Greenter\Model\Despatch\Vehicle())->setPlaca($item['placa']);
+        })->toArray();
+
+        return (new \Greenter\Model\Despatch\Vehicle())
+            ->setPlaca($vehiculos->first()['placa'])
+            ->setSecundarios($secundarios);
+    }
+
+    public function getChoferes(): array
+    {
+        $choferes = collect([
+            ['tipoDoc' => '1', 'numDoc' => '12345678', 'nombre' => 'JUAN PEREZ'],
+            ['tipoDoc' => '1', 'numDoc' => '87654321', 'nombre' => 'MARIA PEREZ'],
+        ]);
+
+        $drivers = $choferes->map(function ($item, $key) {
+            return (new \Greenter\Model\Despatch\Driver())
+                ->setTipo($key === 0 ? 'Principal' : 'Secundario')
+                ->setTipoDoc($item['tipoDoc'])
+                ->setNroDoc($item['numDoc'])
+                ->setNombres($item['nombre']);
+        })->toArray();
+
+        return $drivers;
+    }
+
+    public function sunatResponse($result)
+    {
+        $response['success'] = $result->isSuccess();
+        if (!$response['success']) {
+            $response['error'] = [
+                'code' => $result->getError()->getCode(),
+                'message' => $result->getError()->getMessage()
+            ];
+            return $response;
+        }
+
+        $cdr = $result->getCdrResponse();
+
+        $response['cdrResponse'] = [
+            'code' => (int)$cdr->getCode(),
+            'description' => $cdr->getDescription(),
+            'notes' => $cdr->getNotes(),
+            'cdrZip' => base64_encode($result->getCdrZip())
+        ];
+
+        return $response;
+    }
 }
