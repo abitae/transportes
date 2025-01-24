@@ -152,10 +152,12 @@
                             hint="Max 1000 chars" rows="2" inline class="rounded-r-lg" />
                     </div>
                     <div class="grid col-span-4">
-                        <x-mary-select label="Transportista" icon="o-user" :options="$transportistas" wire:model.live="transportista_id" inline />
+                        <x-mary-select label="Transportista" icon="o-user" :options="$transportistas"
+                            wire:model.live="transportista_id" inline />
                     </div>
                     <div class="grid col-span-4">
-                        <x-mary-select label="Vehiculo" icon="o-user" :options="$vehiculos" wire:model.live="vehiculo_id" inline />
+                        <x-mary-select label="Vehiculo" icon="o-user" :options="$vehiculos"
+                            wire:model.live="vehiculo_id" inline />
                     </div>
                 </div>
             </x-mary-step>
@@ -269,53 +271,48 @@
     @if ($this->encomienda)
     <x-mary-modal wire:model.live="modalFinal" persistent class="backdrop-blur" box-class="w-full">
         <x-mary-card shadow>
-            <div class="grid grid-cols-3 grid-rows-2 gap-1 p-2 border rounded-lg border-sky-500">
-                <div>TICKET
-                    <br>
+            <div class="grid grid-cols-4 grid-rows-2 gap-2 border-sky-500">
+                <div>
                     @if ($this->encomienda->ticket)
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="TICKET" responsive
                         link="/ticket/80mm/{{ $this->encomienda->ticket->id }}" spinner
                         class="text-white bg-green-500 btn-xl" />
                     @endif
+                </div>
+                <div>
                     @if ($this->encomienda->invoice)
-                    RECIBO
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="RECIBO" responsive
                         link="/invoice/80mm/{{ $this->encomienda->invoice->id }}" spinner
                         class="text-white bg-cyan-500 btn-xl" />
                     @endif
                 </div>
-                <div>GUIA
-                    <br>
-                    @if ($this->encomienda->despatche)
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                <div>
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="GUIA T" responsive
                         link="/despache/80mm/{{ $this->encomienda->despatche->id }}" spinner
                         class="text-white bg-blue-500 btn-xl" />
-                    @endif
                 </div>
-                <div>STICKER
-                    <br>
-                    @if ($this->encomienda->despatche)
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                <div>
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="STICKER" responsive
                         link="/sticker/a5/{{ $this->encomienda->id }}" spinner
                         class="text-white bg-orange-500 btn-xl" />
-                    @endif
                 </div>
-                <div>NUEVO
-                    <br>
-                    <x-mary-button icon="o-clipboard" link="{{ route('package.register') }}" spinner
-                        class="text-white bg-blue-500 btn-xl" />
+                <div>
+                    <x-mary-button icon="o-clipboard" link="{{ route('package.register') }}" spinner label="NUEVO"
+                        responsive class="text-white bg-blue-500 btn-xl" />
                 </div>
-                <div>LISTA
-                    <br>
-                    <x-mary-button icon="s-list-bullet" link="{{ route('package.send') }}" spinner
-                        class="text-white bg-blue-500 btn-xl" />
+                <div>
+                    <x-mary-button icon="s-list-bullet" link="{{ route('package.send') }}" spinner label="LISTA E"
+                        responsive class="text-white bg-blue-500 btn-xl" />
                 </div>
-                <div>ENTREGAR
-                    <br>
+                <div>
                     <x-mary-button icon="o-cursor-arrow-ripple" link="{{ route('package.deliver') }}" no-wire-navigate
-                        spinner class="text-white bg-blue-500 btn-xl" />
+                        label="ENTREGAR" responsive spinner class="text-white bg-blue-500 btn-xl" />
+                </div>
+                <div>
+
                 </div>
             </div>
+
         </x-mary-card>
     </x-mary-modal>
     @endif
