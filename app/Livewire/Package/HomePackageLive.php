@@ -71,9 +71,11 @@ class HomePackageLive extends Component
 
     public function openModal($id)
     {
+        //dd($id);
+        $this->encomienda       = Encomienda::find($id);
         $this->modalDeliver     = ! $this->modalDeliver;
         $this->tipo_comprobante = $this->encomienda->tipo_comprobante;
-        $this->encomienda       = Encomienda::find($id);
+        
     }
 
     public function deliverPaquetes()

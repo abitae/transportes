@@ -99,7 +99,14 @@ class RegisterLive extends Component
 
     public function searchRemitente()
     {
-        $this->customerForm->store();
+        //dump($this->customerForm->store());
+        if ($this->customerForm->store()) {
+            $this->success('Genial, ingresado correctamente!');
+        } else {
+            dump($this->customerForm);
+            $this->error('Error, verifique los datos!');
+        }
+        
     }
 
     public function searchDestinatario()
@@ -131,6 +138,7 @@ class RegisterLive extends Component
 
     private function processStep($condition, $errorMessage = 'Error, verifique los datos!')
     {
+        dd($condition);
         if ($condition) {
             $this->step++;
             $this->success('Genial, ingresado correctamente!');
