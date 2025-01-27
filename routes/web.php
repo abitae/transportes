@@ -24,6 +24,7 @@ use App\Livewire\Package\ManifiestoLive;
 use App\Livewire\Package\ReceivePackageLive;
 use App\Livewire\Package\RecordPackageLive;
 use App\Livewire\Package\RegisterLive;
+use App\Livewire\Package\ReturnPackageLive;
 use App\Livewire\Package\SendPackageLive;
 use Illuminate\Support\Facades\Route;
 
@@ -56,6 +57,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/deliver_package', DeliverPackageLive::class)->name('package.deliver');
     Route::get('/record_package', RecordPackageLive::class)->name('package.record');
     Route::get('/home_package', HomePackageLive::class)->name('package.home');
+    Route::get('/return_package', ReturnPackageLive::class)->name('package.return');
     Route::get('/maniesto', ManifiestoLive::class)->name('package.maniesto');
     Route::get('/message', MessageLive::class)->name('message.frontend');
     Route::get('/ticket', TicketLive::class)->name('facturacion.ticket');

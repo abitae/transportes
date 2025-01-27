@@ -31,7 +31,6 @@ class RecordPackageLive extends Component
     public array $selected = [];
     public int $sucursal_dest_id;
     public $date_ini;
-    public $date_traslado;
     public $modalEnvio = false;
     public $numElementos;
     public Sucursal $sucursal_dest;
@@ -54,12 +53,12 @@ class RecordPackageLive extends Component
         }
         $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
         $this->date_ini = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
-        $this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
     }
     public function render()
     {
-        $sucursals = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->id])->get();
-
+        $sucursals = Sucursal::where('isActive', true)
+            ->whereNotIn('id', [Auth::user()->sucursal->id])
+            ->get();
         $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
             ->where('isActive', $this->isActive)
             ->where('sucursal_id', $this->sucursal_dest_id)
@@ -74,15 +73,7 @@ class RecordPackageLive extends Component
 
         return view('livewire.package.record-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
     }
-    public function openModal()
-    {
-        if (!empty($this->selected)) {
-            $this->numElementos = count($this->selected);
-            $this->sucursal_dest = Sucursal::findOrFail($this->sucursal_dest_id);
-            $this->modalEnvio = !$this->modalEnvio;
-        }
-    }
-    
+
     
     public function detailEncomienda(Encomienda $encomienda)
     {

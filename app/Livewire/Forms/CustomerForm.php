@@ -13,7 +13,6 @@ class CustomerForm extends Form
     use LogCustom, SearchDocument;
 
     public ?Customer $customer;
-    public $customer_id;
 
     #[Validate('required')]
     public $type_code = 'dni';
@@ -23,7 +22,7 @@ class CustomerForm extends Form
     public $name = '';
     #[Validate('')]
     public $phone = '';
-    #[Validate('email')]
+    #[Validate('')]
     public $email = '';
     #[Validate('')]
     public $address = '';
@@ -43,6 +42,13 @@ class CustomerForm extends Form
     public function store()
     {
         try {
+            
+            $customer = Customer::where('type_code', $this->type_code)->where('code', $this->code)->first();
+            if ($customer) {
+                $this->setCustomer($customer);
+                return true;
+            }
+            
             $data = $this->search($this->type_code, $this->code);
             if ($data['encontrado']) {
                 $this->populateCustomerData($data['data']);
@@ -50,7 +56,7 @@ class CustomerForm extends Form
                     ['type_code' => $this->type_code, 'code' => $this->code],
                     ['name' => $this->name, 'phone' => $this->phone, 'email' => $this->email, 'address' => $this->address]
                 );
-                $this->updateCustomerFields($customer);
+                $this->setCustomer($customer);
                 $this->infoLog('Customer store ' . $this->code);
                 return true;
             }
@@ -101,15 +107,6 @@ class CustomerForm extends Form
             $this->address = $data->direccion;
         }
     }
-
-    private function updateCustomerFields(Customer $customer)
-    {
-        $this->phone = $customer->phone;
-        $this->email = $customer->email;
-        $this->address = $customer->address;
-        $this->customer_id = $customer->id;
-    }
-
     private function performAction($id, callable $action, $logMessage)
     {
         try {

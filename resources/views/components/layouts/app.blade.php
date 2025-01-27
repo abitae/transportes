@@ -84,6 +84,8 @@
                         link="{{ route('package.deliver') }}" />
                     <x-mary-menu-item title="Paquetes domicilio" icon="o-cursor-arrow-ripple"
                         link="{{ route('package.home') }}" />
+                        <x-mary-menu-item title="Paquetes retorno" icon="o-cursor-arrow-ripple"
+                        link="{{ route('package.return') }}" />
                     <x-mary-menu-item title="Paquetes entregados" icon="o-arrow-path"
                         link="{{ route('package.record') }}" />
                     <x-mary-menu-item title="Clientes" icon="o-user-group" link="{{ route('package.customer') }}" />

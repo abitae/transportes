@@ -8,11 +8,11 @@
             </td>
             <th>CONDUCTOR
             </th>
-            <td>GUMERCINDO LEONCIO VELAZQUE SAVALA
+            <td>{{ $encomienda->transportista->name }}
             </td>
             <th>MARCA DEL VEHICULO
             </th>
-            <td> HINO
+            <td> {{ $encomienda->vehiculo->marca }}
             </td>
         </tr>
         <tr>
@@ -20,11 +20,11 @@
             </td>
             <th>DNI
             </th>
-            <td>21120418
+            <td>{{ $encomienda->transportista->dni }}
             </td>
             <th>CONFIGURACION VEHICULAR
             </th>
-            <td>N-3
+            <td>{{ $encomienda->vehiculo->tipo }}
             </td>
         </tr>
         <tr>
@@ -32,11 +32,11 @@
             </td>
             <th>PLACA
             </th>
-            <td>W7L-874
+            <td>{{ $encomienda->vehiculo->name }}
             </td>
             <th>MTC
             </th>
-            <td>1553682
+            <td>{{ $encomienda->transportista->licencia }}
             </td>
         </tr>
         <tr>
@@ -44,11 +44,11 @@
             </td>
             <th>LICENCIA
             </th>
-            <td>Q21120418
+            <td>{{ $encomienda->transportista->licencia }}
             </td>
             <th>TELEF
             </th>
-            <td>1553682
+            <td>{{ $encomienda->transportista->tipo }}
             </td>
         </tr>
     </tbody>

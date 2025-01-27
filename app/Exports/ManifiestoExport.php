@@ -22,6 +22,7 @@ class ManifiestoExport implements FromView, WithColumnWidths, WithStyles
     public function view(): View
     {
         return view('report.excel.manifiesto', [
+            'encomienda' => Encomienda::query()->whereIn('id', $this->ids)->first(),
             'encomiendas' => Encomienda::query()->whereIn('id', $this->ids)->where('isHome', false)->get(),
             'encomiendasIsHome' => Encomienda::query()->whereIn('id', $this->ids)->where('isHome', true)->get(),
             'encomiendasIsReturn' => Encomienda::query()->whereIn('id', $this->ids)->where('isReturn', true)->get(),
@@ -37,10 +38,13 @@ class ManifiestoExport implements FromView, WithColumnWidths, WithStyles
             'A' => 20,
             'B' => 20,
             'C' => 50,
-            'D' => 50,
-            'E' => 15,
-            'F' => 50,
-            'G' => 10,
+            'D' => 20,
+            'E' => 40,
+            'F' => 10,
+            'G' => 50,
+            'H' => 10,
+            'I' => 10,
+            'J' => 15,
         ];
     }
     public function styles(Worksheet $sheet)

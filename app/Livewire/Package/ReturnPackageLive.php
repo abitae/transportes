@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Livewire\Package;
 
 use App\Livewire\Forms\CustomerForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
-use App\Traits\InvoiceTrait;
 use App\Traits\LogCustom;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -13,30 +13,25 @@ use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
 use Mary\Traits\Toast;
 
-class HomePackageLive extends Component
+class ReturnPackageLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
-    use InvoiceTrait;
     public CustomerForm $customerFact;
-    public $title     = 'Entrega paquetes destino';
-    public $sub_title = 'Modulo de entrega de paquetes domicilio';
+    public $title     = 'Entrega paquetes retorno';
+    public $sub_title = 'Modulo de entrega de paquetes retorno';
+    public $caja;
+    public int $sucursal_id;
+    public $date_ini;
     public $search    = '';
     public $perPage   = 10;
-    public $date_ini;
-    public int $sucursal_id;
-    //public $date_traslado;
-    public $numElementos;
-    public Sucursal $sucursal_rem;
-    public $modalDeliver = false;
     public $encomienda;
     public $document;
     public $pin;
-    public $showDrawer;
-    public $estado_pago;
+    public $modalDeliver = false;
     public $tipo_comprobante;
-    public $caja;
+    public $estado_pago;
     public bool $modalConfimation;
-
+    public $showDrawer;
     public function mount()
     {
         $this->caja = Caja::where('user_id', Auth::user()->id)
@@ -47,9 +42,8 @@ class HomePackageLive extends Component
         }
         $this->sucursal_id   = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
         $this->date_ini      = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
-        //$this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
+      
     }
-
     public function render()
     {
         $sucursals   = Sucursal::where('isActive', true)->whereNot('id', [Auth::user()->sucursal->id])->get();
@@ -57,19 +51,11 @@ class HomePackageLive extends Component
             ->where('sucursal_id', $this->sucursal_id)
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'RECIBIDO')
-            ->where('isHome', true)
-            ->where('isReturn', false)
+            ->where('isReturn', true)
             ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
             )->paginate($this->perPage, '*', 'page');
-        return view('livewire.package.home-package-live', compact('encomiendas', 'sucursals'));
+        return view('livewire.package.return-package-live', compact('encomiendas', 'sucursals'));
     }
-
-    public function detailEncomienda(Encomienda $encomienda)
-    {
-        $this->encomienda = $encomienda;
-        $this->showDrawer = true;
-    }
-
     public function openModal($id)
     {
         //dd($id);
@@ -78,30 +64,34 @@ class HomePackageLive extends Component
         $this->tipo_comprobante = $this->encomienda->tipo_comprobante;
         
     }
-
     public function deliverPaquetes()
     {
         if ($this->encomienda->isHome) {
             $this->pin = 123;
         }
-        if ($this->encomienda->destinatario->code == $this->document && $this->encomienda->pin == $this->pin) {
+        if ($this->encomienda->destinatario->code == $this->document) {
             $this->customerFact->setCustomer($this->encomienda->destinatario);
             $this->estado_pago      = $this->encomienda->estado_pago;
             $this->modalDeliver     = false;
             $this->modalConfimation = true;
         } else {
-
+            $this->toast('error', 'Error', 'Datos incorrectos');
         }
     }
-
+    public function detailEncomienda(Encomienda $encomienda)
+    {
+        $this->encomienda = $encomienda;
+        $this->showDrawer = true;
+    }
     public function confirmEncomienda()
     {
         if ($this->estado_pago == 'PAGADO') {
-            $this->updateEncomiendaStatus('ENTREGADO');
+            $this->updateEncomiendaStatus('REGISTRADO');
             $this->toast('success', 'Paquete entregado correctamente');
         } else {
+            dd($this->encomienda);
             if ($this->tipo_comprobante != 'TICKET') {
-                $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
+                $this->updateEncomiendaStatus('REGISTRADO', $this->tipo_comprobante);
                 $this->setInvoice($this->encomienda);
                 $this->entryForm->fill([
                     'caja_id'     => $this->caja->id,
@@ -123,6 +113,10 @@ class HomePackageLive extends Component
         $this->encomienda->estado_encomienda = $status;
         if ($tipo_comprobante) {
             $this->encomienda->tipo_comprobante = $tipo_comprobante;
+            $this->encomienda->sucursal_id      = 'PENDIENTE';
+            $this->encomienda->sucursal_dest_id      = 'PENDIENTE';
+            $this->encomienda->isReturn      = false;
+            
         }
         $this->encomienda->save();
     }

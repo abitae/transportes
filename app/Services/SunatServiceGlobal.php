@@ -247,13 +247,13 @@ class SunatServiceGlobal
         $despatch->setSerie('V001');
         $despatch->setCorrelativo('1');
         $despatch->setFechaEmision(new \DateTime());
+        $despatch->setPagaFlete($pagaflete);
         $despatch->setCompany($this->getGRECompany());
         $despatch->setDestinatario($destinatario);
         $despatch->setEnvio(new \Greenter\Model\Despatch\Shipment());
         $despatch->setObservacion('OBSERVACION');
         $despatch->setAddDocs([$item]);
         $despatch->setDetails($this->getDespatchDetail());
-        $despatch->setPagaFlete($pagaflete);
         return $despatch;
     }
 

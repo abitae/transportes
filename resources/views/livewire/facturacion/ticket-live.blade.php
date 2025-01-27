@@ -7,7 +7,7 @@
         @php
         $headers = [
         ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1'],
-        ['key' => 'document', 'label' => 'Documento', 'class' => ''],
+        ['key' => 'serie', 'label' => 'Documento', 'class' => ''],
         ['key' => 'fecha', 'label' => 'Fecha documento', 'class' => ''],
         ['key' => 'cliente', 'label' => 'Cliente', 'class' => ''],
         ['key' => 'mtoImpVenta', 'label' => 'Monto', 'class' => ''],
@@ -18,8 +18,8 @@
         @endphp
         <x-mary-table :headers="$headers" :rows="$tickets" striped with-pagination per-page="perPage"
             :per-page-values="[5, 20, 10, 50]">
-            @scope('cell_document', $stuff)
-            <x-mary-badge :value="$stuff->correlativo" class="badge-primary" />
+            @scope('cell_serie', $stuff)
+            <x-mary-badge :value="$stuff->serie" class="badge-primary" />
             @endscope
             @scope('cell_fecha', $stuff)
             {{ $stuff->created_at->format('d-m-Y H:i A') }}
