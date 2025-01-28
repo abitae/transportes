@@ -2,12 +2,15 @@
 
 namespace App\Services;
 
+use DateTime;
 use Greenter\Api;
 use Greenter\Model\Client\Client;
 
 use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
+use Greenter\Model\Sale\FormaPagos\FormaPagoCredito;
 use Greenter\See;
 use Greenter\Ws\Services\SunatEndpoints;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Storage;
 
 class SunatServiceGlobal
@@ -50,28 +53,35 @@ class SunatServiceGlobal
         return $api;
     }
 
-    public function getInvoce($invoice): \Greenter\Model\Sale\Invoice
+    public function getInvoce($data): \Greenter\Model\Sale\Invoice
     {
+
         $invoice = new \Greenter\Model\Sale\Invoice();
-        $invoice->setUblVersion('2.1')
-            ->setFecVencimiento(new \DateTime())
-            ->setTipoOperacion('0101')
-            ->setTipoDoc('01')
-            ->setSerie('F001')
-            ->setCorrelativo('1')
-            ->setFechaEmision(new \DateTime())
-            ->setFormaPago(new FormaPagoContado())
-            ->setTipoMoneda('PEN')
+        $invoice->setUblVersion($data->ublVersion ?? '2.1')
+            ->setFecVencimiento(new DateTime($data->fecVencimiento) ?? null)
+            ->setTipoOperacion($data->tipoOperacion ?? '0101')
+            ->setTipoDoc($data->tipoDoc ?? '01')
+            ->setSerie($data->serie ?? 'F001')
+            ->setCorrelativo($data->correlativo ?? '1')
+            ->setFechaEmision(new DateTime($$data->fechaEmision) ?? null)
+            ->setFormaPago($data->formaPago == 'Contado' ? new FormaPagoContado() : new FormaPagoCredito($data->mtoCredito, 'PEN'))
+            ->setTipoMoneda($data->tipoMoneda ?? 'PEN')
             ->setCompany($this->getCompany())
             ->setClient($this->getClient())
             ->setMtoOperGravadas(200)
             ->setMtoOperExoneradas(100)
+            ->setMtoOperInafectas(0)
+            ->setMtoOperExportacion(0)
+            ->setMtoOperGratuitas(0)
             ->setMtoIGV(36)
+            ->setMtoIGVGratuitas(0)
+            ->setIcbper(0)
             ->setTotalImpuestos(36)
             ->setValorVenta(300)
             ->setSubTotal(336)
             ->setMtoImpVenta(336)
-            ->setDetails([])
+            ->setRedondeo(0)
+            ->setDetails($this->getDetails($data->details))
             ->setLegends([])
             ->setObservacion('')
             ->setDireccionEntrega(new \Greenter\Model\Company\Address());
@@ -112,6 +122,7 @@ class SunatServiceGlobal
     public function getDetails(): array
     {
         $item = (new \Greenter\Model\Sale\SaleDetail())
+            ->setTipAfeIgv('10')
             ->setCodProducto('P001')
             ->setUnidad('NIU')
             ->setDescripcion('PRODUCTO 1')
@@ -121,7 +132,8 @@ class SunatServiceGlobal
             ->setMtoBaseIgv(100)
             ->setPorcentajeIgv(18.00)
             ->setIgv(18)
-            ->setTipAfeIgv('10')
+            ->setFactorIcbper(0)
+            ->setIcbper(0)
             ->setTotalImpuestos(18)
             ->setMtoPrecioUnitario(56);
 
