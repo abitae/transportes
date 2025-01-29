@@ -21,7 +21,7 @@ class CajaLive extends Component
     public CajaForm $cajaForm;
     public EntryCajaForm $entryForm;
     public ExitCajaForm $exitForm;
-    public string $title = 'Caja';
+    public string $title = 'Caja prueba';
     public string $sub_title = 'Modulo de caja';
 
     public bool $showHistory = false;
