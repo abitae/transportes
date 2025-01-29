@@ -3,6 +3,7 @@ namespace App\Livewire\Facturacion;
 
 use App\Models\Facturacion\Invoice;
 use App\Services\SunatService;
+use App\Services\SunatServiceGlobal;
 use Greenter\Report\XmlUtils;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -92,5 +93,10 @@ class InvoiceLive extends Component
         if (Storage::exists($path)) {
             return response()->download(storage_path('app/public/' . $path));
         }
+    }
+    public function refresh() {
+        $prueba = new SunatServiceGlobal();
+        $data = $prueba->getInvoce('F001-1');
+        dd($data);
     }
 }

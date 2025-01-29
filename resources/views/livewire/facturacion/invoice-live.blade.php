@@ -1,6 +1,7 @@
 <div>
     <x-mary-card title="{{ $title }}" subtitle="{{ $sub_title }}" separator>
         <x-slot:menu>
+            <x-mary-button icon="o-document-chart-bar" wire:click="refresh" spinner class="text-white bg-blue-500 btn-xs" />  
         </x-slot:menu>
         @php
         $headers = [
