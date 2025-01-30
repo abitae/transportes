@@ -51,9 +51,9 @@ class SunatServiceGlobal
         return $api;
     }
 
-    public function getInvoce($data2) //: \Greenter\Model\Sale\Invoice
+    public function getInvoce($data) //: \Greenter\Model\Sale\Invoice
     {
-        $data = [
+        /* $data = [
             'ublVersion'         => '2.1',
             'fecVencimiento'     => '2023-12-31',
             'tipoOperacion'      => '0101',
@@ -147,20 +147,18 @@ class SunatServiceGlobal
                 'codLocal'     => '0000',
             ],
         ];
-        $data = (object) $data;
+        $data = (object) $data; */
         //return $data;
         $invoice = new \Greenter\Model\Sale\Invoice();
         $invoice->setUblVersion($data->ublVersion ?? '2.1');
         $invoice->setFecVencimiento(new DateTime($data->fecVencimiento) ?? null);
-        $invoice->setTipoOperacion($data->tipoOperacion ?? '0101');
+        $invoice->setTipoOperacion($data->tipoOperacion ?? '0101'); //Tipo operacion (Catálogo 51).
         $invoice->setTipoDoc($data->tipoDoc ?? '01');
         $invoice->setSerie($data->serie ?? 'F001');
         $invoice->setCorrelativo($data->correlativo ?? '1');
         $invoice->setFechaEmision(new DateTime($data->fechaEmision) ?? null);
         $invoice->setFormaPago($data->formaPago == 'Contado' ? new FormaPagoContado() : new FormaPagoCredito($data->mtoCredito, 'PEN'));
         $invoice->setTipoMoneda($data->tipoMoneda ?? 'PEN');
-        $invoice->setCompany($this->getCompany((object) $data->company));
-        $invoice->setClient($this->getClient((object) $data->client));
 
         $invoice->setMtoOperGravadas($data->mtoOperGravadas);
         $invoice->setMtoOperExoneradas($data->mtoOperExoneradas);
@@ -175,11 +173,14 @@ class SunatServiceGlobal
         $invoice->setSubTotal($data->subTotal);
         $invoice->setMtoImpVenta($data->mtoImpVenta);
         $invoice->setRedondeo($data->redondeo);
-        $invoice->setDetraccion($this->getDetraccion((object)$data->detraccion));
-        $invoice->setDetails($this->getDetails((object) $data->details));
-        $invoice->setLegends($this->getLegends((object) $data->legents));
         $invoice->setObservacion($data->observacion ?? null);
-        $invoice->setDireccionEntrega($this->getAddress((object) $data->direccionEntrega));
+
+        $invoice->setCompany($this->getCompany($data->company));
+        $invoice->setClient($this->getClient($data->client));
+        $invoice->setDetraccion($this->getDetraccion($data->detraccion));
+        $invoice->setDetails($this->getDetails($data->details));
+        $invoice->setLegends($this->getLegends($data->legents));
+        $invoice->setDireccionEntrega($this->getAddress($data->direccionEntrega));
 
         return $invoice;
     }
@@ -191,7 +192,7 @@ class SunatServiceGlobal
             ->setRuc($company->ruc)
             ->setRazonSocial($company->razonSocial)
             ->setNombreComercial($company->nombreComercial)
-            ->setAddress($this->getAddress((object) $company->address));
+            ->setAddress($this->getAddress($company->address));
     }
 
     public function getClient($client): \Greenter\Model\Client\Client
@@ -200,11 +201,20 @@ class SunatServiceGlobal
             ->setTipoDoc($client->tipoDoc)
             ->setNumDoc($client->numDoc)
             ->setRznSocial($client->rznSocial)
-            ->setAddress($this->getAddress((object) $client->address));
+            ->setAddress($this->getAddress($client->address));
     }
 
     public function getAddress($address): \Greenter\Model\Company\Address
     {
+        $address = (new \Greenter\Model\Company\Address())
+            ->setUbigueo('150101')
+            ->setDepartamento('LIMA')
+            ->setProvincia('LIMA')
+            ->setDistrito('LIMA')
+            ->setUrbanizacion('-')
+            ->setDireccion('PJ. LOS PEDREGALES MZA. D LOTE. 4 GRU.SECTOR 3 LOS PEDREGAL   JUNíN -  HUANCAYO  -  EL TAMBO')
+            ->setCodLocal('0000'); // Codigo de establecimiento asignado por SUNAT, 0000 por defecto.
+        return $address;
         return (new \Greenter\Model\Company\Address())
             ->setUbigueo($address->ubigueo)
             ->setCodigoPais($address->codigoPais)
@@ -246,7 +256,7 @@ class SunatServiceGlobal
     {
         $items = [];
         foreach ($legends as $legend) {
-            $legend = (object) $legend;
+            $legend = $legend;
             $item   = (new \Greenter\Model\Sale\Legend())
                 ->setCode($legend->code)
                 ->setValue($legend->value);
@@ -257,6 +267,13 @@ class SunatServiceGlobal
 
     public function getDetraccion($detraccion): \Greenter\Model\Sale\Detraction
     {
+        return (new \Greenter\Model\Sale\Detraction())
+            ->setCodBienDetraccion('021')
+            ->setCodMedioPago('001')
+            ->setCtaBanco('0004-3342343243')
+            ->setPercent($detraccion->setPercent ?? 4)
+            ->setMount($detraccion->setMount ?? 47.20);
+
         return (new \Greenter\Model\Sale\Detraction())
             ->setCodBienDetraccion($detraccion->codBienDetraccion)
             ->setCodMedioPago($detraccion->codMedioPago)

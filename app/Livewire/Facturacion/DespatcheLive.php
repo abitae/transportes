@@ -48,28 +48,17 @@ class DespatcheLive extends Component
 
     public function sendXmlFile(Despatche $despatche)
     {
+        //($despatche);
         $company = $despatche->company;
         $sunat = new SunatServiceGre();
         $despatch = $sunat->getDespatch($despatche);
+   
         $api = $sunat->getSeeApi($company);
+        
         $result = $api->send($despatch);
-
-        if ($result->isSuccess()) {
-            $ticket = $result->getTicket();
-            $statusResult = $api->getStatus($ticket);
-            $response = $sunat->sunatResponse($statusResult);
-
-            if ($response['success']) {
-                $despatche->cdr_path = 'cdr/' . 'R-' . $despatche->company->ruc . '-' . $despatche->tipoDoc . '-' . $despatche->serie . '-' . $despatche->correlativo . '.zip';
-                $despatche->save();
-                Storage::disk('public')->put($despatche->cdr_path, $response['cdrResponse']['cdrZip']);
-                $this->toast('success', 'Guia enviada a la sunat');
-            } else {
-                $this->toast('error', 'Error al enviar la guia a la sunat');
-            }
-        } else {
-            $this->toast('error', 'Error al enviar la guia a la sunat');
-        }
+        
+        $ticket = $result->getTicket();
+        dd($ticket);
     }
 
     public function downloadCdrFile(Despatche $despatche)

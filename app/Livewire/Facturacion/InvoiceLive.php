@@ -29,7 +29,7 @@ class InvoiceLive extends Component
     public function xmlGenerate(Invoice $invoice)
     {
         $company = $invoice->company;
-        $sunat = new SunatService();
+        $sunat = new SunatServiceGlobal();
         $see = $sunat->getSee($company);
         $invoce = $sunat->getInvoce($invoice);
         
@@ -51,7 +51,7 @@ class InvoiceLive extends Component
     public function sendXmlFile(Invoice $invoice)
     {
         $company = $invoice->company;
-        $sunat = new SunatService();
+        $sunat = new SunatServiceGlobal();
         $see = $sunat->getSee($company);
         $xml = Storage::disk('public')->get($invoice->xml_path);
         $result = $see->sendXmlFile($xml);
@@ -68,6 +68,7 @@ class InvoiceLive extends Component
         } else {
             $invoice->errorCode = $response['error']['code'];
             $invoice->errorMessage = $response['error']['message'];
+            dd($response);
             $this->toast('error', 'Error al enviar la factura a la sunat');
         }
     }

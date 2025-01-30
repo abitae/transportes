@@ -51,7 +51,7 @@ class SunatServiceGre
         return $api;
     }
 
-    public function getDespatch(Despatche $despatche)
+    public function getDespatch($despatche)
     {
         $pagaflete = new Client();
         $pagaflete->setTipoDoc("6")
@@ -168,7 +168,7 @@ class SunatServiceGre
 
     public function sunatResponse($result)
     {
-        dd($result);
+       //d($result);
         $response['success'] = $result->isSuccess();
         if (!$response['success']) {
             $response['error'] = [
