@@ -18,6 +18,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            // Otros seeders
+            SqlFileSeeder::class,
+        ]);
         Company::factory()->create([
             'ruc'             => '20568031734',
             'razonSocial'     => 'CORPORACIÓN LOGÍSTICO BRAYAN BRUHS EMPRESA INDIVIDUAL DE RESPONSABILIDAD LIMITADA',
@@ -55,7 +59,7 @@ class DatabaseSeeder extends Seeder
             ]));
         }
 
-        $user = User::factory()->create([
+        User::factory()->create([
             'name'        => 'Abel Arana',
             'email'       => 'abel.arana@hotmail.com',
             'sucursal_id' => 1,
@@ -100,5 +104,6 @@ class DatabaseSeeder extends Seeder
 
         //Encomienda::factory(1000)->create();
         //Paquete::factory(10000)->create();
+
     }
 }
