@@ -6,6 +6,7 @@ use App\Models\Facturacion\Despatche;
 use App\Models\Facturacion\Invoice;
 use App\Models\Facturacion\Ticket;
 use App\Models\Package\Encomienda;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Spatie\LaravelPdf\Enums\Format;
 
 use function Spatie\LaravelPdf\Support\pdf;
@@ -13,19 +14,26 @@ use function Spatie\LaravelPdf\Support\pdf;
 class pdfController extends Controller
 {
     public function ticket80mm(Ticket $ticket){
-
-        return pdf()
-        ->view('pdfs.ticket.80mm', compact('ticket'))
-        ->paperSize(80, 500, 'mm')
-        ->name('invoice.pdf');
+        $data = [
+            'ticket' => $ticket
+        ];
+        $heigh = 600 + $ticket->details->count() * 30;
+        $paper_format = array(0, 0, 250, $heigh);
+        
+        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.ticket.80mm', $data);
+        return $pdf->stream('invoice.pdf');
     }
     
     public function invoice80mm(Invoice $invoice){
 
-        return pdf()
-        ->view('pdfs.invoice.80mm', compact('invoice'))
-        ->paperSize(80, 500, 'mm')
-        ->name('invoice.pdf');
+        $data = [
+            'invoice' => $invoice
+        ];
+        $heigh = 600 + $invoice->details->count() * 30;
+        $paper_format = array(0, 0, 250, $heigh);
+        
+        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.invoice.80mm', $data);
+        return $pdf->stream('invoice.pdf');
     }
     public function invoiceA4(Invoice $invoice)
     {
@@ -37,10 +45,14 @@ class pdfController extends Controller
     //-------------------------------------------------------
     public function despache80mm(Despatche $despache)
     {
-        return pdf()
-        ->view('pdfs.despache.80mm', compact('despache'))
-        ->paperSize(80, 500, 'mm')
-        ->name('despache.pdf');
+        $data = [
+            'despache' => $despache
+        ];
+        $heigh = 1400 + $despache->details->count() * 30;
+        $paper_format = array(0, 0, 250, $heigh);
+        
+        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.despache.80mm', $data);
+        return $pdf->stream('invoice.pdf');
     }
     public function despacheA4(Despatche $despache)
     {

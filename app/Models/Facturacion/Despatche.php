@@ -41,7 +41,13 @@ class Despatche extends Model
         'cdr_description',
         'cdr_code',
         'cdr_note',
-        'cdr_path', 
+        'cdr_path',
+        
+        'monto_letras',
+        'setPercent',
+        'setMount',
+        'errorCode',
+        'errorMessage'
     ];
     public function company()
     {

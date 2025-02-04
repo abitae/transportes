@@ -153,10 +153,14 @@ trait InvoiceTrait
     }
 
     private function setGuiTrans(Encomienda $encomienda)
-    {
+    {   //dd($encomienda);
         $company = Company::first();
         $correlativo = Despatche::count() + 1;
-
+        $montoTotalIncIGV = $encomienda->paquetes->sum('sub_total');
+        $mtoOperGravadas = round($montoTotalIncIGV / 1.18, 2);
+        $igv = $montoTotalIncIGV - $mtoOperGravadas;
+        $formatter = new NumeroALetras();
+        $monto_letras = $formatter->toInvoice($montoTotalIncIGV, 2, 'SOLES');
         $despatch = Despatche::create([
             'encomienda_id' => $encomienda->id,
             'tipoDoc' => '31',
@@ -177,11 +181,15 @@ trait InvoiceTrait
             'partida_ubigueo' => '150101',
             'partida_direccion' => 'Av. Villa Nueva 221',
             'chofer_tipoDoc' => '1',
-            'chofer_nroDoc' => '41234567',
-            'chofer_licencia' => '0001122020',
-            'chofer_nombres' => 'Victor',
-            'chofer_apellidos' => 'ABC-123',
-            'vehiculo_placa' => 'Arana Flores',
+            'chofer_nroDoc' => $encomienda->transportista->dni,
+            'chofer_licencia' => $encomienda->transportista->licencia,
+            'chofer_nombres' => $encomienda->transportista->name,
+            'chofer_apellidos' => $encomienda->transportista->name,
+            'vehiculo_placa' => $encomienda->vehiculo->name,
+            'monto_letras' => $monto_letras,
+            'setPercent' => 12,
+            'setMount' => $montoTotalIncIGV * 0.12,
+
         ]);
 
         foreach ($encomienda->paquetes as $paquete) {

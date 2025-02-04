@@ -43,6 +43,11 @@ return new class extends Migration
             $table->string('cdr_code')->nullable();
             $table->string('cdr_note')->nullable();
             $table->string('cdr_path')->nullable();
+            $table->string('monto_letras');//monto en letras
+            $table->decimal('setPercent', 8, 2)->nullable();//porcentaje detraccion
+            $table->decimal('setMount', 8, 2)->nullable();//monto detraccion
+            $table->string('errorCode')->nullable();
+            $table->string('errorMessage')->nullable();
             $table->timestamps();
         });
     }
