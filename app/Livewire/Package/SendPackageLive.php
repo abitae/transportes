@@ -92,7 +92,15 @@ class SendPackageLive extends Component
             ->where('sucursal_id', Auth::user()->sucursal->id)
             ->where('sucursal_dest_id', $this->sucursal_dest_id)
             ->where('estado_encomienda', 'REGISTRADO')
-            ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%'))
+            //->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%'))
+            ->whereHas('remitente', function ($query) {
+                $query->where('code', 'like', '%'.$this->search.'%')
+                    ->orWhere('name', 'like', '%'.$this->search.'%');
+            })
+            /* ->whereHas('destinatario', function ($query) {
+                $query->where('code', 'like', '%'.$this->search.'%')
+                    ->orWhere('name', 'like', '%'.$this->search.'%');
+            }) */
             ->latest()
             ->paginate($this->perPage, '*', 'page');
 

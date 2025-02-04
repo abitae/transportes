@@ -186,6 +186,15 @@ class RegisterLive extends Component
 
     public function finish()
     {
+        if ($this->isReturn) {
+            //dd($this->customerFormDest->address,$this->isHome);
+            if (! $this->customerFormDest->address) {
+                $this->error('Error, es necesario ingresar la dirección de entrega!');
+                $this->step = 2;
+                $this->isHome = true;
+                return;
+            }
+        }
         if ($this->isHome) {
             $this->pin1 = $this->pin2 = 123;
         }
@@ -195,7 +204,7 @@ class RegisterLive extends Component
             $this->customerFact     = $this->customerForm;
             $this->modalConfimation = true;
         } else {
-            $this->error('Error, verifique los datos!');
+            $this->error('Error, el pin ingresado no es correcto!');
         }
     }
 
@@ -271,7 +280,7 @@ class RegisterLive extends Component
         if ($this->entryForm->store()) {
             $this->entryForm->reset();
         } else {
-            $this->error('Error, verifique los datos!');
+            $this->error('Error, no se pudo ingresar monto a caja!');
         }
     }
 

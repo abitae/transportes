@@ -3,6 +3,7 @@
 namespace App\Livewire\Package;
 
 use App\Livewire\Forms\CustomerForm;
+use App\Livewire\Forms\EntryCajaForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
@@ -16,6 +17,7 @@ use Mary\Traits\Toast;
 class ReturnPackageLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
+    public EntryCajaForm $entryForm;
     public CustomerForm $customerFact;
     public $title     = 'Entrega paquetes retorno';
     public $sub_title = 'Modulo de entrega de paquetes retorno';
@@ -52,8 +54,13 @@ class ReturnPackageLive extends Component
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'RECIBIDO')
             ->where('isReturn', true)
-            ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
-            )->paginate($this->perPage, '*', 'page');
+            //->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
+            ->whereHas('destinatario', function ($query) {
+                $query->where('code', 'like', '%'.$this->search.'%')
+                    ->orWhere('name', 'like', '%'.$this->search.'%');
+            })
+            ->latest()
+            ->paginate($this->perPage, '*', 'page');
         return view('livewire.package.return-package-live', compact('encomiendas', 'sucursals'));
     }
     public function openModal($id)
@@ -86,13 +93,25 @@ class ReturnPackageLive extends Component
     public function confirmEncomienda()
     {
         if ($this->estado_pago == 'PAGADO') {
-            $this->updateEncomiendaStatus('REGISTRADO');
+            $this->updateEncomiendaStatus('ENTREGADO');
             $this->toast('success', 'Paquete entregado correctamente');
         } else {
-            dd($this->encomienda);
             if ($this->tipo_comprobante != 'TICKET') {
-                $this->updateEncomiendaStatus('REGISTRADO', $this->tipo_comprobante);
+                $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
                 $this->setInvoice($this->encomienda);
+                $this->entryForm->fill([
+                    'caja_id'     => $this->caja->id,
+                    'monto_entry' => $this->encomienda->monto,
+                    'description' => $this->encomienda->code,
+                    'tipo'        => $this->encomienda->tipo_comprobante,
+                ]);
+                if ($this->entryForm->store()) {
+                    $this->entryForm->reset();
+                } else {
+                    $this->error('Error, verifique los datos!');
+                }
+            } else {
+                $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
                 $this->entryForm->fill([
                     'caja_id'     => $this->caja->id,
                     'monto_entry' => $this->encomienda->monto,
@@ -113,10 +132,6 @@ class ReturnPackageLive extends Component
         $this->encomienda->estado_encomienda = $status;
         if ($tipo_comprobante) {
             $this->encomienda->tipo_comprobante = $tipo_comprobante;
-            $this->encomienda->sucursal_id      = 'PENDIENTE';
-            $this->encomienda->sucursal_dest_id      = 'PENDIENTE';
-            $this->encomienda->isReturn      = false;
-            
         }
         $this->encomienda->save();
     }

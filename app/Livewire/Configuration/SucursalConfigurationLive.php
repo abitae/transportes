@@ -25,14 +25,14 @@ class SucursalConfigurationLive extends Component
     public function save()
     {
         $this->date_config = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
-        $dd = $this->validate([
+        $this->validate([
             'sucursal_destino_id' => 'required',
             'vehiculo_id' => 'required',
             'transportista_id' => 'required',
             'date_config' => 'required',
         ]);
         
-        $aa = SucursalConfiguration::updateOrCreate([
+        SucursalConfiguration::updateOrCreate([
             'sucursal_id' => Auth::user()->sucursal->id,
             'sucursal_destino_id' => $this->sucursal_destino_id],
             [
@@ -41,7 +41,5 @@ class SucursalConfigurationLive extends Component
                 'date_config' => $this->date_config,
                 'isActive' => true]
         );
-        //dd($aa,$this->transportista_id,$this->vehiculo_id);
-        //$this->reset();
     }
 }

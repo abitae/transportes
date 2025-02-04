@@ -30,10 +30,11 @@
                     <p>{{ $config->destino->name }}</p>
                     @endscope
                     @scope('cell_transportista', $config)
-                    <x-mary-badge :value="$config->transportista->name" class="badge-primary" />
+                    <x-mary-badge :value="$config->transportista->name" class="text-xl" />
                     @endscope
                     @scope('cell_vehiculo', $config)
-                    <x-mary-badge :value="$config->vehiculo->name" class="badge-primary" />
+                    <x-mary-badge :value="$config->vehiculo->name" class="text-xl badge-primary" />
+                    <x-mary-badge :value="$config->vehiculo->modelo" class="text-xl bg-cyan-500" />
                     @endscope
                 </x-mary-table>
             </x-mary-card>

@@ -31,14 +31,6 @@
                     <x-mary-button @click="$wire.modalEntry = true" responsive icon="o-plus" label="Ingreso"
                         class="text-white bg-green-500" />
                 </x-slot:menu>
-                @php
-                $headersIngreso = [
-                ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1'],
-                ['key' => 'tipo', 'label' => 'Tipo', 'class' => ''],
-                ['key' => 'description', 'label' => 'Descripción', 'class' => ''],
-                ['key' => 'monto_entry', 'label' => 'Monto', 'class' => ''],
-                ];
-                @endphp
                 <x-mary-table :headers="$headersIngreso" :rows="$caja->entries" striped>
                 </x-mary-table>
             </x-mary-card>
@@ -49,14 +41,6 @@
                     <x-mary-button @click="$wire.modalExit = true" responsive icon="c-minus" label="Egreso"
                         class="text-white bg-red-500" />
                 </x-slot:menu>
-                @php
-                $headersEgreso = [
-                ['key' => 'id', 'label' => '#', 'class' => 'bg-red-500 w-1'],
-                ['key' => 'tipo', 'label' => 'Tipo', 'class' => ''],
-                ['key' => 'description', 'label' => 'Descripción', 'class' => ''],
-                ['key' => 'monto_exit', 'label' => 'Monto', 'class' => ''],
-                ];
-                @endphp
                 <x-mary-table :headers="$headersEgreso" :rows="$caja->exits" striped>
                 </x-mary-table>
             </x-mary-card>
@@ -88,13 +72,6 @@
         <x-mary-form wire:submit="entryCaja">
             <div class="border border-green-500 rounded-lg">
                 <div class="grid grid-cols-4 p-2 space-x-2">
-                    @php
-                    $tipos = [
-                    ['id' => 'Devolucion', 'name' => 'Devolución'],
-                    ['id' => 'Efectivo', 'name' => 'Efectivo'],
-                    ['id' => 'Ticket', 'name' => 'Ticket'],
-                    ];
-                    @endphp
                     <div class="grid col-span-4 pt-2">
                         <x-mary-select label="Tipo" :options="$tipos" wire:model="entryForm.tipo" />
                     </div>
@@ -119,13 +96,6 @@
         <x-mary-form wire:submit="exitCaja">
             <div class="border border-red-500 rounded-lg">
                 <div class="grid grid-cols-4 p-2 space-x-2">
-                    @php
-                    $tipos2 = [
-                    ['id' => 'Devolucion', 'name' => 'Pago'],
-                    ['id' => 'Efectivo', 'name' => 'Efectivo'],
-                    ['id' => 'Ticket', 'name' => 'Ticket'],
-                    ];
-                    @endphp
                     <div class="grid col-span-4 pt-2">
                         <x-mary-select label="Tipo" :options="$tipos2" wire:model="exitForm.tipo" />
                     </div>
@@ -148,14 +118,6 @@
         <div>
             @isset($cajas)
             @php
-            $headersHistory = [
-            ['key' => 'id', 'label' => '#', 'class' => 'bg-blue-500 w-1 text-black'],
-            ['key' => 'created_at', 'label' => 'Fecha Apertura', 'class' => 'text-black'],
-            ['key' => 'updated_at', 'label' => 'Fecha Cierre', 'class' => 'text-black'],
-            ['key' => 'monto_apertura', 'label' => 'Apertura', 'class' => 'bg-green-500 text-black'],
-            ['key' => 'monto_cierre', 'label' => 'Cierre', 'class' => 'bg-red-500 text-black'],
-            ['key' => 'action', 'label' => 'Imprimir', 'class' => ''],
-            ];
             $row_decoration = [
             'bg-yellow-500' => fn(App\Models\Caja\Caja $caja) => $caja->isActive,
             ];

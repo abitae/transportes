@@ -59,8 +59,13 @@ class HomePackageLive extends Component
             ->where('estado_encomienda', 'RECIBIDO')
             ->where('isHome', true)
             ->where('isReturn', false)
-            ->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
-            )->paginate($this->perPage, '*', 'page');
+            //->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
+            ->whereHas('destinatario', function ($query) {
+                $query->where('code', 'like', '%'.$this->search.'%')
+                    ->orWhere('name', 'like', '%'.$this->search.'%');
+            })
+            ->latest()
+            ->paginate($this->perPage, '*', 'page');
         return view('livewire.package.home-package-live', compact('encomiendas', 'sucursals'));
     }
 
@@ -103,6 +108,20 @@ class HomePackageLive extends Component
             if ($this->tipo_comprobante != 'TICKET') {
                 $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
                 $this->setInvoice($this->encomienda);
+                $this->entryForm->fill([
+                    'caja_id'     => $this->caja->id,
+                    'monto_entry' => $this->encomienda->monto,
+                    'description' => $this->encomienda->code,
+                    'tipo'        => $this->encomienda->tipo_comprobante,
+                ]);
+                if ($this->entryForm->store()) {
+                    $this->entryForm->reset();
+                } else {
+                    $this->error('Error, verifique los datos!');
+                }
+            }
+            else {
+                $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
                 $this->entryForm->fill([
                     'caja_id'     => $this->caja->id,
                     'monto_entry' => $this->encomienda->monto,
