@@ -49,6 +49,7 @@ trait CajaTrait
             return $model::create([
                 'caja_id' => $caja_id,
                 'monto_entry' => $monto,
+                'monto_exit' => $monto,
                 'description' => $description,
                 'tipo' => $tipo,
             ]);

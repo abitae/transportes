@@ -9,7 +9,7 @@
     <style>
         body {
             margin: -50px 1px -50px -50px;
-            font-family: 'Arial', sans-serif;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
             width: 340px;
             /* Ampliado el ancho del body */
         }
@@ -60,8 +60,8 @@
         </div>
         <!-- Título de la Factura y Número de Serie en un recuadro -->
         <div class="text-center border-top border-dark">
-            <h1 class="m-1 text-sm font-weight-bold">TICKET</h1>
-            <p class="m-1 text-sm font-weight-bold">{{ $invoice->serie }}</p>
+            <h1 class="m-1 text-sm font-weight-bold">{{ $invoice->tipoDoc=='03' ? 'BOLETA ELECTRONICA' : 'FACTURA ELECTRONICA' }}</h1>
+            <p class="m-1 text-sm font-weight-bold">{{ $invoice->serie }} - {{ $invoice->correlativo }}</p>
         </div>
         <section class="text-xs text-left border-top border-dark">
             <p>Fecha Emición: {{ $invoice->fechaEmision }}</p>

@@ -21,7 +21,7 @@
                 @php
                 $headers = [
                 ['key' => 'id', 'label' => '#', 'class' => 'bg-blue-500 w-1'],
-                ['key' => 'name', 'label' => 'Name', 'class' => ''],
+                ['key' => 'name', 'label' => 'Placa', 'class' => ''],
                 ['key' => 'marca', 'label' => 'Marca', 'class' => ''],
                 ['key' => 'modelo', 'label' => 'Modelo', 'class' => ''],
                 ['key' => 'tipo', 'label' => 'Tipo', 'class' => ''],
@@ -63,13 +63,13 @@
             <div class="border border-green-500 rounded-lg">
                 <div class="grid grid-cols-4 p-2">
                     <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Nombre" inline wire:model='vehiculoForm.name' />
+                        <x-mary-input label="Placa" inline wire:model='vehiculoForm.name' />
                     </div>
                     <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Direccion" inline wire:model='vehiculoForm.marca' />
+                        <x-mary-input label="Marca" inline wire:model='vehiculoForm.marca' />
                     </div>
                     <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Telefono" inline wire:model='vehiculoForm.modelo' />
+                        <x-mary-input label="Modelo" inline wire:model='vehiculoForm.modelo' />
                     </div>
                     <div class="grid col-span-4 pt-2">
                         @php

@@ -9,7 +9,7 @@
     <style>
         body {
             margin: -50px 1px -50px -50px;
-            font-family: 'Arial', sans-serif;
+            font-family: Verdana, Arial, Helvetica, sans-serif;
             width: 340px;
             /* Ampliado el ancho del body */
         }

@@ -62,15 +62,15 @@
                     alt="Logo de la Empresa">
                 <p class="font-weight-bold">BRAYAN BRUSH CORPORACION LOGISTICO</p>
                 <p>R.U.C.: {{ $despache->company->ruc }}</p>
-                <p>{{ $despache->company->address }}</p>
-                <p class="m-0">Telf: {{ $despache->company->telephone }}</p>
-                <p class="m-0">Email: {{ $despache->company->email }}</p>
+                <p>{{ $despache->encomienda->sucursal_remitente->address }}</p>
+                <p class="m-0">Telf: {{ $despache->encomienda->sucursal_remitente->telephone }}</p>
+                <p class="m-0">Email: {{ $despache->encomienda->sucursal_remitente->email }}</p>
                 <P>N°Reg.MTC : 1553682 CNG</P>
             </div>
         </div>
         <!-- Título de la Factura y Número de Serie en un recuadro -->
         <div class="text-center border-top border-dark">
-            <h1 class="m-1 text-sm font-weight-bold">GUIA TRANSPORTISTA</h1>
+            <h1 class="m-1 text-sm font-weight-bold">GUIA REMICION TRANSPORTISTA</h1>
             <p class="m-1 text-sm font-weight-bold">{{ $despache->serie }} - {{ $despache->correlativo }}</p>
         </div>
         <section class="text-xs text-left border-top border-dark">
@@ -79,14 +79,14 @@
         </section>
         <!-- Información del Cliente -->
         <section class="text-xs text-left border-top border-dark">
-            <p class="font-semibold">DATOS REMITENTE</p>
+            <p class="font-weight-bold">DATOS REMITENTE</p>
             <p>{{ strtoupper($despache->remitente->type_code) }}: {{ $despache->remitente->code }}</p>
             <p>{{ $despache->remitente->name }}</p>
             <p>{{ $despache->remitente->address }}</p>
             <p>Tel:{{ $despache->remitente->phone }}</p>
         </section>
         <section class="text-xs text-left border-top border-dark">
-            <p class="font-semibold">DATOS DESTINATARIO</p>
+            <p class="font-weight-bold">DATOS DESTINATARIO</p>
             <p>{{ strtoupper($despache->destinatario->type_code) }}: {{ $despache->destinatario->code }}</p>
             <p>{{ $despache->destinatario->name }}</p>
             <p>{{ $despache->destinatario->address }}</p>
@@ -96,17 +96,25 @@
                 <p>Origen:{{ $despache->encomienda->sucursal_remitente->address }}</p>
                 <p>Destino:{{ $despache->encomienda->sucursal_destinatario->address }}</p>
             </section>
+            <section class="text-xs text-left border-top border-dark">
+                <p class="font-weight-bold">TRANSPORTE</p>
+                <p>Placa:{{ $despache->encomienda->vehiculo->name }}</p>
+                <p>{{ $despache->encomienda->vehiculo->marca }} - {{ $despache->encomienda->vehiculo->modelo }}</p>
+            </section>
+            <section class="text-xs text-left border-top border-dark">
+                <p class="font-weight-bold">CONDUCTOR</p>
+                <p>Nombre: {{ $despache->encomienda->transportista->name }}</p>
+                <p>DNI: {{ $despache->encomienda->transportista->dni }}</p>
             <section class="text-xs text-left border-b border-top border-dark">
-                <p class="font-semibold">ENTREGA</p>
+                <p class="font-weight-bold">ENTREGA</p>
                 @if ($despache->isHome)
                 <p>{{ $despache->destinatario->address }}</p>
                 @else
                 <p>RECOJO EN AGENCIA</p>
                 @endif
-
             </section>
             <section class="text-xs text-left border-top border-dark">
-                <p class="font-semibold">FORMA DE PAGO</p>
+                <p class="font-weight-bold">FORMA DE PAGO</p>
                 <p>{{ $despache->encomienda->estado_pago }}</p>
             </section>
             <section class="mb-4">
@@ -115,6 +123,7 @@
                         <tr class="bg-light">
                             <th class="px-2 py-1 text-left">Descripción</th>
                             <th class="px-2 py-1 text-right">Cant</th>
+                            <th class="px-2 py-1 text-right">Und</th>
                             <th class="px-2 py-1 text-right">Precio</th>
                             <th class="px-2 py-1 text-right">Total</th>
                         </tr>
@@ -124,6 +133,7 @@
                         <tr>
                             <td class="px-2 py-1 text-left">{{ $detail->descripcion }}</td>
                             <td class="px-2 py-1 text-right">{{ $detail->cantidad }}</td>
+                            <td class="px-2 py-1 text-right">{{ $detail->unidad }}</td>
                             <td class="px-2 py-1 text-right">{{ $detail->mtoPrecioUnitario }}</td>
                             <td class="px-2 py-1 text-right">{{ number_format($detail->mtoPrecioUnitario *
                                 $detail->cantidad,2) }}</td>
@@ -167,7 +177,7 @@
                 <br>
                 <span>Corporación Logística Brayan Brush EIRL</span>
                 <br>
-                <section class="text-xs text-left border-top border-dark">
+                <section class="text-xs text-left border-top border-dark" style="text-align: justify;">
                     <p>• El cliente debe proporcionar una dirección completa y un número de teléfono válido. Si no es posible contactar al destinatario o la dirección es incorrecta, el paquete será devuelto a nuestros almacenes.</p>
                     <p>• Después de dos intentos fallidos, el envío será devuelto a nuestros almacenes. El cliente deberá coordinar el retiro o solicitar un nuevo envío, sujeto a costos adicionales.</p>
                     <p>• Si el cliente requiere una entrega fuera del horario de 9 a.m. a 6 p.m., debe coordinarlo previamente. Este servicio está sujeto a disponibilidad y costos adicionales.</p>
