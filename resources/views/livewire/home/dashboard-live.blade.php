@@ -10,10 +10,10 @@
             </div>
             
             <div class="row-start-2">
-
+                <x-mary-chart wire:model="myLine" />
             </div>
             <div class="row-start-2">
-
+                <x-mary-chart wire:model="myChart" />
             </div>
         </div>
     </x-mary-card>

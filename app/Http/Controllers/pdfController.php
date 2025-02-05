@@ -52,7 +52,7 @@ class pdfController extends Controller
         $paper_format = array(0, 0, 250, $heigh);
         
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.despache.80mm', $data);
-        return $pdf->stream('invoice.pdf');
+        return $pdf->stream('guia.pdf');
     }
     public function despacheA4(Despatche $despache)
     {
@@ -63,9 +63,13 @@ class pdfController extends Controller
     }
     public function stickerA5(Encomienda $encomienda)
     {
-        return pdf()
-        ->view('pdfs.sticker.a5', compact('encomienda'))
-        ->format(Format::A5)
-        ->name('despache.pdf');
+        $data = [
+            'encomienda' => $encomienda
+        ];
+        //$heigh = 1400 + $encomienda->details->count() * 30;
+        $paper_format = array(0,0,297.64,419.53);
+        
+        $pdf = Pdf::setPaper($paper_format, 'landscape')->loadView('pdfs.sticker.a6', $data);
+        return $pdf->stream('sticker.pdf');
     }
 }
