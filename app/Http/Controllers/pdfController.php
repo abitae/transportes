@@ -48,7 +48,7 @@ class pdfController extends Controller
         $data = [
             'despache' => $despache
         ];
-        $heigh = 1400 + $despache->details->count() * 30;
+        $heigh = 1450 + $despache->details->count() * 30;
         $paper_format = array(0, 0, 250, $heigh);
         
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.despache.80mm', $data);
@@ -61,7 +61,7 @@ class pdfController extends Controller
         //->format(Format::A4)
         ->name('despache.pdf');
     }
-    public function stickerA5(Encomienda $encomienda)
+    public function stickerA6(Encomienda $encomienda)
     {
         $data = [
             'encomienda' => $encomienda

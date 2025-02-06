@@ -63,6 +63,9 @@
             <h1 class="m-1 text-sm font-weight-bold">TICKET</h1>
             <p class="m-1 text-sm font-weight-bold">{{ $ticket->serie }}</p>
         </div>
+        <div class="text-center border-top border-dark">
+            <h1 class="m-1 text-sm font-weight-bold">{{ $ticket->encomienda->estado_pago }}</h1>
+        </div>
         <section class="text-xs text-left border-top border-dark">
             <p>Fecha Emición: {{ $ticket->fechaEmision }}</p>
             <p>Fecha Traslado: {{ $ticket->fecTraslado }}</p>

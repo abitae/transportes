@@ -89,58 +89,68 @@
                         </div>
                         @endscope
                         @scope('cell_estado', $stuff)
-                        <x-mary-badge :value="strtoupper('P')"
+                        <x-mary-badge :value="strtoupper('Pagado')"
                             class="w-min-full {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
                         <br>
-                        <x-mary-badge :value="strtoupper('D')"
+                        <x-mary-badge :value="strtoupper('Domicilio')"
                             class="w-min-full {{ !$stuff->isHome ? 'bg-red-500': 'bg-green-500' }}" />
                         <br>
-                        <x-mary-badge :value="strtoupper('R')"
+                        <x-mary-badge :value="strtoupper('Retorno')"
                             class="w-min-full {{ !$stuff->isReturn ? 'bg-red-500': 'bg-green-500' }}" />
                         @endscope
                         @scope('cell_actions', $stuff)
-                        <div class="grid grid-cols-2 grid-rows-4 gap-0">
+                        <div class="grid grid-cols-2 grid-rows-5 gap-0">
                             <div class="col-span-2">
                                 <x-mary-badge :value="strtoupper($stuff->code)"
-                                    class="w-full text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
+                                    class="w-full text-white text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
                             </div>
                             <div class="row-start-2">
                                 <x-mary-button label='Detalle' icon="s-bars-3"
                                     wire:click="detailEncomienda({{ $stuff->id }})" spinner
-                                    class="text-white btn-xs bg-cyan-500" />
+                                    class="w-full text-white btn-xs bg-cyan-500" />
                             </div>
                             <div class="row-start-2">
-                                <x-mary-button label='Edit' icon="o-pencil-square"
-                                    wire:click="editEncomienda({{ $stuff->id }})" spinner
-                                    class="text-white bg-green-500 btn-xs" />
+                                @if ($stuff->invoice)
+                                <x-mary-button label='Recibo' icon="o-printer" target="_blank" no-wire-navigate
+                                    link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
+                                    class="w-full text-white bg-purple-500 btn-xs" />
+                                @endif
                             </div>
                             <div class="row-start-3">
-                                <x-mary-button label='Anular' icon="o-no-symbol"
-                                    wire:click="enableEncomienda({{ $stuff->id }})" spinner
-                                    wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
-                                    class="text-white bg-red-500 btn-xs" />
+                                <x-mary-button label='Editar' icon="o-pencil-square"
+                                    wire:click="editEncomienda({{ $stuff->id }})" spinner
+                                    class="w-full text-white bg-green-500 btn-xs" />
+                                
                             </div>
                             <div class="row-start-3">
                                 @if ($stuff->ticket)
                                 <x-mary-button label='Ticket' icon="o-printer" target="_blank" no-wire-navigate
                                     link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
-                                    class="text-white bg-cyan-500 btn-xs" />
+                                    class="w-full text-white bg-cyan-500 btn-xs" />
                                 @endif
                             </div>
                             <div class="row-start-4">
-                                @if ($stuff->invoice)
-                                <x-mary-button label='Recibo' icon="o-printer" target="_blank" no-wire-navigate
-                                    link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
-                                    class="text-white bg-green-500 btn-xs" />
-                                @endif
+                                <x-mary-button label='Anular' icon="o-no-symbol"
+                                    wire:click="enableEncomienda({{ $stuff->id }})" spinner
+                                    wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
+                                    class="w-full text-white bg-red-500 btn-xs" />
+                               
                             </div>
                             <div class="row-start-4">
-                                <x-mary-button label='Guia' icon="o-printer" target="_blank" no-wire-navigate
+                                <x-mary-button label='Guia T' icon="o-printer" target="_blank" no-wire-navigate
                                     link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
-                                    class="text-white bg-blue-500 btn-xs" />
+                                    class="w-full text-white bg-green-500 btn-xs" />
+                            </div>
+                            <div class="row-start-5">
+                                <x-mary-badge :value="strtoupper($stuff->estado_pago)"
+                                    class="w-full text-white text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
+                            </div>
+                            <div class="row-start-4">
+                                <x-mary-button label='Sticker' icon="o-printer" target="_blank" no-wire-navigate
+                                    link="/sticker/a6/{{ $stuff->despatche->id }}" spinner
+                                    class="w-full text-white bg-blue-500 btn-xs" />
                             </div>
                         </div>
-                        
                         @endscope
                     </x-mary-table>
                 </x-mary-card>
@@ -215,7 +225,7 @@
         </x-mary-card>
     </x-mary-drawer>
     <x-mary-modal wire:model="editModal" persistent class="backdrop-blur" box-class="max-h-full max-w-256">
-        <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="EDITAR ENCOMIENDA" />
+        <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="CAMBIAR DESTINATARIO" />
         <x-mary-form wire:submit.prevent="updateEncomienda">
             <div class="p-2 border border-green-500 rounded-lg">
                 <div class="grid grid-cols-4 gap-1">

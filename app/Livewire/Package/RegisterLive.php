@@ -195,7 +195,7 @@ class RegisterLive extends Component
 
     public function restPaquete($id)
     {
-        dump($id);
+        //dump($id);
         $this->paquetes->pull($id - 1);
     }
 
