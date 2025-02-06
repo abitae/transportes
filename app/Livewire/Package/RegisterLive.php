@@ -154,15 +154,15 @@ class RegisterLive extends Component
     public function addPaquete()
     {
         if ($this->validatePaquete()) {
-            $paquete = new Paquete([
-                'id'          => $this->paquetes->count() + 1,
-                'cantidad'    => $this->cantidad,
-                'und_medida'  => $this->und_medida,
-                'description' => $this->description,
-                'peso'        => $this->peso,
-                'amount'      => $this->amount,
-                'sub_total'   => $this->amount * $this->cantidad,
-            ]);
+            $paquete = new Paquete();
+            $paquete->id = $this->paquetes->count() + 1;
+            $paquete->cantidad = $this->cantidad;
+            $paquete->und_medida = $this->und_medida;
+            $paquete->description = $this->description;
+            $paquete->peso = $this->peso;
+            $paquete->amount = $this->amount;
+            $paquete->sub_total = $this->amount * $this->cantidad;
+
             $this->paquetes->push($paquete->toArray());
         } else {
             $this->error('Error, verifique los datos!');
@@ -171,11 +171,31 @@ class RegisterLive extends Component
 
     private function validatePaquete()
     {
-        return ! is_null($this->cantidad) && ! is_null($this->description) && ! is_null($this->peso) && ! is_null($this->amount);
+        $validations = [
+            'cantidad'    => 'required|numeric',
+            'und_medida'  => 'required',
+            'description' => 'required',
+            'peso'        => 'required|numeric',
+            'amount'      => 'required|numeric',
+        ];
+        $errorMessage = [
+            'cantidad.required'    => 'Error, es necesario ingresar la cantidad!',
+            'cantidad.numeric'     => 'Error, la cantidad debe ser un número!',
+            'und_medida.required'  => 'Error, es necesario ingresar la unidad de medida!',
+            'description.required' => 'Error, es necesario ingresar la descripción!',
+            'peso.required'        => 'Error, es necesario ingresar el peso!',
+            'peso.numeric'         => 'Error, el peso debe ser un número!',
+            'amount.required'      => 'Error, es necesario ingresar el precio unitario!',
+            'amount.numeric'       => 'Error, el precio unitario debe ser un número!',
+        ];
+        $this->validate($validations, $errorMessage);
+        
+        return true;   
     }
 
     public function restPaquete($id)
     {
+        dump($id);
         $this->paquetes->pull($id - 1);
     }
 
