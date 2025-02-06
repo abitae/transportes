@@ -26,6 +26,7 @@ class UserForm extends Form
     public $role = '';
     public function setUser(User $user)
     {
+        //dd($user->getRoleNames()->first());
         $this->user = $user;
         $this->name = $user->name;
         $this->email = $user->email;
@@ -39,7 +40,7 @@ class UserForm extends Form
             User::create([
                 'name' => $this->name,
                 'email' => $this->email,
-                'password' => Hash::make($this->password),
+                'password' => Hash::make('password'),
                 'sucursal_id' => $this->sucursal_id,
             ])->syncRoles([$this->role]);
             $this->infoLog('User store ' . Auth::user()->name);

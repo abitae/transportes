@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Livewire\Configuration;
 
 use App\Livewire\Forms\UserForm;
@@ -8,41 +7,39 @@ use App\Models\User;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
-use Spatie\Permission\Models\Role;
 use Mary\Traits\Toast;
+use Spatie\Permission\Models\Role;
 
 class UserLive extends Component
 {
     use Toast;
     use WithPagination, WithoutUrlPagination;
     public UserForm $userForm;
-    public $title = 'Usuarios';
-    public $sub_title = 'Modulo de usuarios';
-    public int $perPage = 10;
+    public $title          = 'Usuarios';
+    public $sub_title      = 'Modulo de usuarios';
+    public int $perPage    = 10;
     public bool $modalUser = false;
 
     public function render()
     {
         $sucursals = Sucursal::where('isActive', true)->get();
-        $roles = Role::all();
-        $users = User::latest()->paginate($this->perPage);
+        $roles     = Role::all();
+        $users     = User::latest()->paginate($this->perPage);
         return view('livewire.configuration.user-live', compact('users', 'sucursals', 'roles'));
     }
     public function openModal()
     {
-        $this->userForm->resetErrorBag();
-        $this->userForm->resetValidation();
         $this->userForm->reset();
-        $this->modalUser = !$this->modalUser;
+        $this->modalUser = ! $this->modalUser;
     }
     public function create()
     {
         if ($this->userForm->store()) {
             $this->success('Genial, guardado correctamente!');
-            $this->openModal();
         } else {
             $this->error('Error, verifique los datos!');
         }
+        $this->openModal();
     }
     public function edit(User $user)
     {
@@ -53,10 +50,11 @@ class UserLive extends Component
     {
         if ($this->userForm->update()) {
             $this->success('Genial, guardado correctamente!');
-            $this->openModal();
+
         } else {
             $this->error('Error, verifique los datos!');
         }
+        $this->openModal();
     }
     public function delete(User $user)
     {

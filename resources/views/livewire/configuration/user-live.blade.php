@@ -12,6 +12,7 @@
                     $headers = [
                         ['key' => 'id', 'label' => '#', 'class' => 'bg-purple-500 w-1'],
                         ['key' => 'name', 'label' => 'Name', 'class' => ''],
+                        ['key' => 'role', 'label' => 'Rol', 'class' => ''],
                         ['key' => 'email', 'label' => 'Email', 'class' => ''],
                         ['key' => 'isActive', 'label' => 'isActive', 'class' => ''],
                     ];
@@ -21,6 +22,9 @@
                 @endphp
                 <x-mary-table :headers="$headers" :rows="$users" with-pagination per-page="perPage" :row-decoration="$row_decoration"
                     :per-page-values="[5, 20, 10, 50]" striped>
+                    @scope('cell_role', $stuff)
+                        <span class="text-sm">{{ $stuff->getRoleNames()->first() }}</span>
+                    @endscope
                     @scope('cell_isActive', $stuff)
                         <button wire:click='estado({{ $stuff->id }})'
                             wire:confirm.prompt="Estas seguro de eliminar registro?\n\nEscriba 'SI' para confirmar!|SI"

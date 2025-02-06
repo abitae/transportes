@@ -14,41 +14,45 @@ class RoleForm extends Form
 
     #[Validate('required|min:4|unique:roles')]
     public $name = '';
+
     public function setRole(Role $role)
     {
         $this->role = $role;
         $this->name = $role->name;
     }
-    public function store()
+    public function store($permisions)
     {
-
         try {
             $this->validate();
-            Role::create($this->all());
+            Role::create([
+                'name' => $this->name,
+            ])->syncPermissions($permisions);
             $this->infoLog('Role store', $this->name);
+            $this->reset();
             return true;
         } catch (\Exception $e) {
             $this->errorLog('Role store', $e);
             return false;
         }
     }
-    public function update()
+    public function update($permisions)
     {
         try {
             $this->role->update([
                 'name' => $this->name,
             ]);
+            $this->role->syncPermissions($permisions);
             $this->infoLog('Role update', $this->name);
+            $this->reset();
             return true;
         } catch (\Exception $e) {
             $this->errorLog('Role update', $e);
             return false;
         }
     }
-    public function delete($id)
+    public function delete(Role $role)
     {
         try {
-            $role = Role::find($id);
             $role->delete();
             $this->infoLog('Role delete', $role->email);
             return true;
@@ -57,15 +61,5 @@ class RoleForm extends Form
             return false;
         }
     }
-    public function permision($permisions)
-    {
-        try {
-            $this->role->syncPermissions($permisions);
-            $this->infoLog('Role permision', $this->role->name);
-            return true;
-        } catch (\Exception $e) {
-            $this->errorLog('Role permision', $e);
-            return false;
-        }
-    }
+
 }
