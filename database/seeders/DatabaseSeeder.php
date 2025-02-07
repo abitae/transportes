@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             EmpresaSeeder::class,
             SucursalSeeder::class,
             PermisoSeeder::class,
+            TransportistaSeeder::class,
+            VehiculoSeeder::class,
         ]);
     }
 }

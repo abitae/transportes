@@ -18,7 +18,6 @@
                 @endphp
                 <x-mary-table :headers="$headers" :rows="$roles" with-pagination per-page="perPage1"
                     :per-page-values="[5, 20, 10, 50]">
-
                     @scope('cell_permission', $rol)
                     @forelse($rol->permissions as $permission)
                     <x-mary-badge :value="$permission->name" class="text-white bg-green-500" />
