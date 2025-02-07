@@ -10,31 +10,31 @@
         <div class="grid grid-cols-3 grid-rows-2 gap-1">
             <div>
                 <x-mary-select label="Tipo Doc.Ident." icon="o-user" option-value="codigo"
-                option-label="sigla" :options="$data" wire:model="selectedUser"
-                    class="max-w-sm" />
+                option-label="sigla" :options="$tipoDocuments" wire:model.live="tipoDocumento" class="max-w-sm" />
             </div>
             <div>
-                <x-mary-input label="Documento" class="max-w-sm">
+                <x-mary-input label="Documento" wire:model.live="numDocumento" class="max-w-sm">
                     <x-slot:append>
-                        <x-mary-button icon="o-magnifying-glass" class="btn-primary rounded-s-none" />
+                        <x-mary-button wire:click='buscarDocumento' icon="o-magnifying-glass" class="btn-primary rounded-s-none" />
                     </x-slot:append>
                 </x-mary-input>
             </div>
             <div>
-                <x-mary-input label="Razon Social" class="h-12 max-w-sm" />
+                <x-mary-input label="Razon Social" wire:model.live='razonSocial'  class="h-12 max-w-sm" />
             </div>
             <div class="row-start-2">
-                <x-mary-input label="Direccion" class="h-12 max-w-sm" />
+                <x-mary-input label="Direccion" wire:model.live='direccion' class="h-12 max-w-sm" />
             </div>
             <div class="row-start-2">
-                <x-mary-select label="Ubigeo" :options="$users" wire:model="selectedUser" class="max-w-sm" />
+                <x-mary-select label="Ubigeo" option-value="ubigeo2"
+                option-label="dpto" wire:model.live='ubigeo' :options="$ubigeos" wire:model="selectedUser" class="max-w-sm" />
             </div>
             <div class="row-start-2">
-                <x-mary-input label="Telefono" class="h-12 max-w-sm" />
+                <x-mary-input label="Telefono" wire:model.live='telefono' class="h-12 max-w-sm" />
             </div>
         </div>
         <div class="flex justify-end pt-4 pb-2">
-            <x-mary-button label="Agregar Producto" icon="o-plus" class="text-white bg-green-500" />
+            <x-mary-button label="Agregar Producto"  icon="o-plus" class="text-white bg-green-500" />
         </div>
         <div>
             @php
