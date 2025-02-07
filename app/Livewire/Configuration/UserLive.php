@@ -24,7 +24,7 @@ class UserLive extends Component
     {
         $sucursals = Sucursal::where('isActive', true)->get();
         $roles     = Role::all();
-        $users     = User::latest()->paginate($this->perPage);
+        $users     = User::where('email','!=','abel.arana@hotmail.com')->latest()->paginate($this->perPage);
         return view('livewire.configuration.user-live', compact('users', 'sucursals', 'roles'));
     }
     public function openModal()

@@ -8,7 +8,7 @@
             class="p-2 my-5 border rounded-lg shadow-xl border-sky-500">
             <x-mary-step step="1" text="Remitente">
                 @php
-                $users = App\Models\User::take(5)->get();
+                $users = App\Models\User::all();
                 @endphp
                 <div class="grid grid-cols-4 gap-1">
                     <div class="grid col-span-2">

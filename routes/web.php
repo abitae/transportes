@@ -13,6 +13,7 @@ use App\Livewire\Configuration\TransportistaLive;
 use App\Livewire\Configuration\UserLive;
 use App\Livewire\Configuration\VehiculoLive;
 use App\Livewire\Facturacion\DespatcheLive;
+use App\Livewire\Facturacion\InvoiceCreateLive;
 use App\Livewire\Facturacion\InvoiceLive;
 use App\Livewire\Facturacion\TicketLive;
 use App\Livewire\Frontend\MessageLive;
@@ -66,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ticket', TicketLive::class)->name('facturacion.ticket');
     Route::get('/invoice', InvoiceLive::class)->name('facturacion.invoice');
     Route::get('/despache', DespatcheLive::class)->name('facturacion.despache');
+    Route::get('create-invoice', InvoiceCreateLive::class)->name('facturacion.create-invoice');
 });
 
 Route::get('/ticket/80mm/{ticket}', [pdfController::class, 'ticket80mm']);
