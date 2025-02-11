@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS sunat_24;
 CREATE TABLE sunat_24(
    codigo_de_tarifa   VARCHAR(4) NOT NULL PRIMARY KEY
   ,codigo             VARCHAR(32) NOT NULL

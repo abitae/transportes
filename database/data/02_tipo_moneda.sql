@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS sunat_02;
 CREATE TABLE sunat_02(
    CountryName              VARCHAR(58)
   ,CurrencyName             VARCHAR(65)

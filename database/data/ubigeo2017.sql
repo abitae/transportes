@@ -1,31 +1,4 @@
--- phpMyAdmin SQL Dump
--- version 4.3.8
--- http://www.phpmyadmin.net
---
--- Servidor: localhost
--- Tiempo de generación: 15-06-2017 a las 11:09:46
--- Versión del servidor: 5.6.32-78.1-log
--- Versión de PHP: 5.6.20
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
---
--- Base de datos: `lavacage_cmama`
---
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `ubigeo`
---
-
+DROP TABLE IF EXISTS `ubigeo`;
 CREATE TABLE IF NOT EXISTS `ubigeo` (
   `ubigeo1` char(6) DEFAULT NULL,
   `dpto` varchar(32) DEFAULT NULL,
@@ -847,7 +820,8 @@ INSERT INTO `ubigeo` (`ubigeo1`, `dpto`, `prov`, `distrito`, `ubigeo2`, `orden`)
 ('080201', 'Huancavelica', 'Acobamba', 'Acobamba', '090201', '0'),
 ('080202', 'Huancavelica', 'Acobamba', 'Anta', '090203', '0'),
 ('080203', 'Huancavelica', 'Acobamba', 'Andabamba', '090202', '0'),
-('080204', 'Huancavelica', 'Acobamba', 'Caja', '090204', '0'),
+('080204', 'Huancavelica', 'Acobamba', 'Caja', '090204', '0');
+INSERT INTO `ubigeo` (`ubigeo1`, `dpto`, `prov`, `distrito`, `ubigeo2`, `orden`) VALUES
 ('080205', 'Huancavelica', 'Acobamba', 'Marcas', '090205', '0'),
 ('080206', 'Huancavelica', 'Acobamba', 'Paucara', '090206', '0'),
 ('080207', 'Huancavelica', 'Acobamba', 'Pomacocha', '090207', '0'),
@@ -1875,20 +1849,10 @@ INSERT INTO `ubigeo` (`ubigeo1`, `dpto`, `prov`, `distrito`, `ubigeo2`, `orden`)
 ('250304', 'Ucayali', 'Atalaya', 'Sepahua', '250202', '1'),
 ('250401', 'Ucayali', 'Purus', 'Purus', '250401', '1');
 
---
--- Índices para tablas volcadas
---
-
---
--- Indices de la tabla `ubigeo`
---
-ALTER TABLE `ubigeo`
-  ADD UNIQUE KEY `NewIndex1` (`ubigeo1`), ADD KEY `ndx1` (`dpto`,`prov`,`distrito`), ADD KEY `index3` (`ubigeo2`);
-
+-- Primero actualizamos la tabla para llenar el campo texto_ubigeo
 UPDATE ubigeo
-SET texto_ubigeo = CONCAT(dpto, ' - ', prov, ' - ', distrito)
-WHERE texto_ubigeo IS NULL;
+SET texto_ubigeo = CONCAT(dpto, ' - ', prov, ' - ', distrito);
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+-- Agregamos un índice para mejorar las búsquedas por texto_ubigeo
+ALTER TABLE `ubigeo`
+ADD INDEX `idx_texto_ubigeo` (`texto_ubigeo`);

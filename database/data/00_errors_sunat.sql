@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS sunat_errors;
 CREATE TABLE sunat_errors(
    codigo      VARCHAR(4) NOT NULL PRIMARY KEY
   ,descripcion VARCHAR(255) NOT NULL

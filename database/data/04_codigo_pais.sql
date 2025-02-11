@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS sunat_04;
 CREATE TABLE sunat_04(
    Country VARCHAR(44)
   ,A2      VARCHAR(3)

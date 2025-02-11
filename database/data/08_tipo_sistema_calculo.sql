@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS sunat_08;
 CREATE TABLE sunat_08(
    codigo      VARCHAR(2) NOT NULL PRIMARY KEY
   ,descripcion VARCHAR(120) NOT NULL
