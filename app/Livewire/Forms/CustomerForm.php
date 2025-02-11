@@ -15,7 +15,7 @@ class CustomerForm extends Form
     public ?Customer $customer;
 
     #[Validate('required')]
-    public $type_code = 'dni';
+    public $type_code = '1';
     #[Validate('required|numeric|digits_between:8,11')]
     public $code = '';
     #[Validate('required')]
@@ -26,6 +26,8 @@ class CustomerForm extends Form
     public $email = '';
     #[Validate('')]
     public $address = '';
+    #[Validate('')]
+    public $ubigeo = '';
     public $isActive = true;
 
     public function setCustomer(Customer $customer)
@@ -37,29 +39,44 @@ class CustomerForm extends Form
         $this->phone = $customer->phone;
         $this->email = $customer->email;
         $this->address = $customer->address;
+        $this->ubigeo = $customer->ubigeo;
     }
 
     public function store()
     {
+
         try {
-            
             $customer = Customer::where('type_code', $this->type_code)->where('code', $this->code)->first();
+
             if ($customer) {
                 $this->setCustomer($customer);
                 return true;
             }
-            
-            $data = $this->search($this->type_code, $this->code);
+            switch ($this->type_code) {
+                case '1':
+                    $tipo = 'dni';
+                    break;
+                case '6':
+                    $tipo = 'ruc';
+                    break;
+                default:
+                    $tipo = 'dni';
+                    break;
+            }
+
+            $data = $this->search($tipo, $this->code);
+
             if ($data['encontrado']) {
                 $this->populateCustomerData($data['data']);
                 $customer = Customer::firstOrCreate(
                     ['type_code' => $this->type_code, 'code' => $this->code],
-                    ['name' => $this->name, 'phone' => $this->phone, 'email' => $this->email, 'address' => $this->address]
+                    ['name' => $this->name, 'phone' => $this->phone, 'email' => $this->email, 'address' => $this->address, 'ubigeo' => $this->ubigeo]
                 );
                 $this->setCustomer($customer);
                 $this->infoLog('Customer store ' . $this->code);
                 return true;
             }
+            $customer = null;
             return false;
         } catch (\Exception $e) {
             $this->errorLog('Customer store', $e);
@@ -73,7 +90,7 @@ class CustomerForm extends Form
             $this->validate();
             $customer = Customer::updateOrCreate(
                 ['type_code' => $this->type_code, 'code' => $this->code],
-                ['name' => $this->name, 'phone' => $this->phone, 'email' => $this->email, 'address' => $this->address]
+                ['name' => $this->name, 'phone' => $this->phone, 'email' => $this->email, 'address' => $this->address, 'ubigeo' => $this->ubigeo]
             );
             $this->infoLog('Customer update ' . $this->code);
             return true;
@@ -100,9 +117,9 @@ class CustomerForm extends Form
 
     private function populateCustomerData($data)
     {
-        if ($this->type_code == 'dni') {
+        if ($this->type_code == '1') {
             $this->name = $data->nombre;
-        } elseif ($this->type_code == 'ruc') {
+        } elseif ($this->type_code == '6') {
             $this->name = $data->razon_social;
             $this->address = $data->direccion;
         }

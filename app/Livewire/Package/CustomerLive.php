@@ -36,8 +36,7 @@ class CustomerLive extends Component
     }
     public function openModal()
     {
-        $this->customerForm->resetErrorBag();
-        $this->customerForm->resetValidation();
+
         $this->customerForm->reset();
         $this->modalCustomer = !$this->modalCustomer;
     }
@@ -75,26 +74,14 @@ class CustomerLive extends Component
     }
     public function SearchDocument()
     {
-        if ($this->customerForm->code=="") {
-            return 0;
-        }
-        $search = new SearchService();
-        $document = $search->document($this->customerForm->type_code, $this->customerForm->code);
-        try {
-
-            if ($document['respuesta'] == 'ok') {
-                if ($this->customerForm->type_code == 'dni') {
-                    $this->customerForm->name = $document['data']->nombre;
-                } else {
-                    $this->customerForm->name = $document['data']->razon_social;
-                    $this->customerForm->address = $document['data']->direccion;
-                }
-                $this->infoLog('CustomerLive SearchDocument', $this->customerForm->code);
-            } else {
-                $this->customerForm->reset();
-            }
-        } catch (\Exception $e) {
-            $this->errorLog('CustomerLive SearchDocument', $e);
+        $this->customerForm->store();
+    }
+    public function delete(Customer $customer)
+    {
+        if ($this->customerForm->destroy($customer->id)) {
+            $this->success('Genial, eliminado correctamente!');
+        } else {
+            $this->error('Error, verifique los datos!');
         }
     }
 }

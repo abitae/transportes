@@ -97,10 +97,6 @@ class SendPackageLive extends Component
                 $query->where('code', 'like', '%'.$this->search.'%')
                     ->orWhere('name', 'like', '%'.$this->search.'%');
             })
-            /* ->whereHas('destinatario', function ($query) {
-                $query->where('code', 'like', '%'.$this->search.'%')
-                    ->orWhere('name', 'like', '%'.$this->search.'%');
-            }) */
             ->latest()
             ->paginate($this->perPage, '*', 'page');
 

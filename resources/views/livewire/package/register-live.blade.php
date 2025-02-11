@@ -229,12 +229,12 @@
                                             @php
                                             if ($tipo_comprobante!='FACTURA') {
                                             $docsfact = [
-                                            ['id' => 'dni', 'name' => 'DNI'],
-                                            ['id' => 'ruc', 'name' => 'RUC'],
+                                            ['id' => '1', 'name' => 'DNI'],
+                                            ['id' => '6', 'name' => 'RUC'],
                                             ];
                                             }else {
                                             $docsfact = [
-                                            ['id' => 'ruc', 'name' => 'RUC'],
+                                            ['id' => '6', 'name' => 'RUC'],
                                             ];
                                             }
                                             @endphp

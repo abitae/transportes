@@ -27,13 +27,14 @@
             </div>
             <div class="row-start-2">
                 <x-mary-select label="Ubigeo" option-value="ubigeo2"
-                option-label="dpto" wire:model.live='ubigeo' :options="$ubigeos" wire:model="selectedUser" class="max-w-sm" />
+                option-label="texto_ubigeo" wire:model.live='ubigeo' :options="$ubigeos" wire:model="selectedUser" class="max-w-sm" />
             </div>
             <div class="row-start-2">
                 <x-mary-input label="Telefono" wire:model.live='telefono' class="h-12 max-w-sm" />
             </div>
         </div>
         <div class="flex justify-end pt-4 pb-2">
+            
             <x-mary-button label="Agregar Producto"  icon="o-plus" class="text-white bg-green-500" />
         </div>
         <div>
@@ -66,7 +67,7 @@
 
             </x-mary-table>
         </div>
-        
+
         <div class="grid grid-cols-3 grid-rows-4 gap-1 border-t">
             <div class="col-span-2"></div>
             <div class="col-span-2 col-start-1 row-start-2">SON CIEN CON 00/100 SOLES</div>

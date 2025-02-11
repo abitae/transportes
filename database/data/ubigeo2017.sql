@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS `ubigeo` (
   `prov` varchar(32) DEFAULT NULL,
   `distrito` varchar(32) DEFAULT NULL,
   `ubigeo2` char(6) DEFAULT NULL,
-  `orden` varchar(1) DEFAULT '0'
+  `orden` varchar(1) DEFAULT '0',
+  `texto_ubigeo` VARCHAR(100) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
@@ -846,8 +847,7 @@ INSERT INTO `ubigeo` (`ubigeo1`, `dpto`, `prov`, `distrito`, `ubigeo2`, `orden`)
 ('080201', 'Huancavelica', 'Acobamba', 'Acobamba', '090201', '0'),
 ('080202', 'Huancavelica', 'Acobamba', 'Anta', '090203', '0'),
 ('080203', 'Huancavelica', 'Acobamba', 'Andabamba', '090202', '0'),
-('080204', 'Huancavelica', 'Acobamba', 'Caja', '090204', '0');
-INSERT INTO `ubigeo` (`ubigeo1`, `dpto`, `prov`, `distrito`, `ubigeo2`, `orden`) VALUES
+('080204', 'Huancavelica', 'Acobamba', 'Caja', '090204', '0'),
 ('080205', 'Huancavelica', 'Acobamba', 'Marcas', '090205', '0'),
 ('080206', 'Huancavelica', 'Acobamba', 'Paucara', '090206', '0'),
 ('080207', 'Huancavelica', 'Acobamba', 'Pomacocha', '090207', '0'),
@@ -1667,8 +1667,7 @@ INSERT INTO `ubigeo` (`ubigeo1`, `dpto`, `prov`, `distrito`, `ubigeo2`, `orden`)
 ('200308', 'Puno', 'Carabaya', 'Ollachea', '210308', '1'),
 ('200309', 'Puno', 'Carabaya', 'San Gaban', '210309', '1'),
 ('200310', 'Puno', 'Carabaya', 'Usicayos', '210310', '1'),
-('200401', 'Puno', 'Chucuito', 'Juli', '210401', '1');
-INSERT INTO `ubigeo` (`ubigeo1`, `dpto`, `prov`, `distrito`, `ubigeo2`, `orden`) VALUES
+('200401', 'Puno', 'Chucuito', 'Juli', '210401', '1'),
 ('200402', 'Puno', 'Chucuito', 'Desaguadero', '210402', '1'),
 ('200403', 'Puno', 'Chucuito', 'Huacullani', '210403', '1'),
 ('200406', 'Puno', 'Chucuito', 'Pisacoma', '210405', '1'),
@@ -1885,6 +1884,10 @@ INSERT INTO `ubigeo` (`ubigeo1`, `dpto`, `prov`, `distrito`, `ubigeo2`, `orden`)
 --
 ALTER TABLE `ubigeo`
   ADD UNIQUE KEY `NewIndex1` (`ubigeo1`), ADD KEY `ndx1` (`dpto`,`prov`,`distrito`), ADD KEY `index3` (`ubigeo2`);
+
+UPDATE ubigeo
+SET texto_ubigeo = CONCAT(dpto, ' - ', prov, ' - ', distrito)
+WHERE texto_ubigeo IS NULL;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

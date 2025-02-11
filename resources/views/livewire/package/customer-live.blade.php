@@ -24,7 +24,11 @@
                         :row-decoration="$row_decoration" :sort-by="$sortBy" :per-page-values="[5, 20, 10, 50]">
                         @scope('cell_code', $stuff)
                             <nobr>
-                                <x-mary-badge :value="strtoupper($stuff->type_code)" class="badge-info" />
+                                @if ($stuff->type_code == '1')
+                                    <x-mary-badge :value="strtoupper('DNI')" class="badge-info" />
+                                @else
+                                    <x-mary-badge :value="strtoupper('RUC')" class="badge-info" />
+                                @endif
                                 {{ $stuff->code }}
                             </nobr>
                         @endscope
@@ -42,7 +46,7 @@
                             <nobr>
                                 <x-mary-button icon="s-pencil-square" wire:click="edit({{ $user->id }})" spinner
                                     class="btn-sm" />
-                                <x-mary-button icon="o-trash" wire:click="edit({{ $user->id }})"
+                                <x-mary-button icon="o-trash" wire:click="delete({{ $user->id }})"
                                     wire:confirm.prompt="Estas seguro?\n\nEscribe DELETE para confirmar|DELETE" spinner
                                     class="btn-sm" />
                             </nobr>
@@ -65,9 +69,8 @@
                             <x-slot:prepend>
                                 @php
                                     $docs = [
-                                        ['id' => 'dni', 'name' => 'DNI'],
-                                        ['id' => 'ruc', 'name' => 'RUC'],
-                                        ['id' => 'ce', 'name' => 'CE'],
+                                        ['id' => '1', 'name' => 'DNI'],
+                                        ['id' => '6', 'name' => 'RUC'],
                                     ];
                                 @endphp
                                 <x-mary-select wire:model='customerForm.type_code' icon="o-user" :options="$docs"
@@ -95,7 +98,7 @@
                 </div>
                 <x-slot:actions>
                     <x-mary-button label="Cancel" wire:click="openModal()" class="bg-red-500" />
-                    <x-mary-button type="submit" spinner="{{ !isset($customerForm->sucursal) ? 'create' : 'edit' }}"
+                    <x-mary-button type="submit" spinner="{{ !isset($customerForm->customer) ? 'create' : 'edit' }}"
                         label="Save" class="bg-blue-500" />
                 </x-slot:actions>
             </div>

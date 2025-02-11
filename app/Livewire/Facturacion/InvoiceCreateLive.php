@@ -1,12 +1,18 @@
 <?php
 namespace App\Livewire\Facturacion;
 
+use App\Models\Package\Customer;
 use App\Services\ServiceTableSunat;
+use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
 use Livewire\Component;
+use Livewire\WithoutUrlPagination;
+use Livewire\WithPagination;
+use Mary\Traits\Toast;
 
 class InvoiceCreateLive extends Component
 {
+    use LogCustom, Toast, WithPagination, WithoutUrlPagination;
     use SearchDocument;
     public $title         = 'Emitir Factura';
     public $sub_title     = 'Emitir Factura';
@@ -43,6 +49,28 @@ class InvoiceCreateLive extends Component
     }
     public function buscarDocumento()
     {
+        $rules = [
+            'tipoDocumento' => 'required',
+            'numDocumento'  => 'required',
+            'numDocumento'  => 'numeric',
+            'numDocumento'  => 'min:8',
+            'numDocumento'  => 'max:11',
+        ];
+        $messages = [
+            'tipoDocumento.required' => 'El tipo de documento es requerido',
+            'numDocumento.required'  => 'El número de documento es requerido',
+            'numDocumento.numeric'   => 'El número de documento debe ser un número',
+            'numDocumento.min'       => 'El número de documento debe tener 8 dígitos',
+            'numDocumento.max'       => 'El número de documento debe tener 11 dígitos',
+        ];
+        $this->validate($rules, $messages);
+        $customer = Customer::where('type_code', $this->tipoDocumento)->where('code', $this->numDocumento)->first();
+        if ($customer) {
+            $this->razonSocial = $customer->name;
+            $this->direccion   = $customer->address;
+            $this->ubigeo      = $customer->ubigeo;
+            return;
+        }
         switch ($this->tipoDocumento) {
             case '1':
                 $tipo = 'dni';
@@ -59,6 +87,7 @@ class InvoiceCreateLive extends Component
             $this->razonSocial = '';
             $this->direccion   = '';
             $this->ubigeo      = '';
+            $this->error('El cliente no existe!, verifique el número de documento!');
             return;
         }
         elseif ($tipo == 'ruc') {
@@ -67,11 +96,14 @@ class InvoiceCreateLive extends Component
             $this->ubigeo      = $respuesta['data']->codigo_ubigeo;
         }
         elseif ($tipo == 'dni') {
-            //dd($respuesta);
             $this->razonSocial = $respuesta['data']->nombre;
             $this->direccion   = '';
             $this->ubigeo      = '';
         }
+        Customer::firstOrCreate(
+            ['type_code' => $this->tipoDocumento, 'code' => $this->numDocumento],
+            ['name' => $this->razonSocial, 'address' => $this->direccion, 'ubigeo' => $this->ubigeo]
+        );
 
     }
 }

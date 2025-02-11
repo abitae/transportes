@@ -65,9 +65,8 @@ class RegisterLive extends Component
         $this->vehiculo_id      = $transportistaConfig->vehiculo_id;
 
         $docs = [
-            ['id' => 'dni', 'name' => 'DNI'],
-            ['id' => 'ruc', 'name' => 'RUC'],
-            ['id' => 'ce', 'name' => 'CE'],
+            ['id' => '1', 'name' => 'DNI'],
+            ['id' => '6', 'name' => 'RUC'],
         ];
 
         $headers_paquetes = [
@@ -131,7 +130,7 @@ class RegisterLive extends Component
     }
 
     private function processStep($condition, $errorMessage)
-    {       
+    {
         if ($this->isHome && ! $this->customerFormDest->address) {
             $this->error('Error, es necesario ingresar la dirección de entrega!');
             return;
@@ -189,8 +188,8 @@ class RegisterLive extends Component
             'amount.numeric'       => 'Error, el precio unitario debe ser un número!',
         ];
         $this->validate($validations, $errorMessage);
-        
-        return true;   
+
+        return true;
     }
 
     public function restPaquete($id)
