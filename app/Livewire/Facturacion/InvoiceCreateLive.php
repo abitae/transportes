@@ -7,6 +7,7 @@ use App\Models\Package\Paquete;
 use App\Services\ServiceTableSunat;
 use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
+use App\Traits\UtilsTrait;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -17,6 +18,7 @@ class InvoiceCreateLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
     use SearchDocument;
+    use UtilsTrait;
     public $title         = 'Emitir Factura';
     public $sub_title     = 'Emitir Factura';
     public $tipoDocumento = '1';
@@ -62,13 +64,14 @@ class InvoiceCreateLive extends Component
     public function emitFactura()
     {
         $formatter = new NumeroALetras();
+
         $factura = new Invoice();
-        $factura->encomienda_id = $this->encomienda_id;
+        $factura->encomienda_id = null;
         $factura->tipoDoc = '03';
         $factura->tipoOperacion = '0101';
         $factura->serie = 'B001';
         $factura->correlativo = Invoice::where('tipoDoc', '03')->count() + 1;
-        $factura->fechaEmision = now();
+        $factura->fechaEmision = $this->dateNow('Y-m-d H:i:m');
         $factura->formaPago_moneda = 'PEN';
         $factura->formaPago_tipo = '01';
         $factura->tipoMoneda = 'PEN';
@@ -83,7 +86,7 @@ class InvoiceCreateLive extends Component
         $factura->monto_letras = $formatter->toInvoice($this->total, 2, 'SOLES');;
         $factura->save();
         $this->success('Factura emitida correctamente');
-        dd($factura);
+
     }
     private function emitNotaCredito()
     {
