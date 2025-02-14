@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('telephone')->nullable();
             $table->string('logo_path')->nullable();
+            $table->string('ctaBanco')->nullable();
             //Credenciales SOL
             $table->string('sol_user');
             $table->string('sol_pass');

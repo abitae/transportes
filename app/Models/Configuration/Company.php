@@ -16,6 +16,7 @@ class Company extends Model
         'address',
         'email',
         'telephone',
+        'ctaBanco',
         'logo_path',
         'sol_user',
         'sol_pass',

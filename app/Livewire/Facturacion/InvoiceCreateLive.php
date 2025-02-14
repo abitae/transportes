@@ -166,7 +166,7 @@ class InvoiceCreateLive extends Component
         if ($this->total >= 400 && $this->tipoOperacion == '1001') {
             $factura->codBienDetraccion = $this->tipoDetraccion;
             $factura->codMedioPago = '001';
-            $factura->ctaBanco = '0004-3342343243';
+            $factura->ctaBanco = $company->ctaBanco;
             $factura->setPercent = 12;
             $factura->setMount = $this->total * 0.12;
         }

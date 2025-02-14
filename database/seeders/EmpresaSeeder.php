@@ -21,6 +21,7 @@ class EmpresaSeeder extends Seeder
             'email'           => 'abel.arana@gmail.com',
             'telephone'       => '947199138',
             'logo_path'       => 'company/logo/sq2vGUegnQe99UcdIXABpm8c6cmMWfwKl0saNmFm.png',
+            'ctaBanco'        => '0004-3342343243',
             'sol_user'        => 'MODDATOS',
             'sol_pass'        => 'MODDATOS',
             'cert_path'       => 'company/certificado/certificado_prueba.pem',

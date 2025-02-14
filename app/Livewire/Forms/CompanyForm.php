@@ -27,6 +27,8 @@ class CompanyForm extends Form
     #[Validate(['required', 'string'])]
     public $telephone = '';
     #[Validate(['required', 'string'])]
+    public $ctaBanco = '';
+    #[Validate(['required', 'string'])]
     public $sol_user = '';
     #[Validate(['required', 'string'])]
     public $sol_pass = '';
