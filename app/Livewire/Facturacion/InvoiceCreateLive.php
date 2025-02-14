@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Facturacion;
 
 use App\Models\Facturacion\Invoice;
@@ -36,6 +37,12 @@ class InvoiceCreateLive extends Component
     public $sub_total;
     public $igv;
     public $total;
+    const MONEDA = 'PEN';
+    const FORMA_PAGO = 'Contado';
+    const TIPO_DOC_FACTURA = '03';
+    const TIPO_OPERACION = '0101';
+    const SERIE = 'B001';
+
     public function mount()
     {
         $this->paquetes = collect([])->keyBy('id');
@@ -73,7 +80,7 @@ class InvoiceCreateLive extends Component
         $factura->correlativo = Invoice::where('tipoDoc', '03')->count() + 1;
         $factura->fechaEmision = $this->dateNow('Y-m-d H:i:m');
         $factura->formaPago_moneda = 'PEN';
-        $factura->formaPago_tipo = '01';
+        $factura->formaPago_tipo = 'Contado';
         $factura->tipoMoneda = 'PEN';
         $factura->company_id = 1;
         $factura->client_id = 1;
@@ -85,9 +92,34 @@ class InvoiceCreateLive extends Component
         $factura->mtoImpVenta = $this->total;
         $factura->monto_letras = $formatter->toInvoice($this->total, 2, 'SOLES');;
         $factura->save();
-        $this->success('Factura emitida correctamente');
+        //dd(collect($this->paquetes));
 
+        foreach (collect($this->paquetes) as $paquete) {
+            $mtoValorUnitario = round($paquete['amount'] / 1.18, 2);
+            $factura->details()->create([
+                'invoice_id' => $factura->id,
+                'tipAfeIgv' => '10',
+                'codProducto' => $paquete['id'],
+                'unidad' => $paquete['und_medida'],
+                'descripcion' => $paquete['description'],
+                'cantidad' => $paquete['cantidad'],
+                'mtoValorUnitario' => $mtoValorUnitario,
+                'mtoValorVenta' => $mtoValorUnitario * $paquete['cantidad'],
+                'mtoBaseIgv' => $mtoValorUnitario * $paquete['cantidad'],
+                'porcentajeIgv' => 18,
+                'igv' => ($paquete['amount'] - $mtoValorUnitario) * $paquete['cantidad'],
+                'totalImpuestos' => ($paquete['amount'] - $mtoValorUnitario) * $paquete['cantidad'],
+                'mtoPrecioUnitario' => $paquete['amount'],
+            ]);
+        }
+        $this->success('Factura emitida correctamente');
     }
+
+    private function getNextCorrelativo()
+    {
+        return Invoice::where('tipoDoc', self::TIPO_DOC_FACTURA)->count() + 1;
+    }
+
     private function emitNotaCredito()
     {
         // Lógica para emitir factura
@@ -100,10 +132,7 @@ class InvoiceCreateLive extends Component
     {
         $rules = [
             'tipoDocumento' => 'required',
-            'numDocumento'  => 'required',
-            'numDocumento'  => 'numeric',
-            'numDocumento'  => 'min:8',
-            'numDocumento'  => 'max:11',
+            'numDocumento'  => 'required|numeric|min:8|max:11',
         ];
         $messages = [
             'tipoDocumento.required' => 'El tipo de documento es requerido',
@@ -138,13 +167,11 @@ class InvoiceCreateLive extends Component
             $this->ubigeo      = '';
             $this->error('El cliente no existe!, verifique el número de documento!');
             return;
-        }
-        elseif ($tipo == 'ruc') {
+        } elseif ($tipo == 'ruc') {
             $this->razonSocial = $respuesta['data']->razon_social;
             $this->direccion   = $respuesta['data']->direccion;
             $this->ubigeo      = $respuesta['data']->codigo_ubigeo;
-        }
-        elseif ($tipo == 'dni') {
+        } elseif ($tipo == 'dni') {
             $this->razonSocial = $respuesta['data']->nombre;
             $this->direccion   = '';
             $this->ubigeo      = '';
@@ -153,7 +180,6 @@ class InvoiceCreateLive extends Component
             ['type_code' => $this->tipoDocumento, 'code' => $this->numDocumento],
             ['name' => $this->razonSocial, 'address' => $this->direccion, 'ubigeo' => $this->ubigeo]
         );
-
     }
     public function addPaquete()
     {
@@ -210,8 +236,8 @@ class InvoiceCreateLive extends Component
     }
     public function calculateTotals()
     {
-        $this->total = round($this->paquetes->sum('sub_total'), 2);//
-        $this->sub_total = round($this->total / 1.18, 2);//
+        $this->total = round($this->paquetes->sum('sub_total'), 2); //
+        $this->sub_total = round($this->total / 1.18, 2); //
         $this->igv = round($this->total - $this->sub_total, 2);
     }
 }
