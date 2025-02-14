@@ -4,7 +4,33 @@
             <x-mary-button @click="$wire.showHistory = true" icon="s-eye" label="Historial"
                 class="text-white bg-purple-500" responsive />
         </x-slot:menu>
-        <div class="grid grid-cols-3 grid-rows-2 gap-1">
+        @if ($errors->any())
+            <x-mary-alert title="Error!"  description="{{ $errors->first() }}" icon="o-exclamation-triangle" class="bg-red-500 text-white" dismissible />
+        @endif
+        <div class="grid grid-cols-5 grid-rows-1 gap-4 mt-4 border border-green-500 p-2 rounded-lg">
+            <div>
+                <x-mary-select label="Tipo Doc." :options="$tipoDocs" option-value="codigo" option-label="descripcion"
+                    wire:model.live="tipoDoc" class="max-w-sm" />
+            </div>
+            <div>
+                <x-mary-select label="Tipo Oper." :options="$tipoOperaciones" option-value="codigo" option-label="descripcion"
+                    wire:model.live="tipoOperacion" class="max-w-sm" />
+            </div>
+            <div>
+                <x-mary-select label="Moneda" :options="$monedas" option-value="codigo" option-label="descripcion"
+                    wire:model.live="moneda" class="max-w-sm" />
+            </div>
+            <div class="col-span-2">
+                @if ($tipoOperacion == '1001')
+                    <x-mary-select label="Tipo Detraccion" :options="$tipoDetracciones" option-value="codigo" option-label="descripcion"
+                        wire:model.live="tipoDetraccion" class="max-w-sm" />
+                @endif
+            </div>
+            <div>
+
+            </div>
+        </div>
+        <div class="mt-4 grid grid-cols-3 grid-rows-2 gap-1 border border-green-500 p-2 rounded-lg">
             <div>
                 <x-mary-select label="Tipo Doc.Ident." icon="o-user" option-value="codigo" option-label="sigla"
                     :options="$tipoDocuments" wire:model.live="tipoDocumento" class="max-w-sm" />
@@ -25,13 +51,15 @@
             </div>
             <div class="row-start-2">
                 <x-mary-select label="Ubigeo" option-value="ubigeo2" option-label="texto_ubigeo"
-                    wire:model.live='ubigeo' :options="$ubigeos" wire:model="selectedUser" class="max-w-sm" />
+                    placeholder="Select ubigeo"
+                    wire:model.live='ubigeo' :options="$ubigeos" wire:model="selectedUser" class="max-w-sm"
+                    />
             </div>
             <div class="row-start-2">
                 <x-mary-input label="Telefono" wire:model.live='telefono' class="h-12 max-w-sm" />
             </div>
         </div>
-        <div class="flex justify-end pt-4 pb-2  border-t bg-gray-300">
+        <div class="flex justify-end pt-4 pb-2  border-t bg-gray-300 border border-green-500 p-2 mt-2 rounded-lg">
             <div class="grid grid-cols-8 grid-rows-1 gap-1">
                 <div>
                     <x-mary-input label="CANT." wire:model="cantidad" class="text-xs rounded-r-lg" />
@@ -49,7 +77,8 @@
                             ],
                         ];
                     @endphp
-                    <x-mary-select label="MEDIDA" :options="$unds" wire:model="und_medida" />
+                    <x-mary-select label="MEDIDA" :options="$unidadMedidas" wire:model="und_medida"
+                    option-value="codigo" option-label="descripcion"/>
                 </div>
                 <div class="col-span-3">
                     <x-mary-input label="DESCRIPCION" wire:model="description" class="rounded-r-lg" />
@@ -72,7 +101,7 @@
                 </div>
             </div>
         </div>
-        <div class="border-t bg-gray-100">
+        <div class="border-t">
 
             <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped @row-click="$wire.restPaquete($event.detail.id)">
                 <x-slot:empty>
@@ -81,7 +110,7 @@
             </x-mary-table>
         </div>
 
-        <div class="grid grid-cols-3 grid-rows-4 gap-1 border-t">
+        <div class="grid grid-cols-3 grid-rows-4 gap-1 border-t border border-green-500 p-2 rounded-lg">
             <div class="col-span-2"></div>
             <div class="col-span-2 col-start-1 row-start-2"></div>
             <div class="col-span-2 col-start-1 row-start-3"></div>

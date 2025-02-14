@@ -34,6 +34,9 @@ return new class extends Migration
             $table->decimal('subTotal', 8, 2);
             $table->decimal('mtoImpVenta', 8, 2);
             $table->string('monto_letras');//monto en letras
+            $table->string('codBienDetraccion')->nullable();//catalogo 54
+            $table->string('codMedioPago')->nullable();//catalogo 59
+            $table->string('ctaBanco')->nullable();//numero de cuenta
             $table->decimal('setPercent', 8, 2)->nullable();//porcentaje detraccion
             $table->decimal('setMount', 8, 2)->nullable();//monto detraccion
             $table->string('xml_path')->nullable();

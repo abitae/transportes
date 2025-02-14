@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 
 class ServiceTableSunat
 {
-    
+
     public function getAll($table)
     {
         return DB::table($table)->get();

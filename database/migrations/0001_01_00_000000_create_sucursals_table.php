@@ -14,13 +14,21 @@ return new class extends Migration
         Schema::create('sucursals', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
-            $table->string('serie')->nullable();
+            $table->string('codeSunat')->default('0000');
+            $table->decimal('igv', 8, 2)->default(18);
+            $table->string('serieFactura');
+            $table->string('serieBoleta');
+            $table->string('serieGuiaRemision');
+            $table->string('serieNotaCreditoFactura');
+            $table->string('serieNotaCreditoBoleta');
+            $table->string('serieNotaDebitoFactura');
+            $table->string('serieNotaDebitoBoleta');
             $table->string('color')->nullable();
             $table->string('name');
             $table->string('address');
-            $table->string('phone');
-            $table->string('email');
-            
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->string('ubigeo')->nullable();
             $table->boolean('isActive')->default(true);
             $table->timestamps();
         });

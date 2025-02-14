@@ -12,7 +12,7 @@
             font-family: Verdana, Arial, Helvetica, sans-serif;
             width: 340px;
             /* Ampliado el ancho del body */
-        }
+        }|
 
         .invoice {
             padding: 1rem 1rem 0 1rem;

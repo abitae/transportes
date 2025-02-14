@@ -14,16 +14,16 @@ class SucursalSeeder extends Seeder
     public function run(): void
     {
         $sucursales = [
-            ['code' => 'H28', 'serie' => 'F001', 'color' => '#8fe6d4', 'name' => 'HUANCAYO 28 DE JULIO', 'address' => 'JR 28 DE JULIO 439 HUANCAYO'],
-            ['code' => 'LVI', 'serie' => 'F001', 'color' => '#8fe6d4', 'name' => 'LIMA VILLEGAS', 'address' => 'CALLE JULIO VILLEGAS 122-124 LA VICTORIA LIMA'],
-            ['code' => 'LOB', 'serie' => 'F001', 'color' => '#8fe6d4', 'name' => 'LIMA OBREROS', 'address' => 'JR OBREROS 125  A LA VICTORIA LIMA'],
-            ['code' => 'HVU', 'serie' => 'F001', 'color' => '#8fe6d4', 'name' => 'HUANCAVELICA UNIVERSITARIA', 'address' => 'Av. Universitaria 1003 Huancavelica'],
-            ['code' => 'JAU', 'serie' => 'F001', 'color' => '#8fe6d4', 'name' => 'JAUJA', 'address' => 'JAUJA'],
-            ['code' => 'ORO', 'serie' => 'F001', 'color' => '#8fe6d4', 'name' => 'OROYA', 'address' => 'Av. ALVERTO DIAS 1288- SANTA ROSA DE SACO OROYA'],
-            ['code' => 'HUA', 'serie' => 'F001', 'color' => '#8fe6d4', 'name' => 'HUANUCO', 'address' => 'HUANUCO'],
-            ['code' => 'PIC', 'serie' => 'F001', 'color' => '#8fe6d4', 'name' => 'PICHANAKI', 'address' => 'PICHANAKI'],
-            ['code' => 'ARQ', 'serie' => 'F001', 'color' => '#8fe6d4', 'name' => 'AREQUIPA', 'address' => 'AREQUIPA'],
-            ['code' => 'TRU', 'serie' => 'F001', 'color' => '#8fe6d4', 'name' => 'TRUJILLO', 'address' => 'TRUJILLO'],
+            ['code' => 'H28','codeSunat'=>'0000','igv'=>18, 'serieFactura' => 'F001', 'serieBoleta' => 'B001', 'serieGuiaRemision' => 'V001', 'serieNotaCreditoFactura' => 'FC01', 'serieNotaCreditoBoleta' => 'BC01', 'serieNotaDebitoFactura' => 'FD01', 'serieNotaDebitoBoleta' => 'BD01', 'color' => '#8fe6d4', 'name' => 'HUANCAYO 28 DE JULIO', 'address' => 'JR 28 DE JULIO 439 HUANCAYO'],
+            ['code' => 'LVI','codeSunat'=>'0000','igv'=>18, 'serieFactura' => 'F001', 'serieBoleta' => 'B001', 'serieGuiaRemision' => 'V001', 'serieNotaCreditoFactura' => 'FC01', 'serieNotaCreditoBoleta' => 'BC01', 'serieNotaDebitoFactura' => 'FD01', 'serieNotaDebitoBoleta' => 'BD01', 'color' => '#8fe6d4', 'name' => 'LIMA VILLEGAS', 'address' => 'CALLE JULIO VILLEGAS 122-124 LA VICTORIA LIMA'],
+            ['code' => 'LOB','codeSunat'=>'0000','igv'=>18, 'serieFactura' => 'F001', 'serieBoleta' => 'B001', 'serieGuiaRemision' => 'V001', 'serieNotaCreditoFactura' => 'FC01', 'serieNotaCreditoBoleta' => 'BC01', 'serieNotaDebitoFactura' => 'FD01', 'serieNotaDebitoBoleta' => 'BD01', 'color' => '#8fe6d4', 'name' => 'LIMA OBREROS', 'address' => 'JR OBREROS 125  A LA VICTORIA LIMA'],
+            ['code' => 'HVU','codeSunat'=>'0000','igv'=>18, 'serieFactura' => 'F001', 'serieBoleta' => 'B001', 'serieGuiaRemision' => 'V001', 'serieNotaCreditoFactura' => 'FC01', 'serieNotaCreditoBoleta' => 'BC01', 'serieNotaDebitoFactura' => 'FD01', 'serieNotaDebitoBoleta' => 'BD01', 'color' => '#8fe6d4', 'name' => 'HUANCAVELICA UNIVERSITARIA', 'address' => 'Av. Universitaria 1003 Huancavelica'],
+            ['code' => 'JAU','codeSunat'=>'0000','igv'=>18, 'serieFactura' => 'F001', 'serieBoleta' => 'B001', 'serieGuiaRemision' => 'V001', 'serieNotaCreditoFactura' => 'FC01', 'serieNotaCreditoBoleta' => 'BC01', 'serieNotaDebitoFactura' => 'FD01', 'serieNotaDebitoBoleta' => 'BD01', 'color' => '#8fe6d4', 'name' => 'JAUJA', 'address' => 'JAUJA'],
+            ['code' => 'ORO','codeSunat'=>'0000','igv'=>18, 'serieFactura' => 'F001', 'serieBoleta' => 'B001', 'serieGuiaRemision' => 'V001', 'serieNotaCreditoFactura' => 'FC01', 'serieNotaCreditoBoleta' => 'BC01', 'serieNotaDebitoFactura' => 'FD01', 'serieNotaDebitoBoleta' => 'BD01', 'color' => '#8fe6d4', 'name' => 'OROYA', 'address' => 'Av. ALVERTO DIAS 1288- SANTA ROSA DE SACO OROYA'],
+            ['code' => 'HUA','codeSunat'=>'0000','igv'=>18, 'serieFactura' => 'F001', 'serieBoleta' => 'B001', 'serieGuiaRemision' => 'V001', 'serieNotaCreditoFactura' => 'FC01', 'serieNotaCreditoBoleta' => 'BC01', 'serieNotaDebitoFactura' => 'FD01', 'serieNotaDebitoBoleta' => 'BD01', 'color' => '#8fe6d4', 'name' => 'HUANUCO', 'address' => 'HUANUCO'],
+            ['code' => 'PIC','codeSunat'=>'0000','igv'=>18, 'serieFactura' => 'F001', 'serieBoleta' => 'B001', 'serieGuiaRemision' => 'V001', 'serieNotaCreditoFactura' => 'FC01', 'serieNotaCreditoBoleta' => 'BC01', 'serieNotaDebitoFactura' => 'FD01', 'serieNotaDebitoBoleta' => 'BD01', 'color' => '#8fe6d4', 'name' => 'PICHANAKI', 'address' => 'PICHANAKI'],
+            ['code' => 'ARQ','codeSunat'=>'0000','igv'=>18, 'serieFactura' => 'F001', 'serieBoleta' => 'B001', 'serieGuiaRemision' => 'V001', 'serieNotaCreditoFactura' => 'FC01', 'serieNotaCreditoBoleta' => 'BC01', 'serieNotaDebitoFactura' => 'FD01', 'serieNotaDebitoBoleta' => 'BD01', 'color' => '#8fe6d4', 'name' => 'AREQUIPA', 'address' => 'AREQUIPA'],
+            ['code' => 'TRU','codeSunat'=>'0000','igv'=>18, 'serieFactura' => 'F001', 'serieBoleta' => 'B001', 'serieGuiaRemision' => 'V001', 'serieNotaCreditoFactura' => 'FC01', 'serieNotaCreditoBoleta' => 'BC01', 'serieNotaDebitoFactura' => 'FD01', 'serieNotaDebitoBoleta' => 'BD01', 'color' => '#8fe6d4', 'name' => 'TRUJILLO', 'address' => 'TRUJILLO'],
         ];
 
         foreach ($sucursales as $sucursal) {

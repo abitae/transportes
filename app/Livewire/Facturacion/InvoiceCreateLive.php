@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Facturacion;
 
+use App\Models\Configuration\Company;
 use App\Models\Facturacion\Invoice;
 use App\Models\Package\Customer;
 use App\Models\Package\Paquete;
@@ -9,6 +10,7 @@ use App\Services\ServiceTableSunat;
 use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
 use App\Traits\UtilsTrait;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -30,19 +32,20 @@ class InvoiceCreateLive extends Component
     public $telefono      = '';
     public $paquetes;
     public $cantidad;
-    public $und_medida = 'UND';
+    public $und_medida = 'ZZ';
     public $description;
     public $peso;
     public $amount;
     public $sub_total;
     public $igv;
     public $total;
-    const MONEDA = 'PEN';
-    const FORMA_PAGO = 'Contado';
-    const TIPO_DOC_FACTURA = '03';
-    const TIPO_OPERACION = '0101';
-    const SERIE = 'B001';
-
+    public $moneda = 'PEN';
+    public $formaPago = 'Contado';
+    public $tipoDoc = '03'; //boleta
+    public $tipoOperacion = '0101';
+    public $tipoDetraccion = '027';
+    public $serie;
+    public $client;
     public function mount()
     {
         $this->paquetes = collect([])->keyBy('id');
@@ -57,10 +60,32 @@ class InvoiceCreateLive extends Component
             ['key' => 'amount', 'label' => 'P.UNIT'],
             ['key' => 'sub_total', 'label' => 'MONTO'],
         ];
+
         $service       = new ServiceTableSunat();
-        $tipoDocuments = $service->getAll('sunat_06');
+        //$tipoDocs = $service->getAll('sunat_01');
+        $tipoDocs = [
+            ['codigo' => '01', 'descripcion' => 'Factura (01)'],
+            ['codigo' => '03', 'descripcion' => 'Boleta (03)'],
+        ];
+        //$tipoOperaciones = $service->getAll('sunat_51');
+        $tipoOperaciones = [
+            ['codigo' => '0101', 'descripcion' => 'Venta interna (0101)'],
+            ['codigo' => '1001', 'descripcion' => 'Operación sujeta a detracción (1001)'],
+        ];
+        $tipoDetracciones = $service->getAll('sunat_54');
+        $monedas = [
+            ['codigo' => 'PEN', 'descripcion' => 'Sol (PEN)'],
+            ['codigo' => 'USD', 'descripcion' => 'Dólar (USD)'],
+        ];
+        //$tipoDocuments = $service->getAll('sunat_06');
+        $tipoDocuments = [
+            ['codigo' => '0', 'sigla' => 'OTRO DOCUMENTO cod(0)'],
+            ['codigo' => '1', 'sigla' => 'DNI cod(1)'],
+            ['codigo' => '6', 'sigla' => 'RUC cod(6)'],
+        ];
         $ubigeos       = $service->getAll('ubigeo');
-        return view('livewire.facturacion.invoice-create-live', compact('tipoDocuments', 'ubigeos', 'headers_paquetes'));
+        $unidadMedidas = $service->getAll('sunat_03');
+        return view('livewire.facturacion.invoice-create-live', compact('tipoDocuments', 'ubigeos', 'headers_paquetes', 'tipoDocs', 'tipoOperaciones', 'monedas', 'tipoDetracciones', 'unidadMedidas'));
     }
 
     private function emitBoleta()
@@ -70,30 +95,82 @@ class InvoiceCreateLive extends Component
 
     public function emitFactura()
     {
+        if ($this->tipoDoc == '01' && ($this->tipoDocumento == '0' || $this->tipoDocumento == '1')) {
+            $this->error('Error, El documento no es valido para Facturas!');
+            return;
+        }
+        if ($this->tipoDoc == '03' && $this->tipoOperacion == '1001') {
+            $this->error('Error, El tipo de operación no es valido para Boletas!');
+            return;
+        } elseif ($this->total < 400 && $this->tipoOperacion == '1001') {
+            $this->error('Error, El monto total no es valido para Detracciones!');
+            return;
+        }
+        if ($this->tipoDoc == '01') {
+            $this->serie = Auth::user()->sucursal->serieFactura;
+            $correlativo = Invoice::where('tipoDoc', $this->tipoDoc)->where('serie', $this->serie)->count() + 1;
+        } elseif ($this->tipoDoc == '03') {
+            $this->serie = Auth::user()->sucursal->serieBoleta;
+            $correlativo = Invoice::where('tipoDoc', $this->tipoDoc)->where('serie', $this->serie)->count() + 1;
+        }
+        $rules = [
+            'client' => 'required',
+            'tipoDoc' => 'required',
+            'tipoOperacion' => 'required',
+            'serie' => 'required',
+            'tipoDocumento' => 'required',
+            'numDocumento' => 'required',
+            'moneda' => 'required',
+            'formaPago' => 'required',
+            'paquetes' => 'required',
+            'sub_total' => 'required',
+            'igv' => 'required',
+            'total' => 'required',
+        ];
+        $messages = [
+            'client.required' => 'Error, es necesario seleccionar un cliente!',
+            'tipoDoc.required' => 'Error, es necesario seleccionar un tipo de documento!',
+            'tipoOperacion.required' => 'Error, es necesario seleccionar un tipo de operación!',
+            'serie.required' => 'Error, es necesario seleccionar una serie!',
+            'tipoDocumento.required' => 'Error, es necesario seleccionar un tipo de documento!',
+            'numDocumento.required' => 'Error, es necesario seleccionar un número de documento!',
+            'moneda.required' => 'Error, es necesario seleccionar una moneda!',
+            'formaPago.required' => 'Error, es necesario seleccionar una forma de pago!',
+            'paquetes.required' => 'Error, es necesario seleccionar un paquete!',
+            'sub_total.required' => 'Error, es necesario seleccionar un subtotal!',
+            'igv.required' => 'Error, es necesario seleccionar un igv!',
+            'total.required' => 'Error, es necesario seleccionar un total!',
+        ];
+        $this->validate($rules, $messages);
         $formatter = new NumeroALetras();
-
+        $company = Company::first();
         $factura = new Invoice();
         $factura->encomienda_id = null;
-        $factura->tipoDoc = '03';
-        $factura->tipoOperacion = '0101';
-        $factura->serie = 'B001';
-        $factura->correlativo = Invoice::where('tipoDoc', '03')->count() + 1;
+        $factura->tipoDoc = $this->tipoDoc;
+        $factura->tipoOperacion = $this->tipoOperacion;
+        $factura->serie = $this->serie;
+        $factura->correlativo = $correlativo;
         $factura->fechaEmision = $this->dateNow('Y-m-d H:i:m');
-        $factura->formaPago_moneda = 'PEN';
-        $factura->formaPago_tipo = 'Contado';
-        $factura->tipoMoneda = 'PEN';
-        $factura->company_id = 1;
-        $factura->client_id = 1;
+        $factura->formaPago_moneda = $this->moneda;
+        $factura->formaPago_tipo = $this->formaPago;
+        $factura->tipoMoneda = $this->moneda;
+        $factura->company_id = $company->id;
+        $factura->client_id = $this->client->id;
         $factura->mtoOperGravadas = $this->sub_total;
         $factura->mtoIGV = $this->igv;
         $factura->totalImpuestos = $this->igv;
         $factura->valorVenta = $this->sub_total;
         $factura->subTotal = $this->total;
         $factura->mtoImpVenta = $this->total;
-        $factura->monto_letras = $formatter->toInvoice($this->total, 2, 'SOLES');;
+        $factura->monto_letras = $formatter->toInvoice($this->total, 2, 'SOLES');
+        if ($this->total >= 400 && $this->tipoOperacion == '1001') {
+            $factura->codBienDetraccion = $this->tipoDetraccion;
+            $factura->codMedioPago = '001';
+            $factura->ctaBanco = '0004-3342343243';
+            $factura->setPercent = 12;
+            $factura->setMount = $this->total * 0.12;
+        }
         $factura->save();
-        //dd(collect($this->paquetes));
-
         foreach (collect($this->paquetes) as $paquete) {
             $mtoValorUnitario = round($paquete['amount'] / 1.18, 2);
             $factura->details()->create([
@@ -112,13 +189,23 @@ class InvoiceCreateLive extends Component
                 'mtoPrecioUnitario' => $paquete['amount'],
             ]);
         }
+        $this->client->update(['address' => $this->direccion, 'ubigeo' => $this->ubigeo, 'phone' => $this->telefono]);
+        $this->client = null;
+        $this->numDocumento = '';
+        $this->razonSocial = '';
+        $this->direccion = '';
+        $this->ubigeo = '';
+        $this->telefono = '';
+        $this->paquetes = collect([]);
+        $this->calculateTotals();
+        $this->resetValidation();
+        $this->tipoDetraccion = '027';
+        $this->tipoOperacion = '0101';
+        $this->tipoDocumento = '1';
+        $this->tipoDoc = '03';
         $this->success('Factura emitida correctamente');
     }
 
-    private function getNextCorrelativo()
-    {
-        return Invoice::where('tipoDoc', self::TIPO_DOC_FACTURA)->count() + 1;
-    }
 
     private function emitNotaCredito()
     {
@@ -132,12 +219,11 @@ class InvoiceCreateLive extends Component
     {
         $rules = [
             'tipoDocumento' => 'required',
-            'numDocumento'  => 'required|numeric|min:8|max:11',
+            'numDocumento'  => 'required|min:8|max:11',
         ];
         $messages = [
             'tipoDocumento.required' => 'El tipo de documento es requerido',
             'numDocumento.required'  => 'El número de documento es requerido',
-            'numDocumento.numeric'   => 'El número de documento debe ser un número',
             'numDocumento.min'       => 'El número de documento debe tener 8 dígitos',
             'numDocumento.max'       => 'El número de documento debe tener 11 dígitos',
         ];
@@ -147,6 +233,8 @@ class InvoiceCreateLive extends Component
             $this->razonSocial = $customer->name;
             $this->direccion   = $customer->address;
             $this->ubigeo      = $customer->ubigeo;
+            $this->telefono   = $customer->phone;
+            $this->client = $customer;
             return;
         }
         switch ($this->tipoDocumento) {
@@ -176,9 +264,9 @@ class InvoiceCreateLive extends Component
             $this->direccion   = '';
             $this->ubigeo      = '';
         }
-        Customer::firstOrCreate(
+        $this->client = Customer::firstOrCreate(
             ['type_code' => $this->tipoDocumento, 'code' => $this->numDocumento],
-            ['name' => $this->razonSocial, 'address' => $this->direccion, 'ubigeo' => $this->ubigeo]
+            ['name' => $this->razonSocial, 'address' => $this->direccion, 'ubigeo' => $this->ubigeo, 'phone' => $this->telefono]
         );
     }
     public function addPaquete()

@@ -24,10 +24,9 @@
                         ['key' => 'id', 'label' => '#', 'class' => 'bg-blue-500 w-1'],
                         ['key' => 'code', 'label' => 'Code', 'class' => ''],
                         ['key' => 'name', 'label' => 'Name', 'class' => ''],
-                        ['key' => 'serie', 'label' => 'Serie', 'class' => ''],
+                        ['key' => 'codeSunat', 'label' => 'Codigo Sunat', 'class' => ''],
+                        ['key' => 'series', 'label' => 'Serie', 'class' => ''],
                         ['key' => 'color', 'label' => 'Color', 'class' => ''],
-                        ['key' => 'address', 'label' => 'Direccion', 'class' => ''],
-                        ['key' => 'phone', 'label' => 'Telefono', 'class' => ''],
                         ['key' => 'isActive', 'label' => 'isActive', 'class' => ''],
                     ];
                     $row_decoration = [
@@ -36,6 +35,27 @@
                 @endphp
                 <x-mary-table :headers="$headers" :rows="$sucursales" with-pagination per-page="perPage" :row-decoration="$row_decoration"
                     :per-page-values="[5, 20, 10, 50]">
+                    @scope('cell_codeSunat', $sucursal)
+                        <span class="text-xs text-gray-500">{{ $sucursal->codeSunat }}</span>
+                    @endscope
+                    @scope('cell_series', $sucursal)
+                        <div class="grid grid-cols-2">
+                            <span class="text-xs text-gray-500">Factura</span>
+                            <span class="text-xs text-gray-500">{{ $sucursal->serieFactura }}</span>
+                            <span class="text-xs text-gray-500">Boleta</span>
+                            <span class="text-xs text-gray-500">{{ $sucursal->serieBoleta }}</span>
+                            <span class="text-xs text-gray-500">Guia Remision Transporte</span>
+                            <span class="text-xs text-gray-500">{{ $sucursal->serieGuiaRemision }}</span>
+                            <span class="text-xs text-gray-500">NotaCreditoFactura</span>
+                            <span class="text-xs text-gray-500">{{ $sucursal->serieNotaCreditoFactura }}</span>
+                            <span class="text-xs text-gray-500">NotaCreditoBoleta</span>
+                            <span class="text-xs text-gray-500">{{ $sucursal->serieNotaCreditoBoleta }}</span>
+                            <span class="text-xs text-gray-500">NotaDebitoFactura</span>
+                            <span class="text-xs text-gray-500">{{ $sucursal->serieNotaDebitoFactura }}</span>
+                            <span class="text-xs text-gray-500">NotaDebitoBoleta</span>
+                            <span class="text-xs text-gray-500">{{ $sucursal->serieNotaDebitoBoleta }}</span>
+                        </div>
+                    @endscope
                     @scope('cell_isActive', $stuff)
                         <button wire:click='estado({{ $stuff->id }})'
                             wire:confirm.prompt="Estas seguro de eliminar registro?\n\nEscriba 'SI' para confirmar!|SI"
@@ -59,40 +79,46 @@
             </x-mary-card>
         </div>
     </div>
-    <x-mary-modal wire:model="modalSucursal" persistent class="backdrop-blur" box-class="max-h-full max-w-128 ">
+    <x-mary-modal wire:model="modalSucursal" persistent class="backdrop-blur"
+        box-class="max-h-full max-w-6xl overflow-y-auto">
         <x-mary-icon name="s-envelope" class="text-green-500 text-md"
             label="{{ !isset($sucursalForm->sucursal) ? 'CREAR SUCURSAL' : 'EDITAR SUCURSAL' }}" />
         <x-mary-form wire:submit="{{ !isset($sucursalForm->sucursal) ? 'create' : 'edit' }}">
             <div class="border border-green-500 rounded-lg">
-                <div class="grid grid-cols-4 p-2">
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Code" inline wire:model='sucursalForm.code' />
-                    </div>
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Nombre" inline wire:model='sucursalForm.name' />
-                    </div>
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Serie" inline wire:model='sucursalForm.serie' />
-                    </div>
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-colorpicker wire:model="sucursalForm.color" />
-                    </div>
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Direccion" inline wire:model='sucursalForm.address' />
-                    </div>
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Telefono" inline wire:model='sucursalForm.phone' />
-                    </div>
-                    <div class="grid col-span-4 pt-2">
-                        <x-mary-input label="Email" inline wire:model='sucursalForm.email' />
-                    </div>
+                <div class="grid grid-cols-3 gap-2 p-2">
+                    <x-mary-input label="Codigo" inline wire:model='sucursalForm.code' />
+                    <x-mary-input label="Codigo Sunat" inline wire:model='sucursalForm.codeSunat' />
+                    <x-mary-input label="IGV" inline wire:model='sucursalForm.igv' number />
+                    <x-mary-colorpicker label="Color" inline wire:model='sucursalForm.color' />
+                    <x-mary-input label="Nombre" inline wire:model='sucursalForm.name' />
+                    <x-mary-input label="Direccion" inline wire:model='sucursalForm.address' />
+                    <x-mary-input label="Telefono" inline wire:model='sucursalForm.phone' />
+                    <x-mary-input label="Email" inline wire:model='sucursalForm.email' />
+                    <x-mary-select label="Ubigeo" option-value="ubigeo2" option-label="texto_ubigeo"
+                        placeholder="Select ubigeo" wire:model.live='sucursalForm.ubigeo' :options="$ubigeos"
+                        class="max-w-sm" inline />
                 </div>
-                <x-slot:actions>
-                    <x-mary-button label="Cancel" @click="$wire.modalSucursal = false" class="bg-red-500" />
-                    <x-mary-button type="submit" spinner="{{ !isset($sucursalForm->sucursal) ? 'create' : 'edit' }}"
-                        label="Save" class="bg-blue-500" />
-                </x-slot:actions>
+                <div class="grid grid-cols-4 gap-2 p-2 border-t border-green-500 bg-gray-100">
+                    <div class="col-span-4 text-center">Ingrese series a utilizar en los documentos electronicos</div>
+                    <x-mary-input label="Serie Factura" inline wire:model='sucursalForm.serieFactura' />
+                    <x-mary-input label="Serie Boleta" inline wire:model='sucursalForm.serieBoleta' />
+                    <x-mary-input label="Serie Guia Remision" inline wire:model='sucursalForm.serieGuiaRemision' />
+                    <x-mary-input label="Serie NotaCreditoFactura" inline
+                        wire:model='sucursalForm.serieNotaCreditoFactura' />
+                    <x-mary-input label="Serie NotaCreditoBoleta" inline
+                        wire:model='sucursalForm.serieNotaCreditoBoleta' />
+                    <x-mary-input label="Serie NotaDebitoFactura" inline
+                        wire:model='sucursalForm.serieNotaDebitoFactura' />
+                    <x-mary-input label="Serie NotaDebitoBoleta" inline
+                        wire:model='sucursalForm.serieNotaDebitoBoleta' />
+                </div>
+
             </div>
+            <x-slot:actions>
+                <x-mary-button label="Cancel" @click="$wire.modalSucursal = false" class="bg-red-500" />
+                <x-mary-button type="submit" spinner="{{ !isset($sucursalForm->sucursal) ? 'create' : 'edit' }}"
+                    label="Save" class="bg-blue-500" />
+            </x-slot:actions>
         </x-mary-form>
     </x-mary-modal>
 </div>

@@ -13,12 +13,21 @@ class Sucursal extends Model
     use HasFactory;
     protected $fillable = [
         'code',
+        'codeSunat',
+        'igv',
+        'serieFactura',
+        'serieBoleta',
+        'serieGuiaRemision',
+        'serieNotaCreditoFactura',
+        'serieNotaCreditoBoleta',
+        'serieNotaDebitoFactura',
+        'serieNotaDebitoBoleta',
+        'color',
         'name',
         'address',
         'phone',
         'email',
-        'serie',
-        'color',
+        'ubigeo',
         'isActive',
     ];
     public function encomiendas_remitente()

@@ -15,18 +15,36 @@ class SucursalForm extends Form
     public ?Sucursal $sucursal = null;
     #[Validate('required|max:3')]
     public $code = '';
+    #[Validate('required|max:4')]
+    public $codeSunat = '';
+    #[Validate('required|numeric|min:0|max:100')]
+    public $igv = 18;
     #[Validate('required')]
-    public $name = '';
+    public $serieFactura = '';
     #[Validate('required')]
-    public $serie = '';
+    public $serieBoleta = '';
+    #[Validate('required')]
+    public $serieGuiaRemision = '';
+    #[Validate('required')]
+    public $serieNotaCreditoFactura = '';
+    #[Validate('required')]
+    public $serieNotaCreditoBoleta = '';
+    #[Validate('required')]
+    public $serieNotaDebitoFactura = '';
+    #[Validate('required')]
+    public $serieNotaDebitoBoleta = '';
     #[Validate('required')]
     public $color = '';
+    #[Validate('required')]
+    public $name = '';
     #[Validate('required')]
     public $address = '';
     #[Validate('required')]
     public $phone = '';
     #[Validate('required|email')]
     public $email = '';
+    #[Validate('required')]
+    public $ubigeo = '';
 
     public function setSucursal(Sucursal $sucursal)
     {
