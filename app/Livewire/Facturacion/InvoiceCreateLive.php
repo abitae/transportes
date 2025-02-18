@@ -146,6 +146,7 @@ class InvoiceCreateLive extends Component
         $company = Company::first();
         $factura = new Invoice();
         $factura->encomienda_id = null;
+        $factura->sucursal_id = Auth::user()->sucursal->id;
         $factura->tipoDoc = $this->tipoDoc;
         $factura->tipoOperacion = $this->tipoOperacion;
         $factura->serie = $this->serie;
@@ -163,13 +164,23 @@ class InvoiceCreateLive extends Component
         $factura->subTotal = $this->total;
         $factura->mtoImpVenta = $this->total;
         $factura->monto_letras = $formatter->toInvoice($this->total, 2, 'SOLES');
+        $factura->observacion = 'Observación de prueba';
+        $legends[] = [
+            'code' => '1000',
+            'value' => $factura->monto_letras,
+        ];
         if ($this->total >= 400 && $this->tipoOperacion == '1001') {
             $factura->codBienDetraccion = $this->tipoDetraccion;
             $factura->codMedioPago = '001';
             $factura->ctaBanco = $company->ctaBanco;
             $factura->setPercent = 12;
             $factura->setMount = $this->total * 0.12;
+            $legends[] = [
+                'code' => '2006',
+                'value' => 'Leyenda "Operación sujeta a detracción"',
+            ];
         }
+        $factura->legends = json_encode($legends);
         $factura->save();
         foreach (collect($this->paquetes) as $paquete) {
             $mtoValorUnitario = round($paquete['amount'] / 1.18, 2);

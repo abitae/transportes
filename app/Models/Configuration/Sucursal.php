@@ -2,6 +2,7 @@
 
 namespace App\Models\Configuration;
 
+use App\Models\Facturacion\Invoice;
 use App\Models\Package\Encomienda;
 use App\Models\Package\Manifiesto;
 use App\Models\User;
@@ -49,5 +50,9 @@ class Sucursal extends Model
     public function sucursal_configurations()
     {
         return $this->hasMany(SucursalConfiguration::class);
+    }
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
     }
 }

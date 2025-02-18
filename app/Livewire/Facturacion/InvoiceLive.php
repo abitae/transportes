@@ -5,6 +5,7 @@ namespace App\Livewire\Facturacion;
 use App\Models\Facturacion\Invoice;
 use App\Services\SunatService;
 use App\Services\SunatServiceGlobal;
+use App\Services\SunatServiceGre;
 use Greenter\Report\XmlUtils;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -19,6 +20,13 @@ class InvoiceLive extends Component
     public string $title = 'Facturacion';
     public string $sub_title = 'Modulo de facturacion';
     public int $perPage = 10;
+    public $infoModal = false;
+
+    public $cdr_code;
+    public $cdr_description;
+    public $cdr_note;
+    public $errorCode;
+    public $errorMessage;
 
     public function render()
     {
@@ -32,7 +40,6 @@ class InvoiceLive extends Component
         $sunat = new SunatServiceGlobal();
         $see = $sunat->getSee($company);
         $invoce = $sunat->getInvoce($invoice);
-        
         $xml = $see->getXmlSigned($invoce);
         $hash = (new XmlUtils())->getHashSign($xml);
         $invoice->xml_hash = $hash;
@@ -56,7 +63,7 @@ class InvoiceLive extends Component
         $xml = Storage::disk('public')->get($invoice->xml_path);
         $result = $see->sendXmlFile($xml);
         $response = $sunat->sunatResponse($result);
-
+        //dd($response);
         if ($response['success']) {
             $invoice->cdr_description = $response['cdrResponse']['description'];
             $invoice->cdr_code = $response['cdrResponse']['code'];
@@ -64,12 +71,11 @@ class InvoiceLive extends Component
             $invoice->cdr_path = 'cdr/' . 'R-' . $invoice->company->ruc . '-' . $invoice->tipoDoc . '-' . $invoice->serie . '-' . $invoice->correlativo . '.zip';
             $invoice->save();
             Storage::disk('public')->put($invoice->cdr_path, $response['cdrResponse']['cdrZip']);
-            $this->toast('success', 'Factura enviada a la sunat');
+            $this->toast('success', 'Comprobante enviado a la sunat');
         } else {
             $invoice->errorCode = $response['error']['code'];
             $invoice->errorMessage = $response['error']['message'];
-            dd($response);
-            $this->toast('error', 'Error al enviar la factura a la sunat');
+            $this->toast('error', 'Error al enviar el comprobante a la sunat');
         }
     }
 
@@ -79,9 +85,19 @@ class InvoiceLive extends Component
             return response()->download(storage_path('app/public/' . $invoice->cdr_path));
         }
     }
-    public function refresh() {
-        $prueba = new SunatServiceGlobal();
-        $data = $prueba->getInvoce('F001-1');
-        dd($data);
+    public function refresh($invoice) {
+        $invoice = Invoice::find($invoice);
+        //dd($invoice);
+        $this->infoModal = true;
+
+    }
+    public function statusInvoice($invoice) {
+        $invoice = Invoice::find($invoice);
+        $this->cdr_code = $invoice->cdr_code;
+        $this->cdr_description = $invoice->cdr_description;
+        $this->cdr_note = $invoice->cdr_note;
+        $this->errorCode = $invoice->errorCode;
+        $this->errorMessage = $invoice->errorMessage;
+        $this->infoModal = true;
     }
 }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('address');
             $table->string('email')->nullable();
             $table->string('telephone')->nullable();
+            $table->string('ubigeo')->nullable();
             $table->string('logo_path')->nullable();
             $table->string('ctaBanco')->nullable();
             //Credenciales SOL

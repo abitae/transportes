@@ -70,6 +70,7 @@ class SunatService
     //Facturas/Boletas
     public function getInvoce($data)
     {
+        //dd($data);
         $invoice = (new Invoice())
             ->setTipoOperacion($data->tipoOperacion ?? null)
             ->setFormaPago(new FormaPagoContado());
@@ -167,20 +168,13 @@ class SunatService
     public function getClient($data)
     {
         $client = new Client();
-        if ($data->type_code == 'ruc') {
-            $client->setTipoDoc('6' ?? null);
-        } else {
-            $client->setTipoDoc('1' ?? null);
-        }
-        return $this->setCommonClientData($client, $data);
+        $client->setTipoDoc($data->type_code ?? null);
+        $client->setNumDoc($data->code ?? $data->numDoc ?? null);
+        $client->setRznSocial($data->name ?? null);
+        $client->setAddress($this->getAddress($data->address));
+        return $client;
     }
-    private function setCommonClientData($client, $data)
-    {
-        return $client
-            ->setNumDoc($data->code ?? $data->numDoc ?? null)
-            ->setRznSocial($data->name ?? null)
-            ->setAddress($this->getAddress($data->address));
-    }
+
     public function getDetails($datas)
     {
         $green_details = [];

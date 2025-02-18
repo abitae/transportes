@@ -3,6 +3,7 @@
 namespace App\Models\Facturacion;
 
 use App\Models\Configuration\Company;
+use App\Models\Configuration\Sucursal;
 use App\Models\Package\Customer;
 use App\Models\Package\Encomienda;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,6 +14,7 @@ class Invoice extends Model
     use HasFactory;
     protected $fillable = [
         'encomienda_id',
+        'sucursal_id',
         'tipoDoc',
         'tipoOperacion',
         'serie',
@@ -35,6 +37,8 @@ class Invoice extends Model
         'ctaBanco',
         'setPercent',
         'setMount',
+        'observacion',
+        'legends',
         'xml_path',
         'xml_hash',
         'cdr_description',
@@ -51,6 +55,11 @@ class Invoice extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class);
     }
 
     /**

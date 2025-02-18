@@ -24,6 +24,10 @@
                 <x-mary-input label="Email" wire:model='companyForm.email' />
                 <x-mary-input label="Telefono" wire:model='companyForm.telephone' />
                 <x-mary-input label="Cuenta Bancaria" wire:model='companyForm.ctaBanco' />
+                <x-mary-select label="Ubigeo" option-value="ubigeo2" option-label="texto_ubigeo"
+                    placeholder="Select ubigeo"
+                    wire:model='companyForm.ubigeo' :options="$ubigeos"  class="max-w-sm"
+                    />
             </div>
             <div class="grid grid-cols-6 gap-1">
                 <x-mary-input label="sol_user" wire:model='companyForm.sol_user' />

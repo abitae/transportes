@@ -65,18 +65,6 @@
                     <x-mary-input label="CANT." wire:model="cantidad" class="text-xs rounded-r-lg" />
                 </div>
                 <div>
-                    @php
-                        $unds = [
-                            [
-                                'id' => 'UND',
-                                'name' => 'UND',
-                            ],
-                            [
-                                'id' => 'M3',
-                                'name' => 'M3',
-                            ],
-                        ];
-                    @endphp
                     <x-mary-select label="MEDIDA" :options="$unidadMedidas" wire:model="und_medida"
                     option-value="codigo" option-label="descripcion"/>
                 </div>
@@ -110,11 +98,11 @@
             </x-mary-table>
         </div>
 
-        <div class="grid grid-cols-3 grid-rows-4 gap-1 border-t border border-green-500 p-2 rounded-lg">
-            <div class="col-span-2"></div>
-            <div class="col-span-2 col-start-1 row-start-2"></div>
-            <div class="col-span-2 col-start-1 row-start-3"></div>
-            <div class="col-span-3 col-start-1 row-start-4"></div>
+        <div class="grid grid-cols-3 grid-rows-2 gap-1 border-t border border-green-500 p-2 rounded-lg">
+            <div class="col-span-2">
+                <x-mary-textarea label="Observación" wire:model="observacion" class="h-16 max-w-sm" />
+            </div>
+
             <div class="col-start-3 row-span-3 row-start-1">
                 <div class="grid grid-cols-2 gap-1 gap-y-2">
                     <div>Resumen</div>

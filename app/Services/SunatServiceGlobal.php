@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use DateTime;
@@ -149,17 +150,17 @@ class SunatServiceGlobal
         ];
         $data = (object) $data; */
         //return $data;
+        //dd($data);
         $invoice = new \Greenter\Model\Sale\Invoice();
         $invoice->setUblVersion($data->ublVersion ?? '2.1');
         $invoice->setFecVencimiento(new DateTime($data->fecVencimiento) ?? null);
-        $invoice->setTipoOperacion($data->tipoOperacion ?? '0101'); //Tipo operacion (Catálogo 51).
-        $invoice->setTipoDoc($data->tipoDoc ?? '01');
-        $invoice->setSerie($data->serie ?? 'F001');
-        $invoice->setCorrelativo($data->correlativo ?? '1');
+        $invoice->setTipoOperacion($data->tipoOperacion ?? null); //Tipo operacion (Catálogo 51).
+        $invoice->setTipoDoc($data->tipoDoc ?? null);
+        $invoice->setSerie($data->serie ?? null);
+        $invoice->setCorrelativo($data->correlativo ?? null);
         $invoice->setFechaEmision(new DateTime($data->fechaEmision) ?? null);
-        $invoice->setFormaPago($data->formaPago == 'Contado' ? new FormaPagoContado() : new FormaPagoCredito($data->mtoCredito, 'PEN'));
+        $invoice->setFormaPago($data->formaPago_tipo == 'Contado' ? new FormaPagoContado() : new FormaPagoCredito($data->mtoCredito, 'PEN'));
         $invoice->setTipoMoneda($data->tipoMoneda ?? 'PEN');
-
         $invoice->setMtoOperGravadas($data->mtoOperGravadas);
         $invoice->setMtoOperExoneradas($data->mtoOperExoneradas);
         $invoice->setMtoOperInafectas($data->mtoOperInafecto);
@@ -174,20 +175,19 @@ class SunatServiceGlobal
         $invoice->setMtoImpVenta($data->mtoImpVenta);
         $invoice->setRedondeo($data->redondeo);
         $invoice->setObservacion($data->observacion ?? null);
-
         $invoice->setCompany($this->getCompany($data->company));
         $invoice->setClient($this->getClient($data->client));
-        $invoice->setDetraccion($this->getDetraccion($data->detraccion));
+        if ($data->tipoOperacion == '1001' && $data->mtoOperGravadas >= 400) {
+            $invoice->setDetraccion($this->getDetraccion($data) ?? null);
+        }
         $invoice->setDetails($this->getDetails($data->details));
-        $invoice->setLegends($this->getLegends($data->legents));
-        $invoice->setDireccionEntrega($this->getAddress($data->direccionEntrega));
-
+        $invoice->setLegends($this->getLegends($data->legends));
+        //$invoice->setDireccionEntrega($this->getAddress($data->direccionEntrega) ?? null);
         return $invoice;
     }
 
     public function getCompany($company): \Greenter\Model\Company\Company
     {
-        //dd($company);
         return (new \Greenter\Model\Company\Company())
             ->setRuc($company->ruc)
             ->setRazonSocial($company->razonSocial)
@@ -198,9 +198,9 @@ class SunatServiceGlobal
     public function getClient($client): \Greenter\Model\Client\Client
     {
         return (new \Greenter\Model\Client\Client())
-            ->setTipoDoc($client->tipoDoc)
-            ->setNumDoc($client->numDoc)
-            ->setRznSocial($client->rznSocial)
+            ->setTipoDoc($client->type_code)
+            ->setNumDoc($client->code)
+            ->setRznSocial($client->name)
             ->setAddress($this->getAddress($client->address));
     }
 
@@ -227,7 +227,6 @@ class SunatServiceGlobal
 
     public function getDetails($details): array
     {
-        //dd((object)($details));
         $items = [];
         foreach ($details as $detail) {
             $detail = (object) $detail;
@@ -247,13 +246,13 @@ class SunatServiceGlobal
                 ->setTotalImpuestos($detail->totalImpuestos)
                 ->setMtoPrecioUnitario($detail->mtoPrecioUnitario);
             $items[] = $item;
-
         }
         return $items;
     }
 
     public function getLegends($legends): array
     {
+        $legends = json_decode($legends);
         $items = [];
         foreach ($legends as $legend) {
             $legend = $legend;
@@ -265,21 +264,16 @@ class SunatServiceGlobal
         return $items;
     }
 
-    public function getDetraccion($detraccion): \Greenter\Model\Sale\Detraction
+    public function getDetraccion($data): \Greenter\Model\Sale\Detraction
     {
-        return (new \Greenter\Model\Sale\Detraction())
-            ->setCodBienDetraccion('021')
-            ->setCodMedioPago('001')
-            ->setCtaBanco('0004-3342343243')
-            ->setPercent($detraccion->setPercent ?? 4)
-            ->setMount($detraccion->setMount ?? 47.20);
 
-        return (new \Greenter\Model\Sale\Detraction())
-            ->setCodBienDetraccion($detraccion->codBienDetraccion)
-            ->setCodMedioPago($detraccion->codMedioPago)
-            ->setCtaBanco($detraccion->ctaBanco)
-            ->setPercent($detraccion->percent)
-            ->setMount($detraccion->mount);
+
+            return (new \Greenter\Model\Sale\Detraction())
+                ->setCodBienDetraccion($data->codBienDetraccion)
+                ->setCodMedioPago($data->codMedioPago)
+                ->setCtaBanco($data->company->ctaBanco)
+                ->setPercent($data->setPercent ?? 12)
+                ->setMount($data->setMount ?? 47.20);
     }
 
     public function getNote(): \Greenter\Model\Sale\Note

@@ -4,6 +4,7 @@ namespace App\Livewire\Configuration;
 
 use App\Livewire\Forms\CompanyForm;
 use App\Models\Configuration\Company;
+use App\Services\ServiceTableSunat;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
@@ -25,13 +26,16 @@ class CompanyLive extends Component
 
     #[Rule('required|max:1000')]
     public $logo;
-    public $production = true;
+    public $production = false;
     public function render()
     {
         $this->company = Company::first();
         $this->production = $this->company->production == 1 ? true : false;
         $this->companyForm->setCompany($this->company);
-        return view('livewire.configuration.company-live');
+        $serviceTableSunat = new ServiceTableSunat();
+        $ubigeos = $serviceTableSunat->getAll('ubigeo');
+
+        return view('livewire.configuration.company-live', compact('ubigeos'));
     }
 
     public function save()
@@ -61,9 +65,9 @@ class CompanyLive extends Component
         $this->company->save();
         $this->success('Genial, guardado correctamente!');
     }
-    public function updatedProduction($value) 
+    public function updatedProduction($value)
     {
-        
+
         $this->company->update([
             'production' => $value,
         ]);

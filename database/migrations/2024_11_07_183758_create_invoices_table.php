@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('encomienda_id')->nullable();
             $table->foreign('encomienda_id')->references('id')->on('encomiendas');
+            $table->unsignedBigInteger('sucursal_id')->nullable();
+            $table->foreign('sucursal_id')->references('id')->on('sucursals');
             $table->string('tipoDoc');
             $table->string('tipoOperacion');
             $table->string('serie');
@@ -39,6 +41,8 @@ return new class extends Migration
             $table->string('ctaBanco')->nullable();//numero de cuenta
             $table->decimal('setPercent', 8, 2)->nullable();//porcentaje detraccion
             $table->decimal('setMount', 8, 2)->nullable();//monto detraccion
+            $table->string('observacion')->nullable();
+            $table->json('legends')->nullable();
             $table->string('xml_path')->nullable();
             $table->string('xml_hash')->nullable();
             $table->string('cdr_description')->nullable();

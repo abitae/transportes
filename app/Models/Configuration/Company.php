@@ -2,6 +2,7 @@
 
 namespace App\Models\Configuration;
 
+use App\Models\Facturacion\Despatche;
 use App\Models\Facturacion\Invoice;
 use App\Models\Facturacion\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +17,7 @@ class Company extends Model
         'address',
         'email',
         'telephone',
+        'ubigeo',
         'ctaBanco',
         'logo_path',
         'sol_user',
@@ -32,5 +34,9 @@ class Company extends Model
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
+    }
+    public function despatchs()
+    {
+        return $this->hasMany(Despatche::class);
     }
 }
