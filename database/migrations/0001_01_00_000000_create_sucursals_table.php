@@ -25,6 +25,10 @@ return new class extends Migration
             $table->string('serieNotaDebitoBoleta');
             $table->string('color')->nullable();
             $table->string('name');
+            $table->string('departamento')->nullable();
+            $table->string('provincia')->nullable();
+            $table->string('distrito')->nullable();
+            $table->string('urbanizacion')->nullable();
             $table->string('address');
             $table->string('phone')->nullable();
             $table->string('email')->nullable();

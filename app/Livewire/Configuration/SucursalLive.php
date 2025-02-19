@@ -35,10 +35,11 @@ class SucursalLive extends Component
     {
         if ($this->sucursalForm->store()) {
             $this->success('Genial, guardado correctamente!');
+            $this->openModal();
         } else {
             $this->error('Error, verifique los datos!');
         }
-        $this->openModal();
+
     }
     public function update(Sucursal $sucursal)
     {
@@ -49,10 +50,10 @@ class SucursalLive extends Component
     {
         if ($this->sucursalForm->update()) {
             $this->success('Genial, guardado correctamente!');
+            $this->openModal();
         } else {
             $this->error('Error, verifique los datos!');
         }
-        $this->openModal();
     }
     public function delete(Sucursal $sucursal)
     {

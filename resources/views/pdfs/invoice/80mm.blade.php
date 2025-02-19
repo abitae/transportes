@@ -9,7 +9,7 @@
     <style>
         body {
             margin: -50px 1px -50px -50px;
-            font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-family: 'Arial', sans-serif;
             width: 340px;
             /* Ampliado el ancho del body */
         }|
@@ -42,11 +42,18 @@
             padding: 0;
             margin: 0;
         }
+        .despache {
+            padding: 1rem 1rem 0 1rem;
+            /* Eliminado el padding inferior */
+            background-color: #ffffff;
+            box-shadow: 0 0 5px rgba(214, 10, 10, 0.1);
+            text-align: center;
+        }
     </style>
 </head>
 
 <body>
-    <div class="invoice">
+    <div class="despache">
         <!-- Logo y datos de la empresa centrados -->
         <div class="text-center">
             <div class="text-xs">
@@ -65,12 +72,11 @@
         </div>
         <section class="text-xs text-left border-top border-dark">
             <p>Fecha Emición: {{ $invoice->fechaEmision }}</p>
-            <p>Fecha Traslado: {{ $invoice->fecTraslado }}</p>
         </section>
         <!-- Información del Cliente -->
         <section class="text-xs text-left border-top border-dark">
             <p>Razón Social: {{ $invoice->client->name }}</p>
-            <p>{{ strtoupper($invoice->client->type_code) }}: {{ $invoice->client->code }}</p>
+            <p>{{ strtoupper($invoice->client->type_code == '6' ? 'RUC' : 'DNI') }}: {{ $invoice->client->code }}</p>
             <p>Dirección: {{ $invoice->client->address }}</p>
         </section>
         <!-- Detalle de la Factura -->

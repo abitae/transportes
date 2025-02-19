@@ -1856,3 +1856,8 @@ SET texto_ubigeo = CONCAT(dpto, ' - ', prov, ' - ', distrito);
 -- Agregamos un índice para mejorar las búsquedas por texto_ubigeo
 ALTER TABLE `ubigeo`
 ADD INDEX `idx_texto_ubigeo` (`texto_ubigeo`);
+
+-- Agregamos un índice para mejorar las búsquedas por ubigeo2
+ALTER TABLE `ubigeo`
+ADD INDEX `idx_ubigeo2` (`ubigeo2`);
+

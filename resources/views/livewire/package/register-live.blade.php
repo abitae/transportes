@@ -7,15 +7,12 @@
         <x-mary-steps wire:model="step" steps-color="step-warning"
             class="p-2 my-5 border rounded-lg shadow-xl border-sky-500">
             <x-mary-step step="1" text="Remitente">
-                @php
-                $users = App\Models\User::all();
-                @endphp
                 <div class="grid grid-cols-4 gap-1">
                     <div class="grid col-span-2">
                         <x-mary-input label="Numero de documento" wire:model='customerForm.code'>
                             <x-slot:prepend>
-                                <x-mary-select wire:model='customerForm.type_code' icon="o-user" :options="$docs"
-                                    class="rounded-e-none" />
+                                <x-mary-select wire:model='customerForm.type_code' icon="o-user" :options="$tipoDocuments"
+                                option-value="codigo" option-label="sigla" class="rounded-e-none" />
                             </x-slot:prepend>
                             <x-slot:append>
                                 <x-mary-button wire:click='searchRemitente' icon="o-magnifying-glass"
@@ -39,8 +36,8 @@
                     <div class="grid col-span-2">
                         <x-mary-input label="Numero de documento" wire:model='customerFormDest.code'>
                             <x-slot:prepend>
-                                <x-mary-select wire:model='customerFormDest.type_code' icon="o-user" :options="$docs"
-                                    class="rounded-e-none" />
+                                <x-mary-select wire:model='customerFormDest.type_code' icon="o-user" :options="$tipoDocuments"
+                                option-value="codigo" option-label="sigla" class="rounded-e-none" />
                             </x-slot:prepend>
                             <x-slot:append>
                                 <x-mary-button wire:click='searchDestinatario' icon="o-magnifying-glass"
@@ -73,19 +70,8 @@
                         <x-mary-input label="CANT." wire:model="cantidad" class="text-xs rounded-r-lg" />
                     </div>
                     <div>
-                        @php
-                        $unds = [
-                        [
-                        'id' => 'UND',
-                        'name' => 'UND'
-                        ],
-                        [
-                        'id' => 'M3',
-                        'name' => 'M3'
-                        ]
-                        ];
-                        @endphp
-                        <x-mary-select label="MEDIDA" :options="$unds" wire:model="und_medida" />
+                        <x-mary-select label="MEDIDA" :options="$unidadMedidas" wire:model="und_medida"
+                        option-value="codigo" option-label="descripcion"/>
                     </div>
                     <div class="col-span-3">
                         <x-mary-input label="DESCRIPCION" wire:model="description" class="rounded-r-lg" />

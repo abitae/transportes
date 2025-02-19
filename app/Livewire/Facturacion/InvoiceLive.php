@@ -33,7 +33,6 @@ class InvoiceLive extends Component
         $invoices = Invoice::latest()->paginate($this->perPage);
         return view('livewire.facturacion.invoice-live', compact('invoices'));
     }
-
     public function xmlGenerate(Invoice $invoice)
     {
         $company = $invoice->company;
@@ -47,14 +46,12 @@ class InvoiceLive extends Component
         $invoice->save();
         Storage::disk('public')->put($invoice->xml_path, $xml);
     }
-
     public function xmlDownload(Invoice $invoice)
     {
         if (Storage::exists($invoice->xml_path)) {
             return response()->download(storage_path('app/public/' . $invoice->xml_path));
         }
     }
-
     public function sendXmlFile(Invoice $invoice)
     {
         $company = $invoice->company;
@@ -63,7 +60,6 @@ class InvoiceLive extends Component
         $xml = Storage::disk('public')->get($invoice->xml_path);
         $result = $see->sendXmlFile($xml);
         $response = $sunat->sunatResponse($result);
-        //dd($response);
         if ($response['success']) {
             $invoice->cdr_description = $response['cdrResponse']['description'];
             $invoice->cdr_code = $response['cdrResponse']['code'];
@@ -78,13 +74,13 @@ class InvoiceLive extends Component
             $this->toast('error', 'Error al enviar el comprobante a la sunat');
         }
     }
-
     public function downloadCdrFile(Invoice $invoice)
     {
         if (Storage::exists($invoice->cdr_path)) {
             return response()->download(storage_path('app/public/' . $invoice->cdr_path));
         }
     }
+    
     public function refresh($invoice) {
         $invoice = Invoice::find($invoice);
         //dd($invoice);

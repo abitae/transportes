@@ -54,103 +54,6 @@ class SunatServiceGlobal
 
     public function getInvoce($data) //: \Greenter\Model\Sale\Invoice
     {
-        /* $data = [
-            'ublVersion'         => '2.1',
-            'fecVencimiento'     => '2023-12-31',
-            'tipoOperacion'      => '0101',
-            'tipoDoc'            => '01',
-            'serie'              => 'F001',
-            'correlativo'        => '1',
-            'fechaEmision'       => '2023-10-01',
-            'formaPago'          => 'Contado',
-            'mtoCredito'         => 0,
-            'tipoMoneda'         => 'PEN',
-            'company'            => [
-                'ruc'             => '20123456789',
-                'razonSocial'     => 'ACME SAC',
-                'nombreComercial' => 'ACME',
-                'address'         => [
-                    'ubigueo'      => '150101',
-                    'codigoPais'   => 'PE',
-                    'departamento' => 'LIMA',
-                    'provincia'    => 'LIMA',
-                    'distrito'     => 'LIMA',
-                    'direccion'    => 'AV LIMA 123',
-                    'codLocal'     => '0000',
-                ],
-            ],
-            'client'             => [
-                'tipoDoc'   => '6',
-                'numDoc'    => '10436493903',
-                'rznSocial' => 'Abel Arana',
-                'address'   => [
-                    'ubigueo'      => '150101',
-                    'codigoPais'   => 'PE',
-                    'departamento' => 'LIMA',
-                    'provincia'    => 'LIMA',
-                    'distrito'     => 'LIMA',
-                    'direccion'    => 'AV ITALIA 456',
-                    'codLocal'     => '0001',
-                ],
-            ],
-            'mtoOperGravadas'    => 1000.00,
-            'mtoOperExoneradas'  => 0.00,
-            'mtoOperInafecto'    => 0.00,
-            'mtoOperExportacion' => 0.00,
-            'mtoOperGratuitas'   => 0.00,
-            'mtoIGV'             => 180.00,
-            'mtoIGVGratuitas'    => 0.00,
-            'icbper'             => 0.00,
-            'totalImpuestos'     => 180.00,
-            'valorVenta'         => 1000.00,
-            'subTotal'           => 1180.00,
-            'mtoImpVenta'        => 1180.00,
-            'redondeo'           => 0.00,
-            'detraccion'         => [
-                'codBienDetraccion' => '025',
-                'codMedioPago'      => '001',
-                'ctaBanco'          => '123456789012',
-                'percent'           => 4.00,
-                'mount'             => 47.20,
-            ],
-            'details'            => [
-                [
-                    'tipAfeIgv'         => '10',
-                    'codProducto'       => 'P001',
-                    'unidad'            => 'NIU',
-                    'descripcion'       => 'Producto 1',
-                    'cantidad'          => 1,
-                    'mtoValorUnitario'  => 1000.00,
-                    'mtoValorVenta'     => 1000.00,
-                    'mtoBaseIgv'        => 1000.00,
-                    'porcentajeIgv'     => 18.00,
-                    'igv'               => 180.00,
-                    'factorIcbper'      => 0.00,
-                    'icbper'            => 0.00,
-                    'totalImpuestos'    => 180.00,
-                    'mtoPrecioUnitario' => 1180.00,
-                ],
-            ],
-            'legents'            => [
-                [
-                    'code'  => '1000',
-                    'value' => 'SON MIL CON 00/100 SOLES',
-                ],
-            ],
-            'observacion'        => 'Observación de prueba',
-            'direccionEntrega'   => [
-                'ubigueo'      => '150101',
-                'codigoPais'   => 'PE',
-                'departamento' => 'LIMA',
-                'provincia'    => 'LIMA',
-                'distrito'     => 'LIMA',
-                'direccion'    => 'AV LIMA 123',
-                'codLocal'     => '0000',
-            ],
-        ];
-        $data = (object) $data; */
-        //return $data;
-        //dd($data);
         $invoice = new \Greenter\Model\Sale\Invoice();
         $invoice->setUblVersion($data->ublVersion ?? '2.1');
         $invoice->setFecVencimiento(new DateTime($data->fecVencimiento) ?? null);
@@ -175,56 +78,50 @@ class SunatServiceGlobal
         $invoice->setMtoImpVenta($data->mtoImpVenta);
         $invoice->setRedondeo($data->redondeo);
         $invoice->setObservacion($data->observacion ?? null);
-        $invoice->setCompany($this->getCompany($data->company));
+        $invoice->setCompany($this->getCompany($data));
         $invoice->setClient($this->getClient($data->client));
         if ($data->tipoOperacion == '1001' && $data->mtoOperGravadas >= 400) {
             $invoice->setDetraccion($this->getDetraccion($data) ?? null);
         }
         $invoice->setDetails($this->getDetails($data->details));
         $invoice->setLegends($this->getLegends($data->legends));
-        //$invoice->setDireccionEntrega($this->getAddress($data->direccionEntrega) ?? null);
         return $invoice;
     }
 
-    public function getCompany($company): \Greenter\Model\Company\Company
+    public function getCompany($data): \Greenter\Model\Company\Company
     {
+        //dd($data->company);
+        $address = (new \Greenter\Model\Company\Address())
+            ->setUbigueo($data->sucursal->ubigeo)
+            ->setCodigoPais($data->sucursal->codigoPais ?? 'PE')
+            ->setDepartamento($data->sucursal->departamento)
+            ->setProvincia($data->sucursal->provincia)
+            ->setDistrito($data->sucursal->distrito)
+            ->setDireccion($data->sucursal->address)
+            ->setUrbanizacion($data->sucursal->urbanizacion)
+            ->setCodLocal($data->sucursal->codeSunat);
         return (new \Greenter\Model\Company\Company())
-            ->setRuc($company->ruc)
-            ->setRazonSocial($company->razonSocial)
-            ->setNombreComercial($company->nombreComercial)
-            ->setAddress($this->getAddress($company->address));
+            ->setRuc($data->company->ruc)
+            ->setRazonSocial($data->company->razonSocial)
+            ->setNombreComercial($data->company->nombreComercial)
+            ->setAddress($address);
     }
 
     public function getClient($client): \Greenter\Model\Client\Client
     {
+        $address = (new \Greenter\Model\Company\Address())
+            ->setUbigueo($client->ubigeo)
+            ->setCodigoPais($client->codigoPais ?? 'PE')
+            ->setDepartamento($client->departamento)
+            ->setProvincia($client->provincia)
+            ->setDistrito($client->distrito)
+            ->setDireccion($client->address);
         return (new \Greenter\Model\Client\Client())
             ->setTipoDoc($client->type_code)
             ->setNumDoc($client->code)
             ->setRznSocial($client->name)
-            ->setAddress($this->getAddress($client->address));
+            ->setAddress($address);
     }
-
-    public function getAddress($address): \Greenter\Model\Company\Address
-    {
-        $address = (new \Greenter\Model\Company\Address())
-            ->setUbigueo('150101')
-            ->setDepartamento('LIMA')
-            ->setProvincia('LIMA')
-            ->setDistrito('LIMA')
-            ->setUrbanizacion('-')
-            ->setDireccion('PJ. LOS PEDREGALES MZA. D LOTE. 4 GRU.SECTOR 3 LOS PEDREGAL   JUNíN -  HUANCAYO  -  EL TAMBO')
-            ->setCodLocal('0000'); // Codigo de establecimiento asignado por SUNAT, 0000 por defecto.
-        return $address;
-        return (new \Greenter\Model\Company\Address())
-            ->setUbigueo($address->ubigueo)
-            ->setCodigoPais($address->codigoPais)
-            ->setDepartamento($address->departamento)
-            ->setProvincia($address->provincia)
-            ->setDistrito($address->distrito)
-            ->setDireccion($address->direccion)
-            ->setCodLocal($address->codLocal);
-    }
-
     public function getDetails($details): array
     {
         $items = [];
@@ -249,7 +146,6 @@ class SunatServiceGlobal
         }
         return $items;
     }
-
     public function getLegends($legends): array
     {
         $legends = json_decode($legends);
@@ -263,11 +159,8 @@ class SunatServiceGlobal
         }
         return $items;
     }
-
     public function getDetraccion($data): \Greenter\Model\Sale\Detraction
     {
-
-
             return (new \Greenter\Model\Sale\Detraction())
                 ->setCodBienDetraccion($data->codBienDetraccion)
                 ->setCodMedioPago($data->codMedioPago)

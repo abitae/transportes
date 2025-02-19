@@ -83,7 +83,7 @@
         box-class="max-h-full max-w-6xl overflow-y-auto">
         <x-mary-icon name="s-envelope" class="text-green-500 text-md"
             label="{{ !isset($sucursalForm->sucursal) ? 'CREAR SUCURSAL' : 'EDITAR SUCURSAL' }}" />
-        <x-mary-form wire:submit="{{ !isset($sucursalForm->sucursal) ? 'create' : 'edit' }}">
+        <x-mary-form wire:submit.prevent="{{ !isset($sucursalForm->sucursal) ? 'create' : 'edit' }}">
             <div class="border border-green-500 rounded-lg">
                 <div class="grid grid-cols-3 gap-2 p-2">
                     <x-mary-input label="Codigo" inline wire:model='sucursalForm.code' />
@@ -91,6 +91,10 @@
                     <x-mary-input label="IGV" inline wire:model='sucursalForm.igv' number />
                     <x-mary-colorpicker label="Color" inline wire:model='sucursalForm.color' />
                     <x-mary-input label="Nombre" inline wire:model='sucursalForm.name' />
+                    <x-mary-input label="Departamento" inline wire:model='sucursalForm.departamento' />
+                    <x-mary-input label="Provincia" inline wire:model='sucursalForm.provincia' />
+                    <x-mary-input label="Distrito" inline wire:model='sucursalForm.distrito' />
+                    <x-mary-input label="Urbanizacion" inline wire:model='sucursalForm.urbanizacion' />
                     <x-mary-input label="Direccion" inline wire:model='sucursalForm.address' />
                     <x-mary-input label="Telefono" inline wire:model='sucursalForm.phone' />
                     <x-mary-input label="Email" inline wire:model='sucursalForm.email' />

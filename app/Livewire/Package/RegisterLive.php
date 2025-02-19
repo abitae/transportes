@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Package;
 
 use App\Livewire\Forms\CustomerForm;
@@ -12,6 +13,7 @@ use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
 use App\Models\Package\Encomienda;
 use App\Models\Package\Paquete;
+use App\Services\ServiceTableSunat;
 use App\Traits\CajaTrait;
 use App\Traits\InvoiceTrait;
 use App\Traits\LogCustom;
@@ -33,12 +35,11 @@ class RegisterLive extends Component
     public EncomiendaForm $encomiendaForm;
     public EntryCajaForm $entryForm;
 
-    public $cantidad, $und_medida = 'UND', $description, $peso, $amount;
+    public $cantidad, $und_medida = 'NIU', $description, $peso, $amount;
     public $paquetes, $sucursal_destino, $sucursal_dest_id, $pin1, $pin2, $doc_traslado;
-    public $estado_pago                                       = 'PAGADO', $tipo_comprobante                                       = 'TICKET', $glosa, $observation;
+    public $estado_pago = 'PAGADO', $tipo_comprobante = 'TICKET', $glosa, $observation;
     public $transportista_id, $vehiculo_id, $modalConfimation = false, $caja, $isReturn = false, $isHome = false, $modalFinal = false;
     public $encomienda;
-
     public function mount()
     {
         $this->caja     = $this->cajaIsActive(Auth::user());
@@ -64,11 +65,6 @@ class RegisterLive extends Component
         $this->transportista_id = $transportistaConfig->transportista_id;
         $this->vehiculo_id      = $transportistaConfig->vehiculo_id;
 
-        $docs = [
-            ['id' => '1', 'name' => 'DNI'],
-            ['id' => '6', 'name' => 'RUC'],
-        ];
-
         $headers_paquetes = [
             ['key' => 'cantidad', 'label' => 'Cantidad'],
             ['key' => 'und_medida', 'label' => 'Unidad'],
@@ -91,8 +87,14 @@ class RegisterLive extends Component
 
         $transportistas = Transportista::where('isActive', true)->get();
         $vehiculos      = Vehiculo::where('isActive', true)->get();
-
-        return view('livewire.package.register-live', compact('docs', 'headers_paquetes', 'sucursales', 'pagos', 'comprobantes', 'transportistas', 'vehiculos'));
+        $tipoDocuments = [
+            ['codigo' => '0', 'sigla' => 'OTRO DOCUMENTO cod(0)'],
+            ['codigo' => '1', 'sigla' => 'DNI cod(1)'],
+            ['codigo' => '6', 'sigla' => 'RUC cod(6)'],
+        ];
+        $service       = new ServiceTableSunat();
+        $unidadMedidas = $service->getAll('sunat_03');
+        return view('livewire.package.register-live', compact('unidadMedidas', 'headers_paquetes', 'sucursales', 'pagos', 'comprobantes', 'transportistas', 'vehiculos', 'tipoDocuments'));
     }
 
     public function searchRemitente()

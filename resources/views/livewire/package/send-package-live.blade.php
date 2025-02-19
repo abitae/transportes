@@ -120,7 +120,7 @@
                                 <x-mary-button label='Editar' icon="o-pencil-square"
                                     wire:click="editEncomienda({{ $stuff->id }})" spinner
                                     class="w-full text-white bg-green-500 btn-xs" />
-                                
+
                             </div>
                             <div class="row-start-3">
                                 @if ($stuff->ticket)
@@ -134,21 +134,25 @@
                                     wire:click="enableEncomienda({{ $stuff->id }})" spinner
                                     wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
                                     class="w-full text-white bg-red-500 btn-xs" />
-                               
+
                             </div>
                             <div class="row-start-4">
+                                @if ($stuff->despatche)
                                 <x-mary-button label='Guia T' icon="o-printer" target="_blank" no-wire-navigate
                                     link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
                                     class="w-full text-white bg-green-500 btn-xs" />
+                                @endif
                             </div>
                             <div class="row-start-5">
                                 <x-mary-badge :value="strtoupper($stuff->estado_pago)"
                                     class="w-full text-white text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
                             </div>
-                            <div class="row-start-4">
+                            <div class="row-start-6">
+                                @if ($stuff->despatche)
                                 <x-mary-button label='Sticker' icon="o-printer" target="_blank" no-wire-navigate
                                     link="/sticker/a6/{{ $stuff->despatche->id }}" spinner
                                     class="w-full text-white bg-blue-500 btn-xs" />
+                                @endif
                             </div>
                         </div>
                         @endscope

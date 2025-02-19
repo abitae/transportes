@@ -10,6 +10,7 @@ use App\Models\Facturacion\InvoiceDetail;
 use App\Models\Facturacion\Ticket;
 use App\Models\Facturacion\TicketDetail;
 use App\Models\Package\Encomienda;
+use Illuminate\Support\Facades\Auth;
 use Luecano\NumeroALetras\NumeroALetras;
 
 trait InvoiceTrait
@@ -62,7 +63,7 @@ trait InvoiceTrait
             'ticket_id' => $ticketId,
             'tipAfeIgv' => '10',
             'codProducto' => $paquete->id,
-            'unidad' => 'NIU',
+            'unidad' => $paquete->und_medida,
             'descripcion' => 'Servicio de traslado ' . $paquete->description,
             'cantidad' => $paquete->cantidad,
             'mtoValorUnitario' => $mtoValorUnitario,
@@ -96,6 +97,7 @@ trait InvoiceTrait
         $company = Company::first();
         $data = [
             'encomienda_id' => $encomienda->id,
+            'sucursal_id' => Auth::user()->sucursal->id,
             'fechaEmision' => $encomienda->created_at,
             'formaPago_moneda' => 'PEN',
             'formaPago_tipo' => $encomienda->tipo_pago,
@@ -109,26 +111,36 @@ trait InvoiceTrait
             'subTotal' => $montoTotalIncIGV,
             'mtoImpVenta' => $montoTotalIncIGV, //venta total inc IGV
             'monto_letras' => $monto_letras ?? '',
+            'observacion' => $encomienda->observation,
         ];
-
+        $legends[] = [
+            'code' => '1000',
+            'value' => $monto_letras,
+        ];
         if ($encomienda->tipo_comprobante == 'BOLETA') {
-            $data['serie'] = 'B001';
+            $data['serie'] = Auth::user()->sucursal->serieBoleta;
             $data['tipoDoc'] = '03';
             $data['tipoOperacion'] = '0101';
-            $data['correlativo'] = Invoice::where('tipoDoc', '03')->count() + 1;
+            $data['correlativo'] = Invoice::where('tipoDoc', $data['tipoDoc'])->where('serie', $data['serie'])->count() + 1;
         } else {
-            $data['serie'] = 'F001';
+            $data['serie'] = Auth::user()->sucursal->serieFactura;
             $data['tipoDoc'] = '01';
-            $data['correlativo'] = Invoice::where('tipoDoc', '01')->count() + 1;
+            $data['correlativo'] = Invoice::where('tipoDoc', $data['tipoDoc'])->where('serie', $data['serie'])->count() + 1;
             if ($montoTotalIncIGV >= 400) {
-                $data['tipoOperacion'] = '1001';
+                $data['codBienDetraccion'] = '027';
+                $data['codMedioPago'] = '001';
+                $data['ctaBanco'] = $company->ctaBanco;
                 $data['setPercent'] = 12;
                 $data['setMount'] = $montoTotalIncIGV * 0.12;
+                $legends[] = [
+                    'code' => '2006',
+                    'value' => 'Leyenda "Operación sujeta a detracción"',
+                ];
             } else {
                 $data['tipoOperacion'] = '0101';
             }
         }
-
+        $data['legends'] = json_encode($legends);
         return $data;
     }
 
@@ -139,7 +151,7 @@ trait InvoiceTrait
             'invoice_id' => $invoiceId,
             'tipAfeIgv' => '10',
             'codProducto' => $paquete->id,
-            'unidad' => 'NIU',
+            'unidad' => $paquete->und_medida,
             'descripcion' => 'SERVICIO TRASLADO ' . $paquete->description,
             'cantidad' => $paquete->cantidad,
             'mtoValorUnitario' => $mtoValorUnitario,
@@ -204,7 +216,7 @@ trait InvoiceTrait
             'despatche_id' => $despatcheId,
             'tipAfeIgv' => '10',
             'codProducto' => $paquete->id,
-            'unidad' => 'NIU',
+            'unidad' => $paquete->und_medida,
             'descripcion' => 'SERVICIO TRASLADO ' . $paquete->description,
             'cantidad' => $paquete->cantidad,
             'mtoValorUnitario' => $mtoValorUnitario,
