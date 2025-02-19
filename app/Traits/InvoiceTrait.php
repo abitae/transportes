@@ -127,6 +127,7 @@ trait InvoiceTrait
             $data['tipoDoc'] = '01';
             $data['correlativo'] = Invoice::where('tipoDoc', $data['tipoDoc'])->where('serie', $data['serie'])->count() + 1;
             if ($montoTotalIncIGV >= 400) {
+                $data['tipoOperacion'] = '1001';
                 $data['codBienDetraccion'] = '027';
                 $data['codMedioPago'] = '001';
                 $data['ctaBanco'] = $company->ctaBanco;

@@ -47,10 +47,10 @@ return new class extends Migration
             $table->string('xml_hash')->nullable();
             $table->string('cdr_description')->nullable();
             $table->string('cdr_code')->nullable();
-            $table->string('cdr_note')->nullable();
+            $table->text('cdr_note')->nullable();
             $table->string('cdr_path')->nullable();
             $table->string('errorCode')->nullable();
-            $table->string('errorMessage')->nullable();
+            $table->text('errorMessage')->nullable();
             $table->timestamps();
         });
     }

@@ -17,8 +17,8 @@ class InvoiceLive extends Component
 {
     use Toast;
     use WithPagination, WithoutUrlPagination;
-    public string $title = 'Facturacion';
-    public string $sub_title = 'Modulo de facturacion';
+    public string $title = 'Facturacion electronica';
+    public string $sub_title = 'Modulo de facturacion electronica';
     public int $perPage = 10;
     public $infoModal = false;
 
@@ -60,6 +60,7 @@ class InvoiceLive extends Component
         $xml = Storage::disk('public')->get($invoice->xml_path);
         $result = $see->sendXmlFile($xml);
         $response = $sunat->sunatResponse($result);
+        //dd($response);
         if ($response['success']) {
             $invoice->cdr_description = $response['cdrResponse']['description'];
             $invoice->cdr_code = $response['cdrResponse']['code'];
@@ -71,6 +72,7 @@ class InvoiceLive extends Component
         } else {
             $invoice->errorCode = $response['error']['code'];
             $invoice->errorMessage = $response['error']['message'];
+            $invoice->save();
             $this->toast('error', 'Error al enviar el comprobante a la sunat');
         }
     }
@@ -80,7 +82,7 @@ class InvoiceLive extends Component
             return response()->download(storage_path('app/public/' . $invoice->cdr_path));
         }
     }
-    
+
     public function refresh($invoice) {
         $invoice = Invoice::find($invoice);
         //dd($invoice);

@@ -161,6 +161,7 @@ class SunatServiceGlobal
     }
     public function getDetraccion($data): \Greenter\Model\Sale\Detraction
     {
+        
             return (new \Greenter\Model\Sale\Detraction())
                 ->setCodBienDetraccion($data->codBienDetraccion)
                 ->setCodMedioPago($data->codMedioPago)
