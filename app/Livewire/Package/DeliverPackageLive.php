@@ -1,8 +1,10 @@
 <?php
+
 namespace App\Livewire\Package;
 
 use App\Livewire\Forms\CustomerForm;
 use App\Livewire\Forms\EntryCajaForm;
+use App\Livewire\Forms\ExitCajaForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
@@ -19,9 +21,10 @@ class DeliverPackageLive extends Component
     use LogCustom, Toast, WithPagination, WithoutUrlPagination, InvoiceTrait;
 
     public EntryCajaForm $entryForm;
+    public ExitCajaForm $exitForm;
     public CustomerForm $customerFact;
-    public $title     = 'Entrega paquetes';
-    public $sub_title = 'Modulo de entrega de paquetes';
+    public $title     = 'ENTREGA PAQUETES AGENCIA';
+    public $sub_title = 'Modulo de entrega de paquetes en agencia';
     public $search    = '';
     public $perPage   = 10;
     public $date_ini;
@@ -38,7 +41,9 @@ class DeliverPackageLive extends Component
     public $tipo_comprobante = 'TICKET';
     public $caja;
     public bool $modalConfimation;
-
+    public bool $modalDescuento;
+    public $monto_descuento;
+    public $motivo_descuento;
     public function mount()
     {
         $this->caja = Caja::where('user_id', Auth::user()->id)
@@ -64,14 +69,28 @@ class DeliverPackageLive extends Component
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'RECIBIDO')
             ->where('isHome', false)
-        //->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%'))
             ->whereHas('destinatario', function ($query) {
                 $query->where('code', 'like', '%' . $this->search . '%')
                     ->orWhere('name', 'like', '%' . $this->search . '%');
             })
+
             ->latest()
             ->paginate($this->perPage, '*', 'page');
-        return view('livewire.package.deliver-package-live', compact('encomiendas', 'sucursals'));
+        $pagos = [
+            ['id' => 'PAGADO', 'name' => 'PAGADO'],
+            ['id' => 'CONTRA ENTREGA', 'name' => 'CONTRA ENTREGA'],
+        ];
+        $comprobantes = [
+            ['id' => 'BOLETA', 'name' => 'BOLETA'],
+            ['id' => 'FACTURA', 'name' => 'FACTURA'],
+            ['id' => 'TICKET', 'name' => 'TICKET'],
+        ];
+        $tipoDocuments = [
+            ['codigo' => '0', 'sigla' => 'OTRO DOCUMENTO cod(0)'],
+            ['codigo' => '1', 'sigla' => 'DNI cod(1)'],
+            ['codigo' => '6', 'sigla' => 'RUC cod(6)'],
+        ];
+        return view('livewire.package.deliver-package-live', compact('encomiendas', 'sucursals', 'pagos', 'comprobantes', 'tipoDocuments'));
     }
 
     public function detailEncomienda(Encomienda $encomienda)
@@ -97,7 +116,7 @@ class DeliverPackageLive extends Component
             $this->modalDeliver     = false;
             $this->modalConfimation = true;
         } else {
-            $this->toast('error', 'Datos incorrectos');
+            $this->error('Error', 'Datos incorrectos');
         }
     }
 
@@ -105,34 +124,34 @@ class DeliverPackageLive extends Component
     {
         if ($this->estado_pago == 'PAGADO') {
             $this->updateEncomiendaStatus('ENTREGADO');
-            $this->toast('success', 'Paquete entregado correctamente');
+            $this->success('Paquete entregado correctamente');
         } else {
             if ($this->tipo_comprobante != 'TICKET') {
-                $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
                 $this->setInvoice($this->encomienda);
-                $this->entryForm->fill([
-                    'caja_id'     => $this->caja->id,
-                    'monto_entry' => $this->encomienda->monto,
-                    'description' => $this->encomienda->code,
-                    'tipo'        => $this->encomienda->tipo_comprobante,
-                ]);
-                if ($this->entryForm->store()) {
-                    $this->entryForm->reset();
-                } else {
-                    $this->error('Error, verifique los datos!');
-                }
+            }
+            $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
+            $this->entryForm->fill([
+                'caja_id'     => $this->caja->id,
+                'monto_entry' => $this->encomienda->monto,
+                'description' => $this->encomienda->code,
+                'tipo'        => $this->encomienda->tipo_comprobante,
+            ]);
+            if ($this->entryForm->store()) {
+                $this->entryForm->reset();
             } else {
-                $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
-                $this->entryForm->fill([
+                $this->error('Error, no se pudo registrar la entrada de caja!');
+            }
+            if ($this->encomienda->monto_descuento) {
+                $this->exitForm->fill([
                     'caja_id'     => $this->caja->id,
-                    'monto_entry' => $this->encomienda->monto,
+                    'monto_exit' => $this->encomienda->monto_descuento,
                     'description' => $this->encomienda->code,
-                    'tipo'        => $this->encomienda->tipo_comprobante,
+                    'tipo'        => 'DESCUENTO',
                 ]);
-                if ($this->entryForm->store()) {
-                    $this->entryForm->reset();
+                if ($this->exitForm->store()) {
+                    $this->exitForm->reset();
                 } else {
-                    $this->error('Error, verifique los datos!');
+                    $this->error('Error, no se pudo registrar la salida de caja!');
                 }
             }
         }
@@ -156,6 +175,53 @@ class DeliverPackageLive extends Component
     public function descuento(Encomienda $encomienda)
     {
         $this->encomienda = $encomienda;
-        $this->showDrawer = true;
+        $this->modalDescuento = true;
+    }
+
+    public function descuentoCreate()
+    {
+        $rules = [
+            'monto_descuento' => 'required|numeric|min:0',
+            'motivo_descuento' => 'required|string|max:255',
+        ];
+        $messages = [
+            'monto_descuento.required' => 'El monto de descuento es requerido',
+            'monto_descuento.numeric' => 'El monto de descuento debe ser un número',
+            'monto_descuento.min' => 'El monto de descuento debe ser mayor que 0',
+            'motivo_descuento.required' => 'El motivo del descuento es requerido',
+            'motivo_descuento.string' => 'El motivo del descuento debe ser una cadena de texto',
+            'motivo_descuento.max' => 'El motivo del descuento debe tener menos de 255 caracteres',
+        ];
+        $this->validate($rules, $messages);
+        if ($this->encomienda->monto < $this->monto_descuento) {
+            $this->modalDescuento = false;
+            $this->error('Error', 'El monto de descuento no puede ser mayor al monto de la encomienda');
+            return;
+        }
+        $this->encomienda->monto_descuento = $this->monto_descuento;
+        $this->encomienda->motivo_descuento = $this->motivo_descuento;
+        if ($this->encomienda->ticket) {
+            $this->encomienda->ticket->monto_descuento = $this->monto_descuento;
+            $this->encomienda->ticket->motivo_descuento = $this->motivo_descuento;
+            $this->encomienda->ticket->save();
+        }
+        $this->encomienda->save();
+        $this->modalDescuento = false;
+        $this->success('Descuento aplicado correctamente');
+    }
+
+    public function descuentoDelete(Encomienda $encomienda)
+    {
+        $encomienda->monto_descuento = null;
+        $encomienda->motivo_descuento = null;
+        if ($encomienda->ticket) {
+            $encomienda->ticket->monto_descuento = null;
+            $encomienda->ticket->motivo_descuento = null;
+            $encomienda->ticket->save();
+        }
+        //$exitCaja = Caja::where('user_id', Auth::user()->id)
+        $encomienda->save();
+        $this->dispatch('refreshEncomienda');
+        $this->success('Descuento eliminado correctamente');
     }
 }

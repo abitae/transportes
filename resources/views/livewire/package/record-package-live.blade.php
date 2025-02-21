@@ -12,7 +12,7 @@
                 <x-mary-datetime label="Fecha de registro" wire:model.live="date_ini" icon="o-calendar" inline />
             </div>
             <div class="grid col-span-2">
-                
+
             </div>
         </div>
         <x-mary-menu-separator />
@@ -22,7 +22,6 @@
                     @php
                     $headers = [
                     ['key' => 'actions', 'label' => 'Action', 'class' => ''],
-                    ['key' => 'estado', 'label' => 'Estado', 'class' => ''],
                     ['key' => 'remitente', 'label' => 'Remitente', 'class' => ''],
                     ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
                     ];
@@ -66,7 +65,7 @@
                                 {{ strtoupper($stuff->destinatario->name)}}
                             </div>
                             <div>
-                                
+
                                 <x-mary-badge :value="$stuff->sucursal_destinatario->name"
                                     class="text-xs text-white bg-green-500" />
 
@@ -87,16 +86,6 @@
                                 @endif
                             </div>
                         </div>
-                        @endscope
-                        @scope('cell_estado', $stuff)
-                        <x-mary-badge :value="strtoupper('Pagado')"
-                            class="w-min-full {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
-                        <br>
-                        <x-mary-badge :value="strtoupper('Domicilio')"
-                            class="w-min-full {{ !$stuff->isHome ? 'bg-red-500': 'bg-green-500' }}" />
-                        <br>
-                        <x-mary-badge :value="strtoupper('Retorno')"
-                            class="w-min-full {{ !$stuff->isReturn ? 'bg-red-500': 'bg-green-500' }}" />
                         @endscope
                         @scope('cell_actions', $stuff)
                         <div class="grid grid-cols-2 grid-rows-5 gap-0">
@@ -120,7 +109,7 @@
                                 <x-mary-button label='Editar' icon="o-pencil-square"
                                     wire:click="editEncomienda({{ $stuff->id }})" spinner
                                     class="w-full text-white bg-green-500 btn-xs" />
-                                
+
                             </div>
                             <div class="row-start-3">
                                 @if ($stuff->ticket)
@@ -130,7 +119,7 @@
                                 @endif
                             </div>
                             <div class="row-start-4">
-                               
+
                             </div>
                             <div class="row-start-4">
                                 <x-mary-button label='Guia T' icon="o-printer" target="_blank" no-wire-navigate

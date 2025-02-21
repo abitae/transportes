@@ -33,6 +33,8 @@ return new class extends Migration
             $table->decimal('valorVenta',8,2);
             $table->decimal('subTotal',8,2);
             $table->decimal('mtoImpVenta',8,2);
+            $table->decimal('monto_descuento',8,2)->nullable();
+            $table->string('motivo_descuento')->nullable();
             $table->timestamps();
         });
     }

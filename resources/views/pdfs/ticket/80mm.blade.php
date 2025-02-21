@@ -50,12 +50,13 @@
         <!-- Logo y datos de la empresa centrados -->
         <div class="text-center">
             <div class="text-xs">
-                <img src="./img/logo_format_ticket.jpg" alt="Infinity" width="200" height="w-auto h-16 mx-auto mb-2" alt="Logo de la Empresa">
+                <img src="./img/logo_format_ticket.jpg" alt="Infinity" width="200" height="w-auto h-16 mx-auto mb-2"
+                    alt="Logo de la Empresa">
                 <p class="font-weight-bold">BRAYAN BRUSH CORPORACION LOGISTICO</p>
                 <p>R.U.C.: {{ $ticket->company->ruc }}</p>
-                <p>{{ $ticket->company->address }}</p>
-                <p class="m-0">Telf: {{ $ticket->company->telephone }}</p>
-                <p class="m-0">Email: {{ $ticket->company->email }}</p>
+                <p>{{ $ticket->encomienda->sucursal_remitente->address }}</p>
+                <p class="m-0">Telf: {{ $ticket->encomienda->sucursal_remitente->phone }}</p>
+                <p class="m-0">Email: {{ $ticket->encomienda->sucursal_remitente->email }}</p>
             </div>
         </div>
         <!-- Título de la Factura y Número de Serie en un recuadro -->
@@ -67,14 +68,17 @@
             <h1 class="m-1 text-sm font-weight-bold">{{ $ticket->encomienda->estado_pago }}</h1>
         </div>
         <section class="text-xs text-left border-top border-dark">
-            <p>Fecha Emición: {{ $ticket->fechaEmision }}</p>
-            <p>Fecha Traslado: {{ $ticket->fecTraslado }}</p>
+            <p>Fecha Emición: {{ $ticket->created_at->format('Y-m-d') }}</p>
+            <p>Fecha Traslado: {{ $ticket->updated_at->format('Y-m-d') }}</p>
         </section>
         <!-- Información del Cliente -->
         <section class="text-xs text-left border-top border-dark">
             <p>Razón Social: {{ $ticket->client->name }}</p>
-            <p>{{ strtoupper($ticket->client->type_code) }}: {{ $ticket->client->code }}</p>
-            <p>Dirección: {{ $ticket->client->address }}</p>
+            <p>{{ strtoupper($ticket->client->type_code == 1? 'DNI' : 'RUC') }}: {{ $ticket->client->code }}</p>
+            @if ($ticket->client->address)
+                <p>Dirección: {{ $ticket->client->address }}</p>
+            @endif
+
         </section>
         <!-- Detalle de la Factura -->
         <section class="mb-4">
@@ -89,13 +93,14 @@
                 </thead>
                 <tbody>
                     @forelse ($ticket->details as $detail)
-                    <tr>
-                        <td class="px-2 py-1 text-left">{{ $detail->descripcion }}</td>
-                        <td class="px-2 py-1 text-right">{{ $detail->cantidad }}</td>
-                        <td class="px-2 py-1 text-right">{{ $detail->mtoPrecioUnitario }}</td>
-                        <td class="px-2 py-1 text-right">{{ number_format($detail->mtoPrecioUnitario *
-                            $detail->cantidad,2) }}</td>
-                    </tr>
+                        <tr>
+                            <td class="px-2 py-1 text-left">{{ $detail->descripcion }}</td>
+                            <td class="px-2 py-1 text-right">{{ $detail->cantidad }}</td>
+                            <td class="px-2 py-1 text-right">{{ $detail->mtoPrecioUnitario }}</td>
+                            <td class="px-2 py-1 text-right">
+                                {{ number_format($detail->mtoPrecioUnitario * $detail->cantidad, 2) }}
+                            </td>
+                        </tr>
                     @empty
                     @endforelse
                 </tbody>
@@ -105,15 +110,21 @@
         <section class="mb-4 text-sm text-right">
             <div class="d-flex justify-content-between border-top border-dark">
                 <span class="font-weight-bold">Gravada:</span>
-                <span>S/ {{ $ticket->valorVenta }}</span>
+                <span>S/ {{ number_format($ticket->valorVenta, 2) }}</span>
             </div>
             <div class="d-flex justify-content-between">
                 <span class="font-weight-bold">IGV (18%):</span>
-                <span>S/ {{ $ticket->mtoIGV }}</span>
+                <span>S/ {{ number_format($ticket->mtoIGV, 2) }}</span>
             </div>
+            @if ($ticket->monto_descuento)
+                <div class="d-flex justify-content-between">
+                    <span class="font-weight-bold">Descuento:</span>
+                    <span>S/ {{ number_format($ticket->monto_descuento, 2) }}</span>
+                </div>
+            @endif
             <div class="pt-1 mt-1 d-flex justify-content-between font-weight-bold border-top border-dark">
                 <span>Total:</span>
-                <span>S/ {{ $ticket->mtoImpVenta }}</span>
+                <span>S/ {{ number_format($ticket->mtoImpVenta - $ticket->monto_descuento, 2) }}</span>
             </div>
         </section>
         <!-- Código QR -->
@@ -131,7 +142,7 @@
             <br>
             <span>Corporación Logística Brayan Brush EIRL</span>
             <br>
-            <!-- ...existing policy text... -->
+            <p>Usuario: {{ $ticket->encomienda->user->name }}</p>
         </footer>
     </div>
 </body>

@@ -27,6 +27,8 @@ class Encomienda extends Model
         'customer_fact_id',
         'cantidad',
         'monto',
+        'monto_descuento',
+        'motivo_descuento',
         'estado_pago',
         'tipo_pago',
         'tipo_comprobante',
@@ -37,7 +39,8 @@ class Encomienda extends Model
         'pin',
         'isHome',
         'isReturn',
-        'isActive'
+        'isActive',
+
     ];
     public function user()
     {

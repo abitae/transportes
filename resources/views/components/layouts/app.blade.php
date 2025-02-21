@@ -41,7 +41,9 @@
 
         {{-- Right side actions --}}
         <x-slot:actions>
-            <x-mary-icon name="s-home" class="text-xl text-center text-green-500 w-9 h-9"
+            <x-mary-icon name="s-user" class="text-md text-center text-purple-500"
+                label="{{ auth()->user()->name }}" />
+            <x-mary-icon name="s-home" class="text-md text-center text-green-500"
                 label="{{ auth()->user()->sucursal->name }}" />
             <x-mary-theme-toggle darkTheme="dark" lightTheme="light" />
             <x-mary-button label="Messages" icon="o-envelope" link="/message" class="btn-ghost btn-sm" responsive />

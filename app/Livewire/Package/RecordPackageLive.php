@@ -66,8 +66,8 @@ class RecordPackageLive extends Component
             ->where('estado_encomienda', 'ENTREGADO')
             //->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%'))
             ->whereHas('destinatario', function ($query) {
-                $query->where('code', 'like', '%'.$this->search.'%')
-                    ->orWhere('name', 'like', '%'.$this->search.'%');
+                $query->where('code', 'like', '%' . $this->search . '%')
+                    ->orWhere('name', 'like', '%' . $this->search . '%');
             })
             ->latest()
             ->paginate($this->perPage, '*', 'page');
@@ -78,36 +78,36 @@ class RecordPackageLive extends Component
         return view('livewire.package.record-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
     }
 
-    
+
     public function detailEncomienda(Encomienda $encomienda)
     {
         $this->encomienda = $encomienda;
         $this->showDrawer = true;
     }
 
-    
+
     public function printTicket(Encomienda $envio)
     {
         $width = 78;
         $heigh = 250;
         $paper_format = array(0, 0, 220, 710);
-        
+
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
-        }, 'T'.$envio->code . '.pdf');
+        }, 'T' . $envio->code . '.pdf');
     }
     public function printSticker(Encomienda $envio)
     {
         $width = 78;
         $heigh = 250;
         $paper_format = array(0, 0, 220, 710);
-        
+
         $pdf = Pdf::loadView('report.pdf.sticker', compact('envio'));
 
         return response()->streamDownload(function () use ($pdf) {
             echo $pdf->stream();
-        }, 'S'.$envio->code . '.pdf');
+        }, 'S' . $envio->code . '.pdf');
     }
 }

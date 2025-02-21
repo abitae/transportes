@@ -33,10 +33,12 @@ return new class extends Migration
             //facturacion
             $table->unsignedBigInteger('customer_fact_id');
             $table->foreign('customer_fact_id')->references('id')->on('customers');
-           
-           
+
+
             $table->decimal('cantidad', 8, 2);
             $table->decimal('monto', 8, 2);
+            $table->decimal('monto_descuento', 8, 2)->nullable();
+            $table->string('motivo_descuento')->nullable();
 
             $table->string('estado_pago');
             $table->string('tipo_pago');

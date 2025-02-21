@@ -29,6 +29,8 @@ class Ticket extends Model
         'valorVenta',
         'subTotal',
         'mtoImpVenta',
+        'monto_descuento',
+        'motivo_descuento',
     ];
     public function company()
     {

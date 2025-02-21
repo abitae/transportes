@@ -161,15 +161,34 @@
     </x-mary-card>
 
     <x-mary-modal wire:model="modalConfimation" persistent class="backdrop-blur" box-class="max-w-full max-h-full">
+        <div class="grid grid-cols-2 border border-red-500 rounded-lg">
+            <div class="grid grid-cols-2 gap-2">
+                <div class="col-span-2">
+                    <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
+                </div>
+
+                <div>{{ $this->customerForm->name ?? 'name' }}</div>
+                <div>{{ strtoupper($this->customerForm->type_code) ?? 'type_code' }}</div>
+                <div>{{ $this->customerForm->code ?? 'code' }}</div>
+                <div>{{ $this->customerForm->phone ?? 'phone' }}</div>
+                <div>{{ Auth::user()->sucursal->name ?? 'sucursal' }}</div>
+                <x-mary-icon name="s-envelope" class="text-blue-500 text-md col-span-2" label="DESTINATARIO" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
+                <x-mary-icon name="s-envelope" class="text-blue-500 text-md" label="DESTINATARIO" />
+            </div>
+            </div>
+        </div>
         <div class="grid grid-cols-8 gap-1 p-2 border rounded-lg border-sky-500">
             <div class="grid col-span-4">
                 <div class="grid grid-cols-8 border rounded-lg border-sky-500">
                     <div class="grid col-span-8">
                         <x-mary-card shadow separator>
-                            <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
+
                             <div class="grid grid-cols-5 grid-rows-3 gap-1 rounded">
-                                <div class="col-span-3">{{ $this->customerForm->name ?? 'name' }}</div>
-                                <div class="row-start-2">{{ strtoupper($this->customerForm->type_code) ?? 'type_code' }}
+                                <div class="col-span-3"></div>
+                                <div class="row-start-2">
                                 </div>
                                 <div class="row-start-2">{{ $this->customerForm->code ?? 'code' }}</div>
                                 <div class="row-start-2">{{ $this->customerForm->phone ?? 'phone' }}</div>
@@ -187,10 +206,14 @@
                             <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
                             <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped>
                             </x-mary-table>
-                            <div class="flex justify-end">
-                                <x-mary-icon class="w-12 h-12 p-2 text-white bg-orange-500 rounded-full"
-                                    name="o-currency-dollar" label="TOTAL: {{ $paquetes->sum('sub_total') }}" />
-                            </div>
+                            <x-mary-card shadow>
+                                <div class="grid grid-cols-2 gap-2 border border-sky-500 rounded-lg">
+                                    <div class="text-right">Total</div>
+                                    <div class="border-t text-right text-xl text-blue-500">
+                                        S/{{ number_format($paquetes->sum('sub_total'), 2) }}
+                                    </div>
+                                </div>
+                            </x-mary-card>
                         </x-mary-card>
                     </div>
                 </div>
