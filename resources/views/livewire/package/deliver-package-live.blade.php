@@ -110,10 +110,10 @@
                                 @endif
                             </div>
                             <div class="row-start-3">
-                                <x-mary-button label='Editar' icon="o-pencil-square"
-                                    wire:click="editEncomienda({{ $stuff->id }})" spinner
-                                    class="w-full text-white bg-green-500 btn-xs" />
-                                
+                                <x-mary-button label='ENTREGAR' icon="o-pencil-square"
+                                    wire:click="openModal({{ $stuff->id }})" spinner
+                                    class="w-full text-white bg-purple-500 btn-xs" />
+
                             </div>
                             <div class="row-start-3">
                                 @if ($stuff->ticket)
@@ -123,7 +123,8 @@
                                 @endif
                             </div>
                             <div class="row-start-4">
-                               
+
+
                             </div>
                             <div class="row-start-4">
                                 <x-mary-button label='Guia T' icon="o-printer" target="_blank" no-wire-navigate
@@ -135,7 +136,11 @@
                                     class="w-full text-white text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
                             </div>
                             <div class="row-start-4">
-
+                                @if ($stuff->estado_pago == 'CONTRA ENTREGA')
+                                <x-mary-button label='GENERAR DESCUENTO' icon="o-pencil-square"
+                                wire:click="descuento({{ $stuff->id }})" spinner
+                                class="w-full text-white bg-purple-500 btn-xs" />
+                                @endif
                             </div>
                         </div>
                         @endscope

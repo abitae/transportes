@@ -35,7 +35,9 @@ class HomePackageLive extends Component
     public $estado_pago;
     public $tipo_comprobante;
     public $caja;
-    public bool $modalConfimation;
+    public bool $modalConfimation = false;
+    public bool $modalDescuento = false;
+    public $monto_descuento;
 
     public function mount()
     {
@@ -81,7 +83,7 @@ class HomePackageLive extends Component
         $this->encomienda       = Encomienda::find($id);
         $this->modalDeliver     = ! $this->modalDeliver;
         $this->tipo_comprobante = $this->encomienda->tipo_comprobante;
-        
+
     }
 
     public function deliverPaquetes()
@@ -149,5 +151,18 @@ class HomePackageLive extends Component
     public function searchFacturacion()
     {
         $this->customerFact->store();
+    }
+
+    public function descuento(Encomienda $encomienda)
+    {
+        $this->encomienda = $encomienda;
+        $this->modalDescuento = true;
+    }
+
+    public function applyDescuento()
+    {
+        $this->encomienda->monto = $this->encomienda->monto - $this->monto_descuento;
+        $this->encomienda->save();
+        $this->modalDescuento = false;
     }
 }

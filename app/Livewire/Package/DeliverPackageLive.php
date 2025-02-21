@@ -152,4 +152,10 @@ class DeliverPackageLive extends Component
     {
         $this->customerFact->store();
     }
+
+    public function descuento(Encomienda $encomienda)
+    {
+        $this->encomienda = $encomienda;
+        $this->showDrawer = true;
+    }
 }

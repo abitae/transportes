@@ -110,8 +110,10 @@
                                 @endif
                             </div>
                             <div class="row-start-3">
-                               
-                                
+                                <x-mary-button label='ENTREGAR' icon="o-pencil-square"
+                                    wire:click="openModal({{ $stuff->id }})" spinner
+                                    class="w-full text-white bg-purple-500 btn-xs" />
+
                             </div>
                             <div class="row-start-3">
                                 @if ($stuff->ticket)
@@ -121,7 +123,7 @@
                                 @endif
                             </div>
                             <div class="row-start-4">
-                               
+
                             </div>
                             <div class="row-start-4">
                                 <x-mary-button label='Guia T' icon="o-printer" target="_blank" no-wire-navigate
