@@ -41,9 +41,9 @@
 
         {{-- Right side actions --}}
         <x-slot:actions>
-            <x-mary-icon name="s-user" class="text-md text-center text-purple-500"
+            <x-mary-icon name="s-user" class="text-center text-purple-500 text-md"
                 label="{{ auth()->user()->name }}" />
-            <x-mary-icon name="s-home" class="text-md text-center text-green-500"
+            <x-mary-icon name="s-home" class="text-center text-green-500 text-md"
                 label="{{ auth()->user()->sucursal->name }}" />
             <x-mary-theme-toggle darkTheme="dark" lightTheme="light" />
             <x-mary-button label="Messages" icon="o-envelope" link="/message" class="btn-ghost btn-sm" responsive />
@@ -72,6 +72,9 @@
     <x-mary-main with-nav full-width>
         <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100">
             <x-mary-menu activate-by-route>
+                <x-mary-menu-separator />
+                <x-mary-menu-item title="Dashboard" icon="o-home" link="{{ route('dashboard') }}" />
+                <x-mary-menu-separator />
                 <x-mary-menu-item title="Caja" icon="o-banknotes" link="{{ route('caja.index') }}" />
                 <x-mary-menu-item title="Configuracion sucursal" icon="o-banknotes" link="{{ route('config.configuration') }}" />
                 <x-mary-menu-separator />
@@ -96,6 +99,8 @@
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Facturacion" icon="s-banknotes">
                     <x-mary-menu-item title="Crear factura" icon="o-ticket" link="{{ route('facturacion.create-invoice') }}" />
+                    <x-mary-menu-item title="Crear Nota Credito" icon="o-ticket" link="{{ route('facturacion.create-note') }}" />
+
                     <x-mary-menu-item title="Facturas" icon="o-ticket" link="{{ route('facturacion.invoice') }}" />
                     <x-mary-menu-item title="Ticket" icon="c-ticket" link="{{ route('facturacion.ticket') }}" />
                     <x-mary-menu-item title="Guias" icon="s-ticket" link="{{ route('facturacion.despache') }}" />

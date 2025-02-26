@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Home;
 
+use App\Models\Package\Encomienda;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class DashboardLive extends Component
@@ -19,7 +21,10 @@ class DashboardLive extends Component
     ];
     public function mount()
     {
-        $labels = ['Enero', 'Febrero', 'Marzo'];
+        $labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        $encomiendas = Encomienda::where('sucursal_id', Auth::user()->sucursal->id)
+        ->where('created_at', 2025)
+        ->count();
         $datasets = [
             [
                 'label' => 'Encomiendas',
@@ -30,6 +35,7 @@ class DashboardLive extends Component
                 'data' => [1, 9, 3],
             ],
         ];
+
         Arr::set($this->myChart['data'], 'labels', $labels);
         Arr::set($this->myChart['data'], 'datasets', $datasets);
         Arr::set($this->myLine['data'], 'labels', $labels);
