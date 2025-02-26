@@ -20,7 +20,7 @@ class InvoiceCreateLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination, SearchDocument, UtilsTrait;
 
-    public $title         = 'Emitir Factura';
+    public $title         = 'EMITIR RECIBOS';
     public $sub_title     = 'Emitir Factura';
     public $tipoDocumento = '1';
     public $numDocumento  = '';
