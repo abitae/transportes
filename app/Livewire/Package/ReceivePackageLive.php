@@ -16,7 +16,7 @@ class ReceivePackageLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
 
-    public $title = 'Recibir paquetes';
+    public $title = 'RECIBIR PAQUETES';
     public $sub_title = 'Modulo de recepcion de paquetes';
     public $perPage = 100;
     public array $selected = [];

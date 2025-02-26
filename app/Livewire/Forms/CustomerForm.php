@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Livewire\Forms;
 
 use App\Models\Package\Customer;
@@ -32,14 +31,14 @@ class CustomerForm extends Form
 
     public function setCustomer(Customer $customer)
     {
-        $this->customer = $customer;
+        $this->customer  = $customer;
         $this->type_code = $customer->type_code;
-        $this->code = $customer->code;
-        $this->name = $customer->name;
-        $this->phone = $customer->phone;
-        $this->email = $customer->email;
-        $this->address = $customer->address;
-        $this->ubigeo = $customer->ubigeo;
+        $this->code      = $customer->code;
+        $this->name      = $customer->name;
+        $this->phone     = $customer->phone;
+        $this->email     = $customer->email;
+        $this->address   = $customer->address;
+        $this->ubigeo    = $customer->ubigeo;
     }
 
     public function store()
@@ -47,7 +46,6 @@ class CustomerForm extends Form
 
         try {
             $customer = Customer::where('type_code', $this->type_code)->where('code', $this->code)->first();
-
             if ($customer) {
                 $this->setCustomer($customer);
                 return true;
@@ -59,11 +57,7 @@ class CustomerForm extends Form
                 case '6':
                     $tipo = 'ruc';
                     break;
-                default:
-                    $tipo = 'dni';
-                    break;
             }
-
             $data = $this->search($tipo, $this->code);
 
             if ($data['encontrado']) {
@@ -110,7 +104,7 @@ class CustomerForm extends Form
     public function estado($id)
     {
         return $this->performAction($id, function ($customer) {
-            $customer->isActive = !$customer->isActive;
+            $customer->isActive = ! $customer->isActive;
             $customer->save();
         }, 'Customer estado');
     }
@@ -120,7 +114,7 @@ class CustomerForm extends Form
         if ($this->type_code == '1') {
             $this->name = $data->nombre;
         } elseif ($this->type_code == '6') {
-            $this->name = $data->razon_social;
+            $this->name    = $data->razon_social;
             $this->address = $data->direccion;
         }
     }

@@ -153,8 +153,8 @@
         </x-mary-form>
     </x-mary-modal>
     @isset($encomienda)
-    <x-mary-drawer wire:model="showDrawer" title="Detalle de encomienda" subtitle="Code {{ $encomienda->code }}" separator
-        with-close-button close-on-escape class="w-11/12 lg:w-2/3" right>
+    <x-mary-drawer wire:model="showDrawer" title="Detalle de encomienda" subtitle="Code {{ $encomienda->code }}"
+        separator with-close-button close-on-escape class="w-11/12 lg:w-2/3" right>
         <x-mary-card shadow>
             <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
             <div class="grid grid-cols-5 grid-rows-3 gap-1 bg-green-200 rounded">
@@ -187,19 +187,19 @@
             <x-mary-table :headers="$headers_paquets" :rows="$encomienda->paquetes" striped>
             </x-mary-table>
             <x-mary-card shadow>
-                <div class="grid grid-cols-2 gap-2 border border-sky-500 rounded-lg">
-                    <div class="text-right text-xl">Resumen</div>
+                <div class="grid grid-cols-2 gap-2 border rounded-lg border-sky-500">
+                    <div class="text-xl text-right">Resumen</div>
                     <div></div>
                     <div class="text-right">Sub Total</div>
-                    <div class="border-t text-right">
+                    <div class="text-right border-t">
                         S/{{ number_format($encomienda->monto, 2) }}
                     </div>
                     <div class="text-right">Descuento</div>
-                    <div class="border-t text-right">
+                    <div class="text-right border-t">
                         S/{{ number_format($encomienda->monto_descuento ?? 0, 2) }}
                     </div>
                     <div class="text-right">Total</div>
-                    <div class="border-t text-right text-xl text-blue-500">
+                    <div class="text-xl text-right text-blue-500 border-t">
                         S/{{ number_format($encomienda->monto - $encomienda->monto_descuento ?? 0, 2) }}
                     </div>
                 </div>

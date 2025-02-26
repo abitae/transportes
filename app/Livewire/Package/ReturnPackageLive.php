@@ -19,7 +19,7 @@ class ReturnPackageLive extends Component
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
     public EntryCajaForm $entryForm;
     public CustomerForm $customerFact;
-    public $title     = 'Entrega paquetes retorno';
+    public $title     = 'ENTREGAR PAQUETES RETORNO';
     public $sub_title = 'Modulo de entrega de paquetes retorno';
     public $caja;
     public int $sucursal_id;
@@ -44,7 +44,7 @@ class ReturnPackageLive extends Component
         }
         $this->sucursal_id   = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
         $this->date_ini      = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
-      
+
     }
     public function render()
     {
@@ -69,7 +69,7 @@ class ReturnPackageLive extends Component
         $this->encomienda       = Encomienda::find($id);
         $this->modalDeliver     = ! $this->modalDeliver;
         $this->tipo_comprobante = $this->encomienda->tipo_comprobante;
-        
+
     }
     public function deliverPaquetes()
     {

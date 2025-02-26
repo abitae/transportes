@@ -19,7 +19,6 @@
                     @php
                     $headers = [
                     ['key' => 'actions', 'label' => 'Action', 'class' => ''],
-                    ['key' => 'estado', 'label' => 'Estado', 'class' => ''],
                     ['key' => 'remitente', 'label' => 'Remitente', 'class' => ''],
                     ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
                     ];
@@ -31,16 +30,7 @@
                         <x-slot:empty>
                             <x-mary-icon name="o-cube" label="No se encontro registros." />
                         </x-slot:empty>
-                        @scope('cell_estado', $stuff)
-                        <x-mary-badge :value="strtoupper('Pagado')"
-                            class="w-min-full {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
-                        <br>
-                        <x-mary-badge :value="strtoupper('Domicilio')"
-                            class="w-min-full {{ !$stuff->isHome ? 'bg-red-500': 'bg-green-500' }}" />
-                        <br>
-                        <x-mary-badge :value="strtoupper('Retorno')"
-                            class="w-min-full {{ !$stuff->isReturn ? 'bg-red-500': 'bg-green-500' }}" />
-                        @endscope
+
                         @scope('cell_remitente', $stuff)
                         <div class="grid grid-cols-1 grid-rows-4 gap-1 text-xs">
                             <div>
@@ -95,31 +85,31 @@
                         <div class="grid grid-cols-2 grid-rows-5 gap-0">
                             <div class="col-span-2">
                                 <x-mary-badge :value="strtoupper($stuff->code)"
-                                    class="w-full text-white text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
+                                    class="w-full h-full text-white text-xl {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500' : 'bg-green-500' }}" />
                             </div>
                             <div class="row-start-2">
                                 <x-mary-button label='Detalle' icon="s-bars-3"
                                     wire:click="detailEncomienda({{ $stuff->id }})" spinner
-                                    class="w-full text-white btn-xs bg-cyan-500" />
+                                    class="w-full h-full text-white btn-xs bg-cyan-500" />
                             </div>
                             <div class="row-start-2">
                                 @if ($stuff->invoice)
                                 <x-mary-button label='Recibo' icon="o-printer" target="_blank" no-wire-navigate
                                     link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
-                                    class="w-full text-white bg-purple-500 btn-xs" />
+                                    class="w-full h-full text-white bg-purple-500 btn-xs" />
                                 @endif
                             </div>
                             <div class="row-start-3">
                                 <x-mary-button label='ENTREGAR' icon="o-pencil-square"
                                     wire:click="openModal({{ $stuff->id }})" spinner
-                                    class="w-full text-white bg-purple-500 btn-xs" />
+                                    class="w-full h-full text-white bg-purple-500 btn-xs" />
 
                             </div>
                             <div class="row-start-3">
                                 @if ($stuff->ticket)
                                 <x-mary-button label='Ticket' icon="o-printer" target="_blank" no-wire-navigate
                                     link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
-                                    class="w-full text-white bg-cyan-500 btn-xs" />
+                                    class="w-full h-full text-white bg-cyan-500 btn-xs" />
                                 @endif
                             </div>
                             <div class="row-start-4">
@@ -128,14 +118,13 @@
                             <div class="row-start-4">
                                 <x-mary-button label='Guia T' icon="o-printer" target="_blank" no-wire-navigate
                                     link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
-                                    class="w-full text-white bg-green-500 btn-xs" />
+                                    class="w-full h-full text-white bg-green-500 btn-xs" />
                             </div>
                             <div class="row-start-5">
                                 <x-mary-badge :value="strtoupper($stuff->estado_pago)"
-                                    class="w-full text-white text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
+                                    class="w-full h-full text-white text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500' : 'bg-green-500' }}" />
                             </div>
-                            <div class="row-start-4">
-
+                            <div class="row-start-5">
                             </div>
                         </div>
                         @endscope
@@ -241,6 +230,24 @@
                             <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
                             <x-mary-table :headers="$headers_paquets" :rows="$encomienda->paquetes" striped>
                             </x-mary-table>
+                            <x-mary-card shadow>
+                                <div class="grid grid-cols-2 gap-2 border rounded-lg border-sky-500">
+                                    <div class="text-xl text-right">Resumen</div>
+                                    <div></div>
+                                    <div class="text-right">Sub Total</div>
+                                    <div class="text-right border-t">
+                                        S/{{ number_format($encomienda->monto, 2) }}
+                                    </div>
+                                    <div class="text-right">Descuento</div>
+                                    <div class="text-right border-t">
+                                        S/{{ number_format($encomienda->monto_descuento ?? 0, 2) }}
+                                    </div>
+                                    <div class="text-right">Total</div>
+                                    <div class="text-xl text-right text-blue-500 border-t">
+                                        S/{{ number_format($encomienda->monto - $encomienda->monto_descuento ?? 0, 2) }}
+                                    </div>
+                                </div>
+                            </x-mary-card>
                         </x-mary-card>
                     </div>
                 </div>

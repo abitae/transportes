@@ -18,7 +18,7 @@ class HomePackageLive extends Component
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
     use InvoiceTrait;
     public CustomerForm $customerFact;
-    public $title     = 'Entrega paquetes destino';
+    public $title     = 'ENTREGAR PAQUETES DOMICILIO';
     public $sub_title = 'Modulo de entrega de paquetes domicilio';
     public $search    = '';
     public $perPage   = 10;
