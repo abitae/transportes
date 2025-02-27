@@ -225,12 +225,13 @@ class NoteCreateLive extends Component
         $factura = Invoice::findOrFail($this->numDocfectado);
         $sts = new ServiceTableSunat();
         $desMotivo = $sts->findById('sunat_09','codigo',$this->motivo);
-        $serie = $this->tipoDocAfectado == '03' ? Auth::user()->sucursal->serieNotaCreditoFactura : Auth::user()->sucursal->serieNotaCreditoBoleta;
+        $serie = $this->tipoDocAfectado == '01' ? Auth::user()->sucursal->serieNotaCreditoFactura : Auth::user()->sucursal->serieNotaCreditoBoleta;
         $correlativo = Note::where('serie', $serie)->count() + 1;
 
         $note->fill([
             'company_id' => $company->id,
             'customer_id' => $this->client->id,
+            'sucursal_id' => Auth::user()->sucursal->id,
             'ublVersion' => '2.1',
             'tipoDoc' => '07',
             'serie' => $serie,

@@ -69,7 +69,7 @@
                     <x-mary-button icon="m-bars-4" class="btn-outline" />
                 </x-slot:trigger>
                 <x-mary-menu-item title="Estado SUNAT" icon="o-archive-box"
-                    wire:click="statusInvoice({{ $stuff->id }})" />
+                    wire:click="statusNote({{ $stuff->id }})" />
             </x-mary-dropdown>
             @endscope
         </x-mary-table>

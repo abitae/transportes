@@ -186,6 +186,7 @@ class SunatServiceGlobal
             ->setCompany($this->getCompany($note))
             ->setClient($this->getClient($note->client))
             ->setMtoOperGravadas($note->mtoOperGravadas)
+            ->setTotalImpuestos($note->mtoIGV)
             ->setMtoIGV($note->mtoIGV)
             ->setMtoImpVenta($note->mtoImpVenta)
             ->setDetails($this->getDetails($note->details))

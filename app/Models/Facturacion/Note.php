@@ -2,6 +2,7 @@
 namespace App\Models\Facturacion;
 
 use App\Models\Configuration\Company;
+use App\Models\Configuration\Sucursal;
 use App\Models\Package\Customer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -45,6 +46,10 @@ class Note extends Model
     public function client()
     {
         return $this->belongsTo(Customer::class,'customer_id');
+    }
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursal::class,'sucursal_id');
     }
 
     /**
