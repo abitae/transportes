@@ -11,6 +11,7 @@ use App\Services\ServiceTableSunat;
 use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
 use App\Traits\UtilsTrait;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -224,14 +225,16 @@ class NoteCreateLive extends Component
         $factura = Invoice::findOrFail($this->numDocfectado);
         $sts = new ServiceTableSunat();
         $desMotivo = $sts->findById('sunat_09','codigo',$this->motivo);
+        $serie = $this->tipoDocAfectado == '03' ? Auth::user()->sucursal->serieNotaCreditoFactura : Auth::user()->sucursal->serieNotaCreditoBoleta;
+        $correlativo = Note::where('serie', $serie)->count() + 1;
 
         $note->fill([
             'company_id' => $company->id,
             'customer_id' => $this->client->id,
             'ublVersion' => '2.1',
             'tipoDoc' => '07',
-            'serie' => 'FF01',
-            'correlativo' => '1',
+            'serie' => $serie,
+            'correlativo' => $correlativo,
             'fechaEmision' => $this->dateNow('Y-m-d H:i:m'),
             'tipoDocAfectado' => $this->tipoDocAfectado, // 01 BOLETA 03 FACTURA
             'numDocfectado' => $factura->serie.'-'.$factura->correlativo,

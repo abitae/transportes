@@ -90,7 +90,7 @@ class SunatServiceGlobal
 
     public function getCompany($data): \Greenter\Model\Company\Company
     {
-        //dd($data->company);
+        //dd($data->sucursal);
         $address = (new \Greenter\Model\Company\Address())
             ->setUbigueo($data->sucursal->ubigeo)
             ->setCodigoPais($data->sucursal->codigoPais ?? 'PE')
@@ -161,7 +161,7 @@ class SunatServiceGlobal
     }
     public function getDetraccion($data): \Greenter\Model\Sale\Detraction
     {
-        
+
             return (new \Greenter\Model\Sale\Detraction())
                 ->setCodBienDetraccion($data->codBienDetraccion)
                 ->setCodMedioPago($data->codMedioPago)
@@ -170,26 +170,26 @@ class SunatServiceGlobal
                 ->setMount($data->setMount ?? 47.20);
     }
 
-    public function getNote(): \Greenter\Model\Sale\Note
+    public function getNote($note): \Greenter\Model\Sale\Note
     {
         return (new \Greenter\Model\Sale\Note())
-            ->setUblVersion('2.1')
-            ->setTipoDoc('07')
-            ->setSerie('FF01')
-            ->setCorrelativo('123')
-            ->setFechaEmision(new \DateTime())
-            ->setTipDocAfectado('01')
-            ->setNumDocfectado('F001-1')
-            ->setCodMotivo('01')
-            ->setDesMotivo('Anulacion de la operacion')
-            ->setTipoMoneda('PEN')
-            ->setCompany(new \Greenter\Model\Company\Company())
-            ->setClient(new \Greenter\Model\Client\Client())
-            ->setMtoOperGravadas(100)
-            ->setMtoIGV(18)
-            ->setMtoImpVenta(118)
-            ->setDetails([])
-            ->setLegends([]);
+            ->setUblVersion($note->ublVersion ?? '2.1')
+            ->setTipoDoc($note->tipoDoc ?? '07')
+            ->setSerie($note->serie ?? 'FF01')
+            ->setCorrelativo($note->correlativo ?? '123')
+            ->setFechaEmision(new DateTime($note->fechaEmision) ?? null)
+            ->setTipDocAfectado($note->tipoDocAfectado ?? '01')
+            ->setNumDocfectado($note->numDocfectado ?? 'F001-1')
+            ->setCodMotivo($note->codMotivo ?? '01')
+            ->setDesMotivo($note->desMotivo ?? 'Anulacion de la operacion')
+            ->setTipoMoneda($note->tipoMoneda ?? 'PEN')
+            ->setCompany($this->getCompany($note))
+            ->setClient($this->getClient($note->client))
+            ->setMtoOperGravadas($note->mtoOperGravadas)
+            ->setMtoIGV($note->mtoIGV)
+            ->setMtoImpVenta($note->mtoImpVenta)
+            ->setDetails($this->getDetails($note->details))
+            ->setLegends($this->getLegends($note->legends));
     }
 
     public function Despatch(): \Greenter\Model\Despatch\Despatch

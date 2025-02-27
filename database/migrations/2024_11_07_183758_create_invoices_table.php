@@ -17,6 +17,10 @@ return new class extends Migration
             $table->foreign('encomienda_id')->references('id')->on('encomiendas');
             $table->unsignedBigInteger('sucursal_id')->nullable();
             $table->foreign('sucursal_id')->references('id')->on('sucursals');
+            $table->unsignedBigInteger('company_id');
+            $table->foreign('company_id')->references('id')->on('companies');
+            $table->unsignedBigInteger('client_id');
+            $table->foreign('client_id')->references('id')->on('customers');
             $table->string('tipoDoc');
             $table->string('tipoOperacion');
             $table->string('serie');
@@ -25,10 +29,6 @@ return new class extends Migration
             $table->string('formaPago_moneda');
             $table->string('formaPago_tipo');
             $table->string('tipoMoneda');
-            $table->unsignedBigInteger('company_id');
-            $table->foreign('company_id')->references('id')->on('companies');
-            $table->unsignedBigInteger('client_id');
-            $table->foreign('client_id')->references('id')->on('customers');
             $table->decimal('mtoOperGravadas', 8, 2);
             $table->decimal('mtoIGV', 8, 2);
             $table->decimal('totalImpuestos', 8, 2);
@@ -43,6 +43,7 @@ return new class extends Migration
             $table->decimal('setMount', 8, 2)->nullable();//monto detraccion
             $table->string('observacion')->nullable();
             $table->json('legends')->nullable();
+            $table->string('note_reference')->nullable();
             $table->string('xml_path')->nullable();
             $table->string('xml_hash')->nullable();
             $table->string('cdr_description')->nullable();

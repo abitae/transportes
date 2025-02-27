@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreign('company_id')->references('id')->on('companies');
             $table->unsignedBigInteger('customer_id')->nullable();
             $table->foreign('customer_id')->references('id')->on('customers');
+            $table->unsignedBigInteger('sucursal_id')->nullable();
+            $table->foreign('sucursal_id')->references('id')->on('sucursals');
             $table->string('ublVersion');
             $table->string('tipoDoc')->nullable(false);
             $table->string('serie')->nullable(false);

@@ -85,7 +85,7 @@ class InvoiceLive extends Component
 
     public function refresh($invoice) {
         $invoice = Invoice::find($invoice);
-        //dd($invoice);
+        
         $this->infoModal = true;
 
     }

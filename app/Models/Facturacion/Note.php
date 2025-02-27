@@ -12,6 +12,7 @@ class Note extends Model
     protected $fillable = [
             'company_id',
             'customer_id',
+            'sucursal_id',
             'ublVersion',
             'tipoDoc',
             'serie',
