@@ -43,7 +43,7 @@ class Note extends Model
     }
     public function client()
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class,'customer_id');
     }
 
     /**

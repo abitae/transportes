@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models\Package;
 
 use App\Models\Facturacion\Despatche;

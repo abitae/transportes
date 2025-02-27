@@ -11,8 +11,6 @@ use App\Services\ServiceTableSunat;
 use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
 use App\Traits\UtilsTrait;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -24,8 +22,8 @@ class NoteCreateLive extends Component
     use LogCustom, Toast, WithPagination, WithoutUrlPagination, SearchDocument, UtilsTrait;
     public $title = 'NOTA DE CREDITO';
     public $sub_title = 'Crear Nota de Crédito';
-    public $tipoDoc = '03';
-    public $docEletronico;
+    public $tipoDocAfectado = '03';
+    public $numDocfectado;
     public $motivo = '01';
     public $tipoDocumento = '1';
     public $numDocumento  = '';
@@ -49,7 +47,7 @@ class NoteCreateLive extends Component
     }
     public function render()
     {
-        $docElectronicos = Invoice::where('tipoDoc', $this->tipoDoc)
+        $docElectronicos = Invoice::where('tipoDoc', $this->tipoDocAfectado)
         ->latest()
         ->take(10)
         ->get();
@@ -204,20 +202,29 @@ class NoteCreateLive extends Component
     }
     public function emitNote()
     {
-
         $rules = [
             'client'        => 'required',
-            'tipoDoc'       => 'required',
+            'tipoDocAfectado'=> 'required',
+            'numDocfectado' => 'required',
+            'motivo' => 'required',
+            'paquetes'      => 'required',
         ];
         $messages = [
             'client.required'        => 'Error, es necesario seleccionar un cliente!',
-            'tipoDoc.required'       => 'Error, es necesario seleccionar un tipo de documento!',
+            'tipoDocAfectado.required'       => 'Error, es necesario seleccionar un tipo de documento!',
+            'numDocfectado.required'       => 'Error, es necesario seleccionar el documento afectado!',
+            'motivo' => 'Error, es necesario seleccionar motivo!',
+            'paquetes.required'      => 'Error, es necesario seleccionar un paquete!',
         ];
         $this->validate($rules, $messages);
 
         $formatter = new NumeroALetras();
         $company   = Company::first();
         $note   = new Note();
+        $factura = Invoice::findOrFail($this->numDocfectado);
+        $sts = new ServiceTableSunat();
+        $desMotivo = $sts->findById('sunat_09','codigo',$this->motivo);
+
         $note->fill([
             'company_id' => $company->id,
             'customer_id' => $this->client->id,
@@ -226,15 +233,15 @@ class NoteCreateLive extends Component
             'serie' => 'FF01',
             'correlativo' => '1',
             'fechaEmision' => $this->dateNow('Y-m-d H:i:m'),
-            'tipoDocAfectado' => '01', // 01 BOLETA 03 FACTURA
-            'numDocfectado' => 'F001-1',
-            'codMotivo' => '07', //CAT 09
-            'desMotivo' => 'DEVOLUCION POR ITEM',
+            'tipoDocAfectado' => $this->tipoDocAfectado, // 01 BOLETA 03 FACTURA
+            'numDocfectado' => $factura->serie.'-'.$factura->correlativo,
+            'codMotivo' => $this->motivo, //CAT 09
+            'desMotivo' => $desMotivo->descripcion,
             'tipoMoneda' => 'PEN',
-            'mtoOperGravadas' => 200,
-            'mtoIGV' => 36,
-            'totalImpuestos' => 36,
-            'mtoImpVenta' => 236,
+            'mtoOperGravadas' => $this->sub_total,
+            'mtoIGV' => $this->igv,
+            'totalImpuestos' => $this->igv,
+            'mtoImpVenta' => $this->total,
             'monto_letras'     => $formatter->toInvoice($this->total, 2, 'SOLES'),
         ]);
 
@@ -243,7 +250,7 @@ class NoteCreateLive extends Component
         ];
 
         $note->legends = json_encode($legends);
-        //dd($note);
+
         $note->save();
 
         foreach ($this->paquetes as $paquete) {
@@ -283,12 +290,13 @@ class NoteCreateLive extends Component
         $this->direccion    = '';
         $this->ubigeo       = '';
         $this->telefono     = '';
+        $this->motivo = '01';
+        $this->numDocfectado='';
         $this->paquetes     = collect([]);
         $this->calculateTotals();
         $this->resetValidation();
 
         $this->tipoDocumento  = '1';
-        $this->tipoDoc        = '03';
         $this->success('Factura emitida correctamente');
     }
 }

@@ -10,17 +10,17 @@
         @endif
         <div class="grid grid-cols-5 grid-rows-1 gap-4 p-2 mt-4 border border-green-500 rounded-lg">
             <div>
-                <x-mary-select label="Tipo Doc." :options="$tipoDocs" option-value="codigo" option-label="descripcion"
-                    wire:model.live="tipoDoc" class="max-w-sm" />
+                <x-mary-select label="Tipo Doc. Afectado" :options="$tipoDocs" option-value="codigo" option-label="descripcion"
+                    wire:model.live="tipoDocAfectado" class="max-w-sm" />
             </div>
-            <div>
+            <div  class="col-span-2">
                 <x-mary-choices-offline label="Serie y numero CEP" :options="$docElectronicos"
-                    wire:model="docEletronico" single searchable>
-                    @scope('item', $user)
-                    {{ $user->serie }} - {{ $user->correlativo }}
+                    wire:model="numDocfectado" single searchable>
+                    @scope('item', $numDocfectado)
+                    {{ $numDocfectado->serie }} - {{ $numDocfectado->correlativo }}
                     @endscope
-                    @scope('selection', $user)
-                    {{ $user->serie }} - {{ $user->correlativo }}
+                    @scope('selection', $numDocfectado)
+                    {{ $numDocfectado->serie }} - {{ $numDocfectado->correlativo }}
                     @endscope
                 </x-mary-choices-offline>
             </div>
