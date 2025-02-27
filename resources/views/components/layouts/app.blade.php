@@ -101,9 +101,10 @@
                     <x-mary-menu-item title="Crear factura" icon="o-ticket" link="{{ route('facturacion.create-invoice') }}" />
                     <x-mary-menu-item title="Crear Nota Credito" icon="o-ticket" link="{{ route('facturacion.create-note') }}" />
 
-                    <x-mary-menu-item title="Facturas" icon="o-ticket" link="{{ route('facturacion.invoice') }}" />
-                    <x-mary-menu-item title="Ticket" icon="c-ticket" link="{{ route('facturacion.ticket') }}" />
-                    <x-mary-menu-item title="Guias" icon="s-ticket" link="{{ route('facturacion.despache') }}" />
+                    <x-mary-menu-item title="Boletas y facturas" icon="o-ticket" link="{{ route('facturacion.invoice') }}" />
+                    <x-mary-menu-item title="Ticket Envio" icon="c-ticket" link="{{ route('facturacion.ticket') }}" />
+                    <x-mary-menu-item title="Guias Transportista" icon="s-ticket" link="{{ route('facturacion.despache') }}" />
+                    <x-mary-menu-item title="Notas Credito" icon="s-ticket" link="{{ route('facturacion.note') }}" />
                 </x-mary-menu-sub>
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Configuracion" icon="o-cog-6-tooth">

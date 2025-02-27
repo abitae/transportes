@@ -8,13 +8,20 @@ use App\Models\Facturacion\Note;
 use App\Models\Package\Customer;
 use App\Models\Package\Paquete;
 use App\Services\ServiceTableSunat;
+use App\Traits\LogCustom;
+use App\Traits\SearchDocument;
+use App\Traits\UtilsTrait;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\WithoutUrlPagination;
+use Livewire\WithPagination;
 use Luecano\NumeroALetras\NumeroALetras;
+use Mary\Traits\Toast;
 
 class NoteCreateLive extends Component
 {
+    use LogCustom, Toast, WithPagination, WithoutUrlPagination, SearchDocument, UtilsTrait;
     public $title = 'NOTA DE CREDITO';
     public $sub_title = 'Crear Nota de Crédito';
     public $tipoDoc = '03';
@@ -201,34 +208,10 @@ class NoteCreateLive extends Component
         $rules = [
             'client'        => 'required',
             'tipoDoc'       => 'required',
-            'docEletronico' => 'required',
-            'motivo'        => 'required',
-            'tipoOperacion' => 'required',
-            'serie'         => 'required',
-            'tipoDocumento' => 'required',
-            'numDocumento'  => 'required',
-            'moneda'        => 'required',
-            'formaPago'     => 'required',
-            'paquetes'      => 'required',
-            'sub_total'     => 'required',
-            'igv'           => 'required',
-            'total'         => 'required',
         ];
         $messages = [
             'client.required'        => 'Error, es necesario seleccionar un cliente!',
             'tipoDoc.required'       => 'Error, es necesario seleccionar un tipo de documento!',
-            'docEletronico.required' => 'Error, es necesario seleccionar un documento electrónico!',
-            'motivo.required'        => 'Error, es necesario seleccionar un motivo!',
-            'tipoOperacion.required' => 'Error, es necesario seleccionar un tipo de operación!',
-            'serie.required'         => 'Error, es necesario seleccionar una serie!',
-            'tipoDocumento.required' => 'Error, es necesario seleccionar un tipo de documento!',
-            'numDocumento.required'  => 'Error, es necesario seleccionar un número de documento!',
-            'moneda.required'        => 'Error, es necesario seleccionar una moneda!',
-            'formaPago.required'     => 'Error, es necesario seleccionar una forma de pago!',
-            'paquetes.required'      => 'Error, es necesario seleccionar un paquete!',
-            'sub_total.required'     => 'Error, es necesario seleccionar un subtotal!',
-            'igv.required'           => 'Error, es necesario seleccionar un igv!',
-            'total.required'         => 'Error, es necesario seleccionar un total!',
         ];
         $this->validate($rules, $messages);
 
@@ -236,53 +219,37 @@ class NoteCreateLive extends Component
         $company   = Company::first();
         $note   = new Note();
         $note->fill([
-            'encomienda_id'    => null,
-            'sucursal_id'      => Auth::user()->sucursal->id,
-            'tipoDoc'          => $this->tipoDoc,
-            'tipoOperacion'    => $this->tipoOperacion,
-            'serie'            => $this->serie,
-            'correlativo'      => $correlativo,
-            'fechaEmision'     => $this->dateNow('Y-m-d H:i:m'),
-            'formaPago_moneda' => $this->moneda,
-            'formaPago_tipo'   => $this->formaPago,
-            'tipoMoneda'       => $this->moneda,
-            'company_id'       => $company->id,
-            'client_id'        => $this->client->id,
-            'mtoOperGravadas'  => $this->sub_total,
-            'mtoIGV'           => $this->igv,
-            'totalImpuestos'   => $this->igv,
-            'valorVenta'       => $this->sub_total,
-            'subTotal'         => $this->total,
-            'mtoImpVenta'      => $this->total,
+            'company_id' => $company->id,
+            'customer_id' => $this->client->id,
+            'ublVersion' => '2.1',
+            'tipoDoc' => '07',
+            'serie' => 'FF01',
+            'correlativo' => '1',
+            'fechaEmision' => $this->dateNow('Y-m-d H:i:m'),
+            'tipoDocAfectado' => '01', // 01 BOLETA 03 FACTURA
+            'numDocfectado' => 'F001-1',
+            'codMotivo' => '07', //CAT 09
+            'desMotivo' => 'DEVOLUCION POR ITEM',
+            'tipoMoneda' => 'PEN',
+            'mtoOperGravadas' => 200,
+            'mtoIGV' => 36,
+            'totalImpuestos' => 36,
+            'mtoImpVenta' => 236,
             'monto_letras'     => $formatter->toInvoice($this->total, 2, 'SOLES'),
-            'observacion'      => 'Observación de prueba',
         ]);
 
         $legends = [
-            ['code' => '1000', 'value' => $factura->monto_letras],
+            ['code' => '1000', 'value' => $note->monto_letras],
         ];
 
-        if ($this->total >= 400 && $this->tipoOperacion == '1001') {
-            $factura->fill([
-                'codBienDetraccion' => $this->tipoDetraccion,
-                'codMedioPago'      => '001',
-                'ctaBanco'          => $company->ctaBanco,
-                'setPercent'        => 12,
-                'setMount'          => $this->total * 0.12,
-            ]);
-            $legends[] = [
-                'code'  => '2006',
-                'value' => 'Leyenda "Operación sujeta a detracción"',
-            ];
-        }
-
-        $factura->legends = json_encode($legends);
-        $factura->save();
+        $note->legends = json_encode($legends);
+        //dd($note);
+        $note->save();
 
         foreach ($this->paquetes as $paquete) {
             $mtoValorUnitario = round($paquete['amount'] / 1.18, 2);
-            $factura->details()->create([
-                'invoice_id'        => $factura->id,
+            $note->details()->create([
+                'note_id'        => $note->id,
                 'tipAfeIgv'         => '10',
                 'codProducto'       => $paquete['id'],
                 'unidad'            => $paquete['und_medida'],
@@ -305,7 +272,7 @@ class NoteCreateLive extends Component
         ]);
 
         $this->resetForm();
-        $this->success('Factura emitida correctamente');
+        $this->success('Note emitida correctamente');
     }
 
     private function resetForm()
@@ -319,8 +286,7 @@ class NoteCreateLive extends Component
         $this->paquetes     = collect([]);
         $this->calculateTotals();
         $this->resetValidation();
-        $this->tipoDetraccion = '027';
-        $this->tipoOperacion  = '0101';
+
         $this->tipoDocumento  = '1';
         $this->tipoDoc        = '03';
         $this->success('Factura emitida correctamente');

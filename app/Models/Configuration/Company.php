@@ -4,6 +4,7 @@ namespace App\Models\Configuration;
 
 use App\Models\Facturacion\Despatche;
 use App\Models\Facturacion\Invoice;
+use App\Models\Facturacion\Note;
 use App\Models\Facturacion\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,5 +39,9 @@ class Company extends Model
     public function despatchs()
     {
         return $this->hasMany(Despatche::class);
+    }
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
     }
 }

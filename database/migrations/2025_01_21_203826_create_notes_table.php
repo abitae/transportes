@@ -13,6 +13,34 @@ return new class extends Migration
     {
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('company_id')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies');
+            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->foreign('customer_id')->references('id')->on('customers');
+            $table->string('ublVersion');
+            $table->string('tipoDoc')->nullable(false);
+            $table->string('serie')->nullable(false);
+            $table->string('correlativo')->nullable(false);
+            $table->date('fechaEmision')->nullable(false);
+            $table->string('tipoDocAfectado');
+            $table->string('numDocfectado');
+            $table->string('codMotivo');
+            $table->text('desMotivo');
+            $table->string('tipoMoneda');
+            $table->decimal('mtoOperGravadas',8,2);
+            $table->decimal('mtoIGV',8,2);
+            $table->decimal('totalImpuestos',8,2);
+            $table->decimal('mtoImpVenta',8,2);
+            $table->string('monto_letras');
+            $table->json('legends')->nullable();
+            $table->string('xml_path')->nullable();
+            $table->string('xml_hash')->nullable();
+            $table->string('cdr_description')->nullable();
+            $table->string('cdr_code')->nullable();
+            $table->text('cdr_note')->nullable();
+            $table->string('cdr_path')->nullable();
+            $table->string('errorCode')->nullable();
+            $table->text('errorMessage')->nullable();
             $table->timestamps();
         });
     }

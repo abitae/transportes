@@ -4,6 +4,7 @@ namespace App\Models\Package;
 
 use App\Models\Facturacion\Despatche;
 use App\Models\Facturacion\Invoice;
+use App\Models\Facturacion\Note;
 use App\Models\Facturacion\Ticket;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -49,6 +50,10 @@ class Customer extends Model
     public function despach_destinatario()
     {
         return $this->hasMany(Despatche::class, 'destinatario_id', 'id');
+    }
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
     }
 
 }
