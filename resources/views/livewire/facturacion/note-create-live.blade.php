@@ -57,7 +57,7 @@
                 <x-mary-input label="Telefono" wire:model.live='telefono' class="h-12 max-w-sm" />
             </div>
         </div>
-        <div class="flex justify-end p-2 pt-4 pb-2 mt-2 bg-gray-300 border border-t border-green-500 rounded-lg">
+        <div class="flex justify-end p-2 pt-4 mt-2 mb-2 border border-t border-green-500 rounded-lg">
             <div class="grid grid-cols-8 grid-rows-1 gap-1">
                 <div>
                     <x-mary-input label="CANT." wire:model="cantidad" class="text-xs rounded-r-lg" />
@@ -87,7 +87,7 @@
                 </div>
             </div>
         </div>
-        <div class="border-t">
+        <div class="p-2 pt-4 mt-2 mb-2 border border-t border-green-500 rounded-lg">
             <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped
                 @row-click="$wire.restPaquete($event.detail.id)">
                 <x-slot:empty>

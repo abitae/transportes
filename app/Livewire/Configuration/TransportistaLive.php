@@ -14,8 +14,8 @@ class TransportistaLive extends Component
     use Toast;
     use WithPagination, WithoutUrlPagination;
     public TransportistaForm $transportistaForm;
-    public $title = 'Transportistas';
-    public $sub_title = 'Modulo de transportistas';
+    public $title = 'CHOFERES';
+    public $sub_title = 'Modulo de choferes';
     public int $perPage = 10;
     public bool $modalTransportista = false;
     public function render()

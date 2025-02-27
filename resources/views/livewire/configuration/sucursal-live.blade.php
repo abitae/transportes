@@ -4,17 +4,7 @@
             <x-mary-button wire:click='openModal' responsive icon="o-plus" label="Nuevo sucursal"
                 class="text-white bg-sky-500" />
         </x-slot:menu>
-        <div class="grid content-start grid-cols-4 xs:grid-cols-1">
-            <x-mary-stat title="Paquetes" description="Paquetes pendientes de envio" value="44" icon="m-archive-box"
-                tooltip="Paquetes" />
-            <x-mary-stat title="Monto apertura" description="This month" value="12" icon="o-arrow-trending-up"
-                tooltip="Ops!" />
-            <x-mary-stat title="Ingresos" description="Boletas, Facturas y ticket" value="12"
-                icon="o-arrow-trending-up" class="text-green-500" color="text-green-500"
-                tooltip="Total entradas de dinero" />
-            <x-mary-stat title="Egresos" description="Pagos y salidas" value="123" icon="o-arrow-trending-down"
-                class="text-red-500" color="text-red-500" tooltip="Total salidas de dinero" />
-        </div>
+
     </x-mary-card>
     <div class="grid grid-cols-4 space-x-2">
         <div class="grid col-span-4 pt-2">
@@ -80,7 +70,7 @@
         </div>
     </div>
     <x-mary-modal wire:model="modalSucursal" persistent class="backdrop-blur"
-        box-class="max-h-full max-w-6xl overflow-y-auto">
+        box-class="max-w-6xl max-h-full overflow-y-auto">
         <x-mary-icon name="s-envelope" class="text-green-500 text-md"
             label="{{ !isset($sucursalForm->sucursal) ? 'CREAR SUCURSAL' : 'EDITAR SUCURSAL' }}" />
         <x-mary-form wire:submit.prevent="{{ !isset($sucursalForm->sucursal) ? 'create' : 'edit' }}">
@@ -102,7 +92,7 @@
                         placeholder="Select ubigeo" wire:model.live='sucursalForm.ubigeo' :options="$ubigeos"
                         class="max-w-sm" inline />
                 </div>
-                <div class="grid grid-cols-4 gap-2 p-2 border-t border-green-500 bg-gray-100">
+                <div class="grid grid-cols-4 gap-2 p-2 bg-gray-100 border-t border-green-500">
                     <div class="col-span-4 text-center">Ingrese series a utilizar en los documentos electronicos</div>
                     <x-mary-input label="Serie Factura" inline wire:model='sucursalForm.serieFactura' />
                     <x-mary-input label="Serie Boleta" inline wire:model='sucursalForm.serieBoleta' />

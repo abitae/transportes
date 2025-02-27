@@ -1,10 +1,7 @@
 <div>
-    <x-mary-card title="{{ $step ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow progress-indicator>
+    <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow progress-indicator>
         <x-slot:menu>
-            @if ($errors->any())
-            <x-mary-alert title="Error!" description="{{ $errors->first() }}" icon="o-exclamation-triangle"
-                class="text-white bg-red-500" dismissible />
-            @endif
+
         </x-slot:menu>
         <x-mary-steps wire:model="step" steps-color="step-warning"
             class="p-2 my-5 border rounded-lg shadow-xl border-sky-500">
@@ -37,9 +34,9 @@
             <x-mary-step step="2" text="Destinatario">
                 <div class="grid grid-cols-4 gap-1">
                     <div class="grid col-span-2">
-                        <x-mary-input label="Numero de documento" wire:model='customerFormDest.code'>
+                        <x-mary-input label="Numero de documento" wire:model='destinatario_code'>
                             <x-slot:prepend>
-                                <x-mary-select wire:model='customerFormDest.type_code' icon="o-user"
+                                <x-mary-select wire:model='destinatario_type_code' icon="o-user"
                                 option-value="codigo" option-label="sigla" :options="$tipoDocuments"
                                     class="rounded-e-none" />
                             </x-slot:prepend>
@@ -50,7 +47,7 @@
                         </x-mary-input>
                     </div>
                     <div class="grid col-span-2">
-                        <x-mary-input label="Nombre/Raz. Social" wire:model='customerFormDest.name' />
+                        <x-mary-input label="Nombre/Raz. Social" wire:model='destinatario_name' />
                     </div>
                     <div class="grid col-span-8">
                         <hr />
@@ -60,10 +57,10 @@
                     </div>
                     @if ($isHome)
                     <div class="grid col-span-3">
-                        <x-mary-input label="Direccion" wire:model='customerFormDest.address' />
+                        <x-mary-input label="Direccion" wire:model='destinatario_address' />
                     </div>
                     <div class="grid col-span-1">
-                        <x-mary-input label="Celular" wire:model='customerFormDest.phone' />
+                        <x-mary-input label="Celular" wire:model='destinatario_phone' />
                     </div>
                     @endif
                 </div>
@@ -164,26 +161,23 @@
         </x-slot:actions>
     </x-mary-card>
 
-    {{-- <x-mary-modal wire:model="modalConfimation" persistent class="backdrop-blur" box-class="max-w-full max-h-full">
+    @if ($this->destinatario && $this->remitente && $this->paquetes)
+     <x-mary-modal wire:model="modalConfimation" persistent class="backdrop-blur" box-class="max-w-full max-h-full">
         <div class="grid grid-cols-2 gap-2">
             <div class="grid grid-cols-2 gap-2 p-2 border rounded-lg border-sky-500">
                 <div class="col-span-2">
                     <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
                 </div>
-                <div>{{ $this->customerForm->name ?? 'name' }}</div>
-                <span></span>
-                <div>{{ $this->customerForm->type_code = 1 ? 'DNI' : 'RUC' }}</div>
-                <div>{{ $this->customerForm->code ?? 'code' }}</div>
-                <div>{{ $this->customerForm->phone ?? 'phone' }}</div>
-                <div>{{ Auth::user()->sucursal->name ?? 'sucursal' }}</div>
+                <div class="col-span-2">{{ $this->remitente->name ?? 'name' }}</div>
+                <div class="col-span-2">{{ $this->remitente->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->remitente->code ?? 'code' }}</div>
+                <div class="col-span-2">Telefono: {{ $this->remitente->phone ?? 'phone' }}</div>
+                <div  class="col-span-2">{{ Auth::user()->sucursal->name ?? 'sucursal' }}</div>
                 <div class="col-span-2">
                     <x-mary-icon name="s-envelope" class="col-span-2 text-blue-500 text-md" label="DESTINATARIO" />
                 </div>
-                <div>{{ $this->customerFormDest->name ?? 'name' }}</div>
-                <span></span>
-                <div>{{ $this->customerFormDest->type_code = 1 ? 'DNI' : 'RUC' }}</div>
-                <div>{{ $this->customerFormDest->code ?? 'code' }}</div>
-                <div>{{ $this->customerFormDest->phone ?? 'phone' }}</div>
+                <div>{{ $this->destinatario->name ?? 'name' }}</div>
+                <div class="col-span-2">{{ $this->destinatario->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->destinatario->code ?? 'code' }}</div>
+                <div class="col-span-2">Telefono: {{ $this->destinatario->phone ?? 'phone' }}</div>
                 <div>{{ $this->sucursal_destino->name ?? 'sucursal' }}</div>
                 <div class="col-span-2">
                     <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
@@ -220,7 +214,7 @@
                 <div class="col-span-2">
                     <div class="grid grid-cols-4 gap-2 p-2 border rounded-lg border-sky-500">
                         <div class="grid col-span-4 pt-2">
-                            <x-mary-input label="Numero de documento" wire:model='customerFact.code'>
+                            <x-mary-input label="Numero de documento" wire:model.live='cliFacturacion_code'>
                                 <x-slot:prepend>
                                     @php
                                     if ($tipo_comprobante != 'FACTURA') {
@@ -232,7 +226,7 @@
                                     $docsfact = [['id' => '6', 'name' => 'RUC cod(6)']];
                                     }
                                     @endphp
-                                    <x-mary-select wire:model='customerFact.type_code' icon="o-user"
+                                    <x-mary-select wire:model.live='cliFacturacion_type_code' icon="o-user"
                                         :options="$docsfact" class="rounded-e-none" />
                                 </x-slot:prepend>
                                 <x-slot:append>
@@ -242,11 +236,11 @@
                             </x-mary-input>
                         </div>
                         <div class="grid col-span-2 pt-2">
-                            <x-mary-input label="Nombre/Raz. Social" wire:model='customerFact.name'>
+                            <x-mary-input label="Nombre/Raz. Social" wire:model.live='cliFacturacion_name'>
                             </x-mary-input>
                         </div>
                         <div class="grid col-span-2 pt-2">
-                            <x-mary-input label="Direccion" wire:model='customerFact.address'>
+                            <x-mary-input label="Direccion" wire:model.live='cliFacturacion_address'>
                             </x-mary-input>
                         </div>
                     </div>
@@ -260,6 +254,7 @@
             <x-mary-button wire:click='confirmEncomienda' wire: label="Confirm" class="btn-primary" spinner />
         </x-slot:actions>
     </x-mary-modal>
+    @endif
     @if ($this->encomienda)
     <x-mary-modal wire:model.live="modalFinal" persistent class="backdrop-blur" box-class="w-full">
         <x-mary-card shadow>
@@ -307,5 +302,5 @@
 
         </x-mary-card>
     </x-mary-modal>
-    @endif --}}
+    @endif
 </div>

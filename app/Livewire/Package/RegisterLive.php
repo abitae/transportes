@@ -28,10 +28,9 @@ class RegisterLive extends Component
     use LogCustom, Toast, InvoiceTrait, WithPagination, WithoutUrlPagination, CajaTrait, UtilsTrait, SearchDocument;
 
     public int $step  = 1;
-    public $title     = 'REGISTRO';
+    public $title     = 'REGISTRO DE PAQUETES';
     public $sub_title = 'Registrar paquetes de envio';
 
-    public CustomerForm $customerForm, $customerFormDest, $customerFact;
     public EncomiendaForm $encomiendaForm;
     public EntryCajaForm $entryForm;
 
@@ -41,11 +40,12 @@ class RegisterLive extends Component
     public $transportista_id, $vehiculo_id, $modalConfimation = false, $caja, $isReturn = false, $isHome = false, $modalFinal = false;
     public $encomienda;
 
-    public $remitente, $remitente_type_code = 1, $remitente_code, $remitente_name, $remitente_address, $remitente_phone, $remitente_ubigeo;
+    public $remitente, $remitente_type_code           = 1, $remitente_code, $remitente_name, $remitente_address, $remitente_phone, $remitente_ubigeo;
+    public $destinatario, $destinatario_type_code     = 1, $destinatario_code, $destinatario_name, $destinatario_address, $destinatario_phone, $destinatario_ubigeo;
+    public $cliFacturacion, $cliFacturacion_type_code = 1, $cliFacturacion_code, $cliFacturacion_name, $cliFacturacion_address, $cliFacturacion_phone, $cliFacturacion_ubigeo;
 
     public function mount()
     {
-
         $this->caja     = $this->cajaIsActive(Auth::user());
         $this->paquetes = collect([])->keyBy('id');
 
@@ -56,7 +56,6 @@ class RegisterLive extends Component
         if (! $this->caja || $sucursalDestinoIds->isEmpty()) {
             return $this->redirectRoute('caja.index');
         }
-
         $this->sucursal_dest_id = Sucursal::where('isActive', true)
             ->whereIn('id', $sucursalDestinoIds)->first()->id;
     }
@@ -160,18 +159,121 @@ class RegisterLive extends Component
             [
                 'name'    => $this->remitente_name,
                 'address' => $this->remitente_address,
-                'ubigeo'  => $this->remitente_ubigeo,]
+                'ubigeo'  => $this->remitente_ubigeo]
         );
     }
 
     public function searchDestinatario()
     {
-        $this->customerFormDest->store();
+        $rules = [
+            'destinatario_type_code' => 'required',
+            'destinatario_code'      => 'required|min:8|max:11',
+        ];
+        $messages = [
+            'destinatario_type_code.required' => 'El tipo de documento es requerido',
+            'destinatario_code.required'      => 'El número de documento es requerido',
+            'destinatario_code.min'           => 'El número de documento debe tener 8 dígitos',
+            'destinatario_code.max'           => 'El número de documento debe tener 11 dígitos',
+        ];
+        $this->validate($rules, $messages);
+        $destinatario = Customer::where('type_code', $this->destinatario_type_code)
+            ->where('code', $this->destinatario_code)
+            ->first();
+        if ($destinatario) {
+            $this->destinatario         = $destinatario;
+            $this->destinatario_name    = $destinatario->name;
+            $this->destinatario_address = $destinatario->address;
+            $this->destinatario_phone   = $destinatario->phone;
+            $this->destinatario_ubigeo  = $destinatario->ubigeo;
+            return;
+        }
+        $tipo      = $this->destinatario_type_code == '6' ? 'ruc' : 'dni';
+        $respuesta = $this->searchComplete($tipo, $this->destinatario_code);
+
+        if (! $respuesta['encontrado']) {
+            $this->destinatario_name    = '';
+            $this->destinatario_address = '';
+            $this->destinatario_phone   = '';
+            $this->destinatario_ubigeo  = '';
+            $this->error('El destinatario no existe!, verifique el número de documento!');
+            return;
+        }
+        if ($tipo == 'ruc') {
+            $this->destinatario_name    = $respuesta['data']->razon_social;
+            $this->destinatario_address = $respuesta['data']->direccion;
+            $this->destinatario_ubigeo  = $respuesta['data']->codigo_ubigeo;
+        } else {
+            $this->destinatario_name   = $respuesta['data']->nombre;
+            $this->destinatario_phone  = '';
+            $this->destinatario_ubigeo = '';
+        }
+
+        $this->destinatario = Customer::firstOrCreate(
+            [
+                'type_code' => $this->destinatario_type_code,
+                'code'      => $this->destinatario_code],
+            [
+                'name'    => $this->destinatario_name,
+                'address' => $this->destinatario_address,
+                'ubigeo'  => $this->destinatario_ubigeo]
+        );
     }
 
     public function searchFacturacion()
     {
-        $this->customerFact->store();
+
+        $rules                = [
+            'cliFacturacion_type_code' => 'required',
+            'cliFacturacion_code'      => 'required|min:8|max:11',
+        ];
+        $messages = [
+            'cliFacturacion_type_code.required' => 'El tipo de documento es requerido',
+            'cliFacturacion_code.required'      => 'El número de documento es requerido',
+            'cliFacturacion_code.min'           => 'El número de documento debe tener 8 dígitos',
+            'cliFacturacion_code.max'           => 'El número de documento debe tener 11 dígitos',
+        ];
+        $this->validate($rules, $messages);
+        $cliFacturacion = Customer::where('type_code', $this->cliFacturacion_type_code)
+            ->where('code', $this->cliFacturacion_code)
+            ->first();
+        if ($cliFacturacion) {
+            $this->cliFacturacion         = $cliFacturacion;
+            $this->cliFacturacion_name    = $cliFacturacion->name;
+            $this->cliFacturacion_address = $cliFacturacion->address;
+            $this->cliFacturacion_phone   = $cliFacturacion->phone;
+            $this->cliFacturacion_ubigeo  = $cliFacturacion->ubigeo;
+            return;
+        }
+        $tipo      = $this->cliFacturacion_type_code == '6' ? 'ruc' : 'dni';
+        $respuesta = $this->searchComplete($tipo, $this->cliFacturacion_code);
+        if (! $respuesta['encontrado']) {
+            $this->cliFacturacion         = null;
+            $this->cliFacturacion_name    = '';
+            $this->cliFacturacion_address = '';
+            $this->cliFacturacion_phone   = '';
+            $this->cliFacturacion_ubigeo  = '';
+            $this->error('El cliente de Facturacion no existe!, verifique el número de documento!');
+            return;
+        }
+        if ($tipo == 'ruc') {
+            $this->cliFacturacion_name    = $respuesta['data']->razon_social;
+            $this->cliFacturacion_address = $respuesta['data']->direccion;
+            $this->cliFacturacion_ubigeo  = $respuesta['data']->codigo_ubigeo;
+        } else {
+            $this->cliFacturacion_name   = $respuesta['data']->nombre;
+            $this->cliFacturacion_phone  = '';
+            $this->cliFacturacion_ubigeo = '';
+        }
+
+        $this->cliFacturacion = Customer::firstOrCreate(
+            [
+                'type_code' => $this->cliFacturacion_type_code,
+                'code'      => $this->cliFacturacion_code],
+            [
+                'name'    => $this->cliFacturacion_name,
+                'address' => $this->cliFacturacion_address,
+                'ubigeo'  => $this->cliFacturacion_ubigeo]
+        );
     }
 
     public function next()
@@ -179,33 +281,53 @@ class RegisterLive extends Component
         if ($this->step < 4) {
             switch ($this->step) {
                 case 1:
-
-                    $this->processStep(isset($this->customerForm->customer));
-                    //$this->customerForm->update();
+                    $this->processStepOne();
                     break;
                 case 2:
-                    $this->processStep(isset($this->customerFormDest->customer));
-                    $this->customerFormDest->update();
+                    $this->processStepTwo();
                     break;
                 case 3:
-                    $this->processStep($this->paquetes->isNotEmpty());
+                    $this->processStepThree();
+                    //$this->processStep();
                     break;
             }
         }
     }
-
-    private function processStep($condition)
+    private function processStepOne()
     {
-
-        if ($this->isHome && ! $this->customerFormDest->address) {
-            $this->error('Error, es necesario ingresar la dirección de entrega!');
+        if ($this->remitente) {
+            $this->remitente->address = $this->remitente_address;
+            $this->remitente->phone   = $this->remitente_phone;
+            $this->remitente->save();
+            $this->step++;
+            $this->success('Genial', 'remitente ingresado correctamente!');
+        } else {
+            $this->error('Error!', 'Ingrese un remitente');
+        }
+    }
+    private function processStepTwo()
+    {
+        if ($this->isHome && ! $this->destinatario_address) {
+            $this->error('Error', 'Es necesario ingresar la dirección de entrega!');
             return;
         }
-        if ($condition) {
+        if ($this->destinatario) {
+            $this->destinatario->address = $this->destinatario_address;
+            $this->destinatario->phone   = $this->destinatario_phone;
+            $this->destinatario->save();
             $this->step++;
-            $this->success('Genial, ingresado correctamente!');
+            $this->success('Genial', 'Destinatario ingresado correctamente!');
         } else {
-            $this->error('Error!!!');
+            $this->error('Error!', 'Ingrese un destinatario');
+        }
+    }
+    private function processStepThree()
+    {
+        if ($this->paquetes->isNotEmpty()) {
+            $this->step++;
+            $this->success('Genial', 'Paquetes ingresados correctamente!');
+        } else {
+            $this->error('Error!', 'Ingrese un paquete para el envio!');
         }
     }
 
@@ -218,32 +340,14 @@ class RegisterLive extends Component
 
     public function addPaquete()
     {
-        if ($this->validatePaquete()) {
-            $paquete              = new Paquete();
-            $paquete->id          = $this->paquetes->count() + 1;
-            $paquete->cantidad    = $this->cantidad;
-            $paquete->und_medida  = $this->und_medida;
-            $paquete->description = $this->description;
-            $paquete->peso        = $this->peso;
-            $paquete->amount      = $this->amount;
-            $paquete->sub_total   = $this->amount * $this->cantidad;
-
-            $this->paquetes->push($paquete->toArray());
-        } else {
-            $this->error('Error, verifique los datos!');
-        }
-    }
-
-    private function validatePaquete()
-    {
-        $validations = [
+        $rules = [
             'cantidad'    => 'required|numeric',
             'und_medida'  => 'required',
             'description' => 'required',
             'peso'        => 'required|numeric',
             'amount'      => 'required|numeric',
         ];
-        $errorMessage = [
+        $messages = [
             'cantidad.required'    => 'Error, es necesario ingresar la cantidad!',
             'cantidad.numeric'     => 'Error, la cantidad debe ser un número!',
             'und_medida.required'  => 'Error, es necesario ingresar la unidad de medida!',
@@ -253,24 +357,35 @@ class RegisterLive extends Component
             'amount.required'      => 'Error, es necesario ingresar el precio unitario!',
             'amount.numeric'       => 'Error, el precio unitario debe ser un número!',
         ];
-        $this->validate($validations, $errorMessage);
+        $this->validate($rules, $messages);
+        $paquete              = new Paquete();
+        $paquete->id          = $this->paquetes->count() + 1;
+        $paquete->cantidad    = $this->cantidad;
+        $paquete->und_medida  = $this->und_medida;
+        $paquete->description = $this->description;
+        $paquete->peso        = $this->peso;
+        $paquete->amount      = $this->amount;
+        $paquete->sub_total   = $this->amount * $this->cantidad;
+        $this->paquetes->push($paquete->toArray());
+        $this->success('Genial', 'Paquete ingresado correctamente!');
 
-        return true;
     }
-
     public function restPaquete($id)
     {
+        $this->success('Genial', 'Paquete eliminado correctamente!');
         $this->paquetes->pull($id - 1);
     }
 
     public function resetPaquete()
     {
+        $this->success('Genial', 'Paquetes eliminados correctamente!');
         $this->paquetes = collect([]);
     }
 
     public function finish()
     {
-        if ($this->isReturn && ! $this->customerFormDest->address) {
+
+        if ($this->isReturn && ! $this->destinatario_address) {
             $this->error('Error, es necesario ingresar la dirección de entrega!');
             $this->step   = 2;
             $this->isHome = true;
@@ -282,9 +397,15 @@ class RegisterLive extends Component
         }
 
         if ($this->validateFinish()) {
-            $this->sucursal_destino = Sucursal::findOrFail($this->sucursal_dest_id);
-            $this->customerFact     = $this->customerForm;
-            $this->modalConfimation = true;
+            $this->sucursal_destino         = Sucursal::findOrFail($this->sucursal_dest_id);
+            $this->cliFacturacion           = $this->remitente;
+            $this->cliFacturacion_type_code = $this->cliFacturacion->type_code;
+            $this->cliFacturacion_code      = $this->cliFacturacion->code;
+            $this->cliFacturacion_name      = $this->cliFacturacion->name;
+            $this->cliFacturacion_address   = $this->cliFacturacion->address;
+            $this->cliFacturacion_phone     = $this->cliFacturacion->phone;
+            $this->cliFacturacion_ubigeo    = $this->cliFacturacion->ubigeo;
+            $this->modalConfimation         = true;
         } else {
             $this->error('Error, el pin ingresado no es correcto!');
         }
@@ -297,16 +418,31 @@ class RegisterLive extends Component
 
     public function confirmEncomienda()
     {
+
+        if ($this->tipo_comprobante === 'FACTURA') {
+            $this->cliFacturacion_type_code = '6';
+        }
+        if ($this->cliFacturacion_type_code == '6' && strlen($this->cliFacturacion_code) == 8) {
+            $this->error('El cliente de Facturacion no valido!, verifique el número de RUC!');
+            $this->modalConfimation = false;
+            $this->cliFacturacion = null;
+            return;
+        }
+        if ($this->cliFacturacion == null || $this->cliFacturacion_name == '') {
+            $this->error('El cliente de Facturacion no existe!, verifique el número de documento!');
+            $this->modalConfimation = false;
+            return;
+        }
         $this->encomiendaForm->fill([
             'code'              => $this->generateCode(),
             'user_id'           => Auth::user()->id,
             'transportista_id'  => $this->transportista_id,
             'vehiculo_id'       => $this->vehiculo_id,
-            'customer_id'       => $this->getCustomerId($this->customerForm->customer),
+            'customer_id'       => $this->remitente->id,
             'sucursal_id'       => Auth::user()->sucursal->id,
-            'customer_dest_id'  => $this->getCustomerId($this->customerFormDest->customer),
+            'customer_dest_id'  => $this->destinatario->id,
             'sucursal_dest_id'  => $this->sucursal_dest_id,
-            'customer_fact_id'  => $this->getCustomerId($this->customerFact->customer),
+            'customer_fact_id'  => $this->cliFacturacion->id,
             'cantidad'          => $this->paquetes->sum('cantidad'),
             'monto'             => $this->paquetes->sum('sub_total'),
             'estado_pago'       => $this->estado_pago,
@@ -320,7 +456,7 @@ class RegisterLive extends Component
             'isHome'            => $this->isHome,
             'isReturn'          => $this->isReturn,
         ]);
-        $this->customerFact->update();
+
         $this->encomienda = $this->encomiendaForm->store($this->paquetes);
 
         if ($this->encomienda) {
@@ -342,11 +478,6 @@ class RegisterLive extends Component
         $cod         = Sucursal::where('id', Auth::user()->sucursal->id)->first()->code;
         $correlativo = Encomienda::count() + 1;
         return $cod . '-' . Auth::user()->id . $correlativo;
-    }
-
-    private function getCustomerId($customer)
-    {
-        return Customer::firstOrCreate(['type_code' => $customer->type_code, 'code' => $customer->code])->id;
     }
 
     private function storeEntry()
@@ -378,10 +509,5 @@ class RegisterLive extends Component
     public function redirectionSend()
     {
         $this->redirectRoute('package.send');
-    }
-
-    public function openModal()
-    {
-        $this->modalFinal = true;
     }
 }

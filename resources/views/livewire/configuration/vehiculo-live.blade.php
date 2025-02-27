@@ -4,16 +4,7 @@
             <x-mary-button wire:click='openModal' responsive icon="o-plus" label="Nuevo vehiculo"
                 class="text-white bg-sky-500" />
         </x-slot:menu>
-        <div class="grid content-start grid-cols-4 xs:grid-cols-1">
-            <x-mary-stat title="Paquetes" description="Paquetes pendientes de envio" value="44" icon="m-archive-box"
-                tooltip="Paquetes" />
-            <x-mary-stat title="Monto apertura" description="This month" value="12" icon="o-arrow-trending-up"
-                tooltip="Ops!" />
-            <x-mary-stat title="Ingresos" description="Boletas, Facturas y ticket" value="12" icon="o-arrow-trending-up"
-                class="text-green-500" color="text-green-500" tooltip="Total entradas de dinero" />
-            <x-mary-stat title="Egresos" description="Pagos y salidas" value="123" icon="o-arrow-trending-down"
-                class="text-red-500" color="text-red-500" tooltip="Total salidas de dinero" />
-        </div>
+
     </x-mary-card>
     <div class="grid grid-cols-4 space-x-2">
         <div class="grid col-span-4 pt-2">

@@ -17,7 +17,7 @@ class InvoiceLive extends Component
 {
     use Toast;
     use WithPagination, WithoutUrlPagination;
-    public string $title = 'Facturacion electronica';
+    public string $title = 'BOLETAS Y FACTURAS';
     public string $sub_title = 'Modulo de facturacion electronica';
     public int $perPage = 10;
     public $infoModal = false;
@@ -85,7 +85,7 @@ class InvoiceLive extends Component
 
     public function refresh($invoice) {
         $invoice = Invoice::find($invoice);
-        
+
         $this->infoModal = true;
 
     }
