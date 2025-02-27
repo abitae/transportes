@@ -4,7 +4,6 @@ namespace App\Livewire\Forms;
 use App\Models\Package\Customer;
 use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
-use Livewire\Attributes\Validate;
 use Livewire\Form;
 
 class CustomerForm extends Form
@@ -12,23 +11,28 @@ class CustomerForm extends Form
     use LogCustom, SearchDocument;
 
     public ?Customer $customer;
+    public $type_code = '';
+    public $code      = '';
+    public $name      = '';
+    public $phone     = '';
+    public $email     = '';
+    public $address   = '';
+    public $ubigeo    = '';
+    public $isActive  = true;
 
-    #[Validate('required')]
-    public $type_code = '1';
-    #[Validate('required|numeric|digits_between:8,11')]
-    public $code = '';
-    #[Validate('required')]
-    public $name = '';
-    #[Validate('')]
-    public $phone = '';
-    #[Validate('')]
-    public $email = '';
-    #[Validate('')]
-    public $address = '';
-    #[Validate('')]
-    public $ubigeo = '';
-    public $isActive = true;
+    protected $rules = [
+        'type_code' => 'required',
+        'code'      => 'required|numeric|digits_between:8,11',
+        'name'      => 'required',
+    ];
 
+    protected $messages = [
+        'type_code.required'  => 'El campo es requerido.',
+        'code.required'       => 'Num Documento es requerido.',
+        'code.numeric'        => 'El documento debe de ser numerico.',
+        'code.digits_between' => 'El documento debe de tener entre 8 y 11 caracterisricas.',
+        'name'                => 'El campo es requerido.',
+    ];
     public function setCustomer(Customer $customer)
     {
         $this->customer  = $customer;
@@ -43,32 +47,41 @@ class CustomerForm extends Form
 
     public function store()
     {
-
         try {
             $customer = Customer::where('type_code', $this->type_code)->where('code', $this->code)->first();
             if ($customer) {
                 $this->setCustomer($customer);
                 return true;
-            }
-            switch ($this->type_code) {
-                case '1':
-                    $tipo = 'dni';
-                    break;
-                case '6':
-                    $tipo = 'ruc';
-                    break;
-            }
-            $data = $this->search($tipo, $this->code);
+            } else {
+                switch ($this->type_code) {
+                    case '1':
+                        $tipo = 'dni';
+                        break;
+                    case '6':
+                        $tipo = 'ruc';
+                        break;
+                }
+                $data = $this->searchComplete($tipo, $this->code);
 
-            if ($data['encontrado']) {
-                $this->populateCustomerData($data['data']);
-                $customer = Customer::firstOrCreate(
-                    ['type_code' => $this->type_code, 'code' => $this->code],
-                    ['name' => $this->name, 'phone' => $this->phone, 'email' => $this->email, 'address' => $this->address, 'ubigeo' => $this->ubigeo]
-                );
-                $this->setCustomer($customer);
-                $this->infoLog('Customer store ' . $this->code);
-                return true;
+                if ($data['encontrado']) {
+                    $this->populateCustomerData($data['data']);
+                    $customer = Customer::Create(
+                        [
+                        'type_code' => $this->type_code,
+                        'code' => $this->code,
+                        'name' => $this->name,
+                        'phone' => $this->phone,
+                        'email' => $this->email,
+                        'address' => $this->address,
+                        'ubigeo' => $this->ubigeo]
+                    );
+                    $this->setCustomer($customer);
+                    $this->infoLog('Customer store ' . $this->code);
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
             $customer = null;
             return false;
@@ -116,6 +129,8 @@ class CustomerForm extends Form
         } elseif ($this->type_code == '6') {
             $this->name    = $data->razon_social;
             $this->address = $data->direccion;
+            $this->ubigeo = $data->codigo_ubigeo;
+
         }
     }
     private function performAction($id, callable $action, $logMessage)

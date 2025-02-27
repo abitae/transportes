@@ -1,17 +1,19 @@
 <div>
-    <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow progress-indicator>
+    <x-mary-card title="{{ $step ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow progress-indicator>
         <x-slot:menu>
-            <x-mary-button wire:click='openModal' responsive icon="o-plus" label="Nuevo envio"
-                class="text-white shadow-xl bg-sky-500" />
+            @if ($errors->any())
+            <x-mary-alert title="Error!" description="{{ $errors->first() }}" icon="o-exclamation-triangle"
+                class="text-white bg-red-500" dismissible />
+            @endif
         </x-slot:menu>
         <x-mary-steps wire:model="step" steps-color="step-warning"
             class="p-2 my-5 border rounded-lg shadow-xl border-sky-500">
             <x-mary-step step="1" text="Remitente">
                 <div class="grid grid-cols-4 gap-1">
                     <div class="grid col-span-2">
-                        <x-mary-input label="Numero de documento" wire:model='customerForm.code'>
+                        <x-mary-input label="Numero de documento" wire:model.live='remitente_code'>
                             <x-slot:prepend>
-                                <x-mary-select wire:model='customerForm.type_code' icon="o-user"
+                                <x-mary-select wire:model.live='remitente_type_code' icon="o-user"
                                     :options="$tipoDocuments" option-value="codigo" option-label="sigla"
                                     class="rounded-e-none" />
                             </x-slot:prepend>
@@ -22,13 +24,13 @@
                         </x-mary-input>
                     </div>
                     <div class="grid col-span-2">
-                        <x-mary-input label="Nombre/Raz. Social" wire:model='customerForm.name' />
+                        <x-mary-input label="Nombre/Raz. Social" wire:model='remitente_name' />
                     </div>
                     <div class="grid col-span-3">
-                        <x-mary-input label="Direccion" wire:model='customerForm.address' />
+                        <x-mary-input label="Direccion" wire:model='remitente_address' />
                     </div>
                     <div class="grid col-span-1">
-                        <x-mary-input label="Celular" wire:model='customerForm.phone' />
+                        <x-mary-input label="Celular" wire:model='remitente_phone' />
                     </div>
                 </div>
             </x-mary-step>
@@ -38,11 +40,11 @@
                         <x-mary-input label="Numero de documento" wire:model='customerFormDest.code'>
                             <x-slot:prepend>
                                 <x-mary-select wire:model='customerFormDest.type_code' icon="o-user"
-                                    :options="$tipoDocuments" option-value="codigo" option-label="sigla"
+                                option-value="codigo" option-label="sigla" :options="$tipoDocuments"
                                     class="rounded-e-none" />
                             </x-slot:prepend>
                             <x-slot:append>
-                                <x-mary-button wire:click='searchDestinatario' icon="o-magnifying-glass"
+                                <x-mary-button wire:click.prevent='searchDestinatario' icon="o-magnifying-glass"
                                     class="btn-primary rounded-s-none" />
                             </x-slot:append>
                         </x-mary-input>
@@ -162,7 +164,7 @@
         </x-slot:actions>
     </x-mary-card>
 
-    <x-mary-modal wire:model="modalConfimation" persistent class="backdrop-blur" box-class="max-w-full max-h-full">
+    {{-- <x-mary-modal wire:model="modalConfimation" persistent class="backdrop-blur" box-class="max-w-full max-h-full">
         <div class="grid grid-cols-2 gap-2">
             <div class="grid grid-cols-2 gap-2 p-2 border rounded-lg border-sky-500">
                 <div class="col-span-2">
@@ -179,7 +181,7 @@
                 </div>
                 <div>{{ $this->customerFormDest->name ?? 'name' }}</div>
                 <span></span>
-                <div>{{ $this->customerFormDest->type_code ? 'DNI' : 'RUC' }}</div>
+                <div>{{ $this->customerFormDest->type_code = 1 ? 'DNI' : 'RUC' }}</div>
                 <div>{{ $this->customerFormDest->code ?? 'code' }}</div>
                 <div>{{ $this->customerFormDest->phone ?? 'phone' }}</div>
                 <div>{{ $this->sucursal_destino->name ?? 'sucursal' }}</div>
@@ -223,11 +225,11 @@
                                     @php
                                     if ($tipo_comprobante != 'FACTURA') {
                                     $docsfact = [
-                                    ['id' => '1', 'name' => 'DNI'],
-                                    ['id' => '6', 'name' => 'RUC'],
+                                    ['id' => '1', 'name' => 'DNI cod(1)'],
+                                    ['id' => '6', 'name' => 'RUC cod(6)'],
                                     ];
                                     } else {
-                                    $docsfact = [['id' => '6', 'name' => 'RUC']];
+                                    $docsfact = [['id' => '6', 'name' => 'RUC cod(6)']];
                                     }
                                     @endphp
                                     <x-mary-select wire:model='customerFact.type_code' icon="o-user"
@@ -305,5 +307,5 @@
 
         </x-mary-card>
     </x-mary-modal>
-    @endif
+    @endif --}}
 </div>

@@ -15,6 +15,8 @@ use App\Services\ServiceTableSunat;
 use App\Traits\CajaTrait;
 use App\Traits\InvoiceTrait;
 use App\Traits\LogCustom;
+use App\Traits\SearchDocument;
+use App\Traits\UtilsTrait;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -23,10 +25,10 @@ use Mary\Traits\Toast;
 
 class RegisterLive extends Component
 {
-    use LogCustom, Toast, InvoiceTrait, WithPagination, WithoutUrlPagination, CajaTrait;
+    use LogCustom, Toast, InvoiceTrait, WithPagination, WithoutUrlPagination, CajaTrait, UtilsTrait, SearchDocument;
 
     public int $step  = 1;
-    public $title     = 'Registro';
+    public $title     = 'REGISTRO';
     public $sub_title = 'Registrar paquetes de envio';
 
     public CustomerForm $customerForm, $customerFormDest, $customerFact;
@@ -39,8 +41,11 @@ class RegisterLive extends Component
     public $transportista_id, $vehiculo_id, $modalConfimation = false, $caja, $isReturn = false, $isHome = false, $modalFinal = false;
     public $encomienda;
 
+    public $remitente, $remitente_type_code = 1, $remitente_code, $remitente_name, $remitente_address, $remitente_phone, $remitente_ubigeo;
+
     public function mount()
     {
+
         $this->caja     = $this->cajaIsActive(Auth::user());
         $this->paquetes = collect([])->keyBy('id');
 
@@ -91,7 +96,7 @@ class RegisterLive extends Component
         $transportistas = Transportista::where('isActive', true)->get();
         $vehiculos      = Vehiculo::where('isActive', true)->get();
         $tipoDocuments  = [
-            ['codigo' => '0', 'sigla' => 'OTRO  cod(0)'],
+            ['codigo' => '0', 'sigla' => 'OTRO DOCUMENTO cod(0)'],
             ['codigo' => '1', 'sigla' => 'DNI cod(1)'],
             ['codigo' => '6', 'sigla' => 'RUC cod(6)'],
         ];
@@ -105,7 +110,58 @@ class RegisterLive extends Component
 
     public function searchRemitente()
     {
-        $this->customerForm->store();
+        $rules = [
+            'remitente_type_code' => 'required',
+            'remitente_code'      => 'required|min:8|max:11',
+        ];
+        $messages = [
+            'remitente_type_code.required' => 'El tipo de documento es requerido',
+            'remitente_code.required'      => 'El número de documento es requerido',
+            'remitente_code.min'           => 'El número de documento debe tener 8 dígitos',
+            'remitente_code.max'           => 'El número de documento debe tener 11 dígitos',
+        ];
+        $this->validate($rules, $messages);
+        $remitente = Customer::where('type_code', $this->remitente_type_code)
+            ->where('code', $this->remitente_code)
+            ->first();
+        if ($remitente) {
+            $this->remitente         = $remitente;
+            $this->remitente_name    = $remitente->name;
+            $this->remitente_address = $remitente->address;
+            $this->remitente_phone   = $remitente->phone;
+            $this->remitente_ubigeo  = $remitente->ubigeo;
+            return;
+        }
+        $tipo      = $this->remitente_type_code == '6' ? 'ruc' : 'dni';
+        $respuesta = $this->searchComplete($tipo, $this->remitente_code);
+
+        if (! $respuesta['encontrado']) {
+            $this->remitente_name    = '';
+            $this->remitente_address = '';
+            $this->remitente_phone   = '';
+            $this->remitente_ubigeo  = '';
+            $this->error('El remitente no existe!, verifique el número de documento!');
+            return;
+        }
+        if ($tipo == 'ruc') {
+            $this->remitente_name    = $respuesta['data']->razon_social;
+            $this->remitente_address = $respuesta['data']->direccion;
+            $this->remitente_ubigeo  = $respuesta['data']->codigo_ubigeo;
+        } else {
+            $this->remitente_name   = $respuesta['data']->nombre;
+            $this->remitente_phone  = '';
+            $this->remitente_ubigeo = '';
+        }
+
+        $this->remitente = Customer::firstOrCreate(
+            [
+                'type_code' => $this->remitente_type_code,
+                'code'      => $this->remitente_code],
+            [
+                'name'    => $this->remitente_name,
+                'address' => $this->remitente_address,
+                'ubigeo'  => $this->remitente_ubigeo,]
+        );
     }
 
     public function searchDestinatario()
@@ -123,22 +179,24 @@ class RegisterLive extends Component
         if ($this->step < 4) {
             switch ($this->step) {
                 case 1:
-                    $this->processStep(isset($this->customerForm->customer), 'Error, es necesario ingresar el remitente!');
-                    $this->customerForm->update();
+
+                    $this->processStep(isset($this->customerForm->customer));
+                    //$this->customerForm->update();
                     break;
                 case 2:
-                    $this->processStep(isset($this->customerFormDest->customer), 'Error, es necesario ingresar la dirección de entrega!');
+                    $this->processStep(isset($this->customerFormDest->customer));
                     $this->customerFormDest->update();
                     break;
                 case 3:
-                    $this->processStep($this->paquetes->isNotEmpty(), 'Error, verifique los datos!');
+                    $this->processStep($this->paquetes->isNotEmpty());
                     break;
             }
         }
     }
 
-    private function processStep($condition, $errorMessage)
+    private function processStep($condition)
     {
+
         if ($this->isHome && ! $this->customerFormDest->address) {
             $this->error('Error, es necesario ingresar la dirección de entrega!');
             return;
@@ -147,7 +205,7 @@ class RegisterLive extends Component
             $this->step++;
             $this->success('Genial, ingresado correctamente!');
         } else {
-            $this->error($errorMessage);
+            $this->error('Error!!!');
         }
     }
 
