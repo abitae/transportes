@@ -105,96 +105,114 @@
                 <p class="font-weight-bold">CONDUCTOR</p>
                 <p>Nombre: {{ $despache->encomienda->transportista->name }}</p>
                 <p>DNI: {{ $despache->encomienda->transportista->dni }}</p>
-            <section class="text-xs text-left border-b border-top border-dark">
-                <p class="font-weight-bold">ENTREGA</p>
-                @if ($despache->isHome)
-                <p>{{ $despache->destinatario->address }}</p>
-                @else
-                <p>RECOJO EN AGENCIA</p>
-                @endif
-            </section>
-            <section class="text-xs text-left border-top border-dark">
-                <p class="font-weight-bold">FORMA DE PAGO</p>
-                <p>{{ $despache->encomienda->estado_pago }}</p>
-            </section>
-            <section class="mb-4">
-                <table class="table table-bordered table-sm">
-                    <thead>
-                        <tr class="bg-light">
-                            <th class="px-2 py-1 text-left">Descripción</th>
-                            <th class="px-2 py-1 text-right">Cant</th>
-                            <th class="px-2 py-1 text-right">Und</th>
-                            <th class="px-2 py-1 text-right">Precio</th>
-                            <th class="px-2 py-1 text-right">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($despache->details as $detail)
-                        <tr>
-                            <td class="px-2 py-1 text-left">{{ $detail->descripcion }}</td>
-                            <td class="px-2 py-1 text-right">{{ $detail->cantidad }}</td>
-                            <td class="px-2 py-1 text-right">{{ $detail->unidad }}</td>
-                            <td class="px-2 py-1 text-right">{{ $detail->mtoPrecioUnitario }}</td>
-                            <td class="px-2 py-1 text-right">{{ number_format($detail->mtoPrecioUnitario *
-                                $detail->cantidad,2) }}</td>
-                        </tr>
-                        @empty
-                        @endforelse
-                    </tbody>
-                </table>
-            </section>
-            <!-- Totales -->
-            <section class="mb-4 text-sm text-right">
-                <div class="d-flex justify-content-between border-top border-dark">
-                    <span class="font-weight-bold">Gravada:</span>
-                    <span>S/ {{ $despache->valorVenta }}</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span class="font-weight-bold">IGV (18%):</span>
-                    <span>S/ {{ $despache->mtoIGV }}</span>
-                </div>
-                <div class="pt-1 mt-1 d-flex justify-content-between font-weight-bold border-top border-dark">
-                    <span>Total:</span>
-                    <span>S/ {{ $despache->mtoImpVenta }}</span>
-                </div>
-            </section>
-            <div class="cuadrado">
-                <p class="text-xs">FIRMA</p>
-
-            </div>
-            <!-- Código QR -->
-            <section class="mt-4 text-center">
-                <!-- Imagen de ejemplo para el código QR -->
-                <div class="d-flex justify-content-center">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/500px-Codigo_QR.svg.png?20080824194905"
-                        alt="Código QR" style="width: 100px;">
-                </div>
-            </section>
-            <!-- Pie de página -->
-            <footer class="mt-4 text-xs text-center">
-                <p>Gracias por su compra.</p>
-                Políticas de Envío
-                <br>
-                <span>Corporación Logística Brayan Brush EIRL</span>
-                <br>
-                <section class="text-xs text-left border-top border-dark" style="text-align: justify;">
-                    <p>• El cliente debe proporcionar una dirección completa y un número de teléfono válido. Si no es posible contactar al destinatario o la dirección es incorrecta, el paquete será devuelto a nuestros almacenes.</p>
-                    <p>• Después de dos intentos fallidos, el envío será devuelto a nuestros almacenes. El cliente deberá coordinar el retiro o solicitar un nuevo envío, sujeto a costos adicionales.</p>
-                    <p>• Si el cliente requiere una entrega fuera del horario de 9 a.m. a 6 p.m., debe coordinarlo previamente. Este servicio está sujeto a disponibilidad y costos adicionales.</p>
-                    <p>• El destinatario puede autorizar a un tercero para recoger la encomienda, siempre que presente su DNI y la carta poder correspondiente.</p>
-                    <p>• El cliente puede optar por retirar su encomienda en un punto de recogida, acelerando el proceso y reduciendo riesgos.</p>
-                    <p>• En los envíos contra entrega, el cliente debe realizar el pago antes de recibir el paquete.</p>
-                    <p>• Si el envío no se recoge en 30 días, la empresa no se hará responsable. Desde el tercer día, se cobrará 5 soles por día de almacenamiento.</p>
-                    <p>• La empresa no verifica el contenido de los envíos. Es responsabilidad del cliente asegurarse de que los paquetes estén correctamente empaquetados.</p>
-                    <p>• Si el paquete llega dañado, debe ser revisado y grabado en el momento de la entrega. La empresa no se hace responsable si el daño es por mal embalaje.</p>
-                    <p>• Si no se recoge un envío con retorno de cargo en 60 días, no habrá regularización pendiente.</p>
-                    <p>• En caso de extravío, se realizará una conciliación con el destinatario.</p>
-                    <p>• Los reclamos por daños o pérdidas deben presentarse en 3 días hábiles con boleta/factura y la guía de remisión.</p>
-                    <p>• Recuperar el código de envío tiene un costo de 10 soles y puede tomar entre 1 y 24 horas.</p>
-                    <p>• Se requiere presentar el DNI físico y el código de verificación para retirar el paquete.</p>
-                    <p>• La empresa no se responsabiliza por retrasos causados por factores externos como clima o bloqueos de carreteras.</p>
+                <section class="text-xs text-left border-b border-top border-dark">
+                    <p class="font-weight-bold">ENTREGA</p>
+                    @if ($despache->isHome)
+                    <p>{{ $despache->destinatario->address }}</p>
+                    @else
+                    <p>RECOJO EN AGENCIA</p>
+                    @endif
                 </section>
-            </footer>
+                <section class="text-xs text-left border-top border-dark">
+                    <p class="font-weight-bold">FORMA DE PAGO</p>
+                    <p>{{ $despache->encomienda->estado_pago }}</p>
+                </section>
+                <section class="mb-4">
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr class="bg-light">
+                                <th class="px-2 py-1 text-left">Descripción</th>
+                                <th class="px-2 py-1 text-right">Cant</th>
+                                <th class="px-2 py-1 text-right">Und</th>
+                                <th class="px-2 py-1 text-right">Precio</th>
+                                <th class="px-2 py-1 text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($despache->details as $detail)
+                            <tr>
+                                <td class="px-2 py-1 text-left">{{ $detail->descripcion }}</td>
+                                <td class="px-2 py-1 text-right">{{ $detail->cantidad }}</td>
+                                <td class="px-2 py-1 text-right">{{ $detail->unidad }}</td>
+                                <td class="px-2 py-1 text-right">{{ $detail->mtoPrecioUnitario }}</td>
+                                <td class="px-2 py-1 text-right">{{ number_format($detail->mtoPrecioUnitario *
+                                    $detail->cantidad,2) }}</td>
+                            </tr>
+                            @empty
+                            @endforelse
+                        </tbody>
+                    </table>
+                </section>
+                <!-- Totales -->
+                <section class="mb-4 text-sm text-right">
+                    <div class="d-flex justify-content-between border-top border-dark">
+                        <span class="font-weight-bold">Gravada:</span>
+                        <span>S/ {{ $despache->valorVenta }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="font-weight-bold">IGV (18%):</span>
+                        <span>S/ {{ $despache->mtoIGV }}</span>
+                    </div>
+                    <div class="pt-1 mt-1 d-flex justify-content-between font-weight-bold border-top border-dark">
+                        <span>Total:</span>
+                        <span>S/ {{ $despache->mtoImpVenta }}</span>
+                    </div>
+                </section>
+                <div>
+                    <p>User: {{ $despache->encomienda->user->name ?? 'Nombre' }}</p>
+                </div>
+                <div class="cuadrado">
+                    <p class="text-xs">FIRMA</p>
+
+                </div>
+                <!-- Código QR -->
+                <section class="mt-4 text-center">
+                    <!-- Imagen de ejemplo para el código QR -->
+                    <div class="d-flex justify-content-center">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/500px-Codigo_QR.svg.png?20080824194905"
+                            alt="Código QR" style="width: 100px;">
+                    </div>
+                </section>
+                <!-- Pie de página -->
+                <footer class="mt-4 text-xs text-center">
+                    <p>Gracias por su compra.</p>
+                    Políticas de Envío
+                    <br>
+                    <span>Corporación Logística Brayan Brush EIRL</span>
+                    <br>
+                    <section class="text-xs text-left border-top border-dark" style="text-align: justify;">
+                        <p>• El cliente debe proporcionar una dirección completa y un número de teléfono válido. Si no
+                            es posible contactar al destinatario o la dirección es incorrecta, el paquete será devuelto
+                            a nuestros almacenes.</p>
+                        <p>• Después de dos intentos fallidos, el envío será devuelto a nuestros almacenes. El cliente
+                            deberá coordinar el retiro o solicitar un nuevo envío, sujeto a costos adicionales.</p>
+                        <p>• Si el cliente requiere una entrega fuera del horario de 9 a.m. a 6 p.m., debe coordinarlo
+                            previamente. Este servicio está sujeto a disponibilidad y costos adicionales.</p>
+                        <p>• El destinatario puede autorizar a un tercero para recoger la encomienda, siempre que
+                            presente su DNI y la carta poder correspondiente.</p>
+                        <p>• El cliente puede optar por retirar su encomienda en un punto de recogida, acelerando el
+                            proceso y reduciendo riesgos.</p>
+                        <p>• En los envíos contra entrega, el cliente debe realizar el pago antes de recibir el paquete.
+                        </p>
+                        <p>• Si el envío no se recoge en 30 días, la empresa no se hará responsable. Desde el tercer
+                            día, se cobrará 5 soles por día de almacenamiento.</p>
+                        <p>• La empresa no verifica el contenido de los envíos. Es responsabilidad del cliente
+                            asegurarse de que los paquetes estén correctamente empaquetados.</p>
+                        <p>• Si el paquete llega dañado, debe ser revisado y grabado en el momento de la entrega. La
+                            empresa no se hace responsable si el daño es por mal embalaje.</p>
+                        <p>• Si no se recoge un envío con retorno de cargo en 60 días, no habrá regularización
+                            pendiente.</p>
+                        <p>• En caso de extravío, se realizará una conciliación con el destinatario.</p>
+                        <p>• Los reclamos por daños o pérdidas deben presentarse en 3 días hábiles con boleta/factura y
+                            la guía de remisión.</p>
+                        <p>• Recuperar el código de envío tiene un costo de 10 soles y puede tomar entre 1 y 24 horas.
+                        </p>
+                        <p>• Se requiere presentar el DNI físico y el código de verificación para retirar el paquete.
+                        </p>
+                        <p>• La empresa no se responsabiliza por retrasos causados por factores externos como clima o
+                            bloqueos de carreteras.</p>
+                    </section>
+                </footer>
     </div>
 </body>
 

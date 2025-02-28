@@ -19,11 +19,11 @@ class pdfController extends Controller
         ];
         $heigh = 600 + $ticket->details->count() * 30;
         $paper_format = array(0, 0, 250, $heigh);
-        
+
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.ticket.80mm', $data);
         return $pdf->stream('invoice.pdf');
     }
-    
+
     public function invoice80mm(Invoice $invoice){
 
         $data = [
@@ -31,7 +31,7 @@ class pdfController extends Controller
         ];
         $heigh = 600 + $invoice->details->count() * 30;
         $paper_format = array(0, 0, 250, $heigh);
-        
+
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.invoice.80mm', $data);
         return $pdf->stream('invoice.pdf');
     }
@@ -48,9 +48,9 @@ class pdfController extends Controller
         $data = [
             'despache' => $despache
         ];
-        $heigh = 1450 + $despache->details->count() * 30;
+        $heigh = 1500 + $despache->details->count() * 30;
         $paper_format = array(0, 0, 250, $heigh);
-        
+
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.despache.80mm', $data);
         return $pdf->stream('guia.pdf');
     }
@@ -68,7 +68,7 @@ class pdfController extends Controller
         ];
         //$heigh = 1400 + $encomienda->details->count() * 30;
         $paper_format = array(0,0,297.64,419.53);
-        
+
         $pdf = Pdf::setPaper($paper_format, 'landscape')->loadView('pdfs.sticker.a6', $data);
         return $pdf->stream('sticker.pdf');
     }
