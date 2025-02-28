@@ -3,7 +3,9 @@
 namespace App\Livewire\Facturacion;
 
 use App\Models\Facturacion\Despatche;
+use App\Services\SunatServiceGlobal;
 use App\Services\SunatServiceGre;
+use Greenter\Model\DocumentInterface;
 use Greenter\Report\XmlUtils;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -15,7 +17,7 @@ class DespatcheLive extends Component
 {
     use Toast;
     use WithPagination, WithoutUrlPagination;
-    public string $title = 'Guia de Transportista';
+    public string $title = 'GUIA DE REMICION TRANSPORTISTA';
     public string $sub_title = 'Modulo de facturacion';
     public int $perPage = 10;
 
@@ -28,7 +30,7 @@ class DespatcheLive extends Component
     public function xmlGenerate(Despatche $despatche)
     {
         $company = $despatche->company;
-        $sunat = new SunatServiceGre();
+        $sunat = new SunatServiceGlobal();
         $api = $sunat->getSee($company);
         $despatch = $sunat->getDespatch($despatche);
         $xml = $api->getXmlSigned($despatch);
@@ -50,17 +52,30 @@ class DespatcheLive extends Component
     {
         //($despatche);
         $company = $despatche->company;
-        $sunat = new SunatServiceGre();
-        $despatch = $sunat->getDespatch($despatche);
-   
+        $sunat = new SunatServiceGlobal();
+        $guiaT = $sunat->getDespatch();
         $api = $sunat->getSeeApi($company);
-        
-        $result = $api->send($despatch);
-        
+        $result = $api->send($guiaT);
         $ticket = $result->getTicket();
-        dd($ticket);
-    }
+        $result = $api->getStatus($ticket);
+        $response = $sunat->sunatResponse($result);
 
+        if ($response['success']) {
+            $despatche->cdr_description = $response['cdrResponse']['description'];
+            $despatche->cdr_code = $response['cdrResponse']['code'];
+            $despatche->cdr_note = $response['cdrResponse']['notes'];
+            $despatche->cdr_path = 'cdr/' . 'R-' . $despatche->company->ruc . '-' . $despatche->tipoDoc . '-' . $despatche->serie . '-' . $despatche->correlativo . '.zip';
+            $despatche->save();
+            $cdr = $result->getCdrZip();
+            Storage::disk('public')->put($despatche->cdr_path, $cdr );
+            $this->toast('success', 'Comprobante enviado a la sunat');
+        } else {
+            $despatche->errorCode = $response['error']['code'];
+            $despatche->errorMessage = $response['error']['message'];
+            $despatche->save();
+            $this->toast('error', 'Error al enviar el comprobante a la sunat');
+        }
+    }
     public function downloadCdrFile(Despatche $despatche)
     {
         if (Storage::exists($despatche->cdr_path)) {

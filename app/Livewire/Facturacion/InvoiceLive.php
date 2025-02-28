@@ -60,14 +60,14 @@ class InvoiceLive extends Component
         $xml = Storage::disk('public')->get($invoice->xml_path);
         $result = $see->sendXmlFile($xml);
         $response = $sunat->sunatResponse($result);
-        //dd($response);
         if ($response['success']) {
             $invoice->cdr_description = $response['cdrResponse']['description'];
             $invoice->cdr_code = $response['cdrResponse']['code'];
             $invoice->cdr_note = $response['cdrResponse']['notes'];
             $invoice->cdr_path = 'cdr/' . 'R-' . $invoice->company->ruc . '-' . $invoice->tipoDoc . '-' . $invoice->serie . '-' . $invoice->correlativo . '.zip';
             $invoice->save();
-            Storage::disk('public')->put($invoice->cdr_path, $response['cdrResponse']['cdrZip']);
+            $cdr = $result->getCdrZip();
+            Storage::disk('public')->put($invoice->cdr_path, $cdr);
             $this->toast('success', 'Comprobante enviado a la sunat');
         } else {
             $invoice->errorCode = $response['error']['code'];

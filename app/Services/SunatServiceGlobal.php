@@ -1,10 +1,11 @@
 <?php
-
 namespace App\Services;
 
 use DateTime;
 use Greenter\Api;
 use Greenter\Model\Client\Client;
+use Greenter\Model\Despatch\AdditionalDoc;
+use Greenter\Model\Despatch\Transportist;
 use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
 use Greenter\Model\Sale\FormaPagos\FormaPagoCredito;
 use Greenter\See;
@@ -149,7 +150,7 @@ class SunatServiceGlobal
     public function getLegends($legends): array
     {
         $legends = json_decode($legends);
-        $items = [];
+        $items   = [];
         foreach ($legends as $legend) {
             $legend = $legend;
             $item   = (new \Greenter\Model\Sale\Legend())
@@ -162,12 +163,12 @@ class SunatServiceGlobal
     public function getDetraccion($data): \Greenter\Model\Sale\Detraction
     {
 
-            return (new \Greenter\Model\Sale\Detraction())
-                ->setCodBienDetraccion($data->codBienDetraccion)
-                ->setCodMedioPago($data->codMedioPago)
-                ->setCtaBanco($data->company->ctaBanco)
-                ->setPercent($data->setPercent ?? 12)
-                ->setMount($data->setMount ?? 47.20);
+        return (new \Greenter\Model\Sale\Detraction())
+            ->setCodBienDetraccion($data->codBienDetraccion)
+            ->setCodMedioPago($data->codMedioPago)
+            ->setCtaBanco($data->company->ctaBanco)
+            ->setPercent($data->setPercent ?? 12)
+            ->setMount($data->setMount ?? 47.20);
     }
 
     public function getNote($note): \Greenter\Model\Sale\Note
@@ -193,38 +194,70 @@ class SunatServiceGlobal
             ->setLegends($this->getLegends($note->legends));
     }
 
-    public function Despatch(): \Greenter\Model\Despatch\Despatch
+    public function getDespatch(): \Greenter\Model\Despatch\Despatch
     {
+        $pagaflete = new Client();
+        $pagaflete->setTipoDoc("6")
+            ->setNumDoc("10436493903")
+            ->setRznSocial("Abel Arana");
+        $item = new AdditionalDoc();
+        $item->setTipo("01")
+            ->setTipoDesc("Factura")
+            ->setNro("F001-00000007")
+            ->setEmisor("10436493903");
+        $relDoc[]     = $item;
+        $destinatario = new Client();
+        $destinatario->setTipoDoc('6')
+            ->setNumDoc('10436493903')
+            ->setRznSocial('Abel Arana');
         return (new \Greenter\Model\Despatch\Despatch())
             ->setVersion('2022')
-            ->setTipoDoc('09')
-            ->setSerie('T001')
-            ->setCorrelativo('1')
-            ->setFechaEmision(new \DateTime())
+            ->setTipoDoc('31')
+            ->setSerie('V001')
+            ->setCorrelativo('123')
+            ->setFechaEmision(new DateTime('2025-02-27T17:22:47-05:00'))
+            ->setPagaFlete($pagaflete)
             ->setCompany($this->getGRECompany())
-            ->setDestinatario(new \Greenter\Model\Client\Client())
-            ->setEnvio(new \Greenter\Model\Despatch\Shipment())
+            ->setDestinatario($destinatario)
+            ->setEnvio($this->getEnvio())
+            ->setObservacion('glosa')
+            ->setAddDocs($relDoc)
             ->setDetails($this->getDespatchDetail());
     }
 
     public function getGRECompany(): \Greenter\Model\Company\Company
     {
         return (new \Greenter\Model\Company\Company())
-            ->setRuc('20123456789')
-            ->setRazonSocial('ACME SAC');
+            ->setRuc('10436493903')
+            ->setRazonSocial('Abel Arana');
     }
 
-    public function getEnvio(): \Greenter\Model\Despatch\Shipment
+    public function getEnvio()
     {
+        $indicadores[] = "SUNAT_Envio_IndicadorPagadorFlete_Remitente";
+        $transp        = new Transportist();
+        $transp->setTipoDoc('6')
+            ->setNumDoc("20541528092")
+            ->setRznSocial("Abel Arana")
+            ->setNroMtc("123456");
+        $remitente = new Client();
+        $remitente->setTipoDoc("6")
+            ->setNumDoc("10436493901")
+            ->setRznSocial("Abel Arana");
         return (new \Greenter\Model\Despatch\Shipment())
-            ->setModTraslado('01')
-            ->setCodTraslado('01')
-            ->setFecTraslado(new \DateTime())
+            ->setCodTraslado('01') //catalogo 20 sunat
+            ->setModTraslado('02') //catalogo 18 sunat
+            ->setFecTraslado(new \DateTime('2025-02-27T17:22:47-05:00'))
             ->setPesoTotal(10)
             ->setUndPesoTotal('KGM')
+            ->setTransportista($transp)
+            ->setVehiculo($this->getVehiculos())
+            ->setChoferes($this->getChoferes())
+            ->setIndicador($indicadores)
             ->setLlegada(new \Greenter\Model\Despatch\Direction('150101', 'AV LIMA'))
             ->setPartida(new \Greenter\Model\Despatch\Direction('150203', 'AV ITALIA'))
-            ->setTransportista($this->getTransportista());
+            ->setRemitente($remitente);
+
     }
 
     public function getTransportista(): \Greenter\Model\Despatch\Transportist
@@ -247,70 +280,10 @@ class SunatServiceGlobal
         return [$item];
     }
 
-    public function getDespatchTransport(): \Greenter\Model\Despatch\Despatch
-    {
-        $pagaflete = (new Client())
-            ->setTipoDoc("6")
-            ->setNumDoc("10436493903")
-            ->setRznSocial("Abel Arana");
-
-        $destinatario = (new Client())
-            ->setTipoDoc('6')
-            ->setNumDoc('10436493903')
-            ->setRznSocial('Abel Arana');
-
-        $item = (new \Greenter\Model\Despatch\AdditionalDoc())
-            ->setTipo("01")
-            ->setTipoDesc("Factura")
-            ->setNro("F001-00000007")
-            ->setEmisor("1043649390");
-        $despatch = new \Greenter\Model\Despatch\Despatch();
-
-        $despatch->setVersion('2022');
-        $despatch->setTipoDoc('31');
-        $despatch->setSerie('V001');
-        $despatch->setCorrelativo('1');
-        $despatch->setFechaEmision(new \DateTime());
-        $despatch->setPagaFlete($pagaflete);
-        $despatch->setCompany($this->getGRECompany());
-        $despatch->setDestinatario($destinatario);
-        $despatch->setEnvio(new \Greenter\Model\Despatch\Shipment());
-        $despatch->setObservacion('OBSERVACION');
-        $despatch->setAddDocs([$item]);
-        $despatch->setDetails($this->getDespatchDetail());
-        return $despatch;
-    }
-
-    public function getDespatchEnvio(): \Greenter\Model\Despatch\Shipment
-    {
-        $indicadores = ["SUNAT_Envio_IndicadorPagadorFlete_Remitente"];
-        $remitente   = (new Client())
-            ->setTipoDoc("6")
-            ->setNumDoc("10436493901")
-            ->setRznSocial("Abel Arana");
-
-        $shipment = new \Greenter\Model\Despatch\Shipment();
-        $shipment->setModTraslado('01');
-        $shipment->setCodTraslado('01');
-        $shipment->setFecTraslado(new \DateTime());
-        $shipment->setPesoTotal(10);
-        $shipment->setUndPesoTotal('KGM');
-        $shipment->setLlegada(new \Greenter\Model\Despatch\Direction('150101', 'AV LIMA'));
-        $shipment->setPartida(new \Greenter\Model\Despatch\Direction('150203', 'AV ITALIA'));
-        $shipment->setTransportista($this->getTransportista());
-        $shipment->setVehiculo($this->getVehiculos());
-        $shipment->setChoferes($this->getChoferes());
-        $shipment->setIndicador($indicadores);
-        $shipment->setRemitente($remitente);
-        return $shipment;
-    }
-
     public function getVehiculos(): \Greenter\Model\Despatch\Vehicle
     {
         $vehiculos = collect([
-            ['placa' => 'A1'],
-            ['placa' => 'A2'],
-            ['placa' => 'A3'],
+            ['placa' => 'ABC123'],
         ]);
 
         $secundarios = $vehiculos->slice(1)->map(function ($item) {
@@ -325,8 +298,7 @@ class SunatServiceGlobal
     public function getChoferes(): array
     {
         $choferes = collect([
-            ['tipoDoc' => '1', 'numDoc' => '12345678', 'nombre' => 'JUAN PEREZ'],
-            ['tipoDoc' => '1', 'numDoc' => '87654321', 'nombre' => 'MARIA PEREZ'],
+            ['tipoDoc' => '1', 'numDoc' => '41234567', 'nombre' => 'JUAN PEREZ'],
         ]);
 
         $drivers = $choferes->map(function ($item, $key) {
@@ -334,7 +306,9 @@ class SunatServiceGlobal
                 ->setTipo($key === 0 ? 'Principal' : 'Secundario')
                 ->setTipoDoc($item['tipoDoc'])
                 ->setNroDoc($item['numDoc'])
-                ->setNombres($item['nombre']);
+                ->setLicencia('0001122020')
+                ->setNombres($item['nombre'])
+                ->setApellidos('Arana');
         })->toArray();
 
         return $drivers;
