@@ -1,18 +1,15 @@
 <div>
-    <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow progress-indicator>
-        <x-slot:menu>
-
-        </x-slot:menu>
+    <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator
+        progress-indicator>
         <x-mary-steps wire:model="step" steps-color="step-warning"
             class="p-2 my-5 border rounded-lg shadow-xl border-sky-500">
             <x-mary-step step="1" text="Remitente">
                 <div class="grid grid-cols-4 gap-1">
-                    <div class="grid col-span-2">
-                        <x-mary-input label="Numero de documento" wire:model.live='remitente_code'>
+                    <div class="grid col-span-4 md:col-span-2">
+                        <x-mary-input label="Numero de documento" wire:model='remitente_code'>
                             <x-slot:prepend>
-                                <x-mary-select wire:model.live='remitente_type_code' icon="o-user"
-                                    :options="$tipoDocuments" option-value="codigo" option-label="sigla"
-                                    class="rounded-e-none" />
+                                <x-mary-select wire:model='remitente_type_code' icon="o-user" :options="$tipoDocuments"
+                                    option-value="codigo" option-label="sigla" class="rounded-e-none" />
                             </x-slot:prepend>
                             <x-slot:append>
                                 <x-mary-button wire:click='searchRemitente' icon="o-magnifying-glass"
@@ -20,25 +17,24 @@
                             </x-slot:append>
                         </x-mary-input>
                     </div>
-                    <div class="grid col-span-2">
+                    <div class="grid col-span-4  md:col-span-2">
                         <x-mary-input label="Nombre/Raz. Social" wire:model='remitente_name' />
                     </div>
-                    <div class="grid col-span-3">
+                    <div class="grid col-span-4 md:col-span-3">
                         <x-mary-input label="Direccion" wire:model='remitente_address' />
                     </div>
-                    <div class="grid col-span-1">
+                    <div class="grid col-span-4 md:col-span-1">
                         <x-mary-input label="Celular" wire:model='remitente_phone' />
                     </div>
                 </div>
             </x-mary-step>
             <x-mary-step step="2" text="Destinatario">
                 <div class="grid grid-cols-4 gap-1">
-                    <div class="grid col-span-2">
+                    <div class="grid col-span-4 md:col-span-2">
                         <x-mary-input label="Numero de documento" wire:model='destinatario_code'>
                             <x-slot:prepend>
-                                <x-mary-select wire:model='destinatario_type_code' icon="o-user"
-                                option-value="codigo" option-label="sigla" :options="$tipoDocuments"
-                                    class="rounded-e-none" />
+                                <x-mary-select wire:model='destinatario_type_code' icon="o-user" option-value="codigo"
+                                    option-label="sigla" :options="$tipoDocuments" class="rounded-e-none" />
                             </x-slot:prepend>
                             <x-slot:append>
                                 <x-mary-button wire:click.prevent='searchDestinatario' icon="o-magnifying-glass"
@@ -46,47 +42,57 @@
                             </x-slot:append>
                         </x-mary-input>
                     </div>
-                    <div class="grid col-span-2">
+                    <div class="grid col-span-4 md:col-span-2">
                         <x-mary-input label="Nombre/Raz. Social" wire:model='destinatario_name' />
                     </div>
-                    <div class="grid col-span-8">
+                    <div class="grid col-span-4 md:col-span-2">
                         <hr />
                         <x-mary-toggle label="Reparto a domicilio" wire:model.live="isHome"
                             hint="Active para reparto a domicilio" />
                         <hr />
                     </div>
                     @if ($isHome)
-                    <div class="grid col-span-3">
+                    <div class="grid col-span-4 md:col-span-3">
                         <x-mary-input label="Direccion" wire:model='destinatario_address' />
                     </div>
-                    <div class="grid col-span-1">
+                    <div class="grid col-span-4 md:col-span-1">
                         <x-mary-input label="Celular" wire:model='destinatario_phone' />
                     </div>
                     @endif
                 </div>
             </x-mary-step>
             <x-mary-step step="3" text="Paquetes">
-                <div class="grid grid-cols-8 grid-rows-1 gap-1">
-                    <div>
-                        <x-mary-input label="CANT." wire:model="cantidad" class="text-xs rounded-r-lg" />
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-1">
+                    <div class="col-span-1 md:col-span-1">
+                        <div class="grid grid-cols-2 gap-1">
+                            <div>
+                                <x-mary-input label="CANT." wire:model="cantidad" class="text-xs rounded-r-lg" />
+                            </div>
+                            <div>
+                                <x-mary-select label="MEDIDA" :options="$unidadMedidas" wire:model="und_medida"
+                                    option-value="codigo" option-label="descripcion" />
+                            </div>
+                        </div>
+
                     </div>
-                    <div>
-                        <x-mary-select label="MEDIDA" :options="$unidadMedidas" wire:model="und_medida"
-                            option-value="codigo" option-label="descripcion" />
-                    </div>
-                    <div class="col-span-3">
+                    <div class="col-span-1 md:col-span-2">
                         <x-mary-input label="DESCRIPCION" wire:model="description" class="rounded-r-lg" />
                     </div>
-                    <div class="col-start-6">
-                        <x-mary-input label="PESO (KG)" wire:model="peso" suffix="KG" locale="es-PE" />
-                    </div>
-                    <div class="col-start-7">
-                        <x-mary-input label="MONTO" wire:model="amount" suffix="S/" />
-                    </div>
-                    <div class="flex items-end col-start-8">
-                        <x-mary-button icon="o-plus" wire:click='addPaquete' class="text-white rounded-lg bg-sky-500" />
-                        <x-mary-button icon="o-no-symbol" wire:click='resetPaquete'
-                            class="text-white bg-red-500 rounded-lg" />
+                    <div class="col-span-1 md:col-span-1">
+                        <div class="grid grid-cols-2 gap-1">
+                            <div>
+                                <x-mary-input label="PESO (KG)" wire:model="peso" suffix="KG" locale="es-PE" />
+                            </div>
+                            <div>
+                                <x-mary-input label="MONTO" wire:model="amount" suffix="S/" />
+                                <div>
+                                    <x-mary-button icon="o-plus" wire:click='addPaquete'
+                                        class="text-white rounded-lg bg-sky-500 btn-xs" />
+                                    <x-mary-button icon="o-no-symbol" wire:click='resetPaquete'
+                                        class="text-white bg-red-500 rounded-lg btn-xs" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="grid grid-cols-8 gap-1">
@@ -102,33 +108,33 @@
             </x-mary-step>
             <x-mary-step step="4" text="Destino" data-content="✓" step-classes="!step-success">
                 <div class="grid grid-cols-8 gap-1">
-                    <div class="grid col-span-3">
+                    <div class="grid col-span-4">
                         <x-mary-select label="Sucursal" icon="o-user" :options="$sucursales" class="rounded-r-lg"
                             wire:model.live="sucursal_dest_id" />
-                    </div>
-                    <div class="grid col-span-1">
-                    </div>
-                    <div class="grid col-span-2">
-                        @if (!$isHome)
-                        <x-mary-icon name="o-hashtag" label="PING" />
-                        <x-mary-pin ida="pin1" wire:model="pin1" size="3" numeric />
-                        @endif
-                    </div>
-                    <div class="grid col-span-2">
-                        @if (!$isHome)
-                        <x-mary-icon name="o-hashtag" label="CONFIRMACION" />
-                        <x-mary-pin ida="pin2" wire:model="pin2" size="3" numeric />
-                        @endif
-                    </div>
-                    <div class="grid col-span-4">
-                        <hr />
                         <x-mary-toggle label="Retorno de guia" wire:model="isReturn"
                             hint="Active para retorno de guia" />
-                        <hr />
                     </div>
+                    <div class="grid col-span-4">
+                        @if (!$isHome)
+                        <div class="grid grid-cols-1 md:grid-cols-2">
+                            <div>
+                                <x-mary-icon name="o-hashtag" label="PING" />
+                                <x-mary-pin ida="pin1" wire:model="pin1" size="3" hide hide-type="circle" />
+                            </div>
+                            <div>
+                                <x-mary-icon name="o-hashtag" label="CONFIRMACION" />
+                                <x-mary-pin ida="pin2" wire:model="pin2" size="3" hide hide-type="circle" />
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
                     <div class="grid col-span-4">
                         <x-mary-input label="Documento de traslado" wire:model="doc_traslado" class="rounded-r-lg"
                             inline />
+                    </div>
+                    <div class="grid col-span-4">
+
                     </div>
                     <div class="grid col-span-4">
                         <x-mary-textarea label="Glosa" wire:model="glosa" placeholder="Escribe una glosa"
@@ -154,7 +160,7 @@
             <x-mary-button label="Anterior" wire:click="prev" class='shadow-xl' />
             @endif
             @if ($step == 4)
-            <x-mary-button label="Finish" wire:click="finish" class='shadow-xl' />
+            <x-mary-button label="Confirmacion" wire:click="finish" class='shadow-xl' />
             @else
             <x-mary-button label="Siguiente" wire:click="next" class='shadow-xl' />
             @endif
@@ -162,92 +168,125 @@
     </x-mary-card>
 
     @if ($this->destinatario && $this->remitente && $this->paquetes)
-     <x-mary-modal wire:model="modalConfimation" persistent class="backdrop-blur" box-class="max-w-full max-h-full">
-        <div class="grid grid-cols-2 gap-2">
-            <div class="grid grid-cols-2 gap-2 p-2 border rounded-lg border-sky-500">
-                <div class="col-span-2">
+    <x-mary-modal wire:model="modalConfimation" class="backdrop-blur" box-class="max-w-full max-h-full" separator>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
+            <div class="grid grid-cols-2 md:grid-cols-2 gap-1">
+                <div class="col-span-2 md:col-span-1">
                     <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
+                    <ul>
+                        <li>{{ $this->remitente->name ?? 'name' }}</li>
+                        <li>{{ $this->remitente->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->remitente->code ??
+                            'code'
+                            }}</li>
+                        @if ($this->remitente->phone)
+                        <li>Telefono: {{ $this->remitente->phone }}</li>
+                        @endif
+
+                    </ul>
                 </div>
-                <div class="col-span-2">{{ $this->remitente->name ?? 'name' }}</div>
-                <div class="col-span-2">{{ $this->remitente->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->remitente->code ?? 'code' }}</div>
-                <div class="col-span-2">Telefono: {{ $this->remitente->phone ?? 'phone' }}</div>
-                <div  class="col-span-2">{{ Auth::user()->sucursal->name ?? 'sucursal' }}</div>
-                <div class="col-span-2">
+                <div class="col-span-2 md:col-span-1">
                     <x-mary-icon name="s-envelope" class="col-span-2 text-blue-500 text-md" label="DESTINATARIO" />
+                    <ul>
+                        <li>{{ $this->destinatario->name ?? 'name' }}</li>
+                        <li>{{ $this->destinatario->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->destinatario->code ??
+                            'code'
+                            }}</li>
+                        @if ($this->destinatario->phone)
+                        <li>Telefono: {{ $this->destinatario->phone }}</li>
+                        @endif
+                    </ul>
                 </div>
-                <div>{{ $this->destinatario->name ?? 'name' }}</div>
-                <div class="col-span-2">{{ $this->destinatario->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->destinatario->code ?? 'code' }}</div>
-                <div class="col-span-2">Telefono: {{ $this->destinatario->phone ?? 'phone' }}</div>
-                <div>{{ $this->sucursal_destino->name ?? 'sucursal' }}</div>
                 <div class="col-span-2">
                     <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
-                </div>
-                <div class="col-span-2">
                     <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped>
                     </x-mary-table>
-                </div>
-                <div class="text-right">Total</div>
-                <div class="text-right text-blue-500 border-t text-md">
-                    S/{{ number_format($paquetes->sum('sub_total'), 2) }}
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-2 p-2 border rounded-lg border-sky-500">
-                <div class="col-span-2">
-                    <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="ESTADO PAGO" />
-                </div>
-                <div class="col-span-2">
-                    <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$pagos" option-value="id"
-                        option-label="name" wire:model.live="estado_pago" />
-                </div>
-                @if ($estado_pago == 'PAGADO')
-                <div class="col-span-2">
-                    <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="TIPO COMPROBANTE" />
-                </div>
-                <div class="col-span-2">
-                    <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$comprobantes" option-value="id"
-                        option-label="name" wire:model.live="tipo_comprobante" />
-                </div>
-                @if ($tipo_comprobante != 'TICKET')
-                <div class="col-span-2">
-                    <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="DETALLE COMPROBANTE" />
-                </div>
-                <div class="col-span-2">
-                    <div class="grid grid-cols-4 gap-2 p-2 border rounded-lg border-sky-500">
-                        <div class="grid col-span-4 pt-2">
-                            <x-mary-input label="Numero de documento" wire:model.live='cliFacturacion_code'>
-                                <x-slot:prepend>
-                                    @php
-                                    if ($tipo_comprobante != 'FACTURA') {
-                                    $docsfact = [
-                                    ['id' => '1', 'name' => 'DNI cod(1)'],
-                                    ['id' => '6', 'name' => 'RUC cod(6)'],
-                                    ];
-                                    } else {
-                                    $docsfact = [['id' => '6', 'name' => 'RUC cod(6)']];
-                                    }
-                                    @endphp
-                                    <x-mary-select wire:model.live='cliFacturacion_type_code' icon="o-user"
-                                        :options="$docsfact" class="rounded-e-none" />
-                                </x-slot:prepend>
-                                <x-slot:append>
-                                    <x-mary-button wire:click='searchFacturacion' icon="o-magnifying-glass"
-                                        class="btn-primary rounded-s-none" />
-                                </x-slot:append>
-                            </x-mary-input>
-                        </div>
-                        <div class="grid col-span-2 pt-2">
-                            <x-mary-input label="Nombre/Raz. Social" wire:model.live='cliFacturacion_name'>
-                            </x-mary-input>
-                        </div>
-                        <div class="grid col-span-2 pt-2">
-                            <x-mary-input label="Direccion" wire:model.live='cliFacturacion_address'>
-                            </x-mary-input>
-                        </div>
+                    <div class="text-right text-blue-500 border-t text-md">
+                        Total S/{{ number_format($paquetes->sum('sub_total'), 2) }}
                     </div>
                 </div>
-                @endif
-                @endif
             </div>
+
+            <div class="grid grid-cols-1 gap-2 p-2 border rounded-lg border-sky-500 content-start">
+                <div class="flex flex-col space-y-2">
+                    <div class="flex items-start">
+                        <x-mary-icon name="s-envelope" class="text-green-500 text-md mt-1" label="ESTADO PAGO" />
+                    </div>
+
+                    <div class="w-full">
+                        <x-mary-radio
+                            class="w-full max-w-full py-0 text-xs"
+                            :options="$pagos"
+                            option-value="id"
+                            option-label="name"
+                            wire:model.live="estado_pago" />
+                    </div>
+
+                    @if ($estado_pago == 'PAGADO')
+                        <div class="flex flex-col space-y-2">
+                            <div class="flex items-start">
+                                <x-mary-icon name="s-envelope" class="text-red-500 text-md mt-1" label="TIPO COMPROBANTE" />
+                            </div>
+
+                            <x-mary-radio
+                                class="w-full max-w-full py-0 text-xs"
+                                :options="$comprobantes"
+                                option-value="id"
+                                option-label="name"
+                                wire:model.live="tipo_comprobante" />
+
+                            @if ($tipo_comprobante != 'TICKET')
+                                <div class="flex items-start">
+                                    <x-mary-icon name="s-envelope" class="text-green-500 text-md mt-1" label="DETALLE COMPROBANTE" />
+                                </div>
+
+                                <div class="grid grid-cols-4 gap-2 p-2 border rounded-lg border-sky-500">
+                                    <div class="col-span-4">
+                                        <x-mary-input
+                                            label="Numero de documento"
+                                            wire:model.live='cliFacturacion_code'
+                                            class="w-full">
+                                            <x-slot:prepend>
+                                                @php
+                                                $docsfact = ($tipo_comprobante != 'FACTURA')
+                                                    ? [
+                                                        ['id' => '1', 'name' => 'DNI cod(1)'],
+                                                        ['id' => '6', 'name' => 'RUC cod(6)'],
+                                                      ]
+                                                    : [['id' => '6', 'name' => 'RUC cod(6)']];
+                                                @endphp
+                                                <x-mary-select
+                                                    wire:model.live='cliFacturacion_type_code'
+                                                    icon="o-user"
+                                                    :options="$docsfact"
+                                                    class="rounded-e-none" />
+                                            </x-slot:prepend>
+                                            <x-slot:append>
+                                                <x-mary-button
+                                                    wire:click='searchFacturacion'
+                                                    icon="o-magnifying-glass"
+                                                    class="btn-primary rounded-s-none" />
+                                            </x-slot:append>
+                                        </x-mary-input>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <x-mary-input
+                                            label="Nombre/Raz. Social"
+                                            wire:model.live='cliFacturacion_name'
+                                            class="w-full" />
+                                    </div>
+                                    <div class="col-span-2">
+                                        <x-mary-input
+                                            label="Direccion"
+                                            wire:model.live='cliFacturacion_address'
+                                            class="w-full" />
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+
         </div>
         <x-slot:actions>
             <x-mary-button label="Cancel" @click="$wire.modalConfimation = false" />

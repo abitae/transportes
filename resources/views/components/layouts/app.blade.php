@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'ELIZA-CARGO v1.0') }}</title>
     <link rel="icon" href="img/logo01.ico">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -35,7 +35,7 @@
             </label>
 
             {{-- Brand --}}
-            <img src="{{ asset('img/logo01.png') }}" alt='Infinity.ut' class='w-auto h-10'>
+            <img src="{{ asset('img/logo01.png') }}" alt='Infinity.ut' class='w-auto h-10 invisible md:visible'>
 
         </x-slot:brand>
 
@@ -56,7 +56,8 @@
             </x-mary-button>
             <x-mary-dropdown>
                 <x-slot:trigger>
-                    <x-mary-button icon="o-user" class="relative" label="{{ auth()->user()->name }}" responsive no-wire-navigate />
+                    <x-mary-button icon="o-user" class="relative" label="{{ auth()->user()->name }}" responsive
+                        no-wire-navigate />
                 </x-slot:trigger>
                 <x-mary-menu-item icon="o-user" title="Perfil" :href="route('profile.edit')" />
                 @if ($user = auth()->user())
@@ -73,11 +74,10 @@
         <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100">
             <x-mary-menu activate-by-route>
                 <x-mary-menu-separator />
-                <x-mary-menu-item title="Dashboard" icon="o-home" link="{{ route('dashboard') }}" />
+                <x-mary-menu-item title="Dashboard" icon="o-rectangle-group" link="{{ route('dashboard') }}" />
                 <x-mary-menu-separator />
                 <x-mary-menu-item title="Caja" icon="o-banknotes" link="{{ route('caja.index') }}" />
-                <x-mary-menu-item title="Configuracion sucursal" icon="o-banknotes"
-                    link="{{ route('config.configuration') }}" />
+                <x-mary-menu-item title="Salidas" icon="s-paper-airplane" link="{{ route('config.configuration') }}" />
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Paquetes" icon="s-truck">
                     <x-mary-menu-item title="Registrar paquetes" icon="o-cursor-arrow-rays"
@@ -92,19 +92,22 @@
                         link="{{ route('package.home') }}" />
                     <x-mary-menu-item title="Paquetes retorno" icon="o-cursor-arrow-ripple"
                         link="{{ route('package.return') }}" />
-                    <x-mary-menu-item title="Paquetes entregados" icon="o-arrow-path"
+                    <x-mary-menu-item title="Paquetes entregados" icon="m-table-cells"
                         link="{{ route('package.record') }}" />
                     <x-mary-menu-item title="Clientes" icon="o-user-group" link="{{ route('package.customer') }}" />
-                    <x-mary-menu-item title="Manifiesto" icon="o-user-group" link="{{ route('package.maniesto') }}" />
+                    <x-mary-menu-item title="Manifiesto" icon="s-inbox-arrow-down"
+                        link="{{ route('package.maniesto') }}" />
                 </x-mary-menu-sub>
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="Facturacion" icon="s-banknotes">
-                    <x-mary-menu-item title="Emitir factura" icon="o-ticket"
+                    <x-mary-menu-item title="Emitir Factura" icon="o-ticket"
+                        link="{{ route('facturacion.create-invoice') }}" />
+                    <x-mary-menu-item title="Emitir Boleta" icon="o-ticket"
                         link="{{ route('facturacion.create-invoice') }}" />
                     <x-mary-menu-item title="Emitir Nota Credito" icon="o-ticket"
                         link="{{ route('facturacion.create-note') }}" />
 
-                    <x-mary-menu-item title="Ver Boletas y facturas" icon="o-ticket"
+                    <x-mary-menu-item title="Ver Boletas y facturas" icon="c-ticket"
                         link="{{ route('facturacion.invoice') }}" />
                     <x-mary-menu-item title="Ver Ticket Envio" icon="c-ticket"
                         link="{{ route('facturacion.ticket') }}" />
@@ -123,9 +126,11 @@
                     <x-mary-menu-item title="Choferes" icon="o-user-circle"
                         link="{{ route('config.transportista') }}" />
                 </x-mary-menu-sub>
-
                 <x-mary-menu-separator />
                 <x-mary-menu-item title="Messages" icon="o-envelope" link="{{ route('message.frontend') }}" />
+                <x-mary-menu-item title="Reclamaciones" icon="o-envelope" link="{{ route('message.frontend') }}" />
+                <x-mary-menu-item title="Cotizaciones" icon="o-envelope" link="{{ route('message.frontend') }}" />
+                <x-mary-menu-separator />
             </x-mary-menu>
         </x-slot:sidebar>
         <x-slot:content>
@@ -135,5 +140,4 @@
     <x-mary-toast />
     <x-mary-spotlight />
 </body>
-
 </html>
