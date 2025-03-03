@@ -32,8 +32,8 @@ class DespatcheLive extends Component
         $company = $despatche->company;
         $sunat = new SunatServiceGlobal();
         $api = $sunat->getSee($company);
-        $despatch = $sunat->getDespatch($despatche);
-        $xml = $api->getXmlSigned($despatch);
+        $guiaT = $sunat->getDespatch($despatche);
+        $xml = $api->getXmlSigned($guiaT);
         $hash = (new XmlUtils())->getHashSign($xml);
         $despatche->xml_hash = $hash;
         $despatche->xml_path = 'xml/' . $despatche->company->ruc . '-' . $despatche->tipoDoc . '-' . $despatche->serie . '-' . $despatche->correlativo . '.xml';
@@ -50,12 +50,11 @@ class DespatcheLive extends Component
 
     public function sendXmlFile(Despatche $despatche)
     {
-        //($despatche);
         $company = $despatche->company;
         $sunat = new SunatServiceGlobal();
         $guiaT = $sunat->getDespatch();
         $api = $sunat->getSeeApi($company);
-        $result = $api->send($guiaT);
+        $result = $api->send($guiaT);   
         $ticket = $result->getTicket();
         $result = $api->getStatus($ticket);
         $response = $sunat->sunatResponse($result);

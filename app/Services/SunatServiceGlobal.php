@@ -194,12 +194,13 @@ class SunatServiceGlobal
             ->setLegends($this->getLegends($note->legends));
     }
 
-    public function getDespatch(): \Greenter\Model\Despatch\Despatch
+    public function getDespatch($guiaT): \Greenter\Model\Despatch\Despatch
     {
+
         $pagaflete = new Client();
-        $pagaflete->setTipoDoc("6")
-            ->setNumDoc("10436493903")
-            ->setRznSocial("Abel Arana");
+        $pagaflete->setTipoDoc($guiaT->flete->type_code ?? null)
+            ->setNumDoc($guiaT->flete->code ?? null)
+            ->setRznSocial($guiaT->flete->name ?? null);
         $item = new AdditionalDoc();
         $item->setTipo("01")
             ->setTipoDesc("Factura")
@@ -207,49 +208,50 @@ class SunatServiceGlobal
             ->setEmisor("10436493903");
         $relDoc[]     = $item;
         $destinatario = new Client();
-        $destinatario->setTipoDoc('6')
-            ->setNumDoc('10436493903')
-            ->setRznSocial('Abel Arana');
+        $destinatario->setTipoDoc($guiaT->destinatario->type_code ?? null)
+            ->setNumDoc($guiaT->destinatario->type_code ?? null)
+            ->setRznSocial($guiaT->destinatario->type_code ?? null);
         return (new \Greenter\Model\Despatch\Despatch())
             ->setVersion('2022')
-            ->setTipoDoc('31')
-            ->setSerie('V001')
-            ->setCorrelativo('123')
-            ->setFechaEmision(new DateTime('2025-02-27T17:22:47-05:00'))
+            ->setTipoDoc($guiaT->tipoDoc)
+            ->setSerie($guiaT->serie)
+            ->setCorrelativo($guiaT->correlativo)
+            ->setFechaEmision(new DateTime($guiaT->fechaEmision))
             ->setPagaFlete($pagaflete)
-            ->setCompany($this->getGRECompany())
+            ->setCompany($this->getGRECompany($guiaT->company))
             ->setDestinatario($destinatario)
-            ->setEnvio($this->getEnvio())
+            ->setEnvio($this->getEnvio($guiaT))
             ->setObservacion('glosa')
             ->setAddDocs($relDoc)
             ->setDetails($this->getDespatchDetail());
     }
 
-    public function getGRECompany(): \Greenter\Model\Company\Company
+    public function getGRECompany($company): \Greenter\Model\Company\Company
     {
         return (new \Greenter\Model\Company\Company())
-            ->setRuc('10436493903')
-            ->setRazonSocial('Abel Arana');
+            ->setRuc($company->ruc)
+            ->setRazonSocial($company->razonSocial);
     }
 
-    public function getEnvio()
+    public function getEnvio($guiaT)
     {
+        dd($guiaT);
         $indicadores[] = "SUNAT_Envio_IndicadorPagadorFlete_Remitente";
         $transp        = new Transportist();
         $transp->setTipoDoc('6')
-            ->setNumDoc("20541528092")
-            ->setRznSocial("Abel Arana")
-            ->setNroMtc("123456");
+            ->setNumDoc($guiaT->$company->ruc)
+            ->setRznSocial($guiaT->$company->razonSocial)
+            ->setNroMtc($guiaT->$company->nroMtc ?? "123456");
         $remitente = new Client();
-        $remitente->setTipoDoc("6")
-            ->setNumDoc("10436493901")
-            ->setRznSocial("Abel Arana");
+        $remitente->setTipoDoc($guiaT->remitente->type_code)
+            ->setNumDoc($guiaT->remitente->code)
+            ->setRznSocial($guiaT->remitente->name);
         return (new \Greenter\Model\Despatch\Shipment())
             ->setCodTraslado('01') //catalogo 20 sunat
             ->setModTraslado('02') //catalogo 18 sunat
-            ->setFecTraslado(new \DateTime('2025-02-27T17:22:47-05:00'))
-            ->setPesoTotal(10)
-            ->setUndPesoTotal('KGM')
+            ->setFecTraslado(new \DateTime($guiaT->created_at))
+            ->setPesoTotal(100)
+            ->setUndPesoTotal($guiaT->undPesoTotal)
             ->setTransportista($transp)
             ->setVehiculo($this->getVehiculos())
             ->setChoferes($this->getChoferes())
