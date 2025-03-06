@@ -18,7 +18,7 @@ trait InvoiceTrait
     public function storeInvoce(Encomienda $encomienda)
     {
         if ($encomienda->tipo_comprobante != 'TICKET') {
-            $this->setInvoice($encomienda); // Genera factura o boleta
+            $this->setInvoice($encomienda,$encomienda->tipo_comprobante); // Genera factura o boleta
         }
         $this->setTicket($encomienda);   // Genera ticket
         $this->setGuiTrans($encomienda); // Genera guia transportista
@@ -76,7 +76,7 @@ trait InvoiceTrait
         ]);
     }
 
-    private function setInvoice(Encomienda $encomienda)
+    private function setInvoice(Encomienda $encomienda,$tipo_comprobante)
     {
         $montoTotalIncIGV = $encomienda->paquetes->sum('sub_total');
         $mtoOperGravadas = round($montoTotalIncIGV / 1.18, 2);
@@ -84,7 +84,7 @@ trait InvoiceTrait
         $formatter = new NumeroALetras();
         $monto_letras = $formatter->toInvoice($montoTotalIncIGV, 2, 'SOLES');
 
-        $invoiceData = $this->getInvoiceData($encomienda, $montoTotalIncIGV, $mtoOperGravadas, $igv, $monto_letras);
+        $invoiceData = $this->getInvoiceData($tipo_comprobante,$encomienda, $montoTotalIncIGV, $mtoOperGravadas, $igv, $monto_letras);
         $invoice = Invoice::create($invoiceData);
 
         foreach ($encomienda->paquetes as $paquete) {
@@ -92,7 +92,7 @@ trait InvoiceTrait
         }
     }
 
-    private function getInvoiceData($encomienda, $montoTotalIncIGV, $mtoOperGravadas, $igv, $monto_letras)
+    private function getInvoiceData($tipo_comprobante,$encomienda, $montoTotalIncIGV, $mtoOperGravadas, $igv, $monto_letras)
     {
         $company = Company::first();
         $data = [
@@ -117,7 +117,7 @@ trait InvoiceTrait
             'code' => '1000',
             'value' => $monto_letras,
         ];
-        if ($encomienda->tipo_comprobante == 'BOLETA') {
+        if ($tipo_comprobante == 'BOLETA') {
             $data['serie'] = Auth::user()->sucursal->serieBoleta;
             $data['tipoDoc'] = '03';
             $data['tipoOperacion'] = '0101';

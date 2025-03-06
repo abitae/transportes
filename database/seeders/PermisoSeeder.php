@@ -16,7 +16,7 @@ class PermisoSeeder extends Seeder
      */
     public function run(): void
     {
-        
+
         $permissions = [
             'caja.view', 'caja.create', 'caja.edit', 'caja.delete',
             'config_sucursal.view', 'config_sucursal.create', 'config_sucursal.edit', 'config_sucursal.delete',
@@ -36,16 +36,6 @@ class PermisoSeeder extends Seeder
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission, 'guard_name' => 'web']);
         }
-        
-        $role = Role::create(['name' => 'Administrador', 'guard_name' => 'web']);  
-        $role->syncPermissions(Permission::all());
-        User::factory()->create([
-            'name'        => 'Administrador',
-            'email'       => 'administrador@brayanbruhs.pe',
-            'sucursal_id' => Sucursal::first()->id,
-            'isActive'    => true,
-            'password'    => bcrypt('password'),
-        ])->assignRole('Administrador');
         $role = Role::create(['name' => 'SuperAdmin', 'guard_name' => 'web']);
         Permission::create(['name' => 'super.admin', 'guard_name' => 'web']);
         $role->syncPermissions(Permission::all());
@@ -56,6 +46,25 @@ class PermisoSeeder extends Seeder
             'isActive'    => true,
             'password'    => bcrypt('lobomalo123'),
         ])->assignRole('SuperAdmin');
-        
+
+        $role = Role::create(['name' => 'Administrador', 'guard_name' => 'web']);
+        $role->syncPermissions(Permission::all());
+        User::factory()->create([
+            'name'        => 'Administrador',
+            'email'       => 'admin.l28@brayanbruhs.pe',
+            'sucursal_id' => 1,
+            'isActive'    => true,
+            'password'    => bcrypt('password'),
+        ])->assignRole('Administrador');
+
+        User::factory()->create([
+            'name'        => 'Administrador',
+            'email'       => 'admin.villegas@brayanbruhs.pe',
+            'sucursal_id' => 2,
+            'isActive'    => true,
+            'password'    => bcrypt('password'),
+        ])->assignRole('Administrador');
+
+
     }
 }

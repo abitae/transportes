@@ -106,9 +106,6 @@
                                 @endif
                             </div>
                             <div class="row-start-3">
-                                <x-mary-button label='Editar' icon="o-pencil-square"
-                                    wire:click="editEncomienda({{ $stuff->id }})" spinner
-                                    class="w-full text-white bg-green-500 btn-xs" />
 
                             </div>
                             <div class="row-start-3">

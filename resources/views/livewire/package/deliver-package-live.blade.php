@@ -224,7 +224,7 @@
                                 <div class="col-span-3">{{ $encomienda->remitente->name ?? 'name' }}
                                 </div>
                                 <div class="row-start-2">
-                                    {{ strtoupper($encomienda->remitente->type_code) ?? 'type_code' }}
+                                    {{ $encomienda->remitente->type_code ? 'DNI' : 'RUC' }}
                                 </div>
                                 <div class="row-start-2">{{ $encomienda->remitente->code ?? 'code' }}
                                 </div>
@@ -239,8 +239,7 @@
                                 <div class="col-span-3">{{ $encomienda->destinatario->name ?? 'name' }}
                                 </div>
                                 <div class="row-start-2">
-                                    {{ strtoupper($encomienda->destinatario->type_code) ?? 'type_code'
-                                    }}
+                                    {{ $encomienda->destinatario->type_code ? 'DNI' : 'RUC' }}
                                 </div>
                                 <div class="row-start-2">{{ $encomienda->destinatario->code ?? 'code' }}
                                 </div>
@@ -282,10 +281,7 @@
                             <x-mary-icon name="s-envelope" class="text-blue-500 text-md" label="DETALLE PAGO" />
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$pagos" option-value="id"
                                 option-label="name" wire:model.live="estado_pago" disabled />
-
-
                             @if ($estado_pago == 'CONTRA ENTREGA')
-
                             <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="TIPO COMPROBANTE" />
                             <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$comprobantes"
                                 option-value="id" option-label="name" wire:model.live="tipo_comprobante" />
@@ -364,18 +360,19 @@
                 </div>
                 <div>
                     <x-mary-button icon="o-clipboard" link="{{ route('package.register') }}" spinner label="NUEVO"
-                     class="text-white bg-blue-500 btn-xl" />
+                        class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>
                     <x-mary-button icon="s-list-bullet" link="{{ route('package.send') }}" spinner label="LISTA E"
-                     class="text-white bg-blue-500 btn-xl" />
+                        class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>
                     <x-mary-button icon="o-cursor-arrow-ripple" link="{{ route('package.deliver') }}" no-wire-navigate
                         label="ENTREGAR" spinner class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>
-
+                    <x-mary-button icon="o-banknotes" link="{{ route('caja.index') }}" no-wire-navigate label="VER CAJA"
+                        spinner class="text-white bg-blue-500 btn-xl" />
                 </div>
             </div>
         </x-mary-card>

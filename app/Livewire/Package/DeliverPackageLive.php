@@ -129,7 +129,7 @@ class DeliverPackageLive extends Component
             $this->success('Paquete entregado correctamente');
         } else {
             if ($this->tipo_comprobante != 'TICKET') {
-                $this->setInvoice($this->encomienda);
+                $this->setInvoice($this->encomienda,$this->tipo_comprobante);
             }
             $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
             $this->entryForm->fill([
@@ -164,6 +164,7 @@ class DeliverPackageLive extends Component
     private function updateEncomiendaStatus($status, $tipo_comprobante = null)
     {
         $this->encomienda->estado_encomienda = $status;
+        $this->encomienda->estado_pago       = 'PAGADO';
         if ($tipo_comprobante) {
             $this->encomienda->tipo_comprobante = $tipo_comprobante;
         }

@@ -204,7 +204,7 @@
                                 <div class="col-span-3">{{ $encomienda->remitente->name ?? 'name' }}
                                 </div>
                                 <div class="row-start-2">
-                                    {{ strtoupper($encomienda->remitente->type_code) ?? 'type_code' }}
+                                    {{ $encomienda->remitente->type_code ? 'DNI' : 'RUC' }}
                                 </div>
                                 <div class="row-start-2">{{ $encomienda->remitente->code ?? 'code' }}
                                 </div>
@@ -219,8 +219,7 @@
                                 <div class="col-span-3">{{ $encomienda->destinatario->name ?? 'name' }}
                                 </div>
                                 <div class="row-start-2">
-                                    {{ strtoupper($encomienda->destinatario->type_code) ?? 'type_code'
-                                    }}
+                                    {{ $encomienda->destinatario->type_code ? 'DNI' : 'RUC' }}
                                 </div>
                                 <div class="row-start-2">{{ $encomienda->destinatario->code ?? 'code' }}
                                 </div>
@@ -255,22 +254,6 @@
                     </div>
                 </div>
             </div>
-            @php
-            $pagos = [
-            ['id' => 'PAGADO', 'name' => 'PAGADO'],
-            ['id' => 'CONTRA ENTREGA', 'name' => 'CONTRA ENTREGA'],
-            ];
-            $comprobantes = [
-            ['id' => 'BOLETA', 'name' => 'BOLETA'],
-            ['id' => 'FACTURA', 'name' => 'FACTURA'],
-            ['id' => 'TICKET', 'name' => 'TICKET'],
-            ];
-            $docs = [
-            ['id' => 'dni', 'name' => 'DNI'],
-            ['id' => 'ruc', 'name' => 'RUC'],
-            ['id' => 'ce', 'name' => 'CE'],
-            ];
-            @endphp
             <div class="grid col-span-4 space-x-2">
                 <div class="grid grid-cols-8 border rounded-lg border-sky-500">
                     <div class="grid col-span-8 space-y-2">
@@ -318,8 +301,6 @@
                             </div>
                             @endif
                             @endif
-                            @include('livewire.package.descuento')
-
                         </x-mary-card>
                     </div>
                 </div>
@@ -330,6 +311,50 @@
             </x-slot:actions>
         </div>
     </x-mary-modal>
-
+    <x-mary-modal wire:model.live="modalFinal" persistent class="backdrop-blur" box-class="w-full">
+        <x-mary-card shadow>
+            <div class="grid grid-cols-4 gap-0 border-sky-500">
+                <div>
+                    @if ($this->encomienda->ticket)
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="TICKET"
+                        link="/ticket/80mm/{{ $this->encomienda->ticket->id }}" spinner
+                        class="text-white bg-green-500 btn-xl" />
+                    @endif
+                </div>
+                <div>
+                    @if ($this->encomienda->invoice)
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="RECIBO"
+                        link="/invoice/80mm/{{ $this->encomienda->invoice->id }}" spinner
+                        class="text-white bg-cyan-500 btn-xl" />
+                    @endif
+                </div>
+                <div>
+                    @if ($this->encomienda->despatche)
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="GUIA T"
+                        link="/despache/80mm/{{ $this->encomienda->despatche->id }}" spinner
+                        class="text-white bg-blue-500 btn-xl" />
+                    @endif
+                </div>
+                <div>
+                </div>
+                <div>
+                    <x-mary-button icon="o-clipboard" link="{{ route('package.register') }}" spinner label="NUEVO"
+                        class="text-white bg-blue-500 btn-xl" />
+                </div>
+                <div>
+                    <x-mary-button icon="s-list-bullet" link="{{ route('package.send') }}" spinner label="LISTA E"
+                        class="text-white bg-blue-500 btn-xl" />
+                </div>
+                <div>
+                    <x-mary-button icon="o-cursor-arrow-ripple" link="{{ route('package.deliver') }}" no-wire-navigate
+                        label="ENTREGAR" spinner class="text-white bg-blue-500 btn-xl" />
+                </div>
+                <div>
+                    <x-mary-button icon="o-banknotes" link="{{ route('caja.index') }}" no-wire-navigate label="VER CAJA"
+                        spinner class="text-white bg-blue-500 btn-xl" />
+                </div>
+            </div>
+        </x-mary-card>
+    </x-mary-modal>
     @endisset
 </div>

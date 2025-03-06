@@ -55,7 +55,7 @@
       <tr>
         <td class="subtitulo width-first text-bold">Fecha de registro :</td>
         <td class="subtitulo text-bold">{{
-          \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d'); }}</td>
+          \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d') }}</td>
       </tr>
   </table>
 </body>

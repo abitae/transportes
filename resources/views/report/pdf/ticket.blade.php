@@ -119,7 +119,7 @@
 
       <tr>
         <td colspan="2" class="subtitulo"> Fecha Emisión: {{
-          \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d H:s'); }} </td>
+          \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d H:s') }} </td>
       </tr>
 
       <tr>

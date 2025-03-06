@@ -2,6 +2,8 @@
 namespace App\Livewire\Package;
 
 use App\Livewire\Forms\CustomerForm;
+use App\Livewire\Forms\EntryCajaForm;
+use App\Livewire\Forms\ExitCajaForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
@@ -17,6 +19,8 @@ class HomePackageLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
     use InvoiceTrait;
+    public EntryCajaForm $entryForm;
+    public ExitCajaForm $exitForm;
     public CustomerForm $customerFact;
     public $title     = 'ENTREGAR PAQUETES DOMICILIO';
     public $sub_title = 'Modulo de entrega de paquetes domicilio';
@@ -36,8 +40,10 @@ class HomePackageLive extends Component
     public $tipo_comprobante;
     public $caja;
     public bool $modalConfimation = false;
-    public bool $modalDescuento = false;
+    public bool $modalDescuento   = false;
     public $monto_descuento;
+    public $motivo_descuento;
+    public $modalFinal;
 
     public function mount()
     {
@@ -47,8 +53,8 @@ class HomePackageLive extends Component
         if (! $this->caja) {
             $this->redirectRoute('caja.index');
         }
-        $this->sucursal_id   = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
-        $this->date_ini      = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
+        $this->sucursal_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
+        $this->date_ini    = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
         //$this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
     }
 
@@ -61,14 +67,29 @@ class HomePackageLive extends Component
             ->where('estado_encomienda', 'RECIBIDO')
             ->where('isHome', true)
             ->where('isReturn', false)
-            //->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
+        //->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
             ->whereHas('destinatario', function ($query) {
-                $query->where('code', 'like', '%'.$this->search.'%')
-                    ->orWhere('name', 'like', '%'.$this->search.'%');
+                $query->where('code', 'like', '%' . $this->search . '%')
+                    ->orWhere('name', 'like', '%' . $this->search . '%');
             })
             ->latest()
             ->paginate($this->perPage, '*', 'page');
-        return view('livewire.package.home-package-live', compact('encomiendas', 'sucursals'));
+        $pagos = [
+            ['id' => 'PAGADO', 'name' => 'PAGADO'],
+            ['id' => 'CONTRA ENTREGA', 'name' => 'CONTRA ENTREGA'],
+        ];
+        $comprobantes = [
+            ['id' => 'BOLETA', 'name' => 'BOLETA'],
+            ['id' => 'FACTURA', 'name' => 'FACTURA'],
+            ['id' => 'TICKET', 'name' => 'TICKET'],
+        ];
+        $tipoDocuments = [
+            ['codigo' => '0', 'sigla' => 'OTRO DOCUMENTO cod(0)'],
+            ['codigo' => '1', 'sigla' => 'DNI cod(1)'],
+            ['codigo' => '6', 'sigla' => 'RUC cod(6)'],
+        ];
+
+        return view('livewire.package.home-package-live', compact('encomiendas', 'sucursals', 'pagos', 'comprobantes', 'tipoDocuments'));
     }
 
     public function detailEncomienda(Encomienda $encomienda)
@@ -108,40 +129,41 @@ class HomePackageLive extends Component
             $this->toast('success', 'Paquete entregado correctamente');
         } else {
             if ($this->tipo_comprobante != 'TICKET') {
-                $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
-                $this->setInvoice($this->encomienda);
-                $this->entryForm->fill([
-                    'caja_id'     => $this->caja->id,
-                    'monto_entry' => $this->encomienda->monto,
-                    'description' => $this->encomienda->code,
-                    'tipo'        => $this->encomienda->tipo_comprobante,
-                ]);
-                if ($this->entryForm->store()) {
-                    $this->entryForm->reset();
-                } else {
-                    $this->error('Error, verifique los datos!');
-                }
+                $this->setInvoice($this->encomienda,$this->tipo_comprobante);
             }
-            else {
-                $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
-                $this->entryForm->fill([
+            $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
+            $this->entryForm->fill([
+                'caja_id'     => $this->caja->id,
+                'monto_entry' => $this->encomienda->monto,
+                'description' => $this->encomienda->code,
+                'tipo'        => $this->encomienda->tipo_comprobante,
+            ]);
+            if ($this->entryForm->store()) {
+                $this->entryForm->reset();
+            } else {
+                $this->error('Error, no se pudo registrar la entrada de caja!');
+            }
+            if ($this->encomienda->monto_descuento) {
+                $this->exitForm->fill([
                     'caja_id'     => $this->caja->id,
-                    'monto_entry' => $this->encomienda->monto,
+                    'monto_exit'  => $this->encomienda->monto_descuento,
                     'description' => $this->encomienda->code,
-                    'tipo'        => $this->encomienda->tipo_comprobante,
+                    'tipo'        => 'DESCUENTO',
                 ]);
-                if ($this->entryForm->store()) {
-                    $this->entryForm->reset();
+                if ($this->exitForm->store()) {
+                    $this->exitForm->reset();
                 } else {
-                    $this->error('Error, verifique los datos!');
+                    $this->error('Error, no se pudo registrar la salida de caja!');
                 }
             }
         }
         $this->modalConfimation = false;
+        $this->modalFinal       = true;
     }
     private function updateEncomiendaStatus($status, $tipo_comprobante = null)
     {
         $this->encomienda->estado_encomienda = $status;
+        $this->encomienda->estado_pago       = 'PAGADO';
         if ($tipo_comprobante) {
             $this->encomienda->tipo_comprobante = $tipo_comprobante;
         }
@@ -155,14 +177,57 @@ class HomePackageLive extends Component
 
     public function descuento(Encomienda $encomienda)
     {
-        $this->encomienda = $encomienda;
+        $this->encomienda     = $encomienda;
         $this->modalDescuento = true;
     }
 
-    public function applyDescuento()
+    public function descuentoCreate()
     {
-        $this->encomienda->monto = $this->encomienda->monto - $this->monto_descuento;
+
+        $rules = [
+            'monto_descuento'  => 'required|numeric|min:0',
+            'motivo_descuento' => 'required|string|max:255',
+        ];
+        $messages = [
+            'monto_descuento.required'  => 'El monto de descuento es requerido',
+            'monto_descuento.numeric'   => 'El monto de descuento debe ser un número',
+            'monto_descuento.min'       => 'El monto de descuento debe ser mayor que 0',
+            'motivo_descuento.required' => 'El motivo del descuento es requerido',
+            'motivo_descuento.string'   => 'El motivo del descuento debe ser una cadena de texto',
+            'motivo_descuento.max'      => 'El motivo del descuento debe tener menos de 255 caracteres',
+        ];
+
+        $this->validate($rules, $messages);
+
+        if ($this->encomienda->monto < $this->monto_descuento) {
+            $this->modalDescuento = false;
+            $this->error('Error', 'El monto de descuento no puede ser mayor al monto de la encomienda');
+            return;
+        }
+        $this->encomienda->monto_descuento  = $this->monto_descuento;
+        $this->encomienda->motivo_descuento = $this->motivo_descuento;
+        if ($this->encomienda->ticket) {
+            $this->encomienda->ticket->monto_descuento  = $this->monto_descuento;
+            $this->encomienda->ticket->motivo_descuento = $this->motivo_descuento;
+            $this->encomienda->ticket->save();
+        }
         $this->encomienda->save();
         $this->modalDescuento = false;
+        $this->success('Descuento aplicado correctamente');
+    }
+
+    public function descuentoDelete(Encomienda $encomienda)
+    {
+        $encomienda->monto_descuento  = null;
+        $encomienda->motivo_descuento = null;
+        if ($encomienda->ticket) {
+            $encomienda->ticket->monto_descuento  = null;
+            $encomienda->ticket->motivo_descuento = null;
+            $encomienda->ticket->save();
+        }
+
+        $encomienda->save();
+        $this->dispatch('refreshEncomienda');
+        $this->success('Descuento eliminado correctamente');
     }
 }
