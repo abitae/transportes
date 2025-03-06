@@ -24,7 +24,7 @@ class RecordPackageLive extends Component
     use LogCustom;
     use Toast;
     use WithPagination, WithoutUrlPagination;
-    public $title = 'Encomiendas entregadas';
+    public $title = 'ENCOMIENDAS ENTREGADAS';
     public $sub_title = 'Modulo de paquetes entregados';
     public $search = '';
     public $perPage = 100;

@@ -74,7 +74,7 @@
         </div>
         <!-- Título de la Factura y Número de Serie en un recuadro -->
         <div class="text-center border-top border-dark">
-            <h1 class="m-1 text-sm font-weight-bold">GUIA REMISION TRANSPORTISTA</h1>
+            <h1 class="m-1 text-sm font-weight-bold">GUÍA DE REMISIÓN ELECTRÓNICA TRANSPORTISTA</h1>
             <p class="m-1 text-sm font-weight-bold">{{ $despache->serie }} - {{ $despache->correlativo }}</p>
         </div>
         <section class="text-xs text-left border-top border-dark">
