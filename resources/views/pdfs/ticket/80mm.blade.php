@@ -68,7 +68,7 @@
             <h1 class="m-1 text-sm font-weight-bold">{{ $ticket->encomienda->estado_pago }}</h1>
         </div>
         <section class="text-xs text-left border-top border-dark">
-            <p>Fecha Emición: {{ $ticket->created_at->format('Y-m-d') }}</p>
+            <p>Fecha Emisión: {{ $ticket->created_at->format('Y-m-d') }}</p>
             <p>Fecha Traslado: {{ $ticket->updated_at->format('Y-m-d') }}</p>
         </section>
         <!-- Información del Cliente -->

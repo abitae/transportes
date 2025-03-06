@@ -31,6 +31,8 @@ class CompanyForm extends Form
     #[Validate(['required', 'string'])]
     public $ctaBanco = '';
     #[Validate(['required', 'string'])]
+    public $pin = '';
+    #[Validate(['required', 'string'])]
     public $sol_user = '';
     #[Validate(['required', 'string'])]
     public $sol_pass = '';
@@ -46,7 +48,6 @@ class CompanyForm extends Form
     }
     public function update()
     {
-        //($this->company);
         return $this->saveCompany($this->company);
     }
 

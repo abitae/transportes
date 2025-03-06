@@ -17,7 +17,7 @@
                             </x-slot:append>
                         </x-mary-input>
                     </div>
-                    <div class="grid col-span-4  md:col-span-2">
+                    <div class="grid col-span-4 md:col-span-2">
                         <x-mary-input label="Nombre/Raz. Social" wire:model='remitente_name' />
                     </div>
                     <div class="grid col-span-4 md:col-span-3">
@@ -62,7 +62,7 @@
                 </div>
             </x-mary-step>
             <x-mary-step step="3" text="Paquetes">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-1">
+                <div class="grid grid-cols-1 gap-1 md:grid-cols-4">
                     <div class="col-span-1 md:col-span-1">
                         <div class="grid grid-cols-2 gap-1">
                             <div>
@@ -169,8 +169,8 @@
 
     @if ($this->destinatario && $this->remitente && $this->paquetes)
     <x-mary-modal wire:model="modalConfimation" class="backdrop-blur" box-class="max-w-full max-h-full" separator>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
-            <div class="grid grid-cols-2 md:grid-cols-2 gap-1">
+        <div class="grid grid-cols-1 gap-1 md:grid-cols-2">
+            <div class="grid grid-cols-2 gap-1 md:grid-cols-2">
                 <div class="col-span-2 md:col-span-1">
                     <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
                     <ul>
@@ -206,83 +206,65 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 gap-2 p-2 border rounded-lg border-sky-500 content-start">
+            <div class="grid content-start grid-cols-1 gap-2 p-2 border rounded-lg border-sky-500">
                 <div class="flex flex-col space-y-2">
                     <div class="flex items-start">
-                        <x-mary-icon name="s-envelope" class="text-green-500 text-md mt-1" label="ESTADO PAGO" />
+                        <x-mary-icon name="s-envelope" class="mt-1 text-green-500 text-md" label="ESTADO PAGO" />
                     </div>
 
                     <div class="w-full">
-                        <x-mary-radio
-                            class="w-full max-w-full py-0 text-xs"
-                            :options="$pagos"
-                            option-value="id"
-                            option-label="name"
-                            wire:model.live="estado_pago" />
+                        <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$pagos" option-value="id"
+                            option-label="name" wire:model.live="estado_pago" />
                     </div>
 
                     @if ($estado_pago == 'PAGADO')
-                        <div class="flex flex-col space-y-2">
-                            <div class="flex items-start">
-                                <x-mary-icon name="s-envelope" class="text-red-500 text-md mt-1" label="TIPO COMPROBANTE" />
-                            </div>
-
-                            <x-mary-radio
-                                class="w-full max-w-full py-0 text-xs"
-                                :options="$comprobantes"
-                                option-value="id"
-                                option-label="name"
-                                wire:model.live="tipo_comprobante" />
-
-                            @if ($tipo_comprobante != 'TICKET')
-                                <div class="flex items-start">
-                                    <x-mary-icon name="s-envelope" class="text-green-500 text-md mt-1" label="DETALLE COMPROBANTE" />
-                                </div>
-
-                                <div class="grid grid-cols-4 gap-2 p-2 border rounded-lg border-sky-500">
-                                    <div class="col-span-4">
-                                        <x-mary-input
-                                            label="Numero de documento"
-                                            wire:model.live='cliFacturacion_code'
-                                            class="w-full">
-                                            <x-slot:prepend>
-                                                @php
-                                                $docsfact = ($tipo_comprobante != 'FACTURA')
-                                                    ? [
-                                                        ['id' => '1', 'name' => 'DNI cod(1)'],
-                                                        ['id' => '6', 'name' => 'RUC cod(6)'],
-                                                      ]
-                                                    : [['id' => '6', 'name' => 'RUC cod(6)']];
-                                                @endphp
-                                                <x-mary-select
-                                                    wire:model.live='cliFacturacion_type_code'
-                                                    icon="o-user"
-                                                    :options="$docsfact"
-                                                    class="rounded-e-none" />
-                                            </x-slot:prepend>
-                                            <x-slot:append>
-                                                <x-mary-button
-                                                    wire:click='searchFacturacion'
-                                                    icon="o-magnifying-glass"
-                                                    class="btn-primary rounded-s-none" />
-                                            </x-slot:append>
-                                        </x-mary-input>
-                                    </div>
-                                    <div class="col-span-2">
-                                        <x-mary-input
-                                            label="Nombre/Raz. Social"
-                                            wire:model.live='cliFacturacion_name'
-                                            class="w-full" />
-                                    </div>
-                                    <div class="col-span-2">
-                                        <x-mary-input
-                                            label="Direccion"
-                                            wire:model.live='cliFacturacion_address'
-                                            class="w-full" />
-                                    </div>
-                                </div>
-                            @endif
+                    <div class="flex flex-col space-y-2">
+                        <div class="flex items-start">
+                            <x-mary-icon name="s-envelope" class="mt-1 text-red-500 text-md" label="TIPO COMPROBANTE" />
                         </div>
+
+                        <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$comprobantes" option-value="id"
+                            option-label="name" wire:model.live="tipo_comprobante" />
+
+                        @if ($tipo_comprobante != 'TICKET')
+                        <div class="flex items-start">
+                            <x-mary-icon name="s-envelope" class="mt-1 text-green-500 text-md"
+                                label="DETALLE COMPROBANTE" />
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-2 p-2 border rounded-lg border-sky-500">
+                            <div class="col-span-4">
+                                <x-mary-input label="Numero de documento" wire:model.live='cliFacturacion_code'
+                                    class="w-full">
+                                    <x-slot:prepend>
+                                        @php
+                                        $docsfact = ($tipo_comprobante != 'FACTURA')
+                                        ? [
+                                        ['id' => '1', 'name' => 'DNI cod(1)'],
+                                        ['id' => '6', 'name' => 'RUC cod(6)'],
+                                        ]
+                                        : [['id' => '6', 'name' => 'RUC cod(6)']];
+                                        @endphp
+                                        <x-mary-select wire:model.live='cliFacturacion_type_code' icon="o-user"
+                                            :options="$docsfact" class="rounded-e-none" />
+                                    </x-slot:prepend>
+                                    <x-slot:append>
+                                        <x-mary-button wire:click='searchFacturacion' icon="o-magnifying-glass"
+                                            class="btn-primary rounded-s-none" />
+                                    </x-slot:append>
+                                </x-mary-input>
+                            </div>
+                            <div class="col-span-2">
+                                <x-mary-input label="Nombre/Raz. Social" wire:model.live='cliFacturacion_name'
+                                    class="w-full" />
+                            </div>
+                            <div class="col-span-2">
+                                <x-mary-input label="Direccion" wire:model.live='cliFacturacion_address'
+                                    class="w-full" />
+                            </div>
+                        </div>
+                        @endif
+                    </div>
                     @endif
                 </div>
             </div>
@@ -300,45 +282,43 @@
             <div class="grid grid-cols-4 grid-rows-2 gap-2 border-sky-500">
                 <div>
                     @if ($this->encomienda->ticket)
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="TICKET" responsive
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="TICKET"
                         link="/ticket/80mm/{{ $this->encomienda->ticket->id }}" spinner
                         class="text-white bg-green-500 btn-xl" />
                     @endif
                 </div>
                 <div>
                     @if ($this->encomienda->invoice)
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="RECIBO" responsive
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="RECIBO"
                         link="/invoice/80mm/{{ $this->encomienda->invoice->id }}" spinner
                         class="text-white bg-cyan-500 btn-xl" />
                     @endif
                 </div>
                 <div>
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="GUIA T" responsive
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="GUIA T"
                         link="/despache/80mm/{{ $this->encomienda->despatche->id }}" spinner
                         class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>
-                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="STICKER" responsive
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="STICKER"
                         link="/sticker/a5/{{ $this->encomienda->id }}" spinner
                         class="text-white bg-orange-500 btn-xl" />
                 </div>
                 <div>
                     <x-mary-button icon="o-clipboard" link="{{ route('package.register') }}" spinner label="NUEVO"
-                        responsive class="text-white bg-blue-500 btn-xl" />
+                         class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>
                     <x-mary-button icon="s-list-bullet" link="{{ route('package.send') }}" spinner label="LISTA E"
-                        responsive class="text-white bg-blue-500 btn-xl" />
+                         class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>
                     <x-mary-button icon="o-cursor-arrow-ripple" link="{{ route('package.deliver') }}" no-wire-navigate
-                        label="ENTREGAR" responsive spinner class="text-white bg-blue-500 btn-xl" />
+                        label="ENTREGAR" spinner class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>
-
                 </div>
             </div>
-
         </x-mary-card>
     </x-mary-modal>
     @endif

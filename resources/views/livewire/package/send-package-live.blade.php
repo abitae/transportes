@@ -88,55 +88,55 @@
                         </div>
                         @endscope
                         @scope('cell_actions', $stuff)
-                        <div class="grid grid-cols-2 grid-rows-5 gap-0">
+                        <div class="grid grid-cols-2 gap-0">
                             <div class="col-span-2">
                                 <x-mary-badge :value="strtoupper($stuff->code)"
                                     class="w-full h-full text-white text-xl {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
                             </div>
-                            <div class="row-start-2">
+                            <div>
                                 <x-mary-button label='Detalle' icon="s-bars-3"
                                     wire:click="detailEncomienda({{ $stuff->id }})" spinner
                                     class="w-full h-full text-white btn-xs bg-cyan-500" />
                             </div>
-                            <div class="row-start-2">
+                            <div>
                                 @if ($stuff->invoice)
                                 <x-mary-button label='Recibo' icon="o-printer" target="_blank" no-wire-navigate
                                     link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
                                     class="w-full h-full text-white bg-purple-500 btn-xs" />
                                 @endif
                             </div>
-                            <div class="row-start-3">
+                            <div>
                                 <x-mary-button label='Editar' icon="o-pencil-square"
                                     wire:click="editEncomienda({{ $stuff->id }})" spinner
                                     class="w-full h-full text-white bg-green-500 btn-xs" />
 
                             </div>
-                            <div class="row-start-3">
+                            <div>
                                 @if ($stuff->ticket)
                                 <x-mary-button label='Ticket' icon="o-printer" target="_blank" no-wire-navigate
                                     link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
                                     class="w-full h-full text-white bg-cyan-500 btn-xs" />
                                 @endif
                             </div>
-                            <div class="row-start-4">
+                            <div>
                                 <x-mary-button label='Anular' icon="o-no-symbol"
                                     wire:click="enableEncomienda({{ $stuff->id }})" spinner
                                     wire:confirm.prompt="Esta seguro?\n\nEscriba {{ $stuff->remitente->code }} para confirmar|{{$stuff->remitente->code}}"
                                     class="w-full h-full text-white bg-red-500 btn-xs" />
 
                             </div>
-                            <div class="row-start-4">
+                            <div>
                                 @if ($stuff->despatche)
                                 <x-mary-button label='Guia T' icon="o-printer" target="_blank" no-wire-navigate
                                     link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
                                     class="w-full h-full text-white bg-green-500 btn-xs" />
                                 @endif
                             </div>
-                            <div class="row-start-5">
+                            <div>
                                 <x-mary-badge :value="strtoupper($stuff->estado_pago)"
                                     class="w-full h-full text-white text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
                             </div>
-                            <div class="row-start-6">
+                            <div>
                                 @if ($stuff->despatche)
                                 <x-mary-button label='Sticker' icon="o-printer" target="_blank" no-wire-navigate
                                     link="/sticker/a6/{{ $stuff->despatche->id }}" spinner
@@ -156,7 +156,7 @@
             <div class="p-2 border border-green-500 rounded-lg">
                 <div class="grid grid-cols-4 gap-1">
                     <div class="grid col-span-4">
-                        <x-mary-card title="{{ $this->numElementos ?? 0 }}" subtitle="Paquetes seleccionados" shadow
+                        <x-mary-card title="{{ $this->numElementos ?? 0 }}" subtitle="Encomiendas seleccionados" shadow
                             separator>
                             Sucursal de destino : {{ $this->sucursal_dest->name ?? 'Sucursal destino' }}
                         </x-mary-card>
@@ -265,6 +265,19 @@
                 </x-slot:actions>
             </div>
         </x-mary-form>
+    </x-mary-modal>
+    @endisset
+    @isset($manifiesto)
+    <x-mary-modal wire:model.live="modalFinal" persistent class="backdrop-blur" box-class="w-full">
+        <x-mary-card shadow>
+            <div class="grid grid-cols-1 gap-0 border-sky-500">
+                <div>
+                    <x-mary-button icon="o-document-arrow-down" target="_blank"
+                        wire:click="excelGenerate({{ $manifiesto->id }})" no-wire-navigate spinner
+                        class="text-white bg-orange-500 btn-xs" />
+                </div>
+            </div>
+        </x-mary-card>
     </x-mary-modal>
     @endisset
 </div>

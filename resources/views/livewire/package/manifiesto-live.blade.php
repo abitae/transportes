@@ -5,11 +5,11 @@
         </x-slot:menu>
         @php
         $headers = [
-            ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1 text-white'],
-            ['key' => 'fecha', 'label' => 'Fecha', 'class' => ''],
-            ['key' => 'sucursal', 'label' => 'Sucursal', 'class' => ''],
-            ['key' => 'destino', 'label' => 'Destino', 'class' => ''],
-            ['key' => 'excel', 'label' => 'Excel', 'class' => ''],
+        ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1 text-white'],
+        ['key' => 'fecha', 'label' => 'Fecha', 'class' => ''],
+        ['key' => 'sucursal', 'label' => 'Sucursal', 'class' => ''],
+        ['key' => 'destino', 'label' => 'Destino', 'class' => ''],
+        ['key' => 'excel', 'label' => 'Excel', 'class' => ''],
         ];
         @endphp
         <x-mary-table :headers="$headers" :rows="$manifiestos" striped with-pagination per-page="perPage"

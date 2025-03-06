@@ -20,6 +20,7 @@ class Company extends Model
         'telephone',
         'ubigeo',
         'ctaBanco',
+        'pin',
         'logo_path',
         'sol_user',
         'sol_pass',

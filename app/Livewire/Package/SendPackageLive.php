@@ -1,6 +1,7 @@
 <?php
 namespace App\Livewire\Package;
 
+use App\Exports\ManifiestoExport;
 use App\Livewire\Forms\CustomerForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Excel;
 use Mary\Traits\Toast;
 
 class SendPackageLive extends Component
@@ -43,7 +45,8 @@ class SendPackageLive extends Component
     public $editModal = false;
     public $isHome    = false;
     public CustomerForm $customerFormDest;
-
+    public $modalFinal;
+    public $manifiesto;
     public function mount()
     {
         $this->caja = $this->cajaIsActive(Auth::user());
@@ -134,7 +137,7 @@ class SendPackageLive extends Component
                 $this->modalEnvio = false;
                 $ids              = $this->selected;
                 $this->selected   = [];
-                Manifiesto::create([
+                $this->manifiesto = Manifiesto::create([
                     'sucursal_id'         => Auth::user()->sucursal->id,
                     'sucursal_destino_id' => $this->sucursal_dest_id,
                     'ids'                 => json_encode($ids),
@@ -154,7 +157,7 @@ class SendPackageLive extends Component
                         ->first()
                         ->id;
                 }
-
+                $this->modalFinal = true;
             } else {
                 $this->error('Error, verifique los datos!');
             }
@@ -204,5 +207,10 @@ class SendPackageLive extends Component
     public function searchDestinatario()
     {
         $this->customerFormDest->store();
+    }
+    public function excelGenerate(Manifiesto $manifiesto)
+    {
+        $this->toast('success', 'Generando Excel', 'Manifiesto');
+        return Excel::download(new ManifiestoExport(json_decode($manifiesto->ids)), 'manifiesto.xlsx');
     }
 }

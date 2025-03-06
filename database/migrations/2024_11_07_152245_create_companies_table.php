@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('ubigeo')->nullable();
             $table->string('logo_path')->nullable();
             $table->string('ctaBanco')->nullable();
+            $table->string('pin')->nullable();
             //Credenciales SOL
             $table->string('sol_user');
             $table->string('sol_pass');

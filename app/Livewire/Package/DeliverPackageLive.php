@@ -44,6 +44,7 @@ class DeliverPackageLive extends Component
     public bool $modalDescuento;
     public $monto_descuento;
     public $motivo_descuento;
+    public $modalFinal;
     public function mount()
     {
         $this->caja = Caja::where('user_id', Auth::user()->id)
@@ -101,6 +102,7 @@ class DeliverPackageLive extends Component
 
     public function openModal(Encomienda $encomienda)
     {
+        $this->document = '';
         $this->modalDeliver = ! $this->modalDeliver;
         $this->encomienda   = $encomienda;
     }
@@ -156,6 +158,7 @@ class DeliverPackageLive extends Component
             }
         }
         $this->modalConfimation = false;
+        $this->modalFinal       = true;
     }
 
     private function updateEncomiendaStatus($status, $tipo_comprobante = null)
@@ -180,6 +183,7 @@ class DeliverPackageLive extends Component
 
     public function descuentoCreate()
     {
+
         $rules = [
             'monto_descuento' => 'required|numeric|min:0',
             'motivo_descuento' => 'required|string|max:255',
@@ -192,7 +196,9 @@ class DeliverPackageLive extends Component
             'motivo_descuento.string' => 'El motivo del descuento debe ser una cadena de texto',
             'motivo_descuento.max' => 'El motivo del descuento debe tener menos de 255 caracteres',
         ];
+
         $this->validate($rules, $messages);
+
         if ($this->encomienda->monto < $this->monto_descuento) {
             $this->modalDescuento = false;
             $this->error('Error', 'El monto de descuento no puede ser mayor al monto de la encomienda');
@@ -219,7 +225,7 @@ class DeliverPackageLive extends Component
             $encomienda->ticket->motivo_descuento = null;
             $encomienda->ticket->save();
         }
-        //$exitCaja = Caja::where('user_id', Auth::user()->id)
+
         $encomienda->save();
         $this->dispatch('refreshEncomienda');
         $this->success('Descuento eliminado correctamente');

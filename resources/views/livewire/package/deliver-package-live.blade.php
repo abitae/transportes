@@ -157,7 +157,6 @@
                 </x-slot:actions>
             </div>
         </x-mary-form>
-        <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="deuda pendiente" />
     </x-mary-modal>
     <x-mary-drawer wire:model="showDrawer" title="Detalle de encomienda" subtitle="Code {{ $encomienda->code }}"
         separator with-close-button close-on-escape class="w-11/12 lg:w-2/3" right>
@@ -333,10 +332,53 @@
             </div>
             <x-slot:actions>
                 <x-mary-button label="Cancel" @click="$wire.modalConfimation = false" />
-                <x-mary-button wire:click='confirmEncomienda' label="Confirm" class="btn-primary" />
+                <x-mary-button wire:click='confirmEncomienda' label="Entregar" class="btn-primary" />
             </x-slot:actions>
         </div>
     </x-mary-modal>
+    <x-mary-modal wire:model.live="modalFinal" persistent class="backdrop-blur" box-class="w-full">
+        <x-mary-card shadow>
+            <div class="grid grid-cols-4 gap-0 border-sky-500">
+                <div>
+                    @if ($this->encomienda->ticket)
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="TICKET"
+                        link="/ticket/80mm/{{ $this->encomienda->ticket->id }}" spinner
+                        class="text-white bg-green-500 btn-xl" />
+                    @endif
+                </div>
+                <div>
+                    @if ($this->encomienda->invoice)
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="RECIBO"
+                        link="/invoice/80mm/{{ $this->encomienda->invoice->id }}" spinner
+                        class="text-white bg-cyan-500 btn-xl" />
+                    @endif
+                </div>
+                <div>
+                    @if ($this->encomienda->despatche)
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="GUIA T"
+                        link="/despache/80mm/{{ $this->encomienda->despatche->id }}" spinner
+                        class="text-white bg-blue-500 btn-xl" />
+                    @endif
+                </div>
+                <div>
+                </div>
+                <div>
+                    <x-mary-button icon="o-clipboard" link="{{ route('package.register') }}" spinner label="NUEVO"
+                     class="text-white bg-blue-500 btn-xl" />
+                </div>
+                <div>
+                    <x-mary-button icon="s-list-bullet" link="{{ route('package.send') }}" spinner label="LISTA E"
+                     class="text-white bg-blue-500 btn-xl" />
+                </div>
+                <div>
+                    <x-mary-button icon="o-cursor-arrow-ripple" link="{{ route('package.deliver') }}" no-wire-navigate
+                        label="ENTREGAR" spinner class="text-white bg-blue-500 btn-xl" />
+                </div>
+                <div>
 
-    @endisset
+                </div>
+            </div>
+        </x-mary-card>
+    </x-mary-modal>
+    @endif
 </div>
