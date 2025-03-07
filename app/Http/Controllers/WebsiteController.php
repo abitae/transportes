@@ -26,7 +26,7 @@ class WebsiteController extends Controller
     }
     public function tracking()
     {
-        return view('web2.trackin');
+        return view('web2.trackin3');
     }
     public function trackingSearch(Request $request){
         $request->validate(
