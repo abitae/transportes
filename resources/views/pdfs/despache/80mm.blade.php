@@ -4,19 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $despache->serie }}-{{ $despache->correlativo }}-{{ $heigh.'mm' }}</title>
+    <title>{{ $despache->serie }}-{{ $despache->correlativo }}</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com/css?family=Inconsolata">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <style>
-        @page {
-            margin: 0;
-            size: 80mm auto;
-            /* Width for standard thermal receipt */
-        }
-
         body {
-            margin: 0 -10 -10 -10;
-            width: 90%;
-            /* Standard thermal printer width */
+            margin: -50px 1px -50px -50px;
+            font-family: sans-serif;
+            width: 340px;
             /* Ampliado el ancho del body */
         }
 
@@ -48,7 +45,7 @@
         }
 
         .cuadrado {
-            width: 100%;
+            width: 310px;
             height: 0;
             padding-top: 25%;
             position: relative;
@@ -62,7 +59,7 @@
         <!-- Logo y datos de la empresa centrados -->
         <div class="text-center">
             <div class="text-xs">
-                <img src="./img/logo_format_ticket.jpg" alt="Infinity" width="300" height="mx-auto mb-2"
+                <img src="./img/logo_format_ticket.jpg" alt="Infinity" width="200" height="w-auto h-16 mx-auto mb-2"
                     alt="Logo de la Empresa">
                 <p class="font-weight-bold">BRAYAN BRUSH CORPORACION LOGISTICO</p>
                 <p>R.U.C.: {{ $despache->company->ruc }}</p>
@@ -74,7 +71,7 @@
         </div>
         <!-- Título de la Factura y Número de Serie en un recuadro -->
         <div class="text-center border-top border-dark">
-            <h1 class="m-1 text-sm font-weight-bold">GUÍA DE REMISIÓN ELECTRÓNICA TRANSPORTISTA</h1>
+            <h1 class="m-1 text-sm font-weight-bold">GUIA REMICION TRANSPORTISTA</h1>
             <p class="m-1 text-sm font-weight-bold">{{ $despache->serie }} - {{ $despache->correlativo }}</p>
         </div>
         <section class="text-xs text-left border-top border-dark">
@@ -84,14 +81,14 @@
         <!-- Información del Cliente -->
         <section class="text-xs text-left border-top border-dark">
             <p class="font-weight-bold">DATOS REMITENTE</p>
-            <p>{{ $despache->remitente->type_code ? 'DNI':'RUC' }}: {{ $despache->remitente->code }}</p>
+            <p>{{ $despache->remitente->type_code == 1 ? 'DNI': 'RUC' }}: {{ $despache->remitente->code }}</p>
             <p>{{ $despache->remitente->name }}</p>
             <p>{{ $despache->remitente->address }}</p>
             <p>Tel:{{ $despache->remitente->phone }}</p>
         </section>
         <section class="text-xs text-left border-top border-dark">
             <p class="font-weight-bold">DATOS DESTINATARIO</p>
-            <p>{{ $despache->destinatario->type_code ? 'DNI':'RUC' }}: {{ $despache->destinatario->code }}</p>
+            <p>{{ $despache->destinatario->type_code == 1 ? 'DNI': 'RUC' }}: {{ $despache->destinatario->code }}</p>
             <p>{{ $despache->destinatario->name }}</p>
             <p>{{ $despache->destinatario->address }}</p>
             <p>Tel:{{ $despache->destinatario->phone }}</p>
@@ -151,15 +148,15 @@
                 <section class="mb-4 text-sm text-right">
                     <div class="d-flex justify-content-between border-top border-dark">
                         <span class="font-weight-bold">Gravada:</span>
-                        <span>S/ {{ $despache->encomienda->ticket->valorVenta }}</span>
+                        <span>S/ {{ $despache->valorVenta }}</span>
                     </div>
                     <div class="d-flex justify-content-between">
                         <span class="font-weight-bold">IGV (18%):</span>
-                        <span>S/ {{ $despache->encomienda->ticket->mtoIGV }}</span>
+                        <span>S/ {{ $despache->mtoIGV }}</span>
                     </div>
                     <div class="pt-1 mt-1 d-flex justify-content-between font-weight-bold border-top border-dark">
                         <span>Total:</span>
-                        <span>S/ {{ $despache->encomienda->ticket->mtoImpVenta }}</span>
+                        <span>S/ {{ $despache->mtoImpVenta }}</span>
                     </div>
                 </section>
                 <div>

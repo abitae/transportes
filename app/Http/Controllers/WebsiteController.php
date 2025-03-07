@@ -13,7 +13,7 @@ class WebsiteController extends Controller
     {
         $sucursales = Sucursal::where('isActive', 1)->get();
 
-        return view('web2.index', compact('sucursales'));
+        return view('web2.index3', compact('sucursales'));
     }
 
     public function abount()
