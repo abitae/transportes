@@ -17,13 +17,14 @@
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
+    
     {{-- It will not apply locale yet --}}
     <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
     <script>
         flatpickr.localize(flatpickr.l10ns.es);
     </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 
 <body class="min-h-screen font-sans antialiased bg-base-200/50 dark:bg-base-200">
