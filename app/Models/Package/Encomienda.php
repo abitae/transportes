@@ -31,6 +31,7 @@ class Encomienda extends Model
         'motivo_descuento',
         'estado_pago',
         'tipo_pago',
+        'metodo_pago',
         'tipo_comprobante',
         'doc_traslado',
         'glosa',

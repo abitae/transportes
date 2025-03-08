@@ -106,7 +106,53 @@
                     </div>
                 </div>
             </x-mary-step>
-            <x-mary-step step="4" text="Destino" data-content="✓" step-classes="!step-success">
+            <x-mary-step step="4" text="Facturacion">
+                <div class="grid grid-cols-4 gap-1">
+                    <div>
+                        <x-mary-select label="Tipo de pago" icon="o-user" :options="$pagos"
+                            wire:model.live="estado_pago" class="rounded-r-lg" />
+                    </div>
+                    <div>
+                        @if ($estado_pago == 'PAGADO')
+                        <x-mary-select label="Tipo de comprobante" icon="o-user" :options="$comprobantes"
+                            wire:model.live="tipo_comprobante" class="rounded-r-lg" />
+                        @endif
+                    </div>
+                    <div>
+                        @if ($estado_pago == 'PAGADO')
+                        <x-mary-select label="Metodo pago" icon="o-user" :options="$metodoPagos"
+                            wire:model="metodo_pago" class="rounded-r-lg" />
+                        @endif
+                    </div>
+                </div>
+                @if ($tipo_comprobante != 'TICKET' && $estado_pago == 'PAGADO')
+                <div class="grid grid-cols-4 gap-1">
+                    <div class="grid col-span-4 md:col-span-2">
+                        <x-mary-input label="Numero de documento" wire:model='cliFacturacion_code'>
+                            <x-slot:prepend>
+                                <x-mary-select wire:model.live='cliFacturacion_type_code' icon="o-user"
+                                    option-value="codigo" option-label="sigla" :options="$tipoDocuments"
+                                    class="rounded-e-none" />
+                            </x-slot:prepend>
+                            <x-slot:append>
+                                <x-mary-button wire:click='searchFacturacion' icon="o-magnifying-glass"
+                                    class="btn-primary rounded-s-none" />
+                            </x-slot:append>
+                        </x-mary-input>
+                    </div>
+                    <div class="grid col-span-4 md:col-span-2">
+                        <x-mary-input label="Nombre/Raz. Social" wire:model='cliFacturacion_name' />
+                    </div>
+                    <div class="grid col-span-4 md:col-span-3">
+                        <x-mary-input label="Direccion" wire:model='cliFacturacion_address' />
+                    </div>
+                    <div class="grid col-span-4 md:col-span-1">
+                        <x-mary-input label="Celular" wire:model='cliFacturacion_phone' />
+                    </div>
+                </div>
+                @endif
+            </x-mary-step>
+            <x-mary-step step="5" text="Destino" data-content="✓" step-classes="!step-success">
                 <div class="grid grid-cols-8 gap-1">
                     <div class="grid col-span-4">
                         <x-mary-select label="Sucursal" icon="o-user" :options="$sucursales" class="rounded-r-lg"
@@ -159,116 +205,88 @@
             @if ($step != 1)
             <x-mary-button label="Anterior" wire:click="prev" class='shadow-xl' />
             @endif
-            @if ($step == 4)
+            @if ($step == 5)
             <x-mary-button label="Confirmacion" wire:click="finish" class='shadow-xl' />
             @else
             <x-mary-button label="Siguiente" wire:click="next" class='shadow-xl' />
             @endif
         </x-slot:actions>
     </x-mary-card>
-
+    <div>
+        <div>
+            {{ $remitente ?? 'remitente' }}
+        </div>
+        <div>
+            {{ $destinatario ?? 'destinatario' }}
+        </div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
     @if ($this->destinatario && $this->remitente && $this->paquetes)
-    <x-mary-modal wire:model="modalConfimation" class="backdrop-blur" box-class="max-w-full max-h-full" separator>
-        <div class="grid grid-cols-1 gap-1 md:grid-cols-2">
-            <div class="grid grid-cols-2 gap-1 md:grid-cols-2">
-                <div class="col-span-2 md:col-span-1">
-                    <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
-                    <ul>
-                        <li>{{ $this->remitente->name ?? 'name' }}</li>
-                        <li>{{ $this->remitente->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->remitente->code ??
-                            'code'
-                            }}</li>
-                        @if ($this->remitente->phone)
-                        <li>Telefono: {{ $this->remitente->phone }}</li>
-                        @endif
-
-                    </ul>
-                </div>
-                <div class="col-span-2 md:col-span-1">
-                    <x-mary-icon name="s-envelope" class="col-span-2 text-blue-500 text-md" label="DESTINATARIO" />
-                    <ul>
-                        <li>{{ $this->destinatario->name ?? 'name' }}</li>
-                        <li>{{ $this->destinatario->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->destinatario->code ??
-                            'code'
-                            }}</li>
-                        @if ($this->destinatario->phone)
-                        <li>Telefono: {{ $this->destinatario->phone }}</li>
-                        @endif
-                    </ul>
-                </div>
-                <div class="col-span-2">
-                    <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
-                    <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped>
-                    </x-mary-table>
-                    <div class="text-right text-blue-500 border-t text-md">
-                        Total S/{{ number_format($paquetes->sum('sub_total'), 2) }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid content-start grid-cols-1 gap-2 p-2 border rounded-lg border-sky-500">
-                <div class="flex flex-col space-y-2">
-                    <div class="flex items-start">
-                        <x-mary-icon name="s-envelope" class="mt-1 text-green-500 text-md" label="ESTADO PAGO" />
-                    </div>
-
-                    <div class="w-full">
-                        <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$pagos" option-value="id"
-                            option-label="name" wire:model.live="estado_pago" />
-                    </div>
-
-                    @if ($estado_pago == 'PAGADO')
-                    <div class="flex flex-col space-y-2">
-                        <div class="flex items-start">
-                            <x-mary-icon name="s-envelope" class="mt-1 text-red-500 text-md" label="TIPO COMPROBANTE" />
-                        </div>
-
-                        <x-mary-radio class="w-full max-w-full py-0 text-xs" :options="$comprobantes" option-value="id"
-                            option-label="name" wire:model.live="tipo_comprobante" />
-
-                        @if ($tipo_comprobante != 'TICKET')
-                        <div class="flex items-start">
-                            <x-mary-icon name="s-envelope" class="mt-1 text-green-500 text-md"
-                                label="DETALLE COMPROBANTE" />
-                        </div>
-
-                        <div class="grid grid-cols-4 gap-2 p-2 border rounded-lg border-sky-500">
-                            <div class="col-span-4">
-                                <x-mary-input label="Numero de documento" wire:model.live='cliFacturacion_code'
-                                    class="w-full">
-                                    <x-slot:prepend>
-                                        @php
-                                        $docsfact = ($tipo_comprobante != 'FACTURA')
-                                        ? [
-                                        ['id' => '1', 'name' => 'DNI cod(1)'],
-                                        ['id' => '6', 'name' => 'RUC cod(6)'],
-                                        ]
-                                        : [['id' => '6', 'name' => 'RUC cod(6)']];
-                                        @endphp
-                                        <x-mary-select wire:model.live='cliFacturacion_type_code' icon="o-user"
-                                            :options="$docsfact" class="rounded-e-none" />
-                                    </x-slot:prepend>
-                                    <x-slot:append>
-                                        <x-mary-button wire:click='searchFacturacion' icon="o-magnifying-glass"
-                                            class="btn-primary rounded-s-none" />
-                                    </x-slot:append>
-                                </x-mary-input>
-                            </div>
-                            <div class="col-span-2">
-                                <x-mary-input label="Nombre/Raz. Social" wire:model.live='cliFacturacion_name'
-                                    class="w-full" />
-                            </div>
-                            <div class="col-span-2">
-                                <x-mary-input label="Direccion" wire:model.live='cliFacturacion_address'
-                                    class="w-full" />
-                            </div>
-                        </div>
-                        @endif
-                    </div>
+    <x-mary-modal wire:model="modalConfimation" class="backdrop-blur" box-class="max-w-6xl max-h-full" separator>
+        <div class="grid grid-cols-2 gap-1 md:grid-cols-4">
+            <div>
+                <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
+                <ul>
+                    <li>
+                        {{ $this->remitente->name ?? 'name' }}
+                    </li>
+                    <li>
+                        {{ $this->remitente->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->remitente->code ??
+                        'code'
+                        }}
+                    </li>
+                    @if ($this->remitente->phone)
+                    <li>Telefono: {{ $this->remitente->phone }}</li>
                     @endif
+
+                </ul>
+            </div>
+            <div>
+                <x-mary-icon name="s-envelope" class="col-span-2 text-blue-500 text-md" label="DESTINATARIO" />
+                <ul>
+                    <li>{{ $this->destinatario->name ?? 'name' }}</li>
+                    <li>{{ $this->destinatario->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->destinatario->code ??
+                        'code'
+                        }}</li>
+                    @if ($this->destinatario->phone)
+                    <li>Telefono: {{ $this->destinatario->phone }}</li>
+                    @endif
+                </ul>
+            </div>
+            <div>
+                <x-mary-icon name="s-envelope" class="col-span-2 text-blue-500 text-md" label="FACTURACION" />
+                <ul>
+                    <li>{{ $this->cliFacturacion->name ?? 'name' }}</li>
+                    <li>{{ $this->cliFacturacion->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->cliFacturacion->code ??
+                        'code'
+                        }}</li>
+                    @if ($this->cliFacturacion->phone)
+                    <li>Telefono: {{ $this->cliFacturacion->phone }}</li>
+                    @endif
+                </ul>
+            </div>
+            <div>
+                <x-mary-icon name="s-envelope" class="col-span-2 text-blue-500 text-md" label="DETALLE PAGO" />
+                <ul>
+                    <x-mary-stat title="Estado pago" value="{{ $this->estado_pago }}" icon="o-envelope"
+                        tooltip="Pagao o Contra entrega" />
+                    <x-mary-stat title="Tipo conprobante" value="{{ $this->tipo_comprobante }}" icon="o-envelope"
+                        tooltip="Ticket, Boleta, Factura" />
+                    <x-mary-stat title="Metodo de pago" value="{{ $this->metodo_pago }}" icon="o-envelope"
+                        tooltip="Metodo de pago (Contado, Yape, Transferencia, Deposito)" />
+
+                </ul>
+            </div>
+            <div class="col-span-2 md:col-span-4">
+                <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
+                <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped>
+                </x-mary-table>
+                <div class="text-right text-blue-500 border-t text-md">
+                    Total S/{{ number_format($paquetes->sum('sub_total'), 2) }}
                 </div>
             </div>
-
         </div>
         <x-slot:actions>
             <x-mary-button label="Cancel" @click="$wire.modalConfimation = false" />
@@ -306,11 +324,11 @@
                 </div>
                 <div>
                     <x-mary-button icon="o-clipboard" link="{{ route('package.register') }}" spinner label="NUEVO"
-                         class="text-white bg-blue-500 btn-xl" />
+                        class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>
                     <x-mary-button icon="s-list-bullet" link="{{ route('package.send') }}" spinner label="LISTA E"
-                         class="text-white bg-blue-500 btn-xl" />
+                        class="text-white bg-blue-500 btn-xl" />
                 </div>
                 <div>
                     <x-mary-button icon="o-cursor-arrow-ripple" link="{{ route('package.deliver') }}" no-wire-navigate

@@ -42,6 +42,7 @@ return new class extends Migration
 
             $table->string('estado_pago');
             $table->string('tipo_pago');
+            $table->string('metodo_pago');
             $table->string('tipo_comprobante');
             $table->string('doc_traslado')->nullable();
             $table->string('glosa')->nullable();

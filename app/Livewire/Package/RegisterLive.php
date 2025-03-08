@@ -1,7 +1,6 @@
 <?php
 namespace App\Livewire\Package;
 
-use App\Livewire\Forms\CustomerForm;
 use App\Livewire\Forms\EncomiendaForm;
 use App\Livewire\Forms\EntryCajaForm;
 use App\Models\Configuration\Sucursal;
@@ -36,7 +35,8 @@ class RegisterLive extends Component
 
     public $cantidad, $und_medida = 'NIU', $description, $peso, $amount;
     public $paquetes, $sucursal_destino, $sucursal_dest_id, $pin1, $pin2, $doc_traslado;
-    public $estado_pago                                       = 'PAGADO', $tipo_comprobante                                       = 'TICKET', $glosa, $observation;
+    public $estado_pago = 'PAGADO', $tipo_comprobante = 'TICKET', $metodo_pago = 'Contado', $tipo_pago = 'Contado';
+    public $glosa, $observation;
     public $transportista_id, $vehiculo_id, $modalConfimation = false, $caja, $isReturn = false, $isHome = false, $modalFinal = false;
     public $encomienda;
 
@@ -101,9 +101,14 @@ class RegisterLive extends Component
         ];
         $service       = new ServiceTableSunat();
         $unidadMedidas = $service->getAll('sunat_03');
-
+        $metodoPagos   = [
+            ['id' => 'Contado', 'name' => 'Contado'],
+            ['id' => 'Yape', 'name' => 'Yape'],
+            ['id' => 'Transferencia', 'name' => 'Transferencia'],
+            ['id' => 'Deposito', 'name' => 'Deposito'],
+        ];
         return view('livewire.package.register-live', compact(
-            'unidadMedidas', 'headers_paquetes', 'sucursales', 'pagos', 'comprobantes', 'transportistas', 'vehiculos', 'tipoDocuments'
+            'metodoPagos', 'unidadMedidas', 'headers_paquetes', 'sucursales', 'pagos', 'comprobantes', 'transportistas', 'vehiculos', 'tipoDocuments'
         ));
     }
 
@@ -222,7 +227,7 @@ class RegisterLive extends Component
     public function searchFacturacion()
     {
 
-        $rules                = [
+        $rules = [
             'cliFacturacion_type_code' => 'required',
             'cliFacturacion_code'      => 'required|min:8|max:11',
         ];
@@ -278,7 +283,7 @@ class RegisterLive extends Component
 
     public function next()
     {
-        if ($this->step < 4) {
+        if ($this->step < 5) {
             switch ($this->step) {
                 case 1:
                     $this->processStepOne();
@@ -288,6 +293,10 @@ class RegisterLive extends Component
                     break;
                 case 3:
                     $this->processStepThree();
+                    //$this->processStep();
+                    break;
+                case 4:
+                    $this->processStepFour();
                     //$this->processStep();
                     break;
             }
@@ -324,13 +333,52 @@ class RegisterLive extends Component
     private function processStepThree()
     {
         if ($this->paquetes->isNotEmpty()) {
+            $this->cliFacturacion           = $this->remitente;
+            $this->cliFacturacion_type_code = $this->cliFacturacion->type_code;
+            $this->cliFacturacion_code      = $this->cliFacturacion->code;
+            $this->cliFacturacion_name      = $this->cliFacturacion->name;
+            $this->cliFacturacion_address   = $this->cliFacturacion->address;
+            $this->cliFacturacion_phone     = $this->cliFacturacion->phone;
             $this->step++;
             $this->success('Genial', 'Paquetes ingresados correctamente!');
         } else {
             $this->error('Error!', 'Ingrese un paquete para el envio!');
         }
     }
+    private function processStepFour()
+    {
+        $rules = [
+            'cliFacturacion'           => 'required',
+            'estado_pago'              => 'required',
+            'tipo_comprobante'         => 'required',
+            'cliFacturacion_type_code' => 'required',
+            'cliFacturacion_code'      => 'required',
+            'cliFacturacion_code'      => 'min:8|max:11',
+            'cliFacturacion_name'      => 'required',
 
+        ];
+        $messages = [
+            'cliFacturacion.required'           => 'Error, es necesario ingresar el cliente de facturación!',
+            'estado_pago.required'              => 'Error, es necesario ingresar el estado de pago!',
+            'tipo_comprobante.required'         => 'Error, es necesario ingresar el tipo de comprobante!',
+            'cliFacturacion_type_code.required' => 'Error, es necesario ingresar el tipo de documento!',
+            'cliFacturacion_code.required'      => 'Error, es necesario ingresar el número de documento!',
+            'cliFacturacion_code.min'           => 'Error, el número de documento debe tener 8 dígitos!',
+            'cliFacturacion_code.max'           => 'Error, el número de documento debe tener 11 dígitos!',
+            'cliFacturacion_name.required'      => 'Error, es necesario ingresar el nombre del cliente de facturación!',
+        ];
+        $this->validate($rules, $messages);
+        if ($this->tipo_comprobante == 'FACTURA' && $this->cliFacturacion_type_code == '1' && strlen($this->cliFacturacion_code) == 8) {
+            $this->error('Error, el cliente de facturación no es valido!, verifique el número de RUC!');
+            return;
+        }
+        if ($this->estado_pago == 'CONTRA ENTREGA') {
+            $this->cliFacturacion   = $this->destinatario;
+            $this->tipo_comprobante = 'TICKET';
+            $this->metodo_pago      = 'Contado';
+        }
+        $this->step++;
+    }
     public function prev()
     {
         if ($this->step > 1) {
@@ -396,24 +444,12 @@ class RegisterLive extends Component
             $this->pin1 = $this->pin2 = 123;
         }
 
-        if ($this->validateFinish()) {
-            $this->sucursal_destino         = Sucursal::findOrFail($this->sucursal_dest_id);
-            $this->cliFacturacion           = $this->remitente;
-            $this->cliFacturacion_type_code = $this->cliFacturacion->type_code;
-            $this->cliFacturacion_code      = $this->cliFacturacion->code;
-            $this->cliFacturacion_name      = $this->cliFacturacion->name;
-            $this->cliFacturacion_address   = $this->cliFacturacion->address;
-            $this->cliFacturacion_phone     = $this->cliFacturacion->phone;
-            $this->cliFacturacion_ubigeo    = $this->cliFacturacion->ubigeo;
-            $this->modalConfimation         = true;
+        if (isset($this->sucursal_dest_id, $this->pin1, $this->pin2) && $this->pin1 == $this->pin2) {
+            $this->sucursal_destino = Sucursal::findOrFail($this->sucursal_dest_id);
+            $this->modalConfimation = true;
         } else {
             $this->error('Error, el pin ingresado no es correcto!');
         }
-    }
-
-    private function validateFinish()
-    {
-        return isset($this->sucursal_dest_id, $this->pin1, $this->pin2) && $this->pin1 == $this->pin2;
     }
 
     public function confirmEncomienda()
@@ -425,7 +461,7 @@ class RegisterLive extends Component
         if ($this->cliFacturacion_type_code == '6' && strlen($this->cliFacturacion_code) == 8) {
             $this->error('El cliente de Facturacion no valido!, verifique el número de RUC!');
             $this->modalConfimation = false;
-            $this->cliFacturacion = null;
+            $this->cliFacturacion   = null;
             return;
         }
         if ($this->cliFacturacion == null || $this->cliFacturacion_name == '') {
