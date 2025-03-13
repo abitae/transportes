@@ -66,8 +66,7 @@ class DeliverPackageLive extends Component
             ->whereNot('id', [Auth::user()->sucursal->id])
             ->get();
 
-        $encomiendas = Encomienda::whereBetween('updated_at', [$this->date_ini, $this->date_traslado])
-            ->where('sucursal_id', $this->sucursal_id)
+        $encomiendas = Encomienda::where('sucursal_id', $this->sucursal_id)
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'RECIBIDO')
             ->where('isHome', false)
