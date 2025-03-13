@@ -483,6 +483,7 @@ class RegisterLive extends Component
             'monto'             => $this->paquetes->sum('sub_total'),
             'estado_pago'       => $this->estado_pago,
             'tipo_pago'         => 'Contado',
+            'metodo_pago'       => $this->metodo_pago,
             'tipo_comprobante'  => $this->estado_pago == 'CONTRA ENTREGA' ? 'TICKET' : $this->tipo_comprobante,
             'doc_traslado'      => $this->doc_traslado,
             'glosa'             => $this->glosa,
@@ -522,6 +523,7 @@ class RegisterLive extends Component
             'caja_id'     => $this->caja->id,
             'monto_entry' => $this->encomiendaForm->monto,
             'description' => $this->encomiendaForm->code,
+            'metodo_pago'   => $this->encomiendaForm->metodo_pago,
             'tipo'        => $this->encomiendaForm->tipo_comprobante,
         ]);
 

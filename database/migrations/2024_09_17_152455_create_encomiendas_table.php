@@ -41,8 +41,8 @@ return new class extends Migration
             $table->string('motivo_descuento')->nullable();
 
             $table->string('estado_pago');
-            $table->string('tipo_pago');
-            $table->string('metodo_pago');
+            $table->string('tipo_pago')->default('Contado');
+            $table->string('metodo_pago')->nullable();
             $table->string('tipo_comprobante');
             $table->string('doc_traslado')->nullable();
             $table->string('glosa')->nullable();
