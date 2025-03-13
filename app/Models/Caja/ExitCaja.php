@@ -12,7 +12,8 @@ class ExitCaja extends Model
         'caja_id',
         'monto_exit',
         'description',
-        'tipo',
+        'metodo_pago',
+        'tipo_exit',
     ];
     public function caja()
     {

@@ -19,12 +19,15 @@ class ExitCajaForm extends Form
     #[Validate('required')]
     public $description = '';
     #[Validate('required')]
-    public $tipo = '';
+    public $metodo_pago = 'Contado';
+    #[Validate('required')]
+    public $tipo_exit = '';
     public function store()
     {
         try {
+            //dd($this->caja_id, $this->monto_exit, $this->description,$this->metodo_pago, $this->tipo_exit);
             $this->validate();
-            $this->cajaExit($this->caja_id, $this->monto_exit, $this->description, $this->tipo);
+            $this->cajaExit($this->caja_id, $this->monto_exit, $this->description,$this->metodo_pago, $this->tipo_exit);
             $this->infoLog('ExitCaja store');
             return true;
         } catch (\Exception $e) {

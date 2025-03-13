@@ -44,14 +44,16 @@ class CajaLive extends Component
     {
         $headersIngreso = [
             ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1'],
-            ['key' => 'tipo', 'label' => 'Tipo', 'class' => ''],
+            ['key' => 'tipo_entry', 'label' => 'Tipo', 'class' => ''],
             ['key' => 'description', 'label' => 'Descripción', 'class' => ''],
+            ['key' => 'metodo_pago', 'label' => 'Metodo Pago', 'class' => ''],
             ['key' => 'monto_entry', 'label' => 'Monto', 'class' => ''],
         ];
         $headersEgreso = [
             ['key' => 'id', 'label' => '#', 'class' => 'bg-red-500 w-1'],
-            ['key' => 'tipo', 'label' => 'Tipo', 'class' => ''],
+            ['key' => 'tipo_exit', 'label' => 'Tipo', 'class' => ''],
             ['key' => 'description', 'label' => 'Descripción', 'class' => ''],
+            ['key' => 'metodo_pago', 'label' => 'Metodo Pago', 'class' => ''],
             ['key' => 'monto_exit', 'label' => 'Monto', 'class' => ''],
         ];
         $tipos = [

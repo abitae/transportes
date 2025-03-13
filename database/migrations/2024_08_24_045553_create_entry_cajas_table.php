@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('caja_id')->constrained('cajas')->onDelete('cascade');
             $table->decimal('monto_entry',8,2)->default(0.00);
             $table->text('description');
-            $table->text('tipo_entry');
-            $table->text('tipo');
+            $table->text('metodo_pago');
+            $table->text('tipo_entry')->nullable();
             $table->timestamps();
         });
     }

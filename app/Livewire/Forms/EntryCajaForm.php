@@ -18,12 +18,15 @@ class EntryCajaForm extends Form
     #[Validate('required')]
     public $description = '';
     #[Validate('required')]
-    public $tipo = '';
+    public $metodo_pago = 'Contado';
+    #[Validate('required')]
+    public $tipo_entry = '';
     public function store()
     {
         try {
+            //dd($this->caja_id, $this->monto_entry, $this->description,$this->metodo_pago, $this->tipo_entry);
             $this->validate();
-            $this->cajaEntry($this->caja_id, $this->monto_entry, $this->description, $this->tipo);
+            $this->cajaEntry($this->caja_id, $this->monto_entry, $this->description,$this->metodo_pago, $this->tipo_entry);
             $this->infoLog('EntryCaja store');
             return true;
         } catch (\Exception $e) {

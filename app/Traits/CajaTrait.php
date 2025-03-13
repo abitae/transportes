@@ -31,34 +31,34 @@ trait CajaTrait
      */
     function cajaEntry(int $caja_id, float $monto, string $description,string $metodo_pago, string $tipo)
     {
-        return $this->createCajaEntryOrExit(EntryCaja::class, $caja_id, $monto, $description, $metodo_pago, $tipo);
+        $entry = EntryCaja::create([
+            'caja_id' => $caja_id,
+            'monto_entry' => $monto,
+            'description' => $description,
+            'metodo_pago' => $metodo_pago,
+            'tipo_entry' => $tipo,
+        ]);
+        return $entry;
     }
+
     /*
      *   Función para agregar exit
      */
     function cajaExit(int $caja_id, float $monto, string $description,string $metodo_pago, string $tipo)
     {
-        return $this->createCajaEntryOrExit(ExitCaja::class, $caja_id, $monto, $description,$metodo_pago, $tipo);
+        $exit = ExitCaja::create([
+            'caja_id' => $caja_id,
+            'monto_exit' => $monto,
+            'description' => $description,
+            'metodo_pago' => $metodo_pago,
+            'tipo_exit' => $tipo,
+        ]);
+        return $exit;
     }
     /*
      *   Función para crear entrada o salida de caja
      */
-    private function createCajaEntryOrExit($model, int $caja_id, float $monto, string $description,string $metodo_pago = 'EFECTIVO', string $tipo)
-    {
-        try {
-            return $model::create([
-                'caja_id' => $caja_id,
-                'monto_entry' => $monto,
-                'monto_exit' => $monto,
-                'description' => $description,
-                'metodo_pago' => $metodo_pago,
-                'tipo' => $tipo,
-            ]);
-        } catch (\Exception $e) {
-            $this->errorLog('CajaTrait ' . class_basename($model), $e);
-            return null;
-        }
-    }
+
     /*
      *   Función para imprimir reporte de caja
      */

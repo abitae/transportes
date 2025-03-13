@@ -12,8 +12,8 @@ class EntryCaja extends Model
         'caja_id',
         'monto_entry',
         'description',
-        'tipo_pago',
-        'tipo',
+        'metodo_pago',
+        'tipo_entry',
     ];
     public function caja()
     {
