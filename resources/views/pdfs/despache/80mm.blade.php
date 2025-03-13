@@ -94,8 +94,8 @@
             <p>Tel:{{ $despache->destinatario->phone }}</p>
             <!-- Detalle de la Factura -->
             <section class="text-xs text-left border-top border-dark">
-                <p>Origen:{{ $despache->encomienda->sucursal_remitente->address }}</p>
-                <p>Destino:{{ $despache->encomienda->sucursal_destinatario->address }}</p>
+                <p>ORIGEN:{{ $despache->encomienda->sucursal_remitente->address }}</p>
+                <p>DESTINO:{{ $despache->encomienda->sucursal_destinatario->address }}</p>
             </section>
             <section class="text-xs text-left border-top border-dark">
                 <p class="font-weight-bold">TRANSPORTE</p>
@@ -115,8 +115,8 @@
                     @endif
                 </section>
                 <section class="text-xs text-left border-top border-dark">
-                    <p class="font-weight-bold">FORMA DE PAGO</p>
-                    <p>{{ $despache->encomienda->estado_pago }}</p>
+                    <p class="text-center font-weight-bold">FORMA DE PAGO</p>
+                    <p class="text-center font-weight-bold">{{ $despache->encomienda->estado_pago }}</p>
                 </section>
                 <section class="mb-4">
                     <table class="table table-bordered table-sm">

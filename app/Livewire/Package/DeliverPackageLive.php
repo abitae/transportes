@@ -65,18 +65,19 @@ class DeliverPackageLive extends Component
         $sucursals = Sucursal::where('isActive', true)
             ->whereNot('id', [Auth::user()->sucursal->id])
             ->get();
-        $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
+
+        $encomiendas = Encomienda::whereBetween('updated_at', [$this->date_ini, $this->date_traslado])
             ->where('sucursal_id', $this->sucursal_id)
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'RECIBIDO')
             ->where('isHome', false)
             ->whereHas('destinatario', function ($query) {
-                $query->where('code', 'like', '%' . $this->search . '%')
-                    ->orWhere('name', 'like', '%' . $this->search . '%');
+            $query->where('code', 'like', '%' . $this->search . '%')
+                ->orWhere('name', 'like', '%' . $this->search . '%');
             })
-
             ->latest()
             ->paginate($this->perPage, '*', 'page');
+
         $pagos = [
             ['id' => 'PAGADO', 'name' => 'PAGADO'],
             ['id' => 'CONTRA ENTREGA', 'name' => 'CONTRA ENTREGA'],
@@ -102,7 +103,8 @@ class DeliverPackageLive extends Component
 
     public function openModal(Encomienda $encomienda)
     {
-        $this->document = '';
+        $this->document = $encomienda->destinatario->code;
+        $this->pin      = '';
         $this->modalDeliver = ! $this->modalDeliver;
         $this->encomienda   = $encomienda;
     }

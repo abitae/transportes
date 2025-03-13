@@ -64,7 +64,7 @@ trait InvoiceTrait
             'tipAfeIgv' => '10',
             'codProducto' => $paquete->id,
             'unidad' => $paquete->und_medida,
-            'descripcion' => 'Servicio de traslado ' . $paquete->description,
+            'descripcion' => 'SERVICIO DE TRASLADO ' . $paquete->description,
             'cantidad' => $paquete->cantidad,
             'mtoValorUnitario' => $mtoValorUnitario,
             'mtoValorVenta' => $mtoValorUnitario * $paquete->cantidad,

@@ -66,7 +66,7 @@ class pdfController extends Controller
             //->format(Format::A4)
             ->name('despache.pdf');
     }
-    public function stickerA6(Encomienda $encomienda)
+    public function stickerA5(Encomienda $encomienda)
     {
         $data = [
             'encomienda' => $encomienda,

@@ -180,10 +180,12 @@ class RegisterLive extends Component
             'destinatario_code.min'           => 'El número de documento debe tener 8 dígitos',
             'destinatario_code.max'           => 'El número de documento debe tener 11 dígitos',
         ];
+        //dd($this->destinatario_type_code);
         $this->validate($rules, $messages);
         $destinatario = Customer::where('type_code', $this->destinatario_type_code)
             ->where('code', $this->destinatario_code)
             ->first();
+            //dd($destinatario);
         if ($destinatario) {
             $this->destinatario         = $destinatario;
             $this->destinatario_name    = $destinatario->name;
@@ -293,11 +295,9 @@ class RegisterLive extends Component
                     break;
                 case 3:
                     $this->processStepThree();
-                    //$this->processStep();
                     break;
                 case 4:
                     $this->processStepFour();
-                    //$this->processStep();
                     break;
             }
         }
