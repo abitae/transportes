@@ -71,6 +71,8 @@ class CajaLive extends Component
             ['key' => 'created_at', 'label' => 'Fecha Apertura', 'class' => 'text-black'],
             ['key' => 'updated_at', 'label' => 'Fecha Cierre', 'class' => 'text-black'],
             ['key' => 'monto_apertura', 'label' => 'Apertura', 'class' => 'bg-green-500 text-black'],
+            ['key' =>'ingresos', 'label' => 'Ingresos', 'class' => 'bg-blue-500 text-black'],
+            ['key' =>'egresos', 'label' => 'Egresos', 'class' => 'bg-purple-500 text-black'],
             ['key' => 'monto_cierre', 'label' => 'Cierre', 'class' => 'bg-red-500 text-black'],
             ['key' => 'action', 'label' => 'Imprimir', 'class' => ''],
         ];
@@ -95,7 +97,7 @@ class CajaLive extends Component
 
     private function updateCaja()
     {
-        if ($this->cajaForm->update($this->caja) && $this->cajaForm->monto_cierre == ($this->caja->monto_apertura + $this->caja->entries->sum('monto_entry') - $this->caja->exits->sum('monto_exit'))) {
+        if ($this->cajaForm->update($this->caja) && $this->cajaForm->monto_cierre == ($this->caja->monto_apertura + $this->caja->entries->whereIn('metodo_pago', ['Contado'])->sum('monto_entry') - $this->caja->exits->whereIn('metodo_pago', ['Contado'])->sum('monto_exit'))) {
             $this->success('Genial, actualizado correctamente!');
             $this->modalCaja = false;
             $this->openCaja  = false;

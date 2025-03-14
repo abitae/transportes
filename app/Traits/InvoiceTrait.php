@@ -19,9 +19,10 @@ trait InvoiceTrait
     {
         if ($encomienda->tipo_comprobante != 'TICKET') {
             $this->setInvoice($encomienda,$encomienda->tipo_comprobante); // Genera factura o boleta
+            $this->setGuiTrans($encomienda); // Genera guia transportista
         }
         $this->setTicket($encomienda);   // Genera ticket
-        $this->setGuiTrans($encomienda); // Genera guia transportista
+        
     }
 
     private function setTicket(Encomienda $encomienda)

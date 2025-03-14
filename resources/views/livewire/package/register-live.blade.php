@@ -212,16 +212,6 @@
             @endif
         </x-slot:actions>
     </x-mary-card>
-    <div>
-        <div>
-            {{ $remitente ?? 'remitente' }}
-        </div>
-        <div>
-            {{ $destinatario ?? 'destinatario' }}
-        </div>
-        <div>
-            {{ $cliFacturacion ?? 'cliFacturacion' }}
-        </div>
-    </div>
     @include('livewire.package.register-modal')
+    @include('livewire.package.register-final-modal')
 </div>

@@ -49,6 +49,7 @@ return new class extends Migration
             $table->string('observation')->nullable();
             $table->string('estado_encomienda');
             $table->integer('pin')->unsigned();
+            $table->boolean('isTransbordo')->default(false)->nullable();
             $table->boolean('isHome')->default(false);
             $table->boolean('isReturn')->default(false);
             $table->boolean('isActive')->default(true);

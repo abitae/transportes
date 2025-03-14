@@ -498,7 +498,7 @@ class RegisterLive extends Component
 
         if ($this->encomienda) {
             if ($this->encomienda->estado_pago != 'CONTRA ENTREGA') {
-                $this->storeEntry();
+                $this->storeEntry($this->encomienda);
             }
             $this->storeInvoce($this->encomienda);
             $this->resetForms();
@@ -517,14 +517,15 @@ class RegisterLive extends Component
         return $cod . '-' . Auth::user()->id . $correlativo;
     }
 
-    private function storeEntry()
+    private function storeEntry(Encomienda $encomienda)
     {
+        //dd($encomienda);
         $this->entryForm->fill([
             'caja_id'     => $this->caja->id,
-            'monto_entry' => $this->encomiendaForm->monto,
-            'description' => $this->encomiendaForm->code,
-            'metodo_pago'   => $this->encomiendaForm->metodo_pago,
-            'tipo'        => $this->encomiendaForm->tipo_comprobante,
+            'monto_entry' => $encomienda->monto,
+            'description' => $encomienda->code,
+            'metodo_pago'   => $encomienda->metodo_pago,
+            'tipo_entry'        => $encomienda->tipo_comprobante,
         ]);
 
         if ($this->entryForm->store()) {

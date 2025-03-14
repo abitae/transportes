@@ -1,126 +1,108 @@
 @if ($this->destinatario && $this->remitente && $this->cliFacturacion && $this->paquetes)
-<x-mary-modal wire:model="modalConfimation" class="backdrop-blur" box-class="max-w-6xl max-h-full" separator>
-    <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div>
-            <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
-            <ul>
-                <li>
-                    {{ $this->remitente->name ?? 'name' }}
-                </li>
-                <li>
-                    {{ $this->remitente->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->remitente->code ??
-                    'code'
-                    }}
-                </li>
-                @if ($this->remitente->phone)
-                <li>Telefono: {{ $this->remitente->phone }}</li>
-                @endif
-            </ul>
-            <x-mary-icon name="s-envelope" class="col-span-2 text-blue-500 text-md" label="DESTINATARIO" />
-            <ul>
-                <li>{{ $this->destinatario->name ?? 'name' }}</li>
-                <li>{{ $this->destinatario->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->destinatario->code ??
-                    'code'
-                    }}</li>
-                @if ($this->destinatario->phone)
-                <li>Telefono: {{ $this->destinatario->phone }}</li>
-                @endif
-            </ul>
-        </div>
-        <div>
-            <x-mary-icon name="s-envelope" class="col-span-2 text-blue-500 text-md" label="FACTURACION" />
-            <ul>
-                <li>{{ $this->cliFacturacion->name ?? 'name' }}</li>
-                <li>{{ $this->cliFacturacion->type_code = 1 ? 'DNI:' : 'RUC:' }} {{ $this->cliFacturacion->code ??
-                    'code'
-                    }}</li>
-                @if ($this->cliFacturacion->phone)
-                <li>Telefono: {{ $this->cliFacturacion->phone }}</li>
-                @endif
-            </ul>
+    <x-mary-modal wire:model="modalConfimation" class="backdrop-blur" box-class="max-w-6xl max-h-full bg-gray-200" separator
+        progress-indicator>
+        <div class="p-2 space-y-4 ">
+            <!-- Información de clientes -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 ">
+                <!-- Remitente -->
+                <div class="bg-white rounded-lg shadow-sm p-3 border-l-4 border-green-500">
+                    <div class="flex items-center mb-2">
+                        <x-mary-icon name="s-user" class="text-green-500 mr-2" />
+                        <h3 class="font-bold text-green-700">REMITENTE</h3>
+                    </div>
+                    <div class="space-y-1 text-sm">
+                        <p class="font-medium">{{ $this->remitente->name ?? 'name' }}</p>
+                        <p>{{ $this->remitente->type_code == 1 ? 'DNI:' : 'RUC:' }} {{ $this->remitente->code ?? 'code' }}</p>
+                        @if ($this->remitente->phone)
+                            <p class="flex items-center"><x-mary-icon name="s-phone" class="text-gray-500 mr-1 h-4 w-4" /> {{ $this->remitente->phone }}</p>
+                        @endif
+                    </div>
+                </div>
 
-        </div>
-        <div class="col-span-1 md:col-span-2">
-            <x-mary-icon name="s-envelope" class="col-span-2 text-blue-500 text-md" label="DETALLE PAGO" />
-            <div class="grid grid-cols-2 gap-1">
-                <div>
-                    <x-mary-stat class="text-xs" title="Estado pago" value="{{ $this->estado_pago }}" icon="o-envelope"
-                        tooltip="Pagado o Contra entrega" />
+                <!-- Destinatario -->
+                <div class="bg-white rounded-lg shadow-sm p-3 border-l-4 border-blue-500">
+                    <div class="flex items-center mb-2">
+                        <x-mary-icon name="s-user" class="text-blue-500 mr-2" />
+                        <h3 class="font-bold text-blue-700">DESTINATARIO</h3>
+                    </div>
+                    <div class="space-y-1 text-sm">
+                        <p class="font-medium">{{ $this->destinatario->name ?? 'name' }}</p>
+                        <p>{{ $this->destinatario->type_code == 1 ? 'DNI:' : 'RUC:' }} {{ $this->destinatario->code ?? 'code' }}</p>
+                        @if ($this->destinatario->phone)
+                            <p class="flex items-center"><x-mary-icon name="s-phone" class="text-gray-500 mr-1 h-4 w-4" /> {{ $this->destinatario->phone }}</p>
+                        @endif
+                    </div>
                 </div>
-                <div>
-                    <x-mary-stat title="Tipo comprobante" value="{{ $this->tipo_comprobante }}" icon="o-envelope"
-                        tooltip="Ticket, Boleta, Factura" />
-                </div>
-                <div>
-                    <x-mary-stat title="Metodo de pago" value="{{ $this->metodo_pago }}" icon="o-envelope"
-                        tooltip="Metodo de pago (Contado, Yape, Transferencia, Deposito)" />
-                </div>
-                <div>
-                    @if ($isHome)
-                    <x-mary-stat title="Entrega" value="DOMICILIO" icon="o-envelope" tooltip="Reparto a domicilio" />
-                    @else
-                    <x-mary-stat title="Entrega" value="AGENCIA" icon="o-envelope" tooltip="Reparto a agencia" />
-                    @endif
 
+                <!-- Facturación -->
+                <div class="bg-white rounded-lg shadow-sm p-3 border-l-4 border-purple-500">
+                    <div class="flex items-center mb-2">
+                        <x-mary-icon name="s-document-text" class="text-purple-500 mr-2" />
+                        <h3 class="font-bold text-purple-700">FACTURACIÓN</h3>
+                    </div>
+                    <div class="space-y-1 text-sm">
+                        <p class="font-medium">{{ $this->cliFacturacion->name ?? 'name' }}</p>
+                        <p>{{ $this->cliFacturacion->type_code == 1 ? 'DNI:' : 'RUC:' }} {{ $this->cliFacturacion->code ?? 'code' }}</p>
+                        @if ($this->cliFacturacion->phone)
+                            <p class="flex items-center"><x-mary-icon name="s-phone" class="text-gray-500 mr-1 h-4 w-4" /> {{ $this->cliFacturacion->phone }}</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
 
+            <!-- Detalles de pago -->
+            <div class="bg-white rounded-lg shadow-sm p-3">
+                <div class="flex items-center mb-3">
+                    <x-mary-icon name="s-credit-card" class="text-indigo-500 mr-2" />
+                    <h3 class="font-bold text-indigo-700">DETALLE PAGO</h3>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="bg-gray-50 rounded p-2">
+                        <x-mary-stat title="Estado pago" value="{{ $this->estado_pago }}" icon="s-banknotes"
+                            tooltip="Pagado o Contra entrega" />
+                    </div>
+                    <div class="bg-gray-50 rounded p-2">
+                        <x-mary-stat title="Tipo comprobante" value="{{ $this->tipo_comprobante }}" icon="s-document"
+                            tooltip="Ticket, Boleta, Factura" />
+                    </div>
+                    <div class="bg-gray-50 rounded p-2">
+                        <x-mary-stat title="Método de pago" value="{{ strtoupper($this->metodo_pago) }}" icon="s-currency-dollar"
+                            tooltip="Método de pago (Contado, Yape, Transferencia, Depósito)" />
+                    </div>
+                    <div class="bg-gray-50 rounded p-2">
+                        @if ($isHome)
+                            @if ($isReturn)
+                                <x-mary-stat title="Entrega" value="RETORNO" icon="s-arrow-path" tooltip="Retorno de encomienda" />
+                            @else
+                                <x-mary-stat title="Entrega" value="DOMICILIO" icon="s-home" tooltip="Reparto a domicilio" />
+                            @endif
+                        @else
+                            <x-mary-stat title="Entrega" value="AGENCIA" icon="o-building-storefront" tooltip="Reparto a agencia" />
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detalle de paquetes -->
+            <div class="bg-white rounded-lg shadow-sm p-3">
+                <div class="flex items-center mb-3">
+                    <x-mary-icon name="s-cube" class="text-amber-500 mr-2" />
+                    <h3 class="font-bold text-amber-700">DETALLE PAQUETES</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped hover>
+                    </x-mary-table>
+                </div>
+                <div class="text-right font-bold text-lg mt-2 text-indigo-600 border-t pt-2">
+                    Total: S/{{ number_format($paquetes->sum('sub_total'), 2) }}
                 </div>
             </div>
         </div>
-        <div class="col-span-4 md:col-span-4">
-            <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
-            <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped>
-            </x-mary-table>
-            <div class="text-right text-blue-500 border-t text-md">
-                Total S/{{ number_format($paquetes->sum('sub_total'), 2) }}
+        <x-slot:actions>
+            <div class="flex space-x-2">
+                <x-mary-button label="Cancelar" @click="$wire.modalConfimation = false" class="bg-gray-200 hover:bg-gray-300 text-gray-700" />
+                <x-mary-button wire:click='confirmEncomienda' label="Confirmar" class="bg-green-500 hover:bg-green-700 text-white" spinner />
             </div>
-        </div>
-    </div>
-    <x-slot:actions>
-        <x-mary-button label="Cancel" @click="$wire.modalConfimation = false" />
-        <x-mary-button wire:click='confirmEncomienda' wire: label="Confirm" class="btn-primary" spinner />
-    </x-slot:actions>
-</x-mary-modal>
-@endif
-@if ($this->encomienda)
-<x-mary-modal wire:model.live="modalFinal" persistent class="backdrop-blur" box-class="w-full">
-    <x-mary-card shadow>
-        <div class="grid grid-cols-4 gap-2 border-sky-500">
-            <div>
-                @if ($this->encomienda->ticket)
-                <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="TICKET"
-                    link="/ticket/80mm/{{ $this->encomienda->ticket->id }}" spinner
-                    class="text-white bg-green-500 btn-xl" />
-                @endif
-            </div>
-            <div>
-                @if ($this->encomienda->invoice)
-                <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="RECIBO"
-                    link="/invoice/80mm/{{ $this->encomienda->invoice->id }}" spinner
-                    class="text-white bg-cyan-500 btn-xl" />
-                @endif
-            </div>
-            <div>
-                <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="GUIA T"
-                    link="/despache/80mm/{{ $this->encomienda->despatche->id }}" spinner
-                    class="text-white bg-blue-500 btn-xl" />
-            </div>
-            <div>
-                <x-mary-button icon="o-printer" target="_blank" no-wire-navigate label="STICKER"
-                    link="/sticker/a5/{{ $this->encomienda->id }}" spinner class="text-white bg-orange-500 btn-xl" />
-            </div>
-            <div>
-                <x-mary-button icon="o-clipboard" link="{{ route('package.register') }}" spinner label="NUEVO"
-                    class="text-white bg-blue-500 btn-xl" />
-            </div>
-            <div>
-                <x-mary-button icon="s-list-bullet" link="{{ route('package.send') }}" spinner label="LISTA E"
-                    class="text-white bg-blue-500 btn-xl" />
-            </div>
-            <div>
-                <x-mary-button icon="o-cursor-arrow-ripple" link="{{ route('package.deliver') }}" no-wire-navigate
-                    label="ENTREGAR" spinner class="text-white bg-blue-500 btn-xl" />
-            </div>
-        </div>
-    </x-mary-card>
-</x-mary-modal>
+        </x-slot:actions>
+    </x-mary-modal>
 @endif

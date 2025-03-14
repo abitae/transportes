@@ -5,15 +5,15 @@
                 <x-mary-form wire:submit.prevent="save" class="space-y-4">
                     <div class="grid grid-cols-1 gap-1 md:grid-cols-4">
                         <div>
-                            <x-mary-select label="SUCURSAL DESTINO" icon="o-user" :options="$sucursales"
+                            <x-mary-select label="SUCURSAL DESTINO" icon="o-home-modern" :options="$sucursales"
                                 wire:model.live="sucursal_destino_id" placeholder="NO SELECT" placeholder-value="0" />
                         </div>
                         <div>
-                            <x-mary-select label="TRANSPORTISTA" icon="o-user" :options="$transportistas"
+                            <x-mary-select label="CHOFERES" icon="o-user-circle" :options="$transportistas"
                                 wire:model.live="transportista_id" placeholder="NO SELECT" placeholder-value="0" />
                         </div>
                         <div>
-                            <x-mary-select label="VEHICULO" icon="o-user" :options="$vehiculos"
+                            <x-mary-select label="VEHICULO" icon="m-truck" :options="$vehiculos"
                                 wire:model.live="vehiculo_id" placeholder="NO SELECT" placeholder-value="0" />
                         </div>
                     </div>
