@@ -29,6 +29,7 @@ use App\Livewire\Package\RecordPackageLive;
 use App\Livewire\Package\RegisterLive;
 use App\Livewire\Package\ReturnPackageLive;
 use App\Livewire\Package\SendPackageLive;
+use App\Livewire\Report\EncomiendasReport;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', function () {
@@ -73,7 +74,9 @@ Route::middleware('auth')->group(function () {
     Route::get('create-invoice', InvoiceCreateLive::class)->name('facturacion.create-invoice');
     Route::get('create-note', NoteCreateLive::class)->name('facturacion.create-note');
 });
-
+Route::middleware('auth')->group(function () {
+    Route::get('/report/encomiendas', EncomiendasReport::class)->name('report.encomiendas');
+});
 Route::get('/ticket/80mm/{ticket}', [pdfController::class, 'ticket80mm']);
 Route::get('/ticket/a4/{ticket}', [pdfController::class, 'ticketA4']);
 Route::get('/invoice/80mm/{invoice}', [pdfController::class, 'invoice80mm']);

@@ -29,6 +29,10 @@ class Customer extends Model
     {
         return $this->hasMany(Encomienda::class, 'customer_dest_id', 'id');
     }
+    public function encomiendas_facturacion()
+    {
+        return $this->hasMany(Encomienda::class, 'customer_fact_id', 'id');
+    }
     public function tickets()
     {
         return $this->hasMany(Ticket::class);

@@ -1,4 +1,4 @@
-<x-mary-modal wire:model="modalEnvio" persistent class="backdrop-blur" box-class="max-h-full max-w-128 sm:max-w-md md:max-w-lg lg:max-w-2xl">
+<x-mary-modal wire:model="modalEnvio" class="backdrop-blur" box-class="max-h-full max-w-128 sm:max-w-md md:max-w-lg lg:max-w-2xl">
     <div class="flex items-center justify-center mb-4">
         <x-mary-icon name="s-envelope" class="text-green-500 text-2xl mr-2" />
         <h2 class="text-xl font-bold text-gray-800">ENVIAR PAQUETES</h2>

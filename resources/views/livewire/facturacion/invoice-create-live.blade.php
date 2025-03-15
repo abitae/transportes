@@ -21,14 +21,14 @@
                 <x-mary-select label="Moneda" :options="$monedas" option-value="codigo" option-label="descripcion"
                     wire:model.live="moneda" class="max-w-sm" />
             </div>
-            <div class="col-span-2">
+            <div class="col-span-1">
                 @if ($tipoOperacion == '1001')
                 <x-mary-select label="Tipo Detraccion" :options="$tipoDetracciones" option-value="codigo"
                     option-label="descripcion" wire:model.live="tipoDetraccion" class="max-w-sm" />
                 @endif
             </div>
             <div>
-
+                <x-mary-input label="Guia Adjunta" wire:model.live="docAdjunto" class="max-w-sm" />
             </div>
         </div>
         <div class="grid grid-cols-3 grid-rows-2 gap-1 p-2 mt-4 border border-green-500 rounded-lg">

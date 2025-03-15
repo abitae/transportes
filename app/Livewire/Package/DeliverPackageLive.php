@@ -45,6 +45,8 @@ class DeliverPackageLive extends Component
     public $monto_descuento;
     public $motivo_descuento;
     public $modalFinal;
+    public $modalCobrar = false;
+
     public function mount()
     {
         $this->caja = Caja::where('user_id', Auth::user()->id)
@@ -123,11 +125,12 @@ class DeliverPackageLive extends Component
         }
     }
 
-    public function confirmEncomienda()
+    public function confirmEncomienda(Encomienda $encomienda)
     {
-        if ($this->estado_pago == 'PAGADO') {
-            $this->updateEncomiendaStatus('ENTREGADO');
-            $this->success('Paquete entregado correctamente');
+        if ($encomienda->estado_pago == 'PAGADO') {
+            $encomienda->estado_encomienda = 'ENTREGADO';
+            $encomienda->save();
+            $this->success('Genial','Paquete entregado correctamente');
         } else {
             if ($this->tipo_comprobante != 'TICKET') {
                 $this->setInvoice($this->encomienda,$this->tipo_comprobante);
@@ -161,7 +164,12 @@ class DeliverPackageLive extends Component
         $this->modalConfimation = false;
         $this->modalFinal       = true;
     }
-
+    public function modalCobrarOpen()    
+    {
+        //dd($this->encomienda);
+        //$this->modalConfimation = false;
+        $this->modalCobrar = true;
+    }
     private function updateEncomiendaStatus($status, $tipo_comprobante = null)
     {
         $this->encomienda->estado_encomienda = $status;

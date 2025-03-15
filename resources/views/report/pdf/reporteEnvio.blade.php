@@ -24,8 +24,8 @@
 @section("content")
   <h5 class="user-select-none"><i class="far fa-file-alt"></i> Reporte de Envíos</h5>
   <div class="container">
-    <div class="card shadow-sm mb-4">
-      <div class="card-header py-3">
+    <div class="mb-4 shadow-sm card">
+      <div class="py-3 card-header">
         <form action="{{route("reporteEnvio")}}" method="get" class="row justify-content-between">
           <div class="col-12">
             <div class="row align-items-end">
@@ -65,7 +65,7 @@
           <canvas id="oilChart"></canvas>
         @else
           <div class="row">
-            <div class="col-sm-12 text-center text-success py-3 user-select-none">
+            <div class="py-3 text-center col-sm-12 text-success user-select-none">
               <h3><i class="far fa-smile-beam"></i> Sin resultados <i class="far fa-smile-beam"></i></h3>
             </div>
           </div>
@@ -74,7 +74,6 @@
     </div>
   </div>
 @endsection
-
 @section("scripts")
   <script>
     const $dateStart = document.querySelector("#date-start")

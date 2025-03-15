@@ -29,10 +29,10 @@ class Encomienda extends Model
         'monto',
         'monto_descuento',
         'motivo_descuento',
-        'estado_pago',
-        'tipo_pago',
-        'metodo_pago',
-        'tipo_comprobante',
+        'estado_pago', //PAGADO , CONTRA ENTREGA
+        'tipo_pago', // Contado, Credito
+        'metodo_pago',// Efectivo, Yape, Tarjeta, Trasnferencia
+        'tipo_comprobante',// TICKET, FACTURA, BOLETA
         'doc_traslado',
         'glosa',
         'observation',
@@ -43,6 +43,7 @@ class Encomienda extends Model
         'isActive',
 
     ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -67,6 +68,10 @@ class Encomienda extends Model
     {
         return $this->belongsTo(Customer::class, 'customer_dest_id', 'id');
     }
+    public function facturacion()
+    {
+        return $this->belongsTo(Customer::class, 'customer_fact_id', 'id');
+    }
     public function sucursal_destinatario()
     {
         return $this->belongsTo(Sucursal::class, 'sucursal_dest_id', 'id');
@@ -75,7 +80,6 @@ class Encomienda extends Model
     {
         return $this->hasMany(Paquete::class);
     }
-
     public function ticket()
     {
         return $this->hasOne(Ticket::class);

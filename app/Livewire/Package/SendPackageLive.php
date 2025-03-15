@@ -25,7 +25,7 @@ class SendPackageLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
     use CajaTrait, UtilsTrait;
-    public $title = 'Enviar paquetes';
+    public $title = 'ENVIAR PAQUETES';
     public $sub_title = 'Modulo de envio de paquetes';
     public $search = '';
     public $perPage = 100;

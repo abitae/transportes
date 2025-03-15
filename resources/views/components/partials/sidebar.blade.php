@@ -49,6 +49,9 @@
                 <x-mary-menu-item title="Vehiculos" icon="m-truck" link="{{ route('config.vehiculo') }}" />
                 <x-mary-menu-item title="Choferes" icon="o-user-circle" link="{{ route('config.transportista') }}" />
             </x-mary-menu-sub>
+            <x-mary-menu-sub title="Reportes" icon="o-cog-6-tooth">
+                <x-mary-menu-item title="Encomiendas" icon="o-home" link="{{ route('report.encomiendas') }}" />
+            </x-mary-menu-sub>
             <x-mary-menu-separator />
             <x-mary-menu-item title="Messages" icon="o-envelope" link="{{ route('message.frontend') }}" />
             <x-mary-menu-item title="Reclamaciones" icon="o-envelope" link="{{ route('message.frontend') }}" />
