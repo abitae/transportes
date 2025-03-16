@@ -51,7 +51,7 @@ class PermisoSeeder extends Seeder
         $role->syncPermissions(Permission::all());
         User::factory()->create([
             'name'        => 'Administrador',
-            'email'       => 'admin.l28@brayanbruhs.pe',
+            'email'       => 'admin.h28@brayanbruhs.pe',
             'sucursal_id' => 1,
             'isActive'    => true,
             'password'    => bcrypt('password'),

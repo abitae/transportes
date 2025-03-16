@@ -18,7 +18,7 @@ class EntryCajaForm extends Form
     #[Validate('required')]
     public $description = '';
     #[Validate('required')]
-    public $metodo_pago = 'Contado';
+    public $metodo_pago = 'Efectivo';
     #[Validate('required')]
     public $tipo_entry = '';
     public function store()

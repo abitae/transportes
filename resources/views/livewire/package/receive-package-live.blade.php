@@ -6,7 +6,7 @@
         </x-slot:menu>
         <div class="grid grid-cols-1 md:grid-cols-6 gap-2 p-2 shadow-md">
             <div>
-                <x-mary-input label="Buscar envio" inline wire:model.live='search' class="w-full sm:w-auto" />
+                <x-mary-input type='search' label="Buscar envio" inline wire:model.live='search' class="w-full sm:w-auto" />
             </div>
             <div>
                 <x-mary-select label="Raiz" icon="s-inbox-stack" :options="$sucursals" wire:model.live="sucursal_id"

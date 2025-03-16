@@ -6,17 +6,20 @@
         </x-slot:menu>
         <div class="grid grid-cols-1 md:grid-cols-6 gap-2 p-2 shadow-md">
             <div>
-                <x-mary-input label="Buscar encomienda" inline wire:model.live='search' />
+                <x-mary-input type='search' label="Buscar encomienda" icon="o-funnel" wire:model.live="search"
+                    placeholder="Buscar encomienda" />
             </div>
             <div>
-                <x-mary-select label="Sucursal" icon="s-inbox-stack" :options="$sucursals" wire:model.live="sucursal_id"
-                    inline />
+                <x-mary-select label="Sucursal remitente" icon="s-inbox-stack" :options="$sucursals"
+                    wire:model.live="sucursal_id" />
             </div>
             <div>
-                <x-mary-datetime label="Fecha inicio" wire:model.live="date_ini" icon="o-calendar" inline />
+                <x-mary-datetime label="Desde" wire:model.live="filtroFechaInicio" icon="o-calendar"
+                    type="datetime-local" />
             </div>
             <div>
-                <x-mary-datetime label="Fecha Fin" wire:model.live="date_traslado" icon="o-calendar" inline />
+                <x-mary-datetime label="Hasta" wire:model.live="filtroFechaFin" icon="o-calendar"
+                    type="datetime-local" />
             </div>
         </div>
         <x-mary-menu-separator />

@@ -41,7 +41,6 @@ class SendPackageLive extends Component
     public $isActive = true;
     public bool $showDrawer = false;
     public Encomienda $encomienda;
-    public $caja;
     public $editModal = false;
     public $isHome = false;
     public CustomerForm $customerFormDest;
@@ -49,11 +48,6 @@ class SendPackageLive extends Component
     public $manifiesto;
     public function mount()
     {
-        $this->caja = $this->cajaIsActive(Auth::user());
-
-        if (!$this->caja) {
-            return redirect()->route('caja.index');
-        }
 
         $this->date_ini = $this->dateNow('Y-m-d');
         $this->date_traslado = $this->dateNow('Y-m-d H:i');
@@ -71,7 +65,6 @@ class SendPackageLive extends Component
             ->first()
             ->id;
     }
-
     public function render()
     {
         $p = SucursalConfiguration::where('isActive', true)
@@ -90,15 +83,24 @@ class SendPackageLive extends Component
         $this->transportista_id = $config->transportista_id;
         $this->vehiculo_id = $config->vehiculo_id;
 
-        $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
+        $encomiendas = Encomienda::query()
+            ->whereDate('created_at', $this->date_ini)
             ->where('isActive', $this->isActive)
             ->where('sucursal_id', Auth::user()->sucursal->id)
             ->where('sucursal_dest_id', $this->sucursal_dest_id)
             ->where('estado_encomienda', 'REGISTRADO')
-            //->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%'))
-            ->whereHas('remitente', function ($query) {
-                $query->where('code', 'like', '%' . $this->search . '%')
-                    ->orWhere('name', 'like', '%' . $this->search . '%');
+            ->when($this->search, function($query) {
+                $query->where(function($q) {
+                    $q->whereHas('remitente', function($subQuery) {
+                        $subQuery->where('code', 'like', '%' . $this->search . '%')
+                            ->orWhere('name', 'like', '%' . $this->search . '%');
+                    })
+                    ->orWhere('code', 'like', '%' . $this->search . '%')
+                    ->orWhereHas('destinatario', function($subQuery) {
+                        $subQuery->where('code', 'like', '%'. $this->search. '%')
+                            ->orWhere('name', 'like', '%'. $this->search. '%');
+                    });
+                });
             })
             ->latest()
             ->paginate($this->perPage, '*', 'page');
@@ -108,7 +110,6 @@ class SendPackageLive extends Component
 
         return view('livewire.package.send-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
     }
-
     public function openModal()
     {
         if (!empty($this->selected)) {
@@ -119,7 +120,6 @@ class SendPackageLive extends Component
             $this->error('Seleccione al menos un paquete!');
         }
     }
-
     public function sendPaquetes()
     {
         if ($this->vehiculo_id && $this->transportista_id) {
@@ -148,7 +148,7 @@ class SendPackageLive extends Component
                     ]);
             }
             if (count($this->selected) == $num_encomiendas_enviadas) {
-                $this->success('Genial, ingresado correctamente!');
+                $this->success('Genial, enviado correctamente!');
                 $this->modalEnvio = false;
                 $ids = $this->selected;
                 $this->selected = [];
@@ -181,7 +181,6 @@ class SendPackageLive extends Component
             $this->error('Seleccione un vehiculo y transportista!');
         }
     }
-
     public function enableEncomienda(Encomienda $encomienda)
     {
         try {
@@ -192,19 +191,16 @@ class SendPackageLive extends Component
             $this->error('Error, verifique los datos!');
         }
     }
-
     public function detailEncomienda(Encomienda $encomienda)
     {
         $this->encomienda = $encomienda;
         $this->showDrawer = true;
     }
-
     public function editEncomienda(Encomienda $encomienda)
     {
         $this->encomienda = $encomienda;
         $this->editModal = true;
     }
-
     public function updateEncomienda()
     {
         if ($this->customerFormDest->code && $this->customerFormDest->type_code) {
@@ -219,7 +215,6 @@ class SendPackageLive extends Component
             $this->editModal = false;
         }
     }
-
     public function searchDestinatario()
     {
         $this->customerFormDest->store();

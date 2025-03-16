@@ -6,8 +6,8 @@
 
         <div class="grid grid-cols-6 gap-2 p-2 shadow-xl">
             <div>
-                <x-mary-input type='search' label="Buscar" icon="o-funnel" wire:model.live="search"
-                    placeholder="Buscar por nombre" />
+                <x-mary-input type='search' label="Buscar encomienda" icon="o-funnel" wire:model.live="search"
+                    placeholder="Buscar encomienda" />
             </div>
             <div>
                 <x-mary-select label="Sucursal" icon="s-inbox-stack" :options="$sucursals"

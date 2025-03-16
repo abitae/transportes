@@ -20,14 +20,14 @@ class CajaLive extends Component
     public CajaForm $cajaForm;
     public EntryCajaForm $entryForm;
     public ExitCajaForm $exitForm;
-    public string $title     = 'Caja';
+    public string $title = 'CAJA';
     public string $sub_title = 'Modulo de caja';
 
     public bool $showHistory = false;
-    public bool $openCaja    = false;
-    public bool $modalCaja   = false;
-    public bool $modalEntry  = false;
-    public bool $modalExit   = false;
+    public bool $openCaja = false;
+    public bool $modalCaja = false;
+    public bool $modalEntry = false;
+    public bool $modalExit = false;
 
     public $fechaActual;
     public $caja;
@@ -36,8 +36,8 @@ class CajaLive extends Component
     public function mount()
     {
         $this->fechaActual = $this->dateNow('Y-m-d');
-        $this->caja        = $this->cajaIsActive(Auth::user());
-        $this->openCaja    = (bool) $this->caja;
+        $this->caja = $this->cajaIsActive(Auth::user());
+        $this->openCaja = (bool) $this->caja;
     }
 
     public function render()
@@ -71,8 +71,8 @@ class CajaLive extends Component
             ['key' => 'created_at', 'label' => 'Fecha Apertura', 'class' => 'text-black'],
             ['key' => 'updated_at', 'label' => 'Fecha Cierre', 'class' => 'text-black'],
             ['key' => 'monto_apertura', 'label' => 'Apertura', 'class' => 'bg-green-500 text-black'],
-            ['key' =>'ingresos', 'label' => 'Ingresos', 'class' => 'bg-blue-500 text-black'],
-            ['key' =>'egresos', 'label' => 'Egresos', 'class' => 'bg-purple-500 text-black'],
+            ['key' => 'ingresos', 'label' => 'Ingresos', 'class' => 'bg-blue-500 text-black'],
+            ['key' => 'egresos', 'label' => 'Egresos', 'class' => 'bg-purple-500 text-black'],
             ['key' => 'monto_cierre', 'label' => 'Cierre', 'class' => 'bg-red-500 text-black'],
             ['key' => 'action', 'label' => 'Imprimir', 'class' => ''],
         ];
@@ -97,13 +97,17 @@ class CajaLive extends Component
 
     private function updateCaja()
     {
-        if ($this->cajaForm->update($this->caja) && $this->cajaForm->monto_cierre == ($this->caja->monto_apertura + $this->caja->entries->whereIn('metodo_pago', ['Contado'])->sum('monto_entry') - $this->caja->exits->whereIn('metodo_pago', ['Contado'])->sum('monto_exit'))) {
-            $this->success('Genial, actualizado correctamente!');
-            $this->modalCaja = false;
-            $this->openCaja  = false;
-        } else {
-            $this->error('Error, verifique los datos!');
+        if ($this->cajaForm->monto_cierre == ($this->caja->monto_apertura + $this->caja->entries->whereIn('metodo_pago', ['Efectivo'])->sum('monto_entry') - $this->caja->exits->whereIn('metodo_pago', ['Efectivo'])->sum('monto_exit'))) {
+            if ($this->cajaForm->update($this->caja)) {
+                $this->success('Genial, actualizado correctamente!');
+                $this->modalCaja = false;
+                $this->openCaja = false;
+            } else {
+                $this->error('Error, verifique los datos!');
+            }
         }
+        $this->modalCaja = false;
+
     }
 
     private function storeCaja()
@@ -112,7 +116,7 @@ class CajaLive extends Component
         if ($this->caja) {
             $this->success('Genial, guardado correctamente!');
             $this->modalCaja = false;
-            $this->openCaja  = true;
+            $this->openCaja = true;
         } else {
             $this->error('Error, verifique los datos!');
             $this->modalEntry = false;

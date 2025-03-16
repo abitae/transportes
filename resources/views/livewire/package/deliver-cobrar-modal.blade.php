@@ -8,7 +8,7 @@
                 <div class="bg-white rounded-lg shadow-sm p-3 border-l-4 border-green-500">
                     <div class="flex items-center mb-2">
                         <x-mary-icon name="s-user" class="text-green-500 mr-2" />
-                        <h3 class="font-bold text-green-700">REMITENTE2</h3>
+                        <h3 class="font-bold text-green-700">REMITENTE</h3>
                     </div>
                     <div class="space-y-1 text-sm">
                         <p class="font-medium">{{ $encomienda->remitente->name ?? 'name' }}</p>
@@ -66,17 +66,17 @@
                     <h3 class="font-bold text-indigo-700">DETALLE PAGO</h3>
                 </div>
                 @php
-                    $pagos = [
-                        ['id' => 'PAGADO', 'name' => 'PAGADO'],
-                        ['id' => 'CONTRA ENTREGA', 'name' => 'CONTRA ENTREGA'],
+                    $tipo_pagos = [
+                        ['id' => 'Contado', 'name' => 'Contado'],
+                        ['id' => 'Credito', 'name' => 'Credito'],
                     ];
                     $comprobantes = [
+                        ['id' => 'TICKET', 'name' => 'TICKET'],
                         ['id' => 'BOLETA', 'name' => 'BOLETA'],
                         ['id' => 'FACTURA', 'name' => 'FACTURA'],
-                        ['id' => 'TICKET', 'name' => 'TICKET'],
                     ];
                     $metodoPagos = [
-                        ['id' => 'Contado', 'name' => 'Contado'],
+                        ['id' => 'Efectivo', 'name' => 'Efectivo'],
                         ['id' => 'Yape', 'name' => 'Yape'],
                         ['id' => 'Transferencia', 'name' => 'Transferencia'],
                         ['id' => 'Deposito', 'name' => 'Deposito'],
@@ -91,22 +91,29 @@
                     <div class="grid grid-cols-4 gap-1">
                         <div>
                             <x-mary-select label="Tipo de comprobante" icon="o-user" :options="$comprobantes"
-                                    wire:model.live="tipo_comprobante" class="rounded-r-lg" />
+                                wire:model.live="tipo_comprobante" class="rounded-r-lg" />
                         </div>
                         <div>
-                            @if ($encomienda->estado_pago == 'PAGADO')
-                                <x-mary-select label="Tipo de comprobante" icon="o-user" :options="$comprobantes"
-                                    wire:model.live="tipo_comprobante" class="rounded-r-lg" />
-                            @endif
+                            <x-mary-select label="Tipo pago" icon="o-user" :options="$tipo_pagos"
+                                wire:model.live="tipo_pago" class="rounded-r-lg" />
                         </div>
                         <div>
-                            @if ($encomienda->estado_pago == 'PAGADO')
-                                <x-mary-select label="Metodo pago" icon="o-user" :options="$metodoPagos"
-                                    wire:model="metodo_pago" class="rounded-r-lg" />
+                            @if ($tipo_pago == 'Contado')
+                                <x-mary-select label="Metodo de pago" icon="o-user" :options="$metodoPagos"
+                                    wire:model.live="metodo_pago" class="rounded-r-lg" />
                             @endif
                         </div>
                     </div>
-                    @if ($encomienda->tipo_comprobante != 'TICKET' && $encomienda->estado_pago == 'PAGADO')
+
+                </div>
+            </div>
+            @if ($tipo_comprobante != 'TICKET')
+                <div class="bg-white rounded-lg shadow-sm p-3">
+                    <div class="flex items-center mb-3">
+                        <x-mary-icon name="s-credit-card" class="text-indigo-500 mr-2" />
+                        <h3 class="font-bold text-indigo-700">DETALLE FACTURACION</h3>
+                    </div>
+                    <div class="w-full">
                         <div class="grid grid-cols-4 gap-1">
                             <div class="grid col-span-4 md:col-span-2">
                                 <x-mary-input label="Numero de documento" wire:model='cliFacturacion_code'>
@@ -131,21 +138,30 @@
                                 <x-mary-input label="Celular" wire:model='cliFacturacion_phone' />
                             </div>
                         </div>
-                    @endif
+                    </div>
                 </div>
+            @endif
+        </div>
+        <div>
+            <div>
+                {{ $tipo_comprobante }}
+            </div>
+            <div>
+                {{$tipo_pago}}
+            </div>
+            <div>
+                {{$metodo_pago}}
+            </div>
+            <div>
+                {{$cliFacturacion}}
             </div>
         </div>
         <x-slot:actions>
             <div class="flex space-x-2">
                 <x-mary-button label="Cancelar" @click="$wire.modalCobrar = false"
                     class="bg-gray-200 hover:bg-gray-300 text-gray-700" />
-                @if ($encomienda->estado_pago == 'CONTRA ENTREGA')
-                    <x-mary-button wire:click='modalCobrarOpen({{$encomienda}})' label="Cobrar"
-                        class="bg-orange-500 hover:bg-orange-700 text-white" spinner />
-                @else
-                    <x-mary-button wire:click='confirmEncomienda({{$encomienda}})' label="Confirmar"
-                        class="bg-green-500 hover:bg-green-700 text-white" spinner />
-                @endif
+                <x-mary-button wire:click='cobrarEncomienda' label="Cobrar"
+                    class="bg-orange-500 hover:bg-orange-700 text-white" spinner />
             </div>
         </x-slot:actions>
     </x-mary-modal>

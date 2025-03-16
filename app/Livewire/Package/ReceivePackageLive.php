@@ -26,18 +26,11 @@ class ReceivePackageLive extends Component
     public $numElementos;
     public Sucursal $sucursal_rem;
     public $modalEnvio = false;
-    public $caja;
     public bool $showDrawer = false;
     public Encomienda $encomienda;
 
     public function mount()
     {
-        $this->caja = Caja::where('user_id', Auth::user()->id)
-            ->where('isActive', true)
-            ->latest()->first();
-        if (!$this->caja) {
-            return $this->redirectRoute('caja.index');
-        }
         $this->sucursal_id = Sucursal::where('isActive', true)
             ->whereNotIn('id', [Auth::user()->sucursal->id])
             ->first()->id;
@@ -53,13 +46,20 @@ class ReceivePackageLive extends Component
             ->where('sucursal_id', $this->sucursal_id)
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'ENVIADO')
-            //->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%'))
-            ->whereHas('remitente', function ($query) {
-                $query->where('code', 'like', '%'.$this->search.'%')
-                    ->orWhere('name', 'like', '%'.$this->search.'%');
+            ->where(function($query) {
+                $query->whereHas('remitente', function ($q) {
+                    $q->where('code', 'like', '%' . $this->search . '%')
+                        ->orWhere('name', 'like', '%' . $this->search . '%');
+                })
+                ->orWhere('code', 'like', '%' . $this->search . '%')
+                ->orWhereHas('destinatario', function ($q) {
+                    $q->where('code', 'like', '%' . $this->search . '%')
+                        ->orWhere('name', 'like', '%' . $this->search . '%');
+                });
             })
             ->latest()
             ->paginate($this->perPage, '*', 'page');
+
         return view('livewire.package.receive-package-live', compact('encomiendas', 'sucursals'));
     }
 

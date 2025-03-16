@@ -1,7 +1,7 @@
 <x-mary-modal wire:model="modalCaja" persistent class="backdrop-blur" box-class="max-h-full max-w-128">
     <x-mary-icon name="s-envelope" class="text-{{ !$openCaja ? 'green' : 'red' }}-500 text-md"
         label="{{ !$openCaja ? 'ABRIR' : 'CERRAR' }} CAJA" />
-    <x-mary-form wire:submit="save">
+    <x-mary-form wire:submit.prevent="save">
         <div class="border border-{{ !$openCaja ? 'green' : 'red' }}-500 rounded-lg">
             <div class="grid grid-cols-4 p-2 space-x-2">
                 <div class="grid col-span-4 pt-2">
@@ -35,7 +35,7 @@
                 <div>
                     @php
                     $metodoPagos = [
-                    ['id' => 'Contado', 'name' => 'Contado'],
+                    ['id' => 'Efectivo', 'name' => 'Efectivo'],
                     ['id' => 'Yape', 'name' => 'Yape'],
                     ['id' => 'Transferencia', 'name' => 'Transferencia'],
                     ['id' => 'Deposito', 'name' => 'Deposito'],

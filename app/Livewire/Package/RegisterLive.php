@@ -35,7 +35,7 @@ class RegisterLive extends Component
 
     public $cantidad, $und_medida = 'NIU', $description, $peso, $amount;
     public $paquetes, $sucursal_destino, $sucursal_dest_id, $pin1, $pin2, $doc_traslado;
-    public $estado_pago = 'PAGADO', $tipo_comprobante = 'TICKET', $metodo_pago = 'Contado', $tipo_pago = 'Contado';
+    public $estado_pago = 'PAGADO', $tipo_comprobante = 'TICKET', $metodo_pago = 'Efectivo', $tipo_pago = 'Contado';
     public $glosa, $observation;
     public $transportista_id, $vehiculo_id, $modalConfimation = false, $caja, $isReturn = false, $isHome = false, $modalFinal = false;
     public $encomienda;
@@ -102,7 +102,7 @@ class RegisterLive extends Component
         $service       = new ServiceTableSunat();
         $unidadMedidas = $service->getAll('sunat_03');
         $metodoPagos   = [
-            ['id' => 'Contado', 'name' => 'Contado'],
+            ['id' => 'Efectivo', 'name' => 'Efectivo'],
             ['id' => 'Yape', 'name' => 'Yape'],
             ['id' => 'Transferencia', 'name' => 'Transferencia'],
             ['id' => 'Deposito', 'name' => 'Deposito'],
@@ -347,6 +347,7 @@ class RegisterLive extends Component
     }
     private function processStepFour()
     {
+
         $rules = [
             'cliFacturacion'           => 'required',
             'estado_pago'              => 'required',
@@ -368,14 +369,15 @@ class RegisterLive extends Component
             'cliFacturacion_name.required'      => 'Error, es necesario ingresar el nombre del cliente de facturación!',
         ];
         $this->validate($rules, $messages);
-        if ($this->tipo_comprobante == 'FACTURA' && $this->cliFacturacion_type_code == '1' && strlen($this->cliFacturacion_code) == 8) {
+        //dd($this->cliFacturacion->type_code);
+        if ($this->tipo_comprobante == 'FACTURA' && $this->cliFacturacion->type_code == '1') {
             $this->error('Error, el cliente de facturación no es valido!, verifique el número de RUC!');
             return;
         }
         if ($this->estado_pago == 'CONTRA ENTREGA') {
             $this->cliFacturacion   = $this->destinatario;
             $this->tipo_comprobante = 'TICKET';
-            $this->metodo_pago      = 'Contado';
+            $this->metodo_pago      = 'Efectivo';
         }
         $this->step++;
     }
@@ -482,7 +484,7 @@ class RegisterLive extends Component
             'cantidad'          => $this->paquetes->sum('cantidad'),
             'monto'             => $this->paquetes->sum('sub_total'),
             'estado_pago'       => $this->estado_pago,
-            'tipo_pago'         => 'Contado',
+            'tipo_pago'         => $this->estado_pago == 'CONTRA ENTREGA' ? 'Credito':'Contado',
             'metodo_pago'       => $this->metodo_pago,
             'tipo_comprobante'  => $this->estado_pago == 'CONTRA ENTREGA' ? 'TICKET' : $this->tipo_comprobante,
             'doc_traslado'      => $this->doc_traslado,

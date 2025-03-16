@@ -123,7 +123,7 @@
                         <x-mary-button wire:click='modalCobrarOpen()' label="Cobrar"
                             class="bg-orange-500 hover:bg-orange-700 text-white" spinner />
                     @else
-                        <x-mary-button wire:click='confirmEncomienda({{$encomienda}})' label="Confirmar"
+                        <x-mary-button wire:click='confirmEncomienda()' label="Confirmar"
                             class="bg-green-500 hover:bg-green-700 text-white" spinner />
                     @endif
             </div>
