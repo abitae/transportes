@@ -42,19 +42,56 @@ class DashboardLive extends Component
         Arr::set($this->myLine['data'], 'datasets', $datasets);
         $this->dataChart(new DateTime(), 'bar');
     }
-    public function dataChart(DateTime $date, $type='month')
-    {
-        $Y = $date->format('Y');
-        $m = $date->format('m');
-        $c = $date->format('d');
-        $data = Encomienda::where('sucursal_id', Auth::user()->sucursal->id)
-            ->whereYear('created_at', $Y)
-            ->whereMonth('created_at', $m)
-            ->whereDay('created_at', $c)
-            ->count();
-        dd($data);
-        return $data;
+public function dataChart(DateTime $date, $type = 'month', $sucursal_id = null)
+{
+    $Y = $date->format('Y');
+    $m = $date->format('m');
+    $c = $date->format('d');
+
+    // Get base query with branch office filter
+    $query = Encomienda::query();
+    
+    // Filter by branch office if provided, otherwise use authenticated user's branch
+    $query->where('sucursal_id', $sucursal_id ?? Auth::user()->sucursal->id);
+
+    // Apply date filters and grouping based on type
+    switch ($type) {
+        case 'year':
+            $data = $query->whereYear('created_at', $Y)
+                ->selectRaw('MONTH(created_at) as month, SUM(monto) as total_amount, COUNT(*) as count')
+                ->groupBy('month')
+                ->orderBy('month')
+                ->get();
+            break;
+
+        case 'month':
+            $data = $query->whereYear('created_at', $Y)
+                ->whereMonth('created_at', $m)
+                ->selectRaw('DAY(created_at) as day, SUM(monto) as total_amount, COUNT(*) as count')
+                ->groupBy('day')
+                ->orderBy('day')
+                ->get();
+            break;
+
+        default: // day
+            $data = $query->whereYear('created_at', $Y)
+                ->whereMonth('created_at', $m)
+                ->whereDay('created_at', $c)
+                ->selectRaw('HOUR(created_at) as hour, SUM(monto) as total_amount, COUNT(*) as count')
+                ->groupBy('hour')
+                ->orderBy('hour')
+                ->get();
+            break;
     }
+
+    return [
+        'data' => $data,
+        'totals' => [
+            'amount' => $data->sum('total_amount'),
+            'count' => $data->sum('count')
+        ]
+    ];
+}
     public function render()
     {
         return view('livewire.home.dashboard-live');
