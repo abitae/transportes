@@ -259,7 +259,7 @@ class DashboardLive extends Component
         $labels = [];
         $datasets = [];
         $sucursals = Sucursal::all();
-        $estados = ['REGISTRADO', 'ENVIADO', 'RECIBIDO', 'ENTREGADO'];
+        $estados = ['REGISTRADO', 'ENVIADO', 'RECIBIDO' ,'RETORNADO', 'ENTREGADO'];
 
         // Initialize data array for all statuses
         $labels = [];

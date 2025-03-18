@@ -11,7 +11,9 @@ use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
 use App\Models\Package\Encomienda;
 use App\Traits\LogCustom;
+use App\Traits\UtilsTrait;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\Features\SupportPagination\WithoutUrlPagination;
@@ -22,7 +24,7 @@ use Mary\Traits\Toast;
 class RecordPackageLive extends Component
 {
     use LogCustom;
-    use Toast;
+    use Toast,UtilsTrait;
     use WithPagination, WithoutUrlPagination;
     public $title = 'ENCOMIENDAS ENTREGADAS';
     public $sub_title = 'Modulo de paquetes entregados';
@@ -31,11 +33,10 @@ class RecordPackageLive extends Component
     public array $selected = [];
     public int $sucursal_dest_id;
     public $date_ini;
+    public $date_fin;
     public $modalEnvio = false;
     public $numElementos;
     public Sucursal $sucursal_dest;
-    public $transportista_id;
-    public $vehiculo_id;
     public $isActive = true;
     public bool $showDrawer = false;
     public Encomienda $encomienda;
@@ -45,37 +46,42 @@ class RecordPackageLive extends Component
     public CustomerForm $customerFormDest;
     public function mount()
     {
-        $this->caja = Caja::where('user_id', Auth::user()->id)
-            ->where('isActive', true)
-            ->latest()->first();
-        if (!$this->caja) {
-            $this->redirectRoute('caja.index');
-        }
-        $this->sucursal_dest_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
-        $this->date_ini = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
+        $this->sucursal_dest_id = Sucursal::where('isActive', true)->first()->id;
+        $this->date_ini = Carbon::now()->startOfDay()->format('Y-m-d H:i');
+        $this->date_fin = $this->dateNow('Y-m-d H:i:s');
     }
     public function render()
     {
         $sucursals = Sucursal::where('isActive', true)
-            ->whereNotIn('id', [Auth::user()->sucursal->id])
             ->get();
-        $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
-            ->where('isActive', $this->isActive)
-            ->where('sucursal_id', $this->sucursal_dest_id)
-            ->where('sucursal_dest_id', Auth::user()->sucursal->id)
-            ->where('estado_encomienda', 'ENTREGADO')
-            //->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%'))
-            ->whereHas('destinatario', function ($query) {
-                $query->where('code', 'like', '%' . $this->search . '%')
-                    ->orWhere('name', 'like', '%' . $this->search . '%');
+            $encomiendas = Encomienda::query()
+            ->when($this->date_ini && $this->date_fin, function($query) {
+                $query->whereBetween('created_at', [
+                    Carbon::parse($this->date_ini)->startOfDay(),
+                    Carbon::parse($this->date_fin)->endOfDay()
+                ]);
+            })
+            ->where([
+                'isActive' => $this->isActive,
+                'sucursal_id' => $this->sucursal_dest_id,
+            ])
+            ->when($this->search, function($query) {
+                $searchTerm = '%' . $this->search . '%';
+                $query->where(function($q) use ($searchTerm) {
+                    $q->whereHas('remitente', function($subQuery) use ($searchTerm) {
+                        $subQuery->where('code', 'like', $searchTerm)
+                                ->orWhere('name', 'like', $searchTerm);
+                    })
+                    ->orWhere('code', 'like', $searchTerm)
+                    ->orWhereHas('destinatario', function($subQuery) use ($searchTerm) {
+                        $subQuery->where('code', 'like', $searchTerm)
+                                ->orWhere('name', 'like', $searchTerm);
+                    });
+                });
             })
             ->latest()
-            ->paginate($this->perPage, '*', 'page');
-
-        $transportistas = Transportista::where('isActive', true)->get();
-        $vehiculos = Vehiculo::where('isActive', true)->get();
-
-        return view('livewire.package.record-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
+            ->paginate($this->perPage, ['*'], 'page');
+        return view('livewire.package.record-package-live', compact('encomiendas', 'sucursals'));
     }
 
 
@@ -83,31 +89,5 @@ class RecordPackageLive extends Component
     {
         $this->encomienda = $encomienda;
         $this->showDrawer = true;
-    }
-
-
-    public function printTicket(Encomienda $envio)
-    {
-        $width = 78;
-        $heigh = 250;
-        $paper_format = array(0, 0, 220, 710);
-
-        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('report.pdf.ticket', compact('envio'));
-
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'T' . $envio->code . '.pdf');
-    }
-    public function printSticker(Encomienda $envio)
-    {
-        $width = 78;
-        $heigh = 250;
-        $paper_format = array(0, 0, 220, 710);
-
-        $pdf = Pdf::loadView('report.pdf.sticker', compact('envio'));
-
-        return response()->streamDownload(function () use ($pdf) {
-            echo $pdf->stream();
-        }, 'S' . $envio->code . '.pdf');
     }
 }

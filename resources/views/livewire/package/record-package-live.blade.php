@@ -1,181 +1,138 @@
 <div>
-    <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator>
+    <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator
+        progress-indicator>
         <x-slot:menu>
-            <x-mary-input label="Buscar envio" inline wire:model.live='search' />
         </x-slot:menu>
-        <div class="grid grid-cols-6 gap-2 p-2 shadow-md">
-            <div class="grid col-span-2">
-                <x-mary-select label="Sucursal de envio" icon="s-inbox-stack" :options="$sucursals"
-                    wire:model.live="sucursal_dest_id" inline />
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-2 p-2 shadow-md">
+            <div>
+                <x-mary-input type='search' label="Buscar encomienda" icon="o-funnel" wire:model.live="search"
+                    placeholder="Buscar encomienda" />
             </div>
-            <div class="grid col-span-2">
-                <x-mary-datetime label="Fecha de registro" wire:model.live="date_ini" icon="o-calendar" inline />
+            <div>
+                <x-mary-select label="Destino" icon="s-inbox-stack" :options="$sucursals"
+                    wire:model.live="sucursal_dest_id" class="w-full" />
             </div>
-            <div class="grid col-span-2">
+            <div>
+                <x-mary-datetime label="Desde" wire:model.live="date_ini" icon="o-calendar" type="datetime-local" />
+            </div>
+            <div>
+                <x-mary-datetime label="Hasta" wire:model.live="date_fin" icon="o-calendar" type="datetime-local" />
+            </div>
 
-            </div>
         </div>
         <x-mary-menu-separator />
-        <div class="grid grid-cols-4 gap-1 shadow-xl">
-            <div class="grid col-span-4">
-                <x-mary-card shadow separator>
+        <div class="grid grid-cols-1 gap-1 shadow-xl">
+            <div class="col-span-1">
+                <x-mary-card shadow separator class="overflow-x-auto">
                     @php
-                    $headers = [
-                    ['key' => 'actions', 'label' => 'Action', 'class' => ''],
-                    ['key' => 'remitente', 'label' => 'Remitente', 'class' => ''],
-                    ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
-                    ];
-                    $row_decoration = [
-                    'bg-red-400' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,
-                    ];
+                        $headers = [
+                            ['key' => 'actions', 'label' => 'Acción', 'class' => 'w-1/3'],
+                            ['key' => 'remitente', 'label' => 'Remitente', 'class' => 'w-1/3'],
+                            ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => 'w-1/3'],
+                        ];
+                        $row_decoration = [
+                            'bg-red-400' => fn(App\Models\package\Encomienda $encomienda) => !$encomienda->isActive,
+                        ];
                     @endphp
-                    <x-mary-table wire:model="selected" :headers="$headers" :rows="$encomiendas"
-                        with-pagination per-page="perPage" :row-decoration="$row_decoration"
-                        :per-page-values="[100, 150, 200]">
+                    <x-mary-table wire:model="selected" selectable :headers="$headers" :rows="$encomiendas" with-pagination
+                        per-page="perPage" :row-decoration="$row_decoration" :per-page-values="[100, 150, 200]">
                         <x-slot:empty>
-                            <x-mary-icon name="o-cube" label="No se encontro registros." />
+                            <x-mary-icon name="o-cube" label="No se encontraron registros." />
                         </x-slot:empty>
                         @scope('cell_remitente', $stuff)
-                        <div class="grid grid-cols-1 grid-rows-4 gap-1 text-xs">
-                            <div>
-                                <x-mary-badge :value="$stuff->remitente->code" class="text-white bg-purple-500" />
+                            <div class="grid grid-cols-1 grid-rows-auto gap-1 text-xs">
+                                <div>
+                                    <x-mary-badge :value="$stuff->remitente->code" class="text-white bg-purple-500 w-full sm:w-auto" />
+                                </div>
+                                <div class="font-medium">
+                                    {{ strtoupper($stuff->remitente->name) }}
+                                </div>
+                                <div>
+                                    {{ strtoupper($stuff->sucursal_remitente->name) }}
+                                </div>
+                                <div>
+                                    {{ strtoupper($stuff->sucursal_remitente->created_at->format('d/m/Y')) }}
+                                </div>
+                                <div class="truncate">
+                                    {{ $stuff->sucursal_remitente->address }}
+                                </div>
                             </div>
-                            <div>
-                                {{ strtoupper($stuff->remitente->name) }}
-                            </div>
-                            <div>
-                                <x-mary-badge :value="$stuff->sucursal_remitente->name"
-                                    class="text-xs text-white bg-green-500" />
-                            </div>
-                            <div>
-                                <x-mary-badge :value="$stuff->sucursal_remitente->created_at->format('d/m/Y')"
-                                    class="text-xs text-right text-white badge-warning" />
-                            </div>
-                            <div>
-                                {{ $stuff->sucursal_remitente->address }}
-                            </div>
-                        </div>
                         @endscope
                         @scope('cell_destinatario', $stuff)
-                        <div class="grid grid-cols-1 grid-rows-4 gap-1 text-xs">
-                            <div>
-                                <x-mary-badge :value="$stuff->destinatario->code" class="text-white bg-purple-500" />
+                            <div class="grid grid-cols-1 grid-rows-auto gap-1 text-xs">
+                                <div>
+                                    <x-mary-badge :value="$stuff->destinatario->code" class="text-white bg-purple-500 w-full sm:w-auto" />
+                                </div>
+                                <div class="font-medium">
+                                    {{ strtoupper($stuff->destinatario->name) }}
+                                </div>
+                                <div>
+                                    {{ strtoupper($stuff->sucursal_destinatario->name) }}
+                                </div>
+                                <div>
+                                    {{ strtoupper($stuff->sucursal_destinatario->created_at->format('d/m/Y')) }}
+                                </div>
+                                <div class="truncate">
+                                    @if ($stuff->isHome)
+                                        <span class="font-semibold">REPARTO DOMICILIO</span>
+                                        <br>
+                                        {{ $stuff->destinatario->address }}
+                                    @else
+                                        <span class="font-semibold">ENTREGA SUCURSAL</span>
+                                        <br>
+                                        {{ $stuff->sucursal_destinatario->address }}
+                                    @endif
+                                </div>
                             </div>
-                            <div>
-                                {{ strtoupper($stuff->destinatario->name)}}
-                            </div>
-                            <div>
-
-                                <x-mary-badge :value="$stuff->sucursal_destinatario->name"
-                                    class="text-xs text-white bg-green-500" />
-
-                            </div>
-                            <div>
-                                <x-mary-badge :value="$stuff->sucursal_destinatario->created_at->format('d/m/Y')"
-                                    class="text-xs text-right text-white badge-warning" />
-                            </div>
-                            <div>
-                                @if ($stuff->isHome)
-                                REPARTO DOMICILIO
-                                <br>
-                                {{ $stuff->destinatario->address }}
-                                @else
-                                ENTREGA SUCURSAL
-                                <br>
-                                {{ $stuff->sucursal_destinatario->address }}
-                                @endif
-                            </div>
-                        </div>
                         @endscope
                         @scope('cell_actions', $stuff)
-                        <div class="grid grid-cols-2 grid-rows-5 gap-0">
-                            <div class="col-span-2">
-                                <x-mary-badge :value="strtoupper($stuff->code)"
-                                    class="w-full text-white text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
+                            <div class="grid grid-cols-2 gap-1 p-1">
+                                <div class="col-span-2 mb-1">
+                                    <x-mary-badge :value="strtoupper($stuff->code)"
+                                        class="w-full text-white text-lg sm:text-xl {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500' : 'bg-green-500' }}" />
+                                </div>
+                                <div class="col-span-1">
+                                    <x-mary-button label='Detalle' icon="s-bars-3"
+                                        wire:click="detailEncomienda({{ $stuff->id }})" spinner
+                                        class="w-full text-white btn-xs bg-cyan-500" />
+                                </div>
+                                <div class="col-span-1">
+                                    @if ($stuff->invoice)
+                                        <x-mary-button label='Recibo' icon="o-printer" target="_blank" no-wire-navigate
+                                            link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
+                                            class="w-full text-white bg-purple-500 btn-xs" />
+                                    @endif
+                                </div>
+                                <div class="col-span-1 mt-1">
+                                    @if ($stuff->ticket)
+                                        <x-mary-button label='Ticket' icon="o-printer" target="_blank" no-wire-navigate
+                                            link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
+                                            class="w-full text-white bg-cyan-500 btn-xs" />
+                                    @endif
+                                </div>
+                                <div class="col-span-1 mt-1">
+                                    @if ($stuff->despatche)
+                                        <x-mary-button label='Guia T' icon="o-printer" target="_blank" no-wire-navigate
+                                            link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
+                                            class="w-full text-white bg-green-500 btn-xs" />
+                                    @endif
+                                </div>
+                                <div class="col-span-2 mt-1">
+                                    <x-mary-badge :value="strtoupper($stuff->estado_encomienda)"
+                                        class="w-full text-blue-500 text-xs bg-white" />
+                                </div>
+                                <div class="col-span-2 mt-1">
+                                    <x-mary-badge :value="strtoupper($stuff->estado_pago)"
+                                        class="w-full text-white text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500' : 'bg-green-500' }}" />
+                                </div>
                             </div>
-                            <div class="row-start-2">
-                                <x-mary-button label='Detalle' icon="s-bars-3"
-                                    wire:click="detailEncomienda({{ $stuff->id }})" spinner
-                                    class="w-full text-white btn-xs bg-cyan-500" />
-                            </div>
-                            <div class="row-start-2">
-                                @if ($stuff->invoice)
-                                <x-mary-button label='Recibo' icon="o-printer" target="_blank" no-wire-navigate
-                                    link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
-                                    class="w-full text-white bg-purple-500 btn-xs" />
-                                @endif
-                            </div>
-                            <div class="row-start-3">
-
-                            </div>
-                            <div class="row-start-3">
-                                @if ($stuff->ticket)
-                                <x-mary-button label='Ticket' icon="o-printer" target="_blank" no-wire-navigate
-                                    link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
-                                    class="w-full text-white bg-cyan-500 btn-xs" />
-                                @endif
-                            </div>
-                            <div class="row-start-4">
-
-                            </div>
-                            <div class="row-start-4">
-                                <x-mary-button label='Guia T' icon="o-printer" target="_blank" no-wire-navigate
-                                    link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
-                                    class="w-full text-white bg-green-500 btn-xs" />
-                            </div>
-                            <div class="row-start-5">
-                                <x-mary-badge :value="strtoupper($stuff->estado_pago)"
-                                    class="w-full text-white text-xs {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500': 'bg-green-500' }}" />
-                            </div>
-                            <div class="row-start-4">
-
-                            </div>
-                        </div>
-
                         @endscope
+
                     </x-mary-table>
                 </x-mary-card>
             </div>
         </div>
     </x-mary-card>
 
-    @isset($encomienda)
-    <x-mary-drawer wire:model="showDrawer" title="Detalle de encomienda" subtitle="Code {{ $encomienda->code }}"
-        separator with-close-button close-on-escape class="w-11/12 lg:w-2/3" right>
-        <x-mary-card shadow>
-            <x-mary-icon name="s-envelope" class="text-green-500 text-md" label="REMITENTE" />
-            <div class="grid grid-cols-5 grid-rows-3 gap-1 bg-green-200 rounded">
-                <div class="col-span-3">{{ $encomienda->remitente->name ?? 'name' }}</div>
-                <div class="row-start-2">{{ strtoupper($encomienda->remitente->type_code) ?? 'type_code' }}
-                </div>
-                <div class="row-start-2">{{ $encomienda->remitente->code ?? 'code' }}</div>
-                <div class="row-start-2">{{ $encomienda->remitente->phone ?? 'phone' }}</div>
-                <div class="col-span-3">{{ $encomienda->sucursal_remitente->name ?? 'sucursal' }}</div>
-            </div>
-            <x-mary-icon name="s-envelope" class="text-red-500 text-md" label="DESTINATARIO" />
-            <div class="grid grid-cols-5 grid-rows-3 gap-1 bg-red-100 rounded">
-                <div class="col-span-3">{{ $encomienda->destinatario->name ?? 'name' }}</div>
-                <div class="row-start-2">{{ strtoupper($encomienda->destinatario->type_code) ??
-                    'type_code' }}</div>
-                <div class="row-start-2">{{ $encomienda->destinatario->code ?? 'code' }}</div>
-                <div class="row-start-2">{{ $encomienda->destinatario->phone ?? 'phone' }}</div>
-                <div class="col-span-3">{{ $encomienda->sucursal_destino->name ?? 'sucursal' }}</div>
-            </div>
-            <x-mary-icon name="s-envelope" class="text-sky-500 text-md" label="DETALLE PAQUETES" />
-            @php
-            $headers_paquets = [
-            ['key' => 'cantidad', 'label' => 'Cantidad', 'class' => ''],
-            ['key' => 'description', 'label' => 'Descripcion', 'class' => ''],
-            ['key' => 'peso', 'label' => 'Peso', 'class' => ''],
-            ['key' => 'amount', 'label' => 'P.UNIT', 'class' => ''],
-            ['key' => 'sub_total', 'label' => 'MONTO', 'class' => ''],
-            ];
-            @endphp
-            <x-mary-table :headers="$headers_paquets" :rows="$encomienda->paquetes" striped>
-            </x-mary-table>
-        </x-mary-card>
-    </x-mary-drawer>
-    @endisset
-
-
+    @include('livewire.package.send-detail-drawer')
 </div>
