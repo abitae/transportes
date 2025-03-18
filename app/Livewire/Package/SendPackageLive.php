@@ -3,7 +3,6 @@ namespace App\Livewire\Package;
 
 use App\Exports\ManifiestoExport;
 use App\Livewire\Forms\CustomerForm;
-use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Configuration\SucursalConfiguration;
 use App\Models\Configuration\Transportista;
@@ -14,6 +13,7 @@ use App\Models\Package\Manifiesto;
 use App\Traits\CajaTrait;
 use App\Traits\LogCustom;
 use App\Traits\UtilsTrait;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -32,7 +32,7 @@ class SendPackageLive extends Component
     public array $selected = [];
     public int $sucursal_dest_id = 0;
     public $date_ini;
-    public $date_traslado;
+    public $date_fin;
     public $modalEnvio = false;
     public $numElementos;
     public Sucursal $sucursal_dest;
@@ -49,8 +49,8 @@ class SendPackageLive extends Component
     public function mount()
     {
 
-        $this->date_ini = $this->dateNow('Y-m-d');
-        $this->date_traslado = $this->dateNow('Y-m-d H:i');
+        $this->date_ini = Carbon::now()->startOfDay()->format('Y-m-d H:i');//$this->dateNow('Y-m-d');
+        $this->date_fin = $this->dateNow('Y-m-d H:i:s');
 
         $p = SucursalConfiguration::where('isActive', true)
             ->where('sucursal_id', Auth::user()->sucursal->id)
@@ -83,27 +83,37 @@ class SendPackageLive extends Component
         $this->transportista_id = $config->transportista_id;
         $this->vehiculo_id = $config->vehiculo_id;
 
+        // Build base query with date range filter
         $encomiendas = Encomienda::query()
-            ->whereDate('created_at', $this->date_ini)
-            ->where('isActive', $this->isActive)
-            ->where('sucursal_id', Auth::user()->sucursal->id)
-            ->where('sucursal_dest_id', $this->sucursal_dest_id)
-            ->where('estado_encomienda', 'REGISTRADO')
+            ->when($this->date_ini && $this->date_fin, function($query) {
+                $query->whereBetween('created_at', [
+                    Carbon::parse($this->date_ini)->startOfDay(),
+                    Carbon::parse($this->date_fin)->endOfDay()
+                ]);
+            })
+            ->where([
+                'isActive' => $this->isActive,
+                'sucursal_id' => Auth::user()->sucursal->id,
+                'sucursal_dest_id' => $this->sucursal_dest_id,
+            ])
+            ->whereIn('estado_encomienda' , ['REGISTRADO','RETORNADO'])
+            // Search in related models and package code
             ->when($this->search, function($query) {
-                $query->where(function($q) {
-                    $q->whereHas('remitente', function($subQuery) {
-                        $subQuery->where('code', 'like', '%' . $this->search . '%')
-                            ->orWhere('name', 'like', '%' . $this->search . '%');
+                $searchTerm = '%' . $this->search . '%';
+                $query->where(function($q) use ($searchTerm) {
+                    $q->whereHas('remitente', function($subQuery) use ($searchTerm) {
+                        $subQuery->where('code', 'like', $searchTerm)
+                                ->orWhere('name', 'like', $searchTerm);
                     })
-                    ->orWhere('code', 'like', '%' . $this->search . '%')
-                    ->orWhereHas('destinatario', function($subQuery) {
-                        $subQuery->where('code', 'like', '%'. $this->search. '%')
-                            ->orWhere('name', 'like', '%'. $this->search. '%');
+                    ->orWhere('code', 'like', $searchTerm)
+                    ->orWhereHas('destinatario', function($subQuery) use ($searchTerm) {
+                        $subQuery->where('code', 'like', $searchTerm)
+                                ->orWhere('name', 'like', $searchTerm);
                     });
                 });
             })
             ->latest()
-            ->paginate($this->perPage, '*', 'page');
+            ->paginate($this->perPage, ['*'], 'page');
 
         $transportistas = Transportista::where('isActive', true)->get();
         $vehiculos = Vehiculo::where('isActive', true)->get();
@@ -132,7 +142,6 @@ class SendPackageLive extends Component
                     ->whereIn('id', $this->selected)
                     ->update([
                         'estado_encomienda' => 'ENVIADO',
-                        'updated_at' => $this->date_traslado,
                         'vehiculo_id' => $this->vehiculo_id,
                         'transportista_id' => $this->transportista_id,
                         'isTransbordo' => true,
@@ -142,7 +151,6 @@ class SendPackageLive extends Component
                     ->whereIn('id', $this->selected)
                     ->update([
                         'estado_encomienda' => 'ENVIADO',
-                        'updated_at' => $this->date_traslado,
                         'vehiculo_id' => $this->vehiculo_id,
                         'transportista_id' => $this->transportista_id,
                     ]);
@@ -158,14 +166,14 @@ class SendPackageLive extends Component
                     'ids' => json_encode($ids),
                 ]);
                 SucursalConfiguration::where('sucursal_id', Auth::user()->sucursal->id)
-                ->where('sucursal_destino_id', $this->sucursal_dest_id)
-                ->update(['isActive' => false]);
+                    ->where('sucursal_destino_id', $this->sucursal_dest_id)
+                    ->update(['isActive' => false]);
 
                 $p = SucursalConfiguration::where('isActive', true)
                     ->where('sucursal_id', Auth::user()->sucursal->id)
                     ->pluck('sucursal_destino_id');
                 if ($p->isEmpty()) {
-                    
+
                     return redirect()->route('caja.index');
                 } else {
                     $this->sucursal_dest_id = Sucursal::where('isActive', true)

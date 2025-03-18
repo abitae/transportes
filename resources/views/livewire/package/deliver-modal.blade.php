@@ -9,7 +9,7 @@
                 <div class="w-full">
                     <x-mary-input label="Numero documento" inline wire:model.live='document' class="w-full" icon="o-identification" />
                 </div>
-                @if (!$this->encomienda->isHome)
+                @if (!$encomienda->isHome)
                     <div class="w-full">
                         <div class="mb-2">
                             <x-mary-icon name="o-lock-closed" class="text-blue-500" label="CÓDIGO DE SEGURIDAD" />

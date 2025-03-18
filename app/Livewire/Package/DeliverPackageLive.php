@@ -93,7 +93,6 @@ class DeliverPackageLive extends Component
                 Carbon::parse($this->filtroFechaFin)->endOfDay()
             ]);
         }
-        // Apply search filter across multiple related fields
         if (!empty($this->search)) {
             $searchTerm = '%' . trim($this->search) . '%';
             

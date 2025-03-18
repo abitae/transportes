@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Package;
 
 use App\Livewire\Forms\CustomerForm;
@@ -6,9 +7,13 @@ use App\Livewire\Forms\EntryCajaForm;
 use App\Livewire\Forms\ExitCajaForm;
 use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
+use App\Models\Package\Customer;
 use App\Models\Package\Encomienda;
+use App\Traits\CajaTrait;
 use App\Traits\InvoiceTrait;
 use App\Traits\LogCustom;
+use App\Traits\UtilsTrait;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -17,18 +22,19 @@ use Mary\Traits\Toast;
 
 class HomePackageLive extends Component
 {
-    use LogCustom, Toast, WithPagination, WithoutUrlPagination;
+    use LogCustom, Toast, WithPagination, WithoutUrlPagination, InvoiceTrait;
+    use CajaTrait, UtilsTrait;
     use InvoiceTrait;
     public EntryCajaForm $entryForm;
     public ExitCajaForm $exitForm;
     public CustomerForm $customerFact;
-    public $title     = 'ENTREGAR PAQUETES DOMICILIO';
-    public $sub_title = 'Modulo de entrega de paquetes domicilio';
-    public $search    = '';
-    public $perPage   = 10;
-    public $date_ini;
+    public $title = 'ENTREGA PAQUETES DOMICILIO';
+    public $sub_title = 'Modulo de entrega de paquetes a domicilio';
+    public $search = '';
+    public $perPage = 10;
+    public $filtroFechaInicio;
     public int $sucursal_id;
-    //public $date_traslado;
+    public $filtroFechaFin;
     public $numElementos;
     public Sucursal $sucursal_rem;
     public $modalDeliver = false;
@@ -36,44 +42,77 @@ class HomePackageLive extends Component
     public $document;
     public $pin;
     public $showDrawer;
-    public $estado_pago;
-    public $tipo_comprobante;
+    public $estado_pago;//PAGADO, CONTRA ENTREGA
+    public $tipo_pago = 'Contado';
+    public $tipo_comprobante = 'TICKET';
+    public $metodo_pago = 'Efectivo';
     public $caja;
-    public bool $modalConfimation = false;
-    public bool $modalDescuento   = false;
+    public bool $modalConfimation;
+    public bool $modalDescuento;
     public $monto_descuento;
     public $motivo_descuento;
     public $modalFinal;
+    public $modalCobrar = false;
+    public $cliFacturacion;
+    public $cliFacturacion_type_code = 1;
+    public $cliFacturacion_code;
+    public $cliFacturacion_name;
+    public $cliFacturacion_address;
+    public $cliFacturacion_phone;
+    public $cliFacturacion_ubigeo;
 
     public function mount()
     {
         $this->caja = Caja::where('user_id', Auth::user()->id)
             ->where('isActive', true)
             ->latest()->first();
-        if (! $this->caja) {
+        if (!$this->caja) {
             $this->redirectRoute('caja.index');
         }
-        $this->sucursal_id = Sucursal::where('isActive', true)->whereNotIn('id', [Auth::user()->sucursal->id])->first()->id;
-        $this->date_ini    = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
-        //$this->date_traslado = \Carbon\Carbon::now()->setTimezone('America/Lima')->format('Y-m-d');
+        $this->sucursal_id = Sucursal::where('isActive', true)
+            ->whereNotIn('id', [Auth::user()->sucursal->id])
+            ->first()->id;
+        $this->filtroFechaInicio = Carbon::now()->startOfDay()->format('Y-m-d H:i');//$this->dateNow('Y-m-d');
+        $this->filtroFechaFin = $this->dateNow('Y-m-d H:i:s');
     }
 
     public function render()
     {
-        $sucursals   = Sucursal::where('isActive', true)->whereNot('id', [Auth::user()->sucursal->id])->get();
-        $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
+        $sucursals = Sucursal::where('isActive', true)
+            ->whereNot('id', [Auth::user()->sucursal->id])
+            ->get();
+        $encomiendas = Encomienda::query()
             ->where('sucursal_id', $this->sucursal_id)
             ->where('sucursal_dest_id', Auth::user()->sucursal->id)
             ->where('estado_encomienda', 'RECIBIDO')
             ->where('isHome', true)
-            ->where('isReturn', false)
-        //->where(fn($query) => $query->orWhere('code', 'LIKE', '%' . $this->search . '%')
-            ->whereHas('destinatario', function ($query) {
-                $query->where('code', 'like', '%' . $this->search . '%')
-                    ->orWhere('name', 'like', '%' . $this->search . '%');
-            })
-            ->latest()
+            ->where('isReturn', false);
+        // Apply date range filter if both dates are set
+        if ($this->filtroFechaInicio && $this->filtroFechaFin) {
+            $encomiendas->whereBetween('created_at', [
+                Carbon::parse($this->filtroFechaInicio)->startOfDay(),
+                Carbon::parse($this->filtroFechaFin)->endOfDay()
+            ]);
+        }
+        // Apply search filter across multiple related fields
+        if (!empty($this->search)) {
+            $searchTerm = '%' . trim($this->search) . '%';
+
+            $encomiendas->where(function ($query) use ($searchTerm) {
+                $query->where('code', 'like', $searchTerm)
+                    ->orWhereHas('destinatario', function ($q) use ($searchTerm) {
+                        $q->where('code', 'like', $searchTerm)
+                            ->orWhere('name', 'like', $searchTerm);
+                    })
+                    ->orWhereHas('remitente', function ($q) use ($searchTerm) {
+                        $q->where('code', 'like', $searchTerm)
+                            ->orWhere('name', 'like', $searchTerm);
+                    });
+            });
+        }
+        $encomiendas = $encomiendas->latest()
             ->paginate($this->perPage, '*', 'page');
+
         $pagos = [
             ['id' => 'PAGADO', 'name' => 'PAGADO'],
             ['id' => 'CONTRA ENTREGA', 'name' => 'CONTRA ENTREGA'],
@@ -88,7 +127,6 @@ class HomePackageLive extends Component
             ['codigo' => '1', 'sigla' => 'DNI cod(1)'],
             ['codigo' => '6', 'sigla' => 'RUC cod(6)'],
         ];
-
         return view('livewire.package.home-package-live', compact('encomiendas', 'sucursals', 'pagos', 'comprobantes', 'tipoDocuments'));
     }
 
@@ -98,13 +136,12 @@ class HomePackageLive extends Component
         $this->showDrawer = true;
     }
 
-    public function openModal($id)
+    public function openModal(Encomienda $encomienda)
     {
-        //dd($id);
-        $this->encomienda       = Encomienda::find($id);
-        $this->modalDeliver     = ! $this->modalDeliver;
-        $this->tipo_comprobante = $this->encomienda->tipo_comprobante;
-
+        $this->document = $encomienda->destinatario->code;
+        $this->pin = '';
+        $this->modalDeliver = !$this->modalDeliver;
+        $this->encomienda = $encomienda;
     }
 
     public function deliverPaquetes()
@@ -114,70 +151,151 @@ class HomePackageLive extends Component
         }
         if ($this->encomienda->destinatario->code == $this->document && $this->encomienda->pin == $this->pin) {
             $this->customerFact->setCustomer($this->encomienda->destinatario);
-            $this->estado_pago      = $this->encomienda->estado_pago;
-            $this->modalDeliver     = false;
+            $this->estado_pago = $this->encomienda->estado_pago;
+            $this->modalDeliver = false;
             $this->modalConfimation = true;
         } else {
-
+            $this->error('Error', 'Datos incorrectos');
         }
     }
 
     public function confirmEncomienda()
     {
-        if ($this->estado_pago == 'PAGADO') {
-            $this->updateEncomiendaStatus('ENTREGADO');
-            $this->toast('success', 'Paquete entregado correctamente');
-        } else {
-            if ($this->tipo_comprobante != 'TICKET') {
-                $this->setInvoice($this->encomienda,$this->tipo_comprobante);
-            }
-            $this->updateEncomiendaStatus('ENTREGADO', $this->tipo_comprobante);
-            $this->entryForm->fill([
-                'caja_id'     => $this->caja->id,
-                'monto_entry' => $this->encomienda->monto,
-                'description' => $this->encomienda->code,
-                'tipo'        => $this->encomienda->tipo_comprobante,
-            ]);
-            if ($this->entryForm->store()) {
-                $this->entryForm->reset();
-            } else {
-                $this->error('Error, no se pudo registrar la entrada de caja!');
-            }
-            if ($this->encomienda->monto_descuento) {
-                $this->exitForm->fill([
-                    'caja_id'     => $this->caja->id,
-                    'monto_exit'  => $this->encomienda->monto_descuento,
-                    'description' => $this->encomienda->code,
-                    'tipo'        => 'DESCUENTO',
-                ]);
-                if ($this->exitForm->store()) {
-                    $this->exitForm->reset();
-                } else {
-                    $this->error('Error, no se pudo registrar la salida de caja!');
-                }
-            }
+        if ($this->encomienda->estado_pago == 'PAGADO') {
+            $this->encomienda->estado_encomienda = 'ENTREGADO';
+            $this->encomienda->save();
         }
         $this->modalConfimation = false;
-        $this->modalFinal       = true;
+        $this->modalFinal = true;
+    }
+    public function modalCobrarOpen()
+    {
+        //dd($this->encomienda);
+        $this->cliFacturacion = $this->encomienda->facturacion;
+        $this->cliFacturacion_type_code = $this->encomienda->facturacion->type_code;
+        $this->cliFacturacion_code = $this->encomienda->facturacion->code;
+        $this->cliFacturacion_name = $this->encomienda->facturacion->name;
+        $this->cliFacturacion_address = $this->encomienda->facturacion->address;
+        $this->cliFacturacion_phone = $this->encomienda->facturacion->phone;
+        $this->cliFacturacion_ubigeo = $this->encomienda->facturacion->ubigeo;
+        $this->modalConfimation = false;
+        $this->modalCobrar = true;
+    }
+    public function searchFacturacion()
+    {
+
+        $rules = [
+            'cliFacturacion_type_code' => 'required',
+            'cliFacturacion_code' => 'required|min:8|max:11',
+        ];
+        $messages = [
+            'cliFacturacion_type_code.required' => 'El tipo de documento es requerido',
+            'cliFacturacion_code.required' => 'El número de documento es requerido',
+            'cliFacturacion_code.min' => 'El número de documento debe tener 8 dígitos',
+            'cliFacturacion_code.max' => 'El número de documento debe tener 11 dígitos',
+        ];
+        $this->validate($rules, $messages);
+        $cliFacturacion = Customer::where('type_code', $this->cliFacturacion_type_code)
+            ->where('code', $this->cliFacturacion_code)
+            ->first();
+        if ($cliFacturacion) {
+            $this->cliFacturacion = $cliFacturacion;
+            $this->cliFacturacion_name = $cliFacturacion->name;
+            $this->cliFacturacion_address = $cliFacturacion->address;
+            $this->cliFacturacion_phone = $cliFacturacion->phone;
+            $this->cliFacturacion_ubigeo = $cliFacturacion->ubigeo;
+            return;
+        }
+        $tipo = $this->cliFacturacion_type_code == '6' ? 'ruc' : 'dni';
+        $respuesta = $this->searchComplete($tipo, $this->cliFacturacion_code);
+        if (!$respuesta['encontrado']) {
+            $this->cliFacturacion = null;
+            $this->cliFacturacion_name = '';
+            $this->cliFacturacion_address = '';
+            $this->cliFacturacion_phone = '';
+            $this->cliFacturacion_ubigeo = '';
+            $this->error('El cliente de Facturacion no existe!, verifique el número de documento!');
+            return;
+        }
+        if ($tipo == 'ruc') {
+            $this->cliFacturacion_name = $respuesta['data']->razon_social;
+            $this->cliFacturacion_address = $respuesta['data']->direccion;
+            $this->cliFacturacion_ubigeo = $respuesta['data']->codigo_ubigeo;
+        } else {
+            $this->cliFacturacion_name = $respuesta['data']->nombre;
+            $this->cliFacturacion_phone = '';
+            $this->cliFacturacion_ubigeo = '';
+        }
+
+        $this->cliFacturacion = Customer::firstOrCreate(
+            [
+                'type_code' => $this->cliFacturacion_type_code,
+                'code' => $this->cliFacturacion_code
+            ],
+            [
+                'name' => $this->cliFacturacion_name,
+                'address' => $this->cliFacturacion_address,
+                'ubigeo' => $this->cliFacturacion_ubigeo
+            ]
+        );
+    }
+    public function cobrarEncomienda()
+    {
+        if ($this->tipo_comprobante == 'TICKET') {
+            $this->cliFacturacion = $this->encomienda->facturacion;
+        }
+        if ($this->tipo_comprobante == 'FACTURA' && $this->cliFacturacion_type_code != '6') {
+            $this->error('Ops', 'El cliente de Facturacion debe ser un RUC!');
+            return;
+        }
+        $rules = [
+            'cliFacturacion' => 'required',
+            'tipo_comprobante' => 'required',
+            'tipo_pago' => 'required',
+            'metodo_pago' => 'required',
+        ];
+        $message = [
+            'cliFacturacion.required' => 'El cliente de facturacion es requerido',
+            'tipo_comprobante.required' => 'El tipo de comprobante es requerido',
+            'tipo_pago.required' => 'El tipo de pago es requerido',
+            'metodo_pago.required' => 'El método de pago es requerido',
+        ];
+        $this->validate($rules, $message);
+        $this->encomienda->customer_fact_id = $this->cliFacturacion->id;
+        $this->encomienda->tipo_comprobante = $this->tipo_comprobante;
+        $this->encomienda->tipo_pago = $this->tipo_pago;
+        $this->encomienda->metodo_pago = $this->metodo_pago;
+        $this->encomienda->estado_encomienda = 'ENTREGADO';
+        $this->encomienda->save();
+        if ($this->tipo_pago == 'Contado') {
+            $this->cajaEntry(
+                $this->cajaIsActive(Auth::user())->id,
+                $this->encomienda->monto,
+                $this->encomienda->code,
+                $this->metodo_pago,
+                $this->encomienda->tipo_comprobante
+            );
+        }
+        if ($this->tipo_comprobante != 'TICKET') {
+            $this->setInvoice($this->encomienda, $this->tipo_comprobante);
+            $this->setGuiTrans($this->encomienda);
+        }
+        $this->modalCobrar = false;
+        $this->modalFinal = true;
     }
     private function updateEncomiendaStatus($status, $tipo_comprobante = null)
     {
         $this->encomienda->estado_encomienda = $status;
-        $this->encomienda->estado_pago       = 'PAGADO';
+        $this->encomienda->estado_pago = 'PAGADO';
         if ($tipo_comprobante) {
             $this->encomienda->tipo_comprobante = $tipo_comprobante;
         }
         $this->encomienda->save();
     }
 
-    public function searchFacturacion()
-    {
-        $this->customerFact->store();
-    }
-
     public function descuento(Encomienda $encomienda)
     {
-        $this->encomienda     = $encomienda;
+        $this->encomienda = $encomienda;
         $this->modalDescuento = true;
     }
 
@@ -185,16 +303,16 @@ class HomePackageLive extends Component
     {
 
         $rules = [
-            'monto_descuento'  => 'required|numeric|min:0',
+            'monto_descuento' => 'required|numeric|min:0',
             'motivo_descuento' => 'required|string|max:255',
         ];
         $messages = [
-            'monto_descuento.required'  => 'El monto de descuento es requerido',
-            'monto_descuento.numeric'   => 'El monto de descuento debe ser un número',
-            'monto_descuento.min'       => 'El monto de descuento debe ser mayor que 0',
+            'monto_descuento.required' => 'El monto de descuento es requerido',
+            'monto_descuento.numeric' => 'El monto de descuento debe ser un número',
+            'monto_descuento.min' => 'El monto de descuento debe ser mayor que 0',
             'motivo_descuento.required' => 'El motivo del descuento es requerido',
-            'motivo_descuento.string'   => 'El motivo del descuento debe ser una cadena de texto',
-            'motivo_descuento.max'      => 'El motivo del descuento debe tener menos de 255 caracteres',
+            'motivo_descuento.string' => 'El motivo del descuento debe ser una cadena de texto',
+            'motivo_descuento.max' => 'El motivo del descuento debe tener menos de 255 caracteres',
         ];
 
         $this->validate($rules, $messages);
@@ -204,10 +322,10 @@ class HomePackageLive extends Component
             $this->error('Error', 'El monto de descuento no puede ser mayor al monto de la encomienda');
             return;
         }
-        $this->encomienda->monto_descuento  = $this->monto_descuento;
+        $this->encomienda->monto_descuento = $this->monto_descuento;
         $this->encomienda->motivo_descuento = $this->motivo_descuento;
         if ($this->encomienda->ticket) {
-            $this->encomienda->ticket->monto_descuento  = $this->monto_descuento;
+            $this->encomienda->ticket->monto_descuento = $this->monto_descuento;
             $this->encomienda->ticket->motivo_descuento = $this->motivo_descuento;
             $this->encomienda->ticket->save();
         }
@@ -218,10 +336,10 @@ class HomePackageLive extends Component
 
     public function descuentoDelete(Encomienda $encomienda)
     {
-        $encomienda->monto_descuento  = null;
+        $encomienda->monto_descuento = null;
         $encomienda->motivo_descuento = null;
         if ($encomienda->ticket) {
-            $encomienda->ticket->monto_descuento  = null;
+            $encomienda->ticket->monto_descuento = null;
             $encomienda->ticket->motivo_descuento = null;
             $encomienda->ticket->save();
         }

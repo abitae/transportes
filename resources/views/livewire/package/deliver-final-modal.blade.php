@@ -73,7 +73,7 @@
 
             <!-- Botón para cerrar el modal -->
             <div class="mt-6 text-center">
-                <x-mary-button link="{{ route('package.deliver') }}" label="CERRAR" icon="o-x-mark"
+                <x-mary-button @click="$wire.modalFinal = false" label="CERRAR" icon="o-x-mark"
                     class="bg-gray-200 hover:bg-gray-300 text-gray-700 shadow-sm transition-all duration-200" />
             </div>
         </x-mary-card>

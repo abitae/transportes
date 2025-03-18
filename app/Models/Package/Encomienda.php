@@ -36,7 +36,7 @@ class Encomienda extends Model
         'doc_traslado',
         'glosa',
         'observation',
-        'estado_encomienda',//REGISTRADO, ENVIADO, ENTREGADO, ANULADO
+        'estado_encomienda',//REGISTRADO, ENVIADO,RECIBIDO,RETORNADO, ENTREGADO, ANULADO
         'pin',
         'isTransbordo',
         'isHome',

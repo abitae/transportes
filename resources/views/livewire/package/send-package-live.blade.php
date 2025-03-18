@@ -7,15 +7,18 @@
         </x-slot:menu>
         <div class="grid grid-cols-1 md:grid-cols-6 gap-2 p-2 shadow-md">
             <div>
-                <x-mary-input type='search' label="Buscar encomienda" inline wire:model.live='search' />
+                <x-mary-input type='search' label="Buscar encomienda" icon="o-funnel" wire:model.live="search"
+                    placeholder="Buscar encomienda" />
             </div>
             <div>
                 <x-mary-select label="Destino" icon="s-inbox-stack" :options="$sucursals"
-                    wire:model.live="sucursal_dest_id" inline class="w-full" />
+                    wire:model.live="sucursal_dest_id" class="w-full" />
             </div>
             <div>
-                <x-mary-datetime label="Fecha de registro" wire:model.live="date_ini" icon="o-calendar" inline
-                    class="w-full" />
+                <x-mary-datetime label="Desde" wire:model.live="date_ini" icon="o-calendar" type="datetime-local" />
+            </div>
+            <div>
+                <x-mary-datetime label="Hasta" wire:model.live="date_fin" icon="o-calendar" type="datetime-local" />
             </div>
             <div class="flex items-center">
                 <x-mary-toggle label="Activos" wire:model.live="isActive" class="toggle-danger" right tight />
@@ -121,7 +124,7 @@
                                         class="w-full text-white bg-green-500 btn-xs" />
                                 @endif
                             </div>
-                            
+
                             <div class="col-span-1 mt-1">
                                 <x-mary-button label='Anular' icon="o-no-symbol"
                                     wire:click="enableEncomienda({{ $stuff->id }})" spinner

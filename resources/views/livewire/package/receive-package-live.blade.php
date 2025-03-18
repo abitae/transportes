@@ -6,14 +6,18 @@
         </x-slot:menu>
         <div class="grid grid-cols-1 md:grid-cols-6 gap-2 p-2 shadow-md">
             <div>
-                <x-mary-input type='search' label="Buscar envio" inline wire:model.live='search' class="w-full sm:w-auto" />
+                <x-mary-input type='search' label="Buscar encomienda" icon="o-funnel" wire:model.live="search"
+                    placeholder="Buscar encomienda" />
             </div>
             <div>
-                <x-mary-select label="Raiz" icon="s-inbox-stack" :options="$sucursals" wire:model.live="sucursal_id"
-                    inline class="w-full" />
+                <x-mary-select label="Remitente" icon="s-inbox-stack" :options="$sucursals"
+                    wire:model.live="sucursal_id" class="w-full" />
             </div>
             <div>
-                <x-mary-datetime label="Fecha" wire:model.live="date_ini" icon="o-calendar" inline class="w-full" />
+                <x-mary-datetime label="Desde" wire:model.live="date_ini" icon="o-calendar" type="datetime-local" />
+            </div>
+            <div>
+                <x-mary-datetime label="Hasta" wire:model.live="date_fin" icon="o-calendar" type="datetime-local" />
             </div>
         </div>
         <x-mary-menu-separator />

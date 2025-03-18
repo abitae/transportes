@@ -2,7 +2,6 @@
     <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator
         progress-indicator>
         <x-slot:menu>
-
         </x-slot:menu>
         <div class="grid grid-cols-1 md:grid-cols-6 gap-2 p-2 shadow-md">
             <div>
@@ -143,5 +142,4 @@
     @include('livewire.package.deliver-cobrar-modal')
     @include('livewire.package.deliver-final-modal')
     @include('livewire.package.send-detail-drawer')
-
 </div>

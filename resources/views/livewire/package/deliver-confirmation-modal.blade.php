@@ -13,7 +13,8 @@
                     <div class="space-y-1 text-sm">
                         <p class="font-medium">{{ $encomienda->remitente->name ?? 'name' }}</p>
                         <p>{{ $encomienda->remitente->type_code == 1 ? 'DNI:' : 'RUC:' }}
-                            {{ $encomienda->remitente->code ?? 'code' }}</p>
+                            {{ $encomienda->remitente->code ?? 'code' }}
+                        </p>
                         @if ($encomienda->remitente->phone)
                             <p class="flex items-center"><x-mary-icon name="s-phone" class="text-gray-500 mr-1 h-4 w-4" />
                                 {{ $encomienda->remitente->phone }}</p>
@@ -30,7 +31,8 @@
                     <div class="space-y-1 text-sm">
                         <p class="font-medium">{{ $encomienda->destinatario->name ?? 'name' }}</p>
                         <p>{{ $encomienda->destinatario->type_code == 1 ? 'DNI:' : 'RUC:' }}
-                            {{ $encomienda->destinatario->code ?? 'code' }}</p>
+                            {{ $encomienda->destinatario->code ?? 'code' }}
+                        </p>
                         @if ($encomienda->destinatario->phone)
                             <p class="flex items-center"><x-mary-icon name="s-phone" class="text-gray-500 mr-1 h-4 w-4" />
                                 {{ $encomienda->destinatario->phone }}</p>
@@ -47,7 +49,8 @@
                     <div class="space-y-1 text-sm">
                         <p class="font-medium">{{ $encomienda->facturacion->name ?? 'name' }}</p>
                         <p>{{ $encomienda->facturacion->type_code == 1 ? 'DNI:' : 'RUC:' }}
-                            {{ $encomienda->facturacion->code ?? 'code' }}</p>
+                            {{ $encomienda->facturacion->code ?? 'code' }}
+                        </p>
                         @if ($encomienda->facturacion->phone)
                             <p class="flex items-center"><x-mary-icon name="s-phone" class="text-gray-500 mr-1 h-4 w-4" />
                                 {{ $encomienda->facturacion->phone }}</p>
@@ -119,6 +122,12 @@
             <div class="flex space-x-2">
                 <x-mary-button label="Cancelar" @click="$wire.modalConfimation = false"
                     class="bg-gray-200 hover:bg-gray-300 text-gray-700" />
+                @if ($encomienda->isReturn)
+                    <x-mary-button wire:click='retornoHome()' label="Retornar domicilio"
+                        class="bg-green-500 hover:bg-green-700 text-white" spinner />
+                    <x-mary-button wire:click='retornoAgencia()' label="Retornar agencia"
+                        class="bg-purple-500 hover:bg-purple-700 text-white" spinner />
+                @else
                     @if ($encomienda->estado_pago == 'CONTRA ENTREGA')
                         <x-mary-button wire:click='modalCobrarOpen()' label="Cobrar"
                             class="bg-orange-500 hover:bg-orange-700 text-white" spinner />
@@ -126,6 +135,8 @@
                         <x-mary-button wire:click='confirmEncomienda()' label="Confirmar"
                             class="bg-green-500 hover:bg-green-700 text-white" spinner />
                     @endif
+                @endif
+
             </div>
         </x-slot:actions>
     </x-mary-modal>

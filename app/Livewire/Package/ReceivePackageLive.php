@@ -6,6 +6,8 @@ use App\Models\Caja\Caja;
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
 use App\Traits\LogCustom;
+use App\Traits\UtilsTrait;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -15,6 +17,7 @@ use Mary\Traits\Toast;
 class ReceivePackageLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
+    use UtilsTrait;
 
     public $title = 'RECIBIR PAQUETES';
     public $sub_title = 'Modulo de recepcion de paquetes';
@@ -22,6 +25,7 @@ class ReceivePackageLive extends Component
     public array $selected = [];
     public $search;
     public $date_ini;
+    public $date_fin;
     public int $sucursal_id;
     public $numElementos;
     public Sucursal $sucursal_rem;
@@ -34,7 +38,8 @@ class ReceivePackageLive extends Component
         $this->sucursal_id = Sucursal::where('isActive', true)
             ->whereNotIn('id', [Auth::user()->sucursal->id])
             ->first()->id;
-        $this->date_ini = now()->setTimezone('America/Lima')->format('Y-m-d');
+        $this->date_ini = Carbon::now()->startOfDay()->format('Y-m-d H:i');//$this->dateNow('Y-m-d');
+        $this->date_fin = $this->dateNow('Y-m-d H:i:s');
     }
 
     public function render()
@@ -42,23 +47,35 @@ class ReceivePackageLive extends Component
         $sucursals = Sucursal::where('isActive', true)
             ->whereNotIn('id', [Auth::user()->sucursal->id])
             ->get();
-        $encomiendas = Encomienda::whereDate('created_at', $this->date_ini)
-            ->where('sucursal_id', $this->sucursal_id)
-            ->where('sucursal_dest_id', Auth::user()->sucursal->id)
-            ->where('estado_encomienda', 'ENVIADO')
-            ->where(function($query) {
-                $query->whereHas('remitente', function ($q) {
-                    $q->where('code', 'like', '%' . $this->search . '%')
-                        ->orWhere('name', 'like', '%' . $this->search . '%');
-                })
-                ->orWhere('code', 'like', '%' . $this->search . '%')
-                ->orWhereHas('destinatario', function ($q) {
-                    $q->where('code', 'like', '%' . $this->search . '%')
-                        ->orWhere('name', 'like', '%' . $this->search . '%');
+            $encomiendas = Encomienda::query()
+            ->when($this->date_ini && $this->date_fin, function($query) {
+                $query->whereBetween('created_at', [
+                    Carbon::parse($this->date_ini)->startOfDay(),
+                    Carbon::parse($this->date_fin)->endOfDay()
+                ]);
+            })
+            ->where([
+                'sucursal_id' => $this->sucursal_id,
+                'sucursal_dest_id' => Auth::user()->sucursal->id,
+                'estado_encomienda' => 'ENVIADO'
+            ])
+            // Search in related models and package code
+            ->when($this->search, function($query) {
+                $searchTerm = '%' . $this->search . '%';
+                $query->where(function($q) use ($searchTerm) {
+                    $q->whereHas('remitente', function($subQuery) use ($searchTerm) {
+                        $subQuery->where('code', 'like', $searchTerm)
+                                ->orWhere('name', 'like', $searchTerm);
+                    })
+                    ->orWhere('code', 'like', $searchTerm)
+                    ->orWhereHas('destinatario', function($subQuery) use ($searchTerm) {
+                        $subQuery->where('code', 'like', $searchTerm)
+                                ->orWhere('name', 'like', $searchTerm);
+                    });
                 });
             })
             ->latest()
-            ->paginate($this->perPage, '*', 'page');
+            ->paginate($this->perPage, ['*'], 'page');
 
         return view('livewire.package.receive-package-live', compact('encomiendas', 'sucursals'));
     }
