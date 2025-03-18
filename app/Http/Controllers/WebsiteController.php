@@ -13,9 +13,12 @@ class WebsiteController extends Controller
     {
         $sucursales = Sucursal::where('isActive', 1)->get();
 
-        return view('web2.index3', compact('sucursales'));
+        return view('web2.index', compact('sucursales'));
     }
-
+    public function rastrea()
+    {
+        return view('web2.rastrea');
+    }
     public function abount()
     {
         return view('web2.nosotros');
@@ -24,9 +27,9 @@ class WebsiteController extends Controller
     {
         return view('web2.contact');
     }
-    public function tracking()
+    public function terminos()
     {
-        return view('web2.trackin3');
+        return view('web2.terminos');
     }
     public function trackingSearch(Request $request){
         $request->validate(

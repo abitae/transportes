@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brayan - Servicio de Envíos</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//unpkg.com/alpinejs" defer></script>
     <script>
         tailwind.config = {
             theme: {
@@ -17,124 +19,199 @@
             }
         }
     </script>
+    <style>
+        .nav-link {
+            @apply flex flex-col items-center text-white hover:text-abitae-yellow transition-colors duration-200;
+        }
+
+        .nav-icon {
+            @apply w-8 h-8 text-white mb-1;
+        }
+
+        .nav-text {
+            @apply text-sm font-semibold;
+        }
+
+        .user-menu-item {
+            @apply block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200;
+        }
+
+        .mobile-nav-link {
+            @apply block px-3 py-2 text-base font-medium text-white hover:text-abitae-yellow transition-colors duration-200;
+        }
+    </style>
 </head>
+
 <body class="font-sans bg-gray-100">
-    <!-- filepath: /c:/Proyectos/transportes/resources/views/web2/index3.blade.php -->
-    <div class="bg-abitae-green px-5 py-2.5 flex flex-wrap justify-between items-center">
-        <div class="flex items-center pl-4 md:pl-80">
-            <img src="{{ asset('img/logo.png') }}" alt="Brayan Brush Logo" class="h-24 text-white">
-        </div>
-        <div class="flex md:hidden">
-            <button id="menu-toggle" class="text-white focus:outline-none">
-                <svg id="menu-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                </svg>
-            </button>
-        </div>
-        <div id="menu" class="flex-wrap justify-center hidden w-full gap-10 md:flex md:w-auto">
-            <a href="#"
-                class="flex flex-col items-center font-bold text-white no-underline transition-colors duration-300 text-md hover:text-abitae-yellow">
-                <span class="text-md text-white mb-1.5">
-                    <x-mary-icon name="o-home" class="text-white w-9 h-9" />
-                </span>
-                INICIO
-            </a>
-            <a href="#"
-                class="flex flex-col items-center font-bold text-white no-underline transition-colors duration-300 text-md hover:text-abitae-yellow">
-                <span class="text-md text-white mb-1.5">
-                    <x-mary-icon name="o-eye" class="text-white w-9 h-9" />
-                </span>
-                RASTREA
-            </a>
-            <a href="#"
-                class="flex flex-col items-center font-bold text-white no-underline transition-colors duration-300 text-md hover:text-abitae-yellow">
-                <span class="text-md mb-1.5">
-                    <x-mary-icon name="o-currency-dollar" class="text-white w-9 h-9" />
-                </span>
-                PAGALO
-            </a>
-            <a href="#"
-                class="flex flex-col items-center font-bold text-white no-underline transition-colors duration-300 text-md hover:text-abitae-yellow">
-                <span class="text-md mb-1.5">
-                    <x-mary-icon name="o-map-pin" class="text-white w-9 h-9" />
-                </span>
-                AGENCIAS
-            </a>
-            <a href="#"
-                class="flex flex-col items-center font-bold text-white no-underline transition-colors duration-300 text-md hover:text-abitae-yellow">
-                <span class="text-md mb-1.5">
-                    <x-mary-icon name="m-banknotes" class="text-white w-9 h-9" />
-                </span>
-                TARIFAS
-            </a>
-        </div>
-        <div class="flex flex-wrap justify-center gap-5">
-            <a href="#"
-                class="flex flex-col items-center text-sm text-white no-underline transition-colors duration-300 hover:text-abitae-yellow">
-                <span class="text-xl mb-1.5">
-                    <x-mary-icon name="s-shopping-cart" class="w-10 h-10 text-white" />
-                </span>
-            </a>
-            <div class="relative">
-                <button id="user-menu-toggle"
-                    class="flex flex-col items-center text-sm text-white no-underline transition-colors duration-300 hover:text-abitae-yellow">
-                    <span class="text-xl mb-1.5">
-                        <x-mary-icon name="s-user" class="w-10 h-10 text-white" />
-                    </span>
-                </button>
-                <div id="user-menu" class="absolute right-0 z-20 hidden w-48 py-1 mt-2 bg-white rounded-md shadow-lg">
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Perfil</a>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cerrar sesión</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- filepath: /c:/Proyectos/transportes/resources/views/web2/index3.blade.php -->
-    <div class="flex flex-col p-5 mx-auto md:flex-row max-w-7xl">
-        <div class="w-full mb-5 mr-0 md:w-72 md:mr-5 md:mb-0">
-            <div class="py-2 px-2.5 flex items-center border-b border-gray-200">
 
-                <div  class="text-2xl">
-                    Flota Brayan
-                    <span
-                        class="bg-abitae-green text-white text-xs px-2 py-0.5 rounded-full ml-2.5 inline-block">NUEVO</span>
+    <nav class="bg-abitae-green sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-24">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="/" class="flex items-center">
+                        <img src="{{ asset('img/logo.png') }}" alt="Brayan Brush Logo" class="h-20">
+                    </a>
                 </div>
-            </div>
-            <div class="menu-item">
-                <div class="py-2 px-2.5 flex items-center border-b border-gray-200 cursor-pointer">
-                    <span class="mr-2.5 text-abitae-green">🔧</span>
-                    <div class="text-xl">Servicios</div>
-                    <span class="ml-auto text-xl transition-transform">+</span>
+
+                <!-- Mobile menu button -->
+                <div class="flex md:hidden">
+                    <button id="menu-toggle" class="text-white hover:text-abitae-yellow focus:outline-none">
+                        <svg id="menu-icon" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
                 </div>
-                <div class="hidden py-2 pl-8 submenu bg-gray-50">
-                    <div class="py-1.5"><a href="#" class="text-gray-600 hover:text-abitae-green">Servicio Nacional</a>
+
+                <!-- Main Navigation -->
+                <div id="menu" class="hidden md:flex md:items-center md:space-x-8">
+                    <a href="/"
+                        class="flex items-center space-x-2 text-white hover:text-abitae-yellow transition-colors duration-200">
+                        <x-mary-icon name="o-home" class="w-8 h-8 text-white" />
+                        <span class="font-bold text-xl">INICIO</span>
+                    </a>
+                    <a href="/rastrea"
+                        class="flex items-center space-x-2 text-white hover:text-abitae-yellow transition-colors duration-200">
+                        <x-mary-icon name="o-eye" class="w-8 h-8 text-white" />
+                        <span class="font-bold text-xl">RASTREA</span>
+                    </a>
+                    <a href="/pay"
+                        class="flex items-center space-x-2 text-white hover:text-abitae-yellow transition-colors duration-200">
+                        <x-mary-icon name="o-currency-dollar" class="w-8 h-8 text-white" />
+                        <span class="font-bold text-xl">PAGALO</span>
+                    </a>
+                    <a href="/agencies"
+                        class="flex items-center space-x-2 text-white hover:text-abitae-yellow transition-colors duration-200">
+                        <x-mary-icon name="o-map-pin" class="w-8 h-8 text-white" />
+                        <span class="font-bold text-xl">AGENCIAS</span>
+                    </a>
+                    <a href="/rates"
+                        class="flex items-center space-x-2 text-white hover:text-abitae-yellow transition-colors duration-200">
+                        <x-mary-icon name="m-banknotes" class="w-8 h-8 text-white" />
+                        <span class="font-bold text-xl">TARIFAS</span>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4">
+                    <a href="/cart" class="text-white hover:text-abitae-yellow transition-colors duration-200">
+                        <x-mary-icon name="s-shopping-cart" class="w-8 h-8 text-white" />
+                    </a>
+                    <div class="relative">
+                        <a href="/login"
+                            class="text-white hover:text-abitae-yellow transition-colors duration-200">
+                            <x-mary-icon name="s-user" class="w-8 h-8 text-white" />
+                        </a>
                     </div>
-                    <div class="py-1.5"><a href="#" class="text-gray-600 hover:text-abitae-green">Servicio
-                            Internacional</a></div>
-                    <div class="py-1.5"><a href="#" class="text-gray-600 hover:text-abitae-green">Servicio Express</a>
-                    </div>
-                </div>
-            </div>
-            <div class="menu-item">
-                <div class="py-2 px-2.5 flex items-center border-b border-gray-200 cursor-pointer">
-                    <span class="mr-2.5 text-abitae-green">📦</span>
-                    <div class="text-xl">Envía</div>
-                    <span class="ml-auto text-xl transition-transform">+</span>
-                </div>
-                <div class="hidden py-2 pl-8 submenu bg-gray-50">
-                    <div class="py-1.5"><a href="#" class="text-gray-600 hover:text-abitae-green">Crear Envío</a></div>
-                    <div class="py-1.5"><a href="#" class="text-gray-600 hover:text-abitae-green">Rastrear Envío</a>
-                    </div>
-                    <div class="py-1.5"><a href="#" class="text-gray-600 hover:text-abitae-green">Cotizar</a></div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="w-full md:w-[1024px] mx-auto">
-            {{ $slot }}
+        <!-- Mobile Navigation -->
+        <div class="md:hidden">
+            <div id="mobile-menu" class="px-2 pt-2 pb-3 space-y-1 hidden">
+                <a href="/" class="mobile-nav-link text-white font-bold text-xl">INICIO</a>
+                <a href="/track" class="mobile-nav-link text-white font-bold text-xl">RASTREA</a>
+                <a href="/pay" class="mobile-nav-link text-white font-bold text-xl">PAGALO</a>
+                <a href="/agencies" class="mobile-nav-link text-white font-bold text-xl">AGENCIAS</a>
+                <a href="/rates" class="mobile-nav-link text-white font-bold text-xl">TARIFAS</a>
+            </div>
         </div>
-    </div>
+    </nav>
+    <main class="min-h-screen bg-gray-50">
+        <div class="container px-4 py-8 mx-auto max-w-7xl">
+            <div class="flex flex-col gap-8 lg:flex-row">
+                <!-- Sidebar Navigation -->
+                <aside class="w-full lg:w-64 shrink-0">
+                    <div class="overflow-hidden bg-white rounded-lg shadow">
+                        <!-- Brand Header -->
+                        <div class="p-4 border-b">
+                            <h1 class="flex items-center text-xl font-semibold">
+                                Flota Brayan
+                                <span
+                                    class="ml-2 text-xs font-medium text-white bg-abitae-green px-2.5 py-0.5 rounded-full">
+                                    NUEVO
+                                </span>
+                            </h1>
+                        </div>
+
+                        <!-- Navigation Menu -->
+                        <nav class="divide-y divide-gray-100">
+                            <!-- Services Section -->
+                            <div class="menu-section" x-data="{ open: false }">
+                                <button @click="open = !open"
+                                    class="flex items-center w-full p-4 text-left hover:bg-gray-50 group">
+                                    <span class="text-abitae-green">🔧</span>
+                                    <span class="ml-3 text-gray-900 font-medium">Servicios</span>
+                                    <svg class="w-5 h-5 ml-auto text-gray-400 transition-transform"
+                                        :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                    x-transition:enter-end="opacity-100 transform translate-y-0"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 transform translate-y-0"
+                                    x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                    class="px-4 py-2 bg-gray-50">
+                                    <a href="/servicios"
+                                        class="block py-2 pl-8 text-sm text-gray-600 hover:text-abitae-green">Servicio
+                                        Nacional</a>
+                                    <a href="/servicios"
+                                        class="block py-2 pl-8 text-sm text-gray-600 hover:text-abitae-green">Servicio
+                                        Internacional</a>
+                                    <a href="/servicios"
+                                        class="block py-2 pl-8 text-sm text-gray-600 hover:text-abitae-green">Servicio
+                                        Express</a>
+                                </div>
+                            </div>
+
+                            <!-- Shipping Section -->
+                            <div class="menu-section" x-data="{ open: false }">
+                                <button @click="open = !open"
+                                    class="flex items-center w-full p-4 text-left hover:bg-gray-50 group">
+                                    <span class="text-abitae-green">📦</span>
+                                    <span class="ml-3 text-gray-900 font-medium">Envíos</span>
+                                    <svg class="w-5 h-5 ml-auto text-gray-400 transition-transform"
+                                        :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                <div x-show="open" x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                    x-transition:enter-end="opacity-100 transform translate-y-0"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100 transform translate-y-0"
+                                    x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                    class="px-4 py-2 bg-gray-50">
+                                    <a href="#"
+                                        class="block py-2 pl-8 text-sm text-gray-600 hover:text-abitae-green">Crear
+                                        Envío</a>
+                                    <a href="/rastrea"
+                                        class="block py-2 pl-8 text-sm text-gray-600 hover:text-abitae-green">Rastrear
+                                        Envío</a>
+                                    <a href="#"
+                                        class="block py-2 pl-8 text-sm text-gray-600 hover:text-abitae-green">Cotizar</a>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                </aside>
+                <!-- Main Content Area -->
+                <div class="flex-1">
+                    <div class="p-6 bg-white rounded-lg shadow">
+                        {{ $slot }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <!-- Footer -->
     <footer class="py-10 text-white bg-gray-800">
@@ -167,10 +244,12 @@
                 <div>
                     <h3 class="mb-4 text-lg font-semibold">Enlaces rápidos</h3>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 transition-colors duration-300 hover:text-white">Inicio</a>
+                        <li><a href="#"
+                                class="text-gray-400 transition-colors duration-300 hover:text-white">Inicio</a>
                         </li>
                         <li><a href="#"
-                                class="text-gray-400 transition-colors duration-300 hover:text-white">Servicios</a></li>
+                                class="text-gray-400 transition-colors duration-300 hover:text-white">Servicios</a>
+                        </li>
                         <li><a href="#"
                                 class="text-gray-400 transition-colors duration-300 hover:text-white">Tarifas</a></li>
                         <li><a href="#"
@@ -182,16 +261,20 @@
                 <div>
                     <h3 class="mb-4 text-lg font-semibold">Servicios</h3>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-400 transition-colors duration-300 hover:text-white">Envíos
+                        <li><a href="#"
+                                class="text-gray-400 transition-colors duration-300 hover:text-white">Envíos
                                 nacionales</a></li>
-                        <li><a href="#" class="text-gray-400 transition-colors duration-300 hover:text-white">Envíos
+                        <li><a href="#"
+                                class="text-gray-400 transition-colors duration-300 hover:text-white">Envíos
                                 internacionales</a></li>
                         <li><a href="#"
                                 class="text-gray-400 transition-colors duration-300 hover:text-white">Paquetería</a>
                         </li>
-                        <li><a href="#" class="text-gray-400 transition-colors duration-300 hover:text-white">Carga
+                        <li><a href="#"
+                                class="text-gray-400 transition-colors duration-300 hover:text-white">Carga
                                 pesada</a></li>
-                        <li><a href="#" class="text-gray-400 transition-colors duration-300 hover:text-white">Logística
+                        <li><a href="#"
+                                class="text-gray-400 transition-colors duration-300 hover:text-white">Logística
                                 integral</a></li>
                     </ul>
                 </div>
@@ -229,126 +312,65 @@
             </div>
         </div>
     </footer>
-    <!-- Add this script before closing body tag -->
+
     <script>
-        document.getElementById('menu-toggle').addEventListener('click', function () {
-            const menu = document.getElementById('menu');
-            const menuIcon = document.getElementById('menu-icon');
-            menu.classList.toggle('hidden');
+        document.addEventListener('DOMContentLoaded', function() {
+            const track = document.getElementById('carouselTrack');
+            const items = track.querySelectorAll('.carousel-item');
+            const itemWidth = 122; // 112px (w-28) + 10px spacing
+            const visibleItems = 5;
+            let currentIndex = 0;
 
-            // Toggle icon
-            if (menu.classList.contains('hidden')) {
-                menuIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>';
-            } else {
-                menuIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+            // Clone first 5 items and append them to the end
+            for (let i = 0; i < visibleItems; i++) {
+                const clone = items[i].cloneNode(true);
+                track.appendChild(clone);
             }
-        });
 
-        document.getElementById('user-menu-toggle').addEventListener('click', function () {
-            document.getElementById('user-menu').classList.toggle('hidden');
-        });
+            window.moveCarousel = function(direction) {
+                currentIndex += direction;
+                track.style.transition = 'transform 500ms ease-in-out';
+                track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
 
-        document.addEventListener('click', function (event) {
-            const userMenu = document.getElementById('user-menu');
-            const userMenuToggle = document.getElementById('user-menu-toggle');
-            if (!userMenu.contains(event.target) && !userMenuToggle.contains(event.target)) {
-                userMenu.classList.add('hidden');
+                // Reset position when reaching the end
+                if (currentIndex >= items.length || currentIndex < 0) {
+                    setTimeout(() => {
+                        track.style.transition = 'none';
+                        currentIndex = direction > 0 ? 0 : items.length - 1;
+                        track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+                    }, 500);
+                }
             }
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const menuItems = document.querySelectorAll('.menu-item');
 
-            menuItems.forEach(item => {
-                const trigger = item.querySelector('.cursor-pointer');
-                const submenu = item.querySelector('.submenu');
-                const icon = trigger.querySelector('.ml-auto');
+            // Auto-play functionality
+            let autoPlayInterval = setInterval(() => moveCarousel(1), 3000);
 
-                trigger.addEventListener('click', () => {
-                    // Toggle submenu visibility
-                    submenu.classList.toggle('hidden');
+            // Pause on hover
+            track.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
+            track.addEventListener('mouseleave', () => {
+                autoPlayInterval = setInterval(() => moveCarousel(1), 3000);
+            });
 
-                    // Rotate icon when menu is open
-                    if (!submenu.classList.contains('hidden')) {
-                        icon.style.transform = 'rotate(45deg)';
-                    } else {
-                        icon.style.transform = 'rotate(0)';
-                    }
+            // Touch support
+            let touchStartX = 0;
+            let touchEndX = 0;
 
-                    // Close other submenus
-                    menuItems.forEach(otherItem => {
-                        if (otherItem !== item) {
-                            const otherSubmenu = otherItem.querySelector('.submenu');
-                            const otherIcon = otherItem.querySelector('.ml-auto');
-                            otherSubmenu.classList.add('hidden');
-                            otherIcon.style.transform = 'rotate(0)';
-                        }
-                    });
-                });
+            track.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+                clearInterval(autoPlayInterval);
+            });
+
+            track.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                const swipeDistance = touchEndX - touchStartX;
+
+                if (Math.abs(swipeDistance) > 50) {
+                    moveCarousel(swipeDistance > 0 ? -1 : 1);
+                }
+
+                autoPlayInterval = setInterval(() => moveCarousel(1), 3000);
             });
         });
-    </script>
-
-    <!-- Add this script before closing body tag -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-        const track = document.getElementById('carouselTrack');
-        const items = track.querySelectorAll('.carousel-item');
-        const itemWidth = 122; // 112px (w-28) + 10px spacing
-        const visibleItems = 5;
-        let currentIndex = 0;
-
-        // Clone first 5 items and append them to the end
-        for (let i = 0; i < visibleItems; i++) {
-            const clone = items[i].cloneNode(true);
-            track.appendChild(clone);
-        }
-
-        window.moveCarousel = function (direction) {
-            currentIndex += direction;
-            track.style.transition = 'transform 500ms ease-in-out';
-            track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
-
-            // Reset position when reaching the end
-            if (currentIndex >= items.length || currentIndex < 0) {
-                setTimeout(() => {
-                    track.style.transition = 'none';
-                    currentIndex = direction > 0 ? 0 : items.length - 1;
-                    track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
-                }, 500);
-            }
-        }
-
-        // Auto-play functionality
-        let autoPlayInterval = setInterval(() => moveCarousel(1), 3000);
-
-        // Pause on hover
-        track.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
-        track.addEventListener('mouseleave', () => {
-            autoPlayInterval = setInterval(() => moveCarousel(1), 3000);
-        });
-
-        // Touch support
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        track.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-            clearInterval(autoPlayInterval);
-        });
-
-        track.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            const swipeDistance = touchEndX - touchStartX;
-
-            if (Math.abs(swipeDistance) > 50) {
-                moveCarousel(swipeDistance > 0 ? -1 : 1);
-            }
-
-            autoPlayInterval = setInterval(() => moveCarousel(1), 3000);
-        });
-    });
     </script>
 </body>
 

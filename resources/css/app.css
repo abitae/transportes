@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import "~animate.css/animate";
 .mary-table-pagination span[aria-current="page"] > span {
     @apply bg-primary text-base-100 
 }
