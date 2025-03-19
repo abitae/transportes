@@ -6,6 +6,7 @@ use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
 use DateTime;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class DashboardLive extends Component
@@ -33,7 +34,7 @@ class DashboardLive extends Component
         ],
     ];
     public array $myPie = [
-        'type' => 'pie',
+        'type' => 'bar',
         'data' => [],
         'option' => [
             'responsive' => true,
@@ -51,7 +52,23 @@ class DashboardLive extends Component
                 'title' => [
                     'display' => true,
                     'text' => 'Chart.js Bar Chart'
-                ]
+                ],
+            ],
+        ],
+    ];
+    public array $myBarTipoCobro = [
+        'type' => 'bar',
+        'data' => [],
+        'option' => [
+            'responsive' => true,
+            'plugins' => [
+                'legend' => [
+                    'position' => 'bottom',
+                ],
+                'title' => [
+                    'display' => true,
+                    'text' => 'Chart.js Bar Chart'
+                ],
             ]
         ],
     ];
@@ -156,86 +173,102 @@ class DashboardLive extends Component
     }
     private function dataPieYear(DateTime $date)
     {
-        return $this->getPieData($date, 'year');
+        return $this->getPaymentTypeData($date, 'year');
     }
+
     private function dataPieMonth(DateTime $date)
     {
-        return $this->getPieData($date, 'month');
+        return $this->getPaymentTypeData($date, 'month');
     }
+
     private function dataPieDay(DateTime $date)
     {
-        return $this->getPieData($date, 'day');
+        return $this->getPaymentTypeData($date, 'day');
     }
-    private function getPieData(DateTime $date, string $timeUnit = 'month')
+
+    private function getPaymentTypeData(DateTime $date, string $timeUnit = 'month')
     {
         $year = $date->format('Y');
         $month = $date->format('m');
         $day = $date->format('d');
 
-        // Time period filters configuration
+        // Configure time periods and labels
         $timeConfigs = [
-            'year' => [],
-            'month' => ['whereMonth' => $month],
-            'day' => ['whereMonth' => $month, 'whereDay' => $day]
+            'year' => [
+                'labels' => ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                'format' => 'MONTH',
+                'size' => 12,
+                'start' => 1
+            ],
+            'month' => [
+                'format' => 'DAY',
+                'size' => $date->format('t'),
+                'start' => 1,
+                'where' => ['whereMonth' => $month]
+            ],
+            'day' => [
+                'format' => 'HOUR',
+                'size' => 24,
+                'start' => 0,
+                'where' => ['whereMonth' => $month, 'whereDay' => $day]
+            ]
         ];
 
-        $config = $timeConfigs[$timeUnit] ?? [];
+        $config = $timeConfigs[$timeUnit];
+        $sucursals = Sucursal::all();
         
-        // Get all payment data in a single query
-        $query = Encomienda::selectRaw('
-                sucursal_id,
-                tipo_pago,
-                SUM(monto) as total_amount
-            ')
-            ->whereYear('created_at', $year)
+        // Define fixed colors for payment types
+        $colors = [
+            'Contado' => 'rgba(54, 162, 235, 0.8)',
+            'Credito' => 'rgba(255, 99, 132, 0.8)'
+        ];
+
+        // Get data for all branches and payment types in a single query
+        $query = Encomienda::whereYear('created_at', $year)
             ->whereIn('tipo_pago', ['Contado', 'Credito']);
 
-        // Apply time-specific filters
-        foreach ($config as $method => $value) {
-            $query->$method('created_at', $value);
+        if (isset($config['where'])) {
+            foreach ($config['where'] as $method => $value) {
+                $query->$method('created_at', $value);
+            }
         }
 
-        $results = $query->groupBy('sucursal_id', 'tipo_pago')
-            ->get();
+        $data = $query->selectRaw(
+            "tipo_pago,
+            SUM(monto) as total_amount,
+            sucursal_id"
+        )
+            ->groupBy('tipo_pago', 'sucursal_id')
+            ->get()
+            ->groupBy('tipo_pago');
 
-        // Prepare data structure
-        $sucursals = Sucursal::all();
+        // Prepare datasets
         $datasets = [];
-        $totalData = [];
-
-        // Process results into required format
-        foreach ($sucursals as $sucursal) {
-            $contado = $results->where('sucursal_id', $sucursal->id)
-                ->where('tipo_pago', 'Contado')
-                ->first();
+        foreach (['Contado', 'Credito'] as $paymentType) {
+            $branchData = array_fill_keys($sucursals->pluck('id')->toArray(), 0);
             
-            $credito = $results->where('sucursal_id', $sucursal->id)
-                ->where('tipo_pago', 'Credito')
-                ->first();
-
-            // Generate consistent colors for better visualization
-            $color1 = sprintf('rgba(%d, %d, %d, 0.8)', mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
-            $color2 = sprintf('rgba(%d, %d, %d, 0.8)', mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
+            if (isset($data[$paymentType])) {
+                foreach ($data[$paymentType] as $record) {
+                    $branchData[$record->sucursal_id] = $record->total_amount;
+                }
+            }
 
             $datasets[] = [
-                'data' => [
-                    $contado ? $contado->total_amount : 0,
-                    $credito ? $credito->total_amount : 0
-                ],
-                'backgroundColor' => [$color1, $color2],
-                'hoverBackgroundColor' => [$color1, $color2],
-                'label' => $sucursal->code,
+                'label' => $paymentType,
+                'data' => array_values($branchData),
+                'backgroundColor' => $colors[$paymentType],
+                'borderColor' => $colors[$paymentType],
                 'borderWidth' => 1,
-                'borderColor' => 'rgba(255, 255, 255, 0.8)'
+                'borderRadius' => 5
             ];
         }
 
         return [
-            'labels' => ['Contado', 'Crédito'],
+            'labels' => $sucursals->pluck('code')->toArray(),
             'datasets' => $datasets
         ];
     }
-    
+
     private function dataBarYear(DateTime $date)
     {
         $year = $date->format('Y');
@@ -259,7 +292,7 @@ class DashboardLive extends Component
         $labels = [];
         $datasets = [];
         $sucursals = Sucursal::all();
-        $estados = ['REGISTRADO', 'ENVIADO', 'RECIBIDO' ,'RETORNADO', 'ENTREGADO'];
+        $estados = ['REGISTRADO', 'ENVIADO', 'RECIBIDO', 'RETORNADO', 'ENTREGADO'];
 
         // Initialize data array for all statuses
         $labels = [];
@@ -318,11 +351,15 @@ class DashboardLive extends Component
     }
     public function render()
     {
+        $dataTipoCobro = $this->dataTipoCobro(new DateTime());
+        Arr::set($this->myBarTipoCobro['data'], 'labels', $dataTipoCobro['labels']);
+        Arr::set($this->myBarTipoCobro['data'], 'datasets', $dataTipoCobro['datasets']);
         switch ($this->selectedTipe) {
             case 'Y':
                 $data = $this->dataChartYear(new DateTime());
                 $dataPie = $this->dataPieYear(new DateTime());
                 $dataBar = $this->dataBarYear(new DateTime());
+
                 break;
             case 'm':
                 $data = $this->dataChartMonth(new DateTime());
@@ -351,6 +388,75 @@ class DashboardLive extends Component
         Arr::set($this->myBar['data'], 'datasets', $dataBar['datasets']);
 
         return view('livewire.home.dashboard-live');
+    }
+    private function dataTipoCobro(DateTime $date)
+    {
+        // Extract date components
+        $dateComponents = [
+            'year' => $date->format('Y'),
+            'month' => $date->format('m'),
+            'day' => $date->format('d')
+        ];
+
+        // Time period filters configuration
+        $timeConfigs = [
+            'year' => [],
+            'month' => ['whereMonth' => $dateComponents['month']],
+            'day' => ['whereMonth' => $dateComponents['month'], 'whereDay' => $dateComponents['day']]
+        ];
+
+        // Define payment methods and get branches once
+        $metodoPagos = ['Efectivo', 'Yape', 'Transferencia', 'Deposito'];
+        $sucursals = Sucursal::all();
+
+        // Build base query
+        $baseQuery = Encomienda::whereYear('created_at', $dateComponents['year']);
+
+        // Apply time filters based on selected time unit
+        switch ($this->selectedTipe) {
+            case 'Y':
+                break;
+            case 'm':
+                $baseQuery->whereMonth('created_at', $dateComponents['month']);
+                break;
+            case 'd':
+                $baseQuery->whereMonth('created_at', $dateComponents['month'])
+                         ->whereDay('created_at', $dateComponents['day']);
+                break;
+            default:
+                $baseQuery->whereMonth('created_at', $dateComponents['month']);
+                break;
+        }
+
+        // Get all payment data in a single query
+        $paymentData = $baseQuery->select('sucursal_id', 'metodo_pago', DB::raw('SUM(monto) as total'))
+            ->whereIn('metodo_pago', $metodoPagos)
+            ->groupBy('sucursal_id', 'metodo_pago')
+            ->get()
+            ->groupBy(['metodo_pago', 'sucursal_id']);
+
+        // Generate datasets with consistent colors
+        $datasets = array_map(function($metodoPago) use ($paymentData, $sucursals) {
+            $color = sprintf('rgba(%d, %d, %d, 0.8)', mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
+            
+            $data = $sucursals->map(function($sucursal) use ($paymentData, $metodoPago) {
+                return $paymentData[$metodoPago][$sucursal->id][0]['total'] ?? 0;
+            })->toArray();
+
+            return [
+                'label' => $metodoPago,
+                'data' => $data,
+                'backgroundColor' => $color,
+                'borderColor' => $color,
+                'borderWidth' => 1,
+                'borderRadius' => 5
+            ];
+        }, $metodoPagos);
+
+        return [
+            'labels' => $sucursals->pluck('code')->toArray(),
+            'datasets' => $datasets
+        ];
     }
     public function switch()
     {

@@ -71,7 +71,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/invoice', InvoiceLive::class)->name('facturacion.invoice');
     Route::get('/despache', DespatcheLive::class)->name('facturacion.despache');
     Route::get('/note', NoteLive::class)->name('facturacion.note');
-    Route::get('create-invoice', InvoiceCreateLive::class)->name('facturacion.create-invoice');
+    Route::get('/facturacion/create-invoice/{id?}', InvoiceCreateLive::class)->name('facturacion.create-invoice');
     Route::get('create-note', NoteCreateLive::class)->name('facturacion.create-note');
 });
 Route::middleware('auth')->group(function () {

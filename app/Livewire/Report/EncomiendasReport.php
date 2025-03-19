@@ -39,28 +39,37 @@ class EncomiendasReport extends Component
         if ($this->filtroSucursal) {
             $encomiendas->where('sucursal_id', $this->filtroSucursal);
         }
+
         if ($this->filtroFechaInicio && $this->filtroFechaFin) {
             $encomiendas->whereBetween('created_at', [$this->filtroFechaInicio, $this->filtroFechaFin]);
         }
+
         if ($this->search) {
-            $encomiendas->whereHas('remitente', function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                    ->orWhere('code', 'like', '%' . $this->search . '%');
-            })
-                ->orWhereHas('destinatario', function ($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('code', 'like', '%' . $this->search . '%');
-                });
+            $encomiendas->where(function ($query) {
+                $query->where('code', 'like', '%' . $this->search . '%')
+                    ->orWhereHas('remitente', function ($query) {
+                        $query->where('name', 'like', '%' . $this->search . '%')
+                            ->orWhere('code', 'like', '%' . $this->search . '%');
+                    })
+                    ->orWhereHas('destinatario', function ($query) {
+                        $query->where('name', 'like', '%' . $this->search . '%')
+                            ->orWhere('code', 'like', '%' . $this->search . '%');
+                    });
+            });
         }
+
         if ($this->FiltroEstadoEncomienda) {
             $encomiendas->where('estado_encomienda', $this->FiltroEstadoEncomienda);
         }
+
         if ($this->FiltroEstadoPago) {
-            $encomiendas->where('estado_pago', $this->FiltroEstadoPago);
+            $encomiendas->where('tipo_pago', $this->FiltroEstadoPago);
         }
+
         if ($this->filtroMetodoPago) {
             $encomiendas->where('metodo_pago', $this->filtroMetodoPago);
         }
+
         $encomiendas = $encomiendas->latest()->paginate($this->perPage);
         $sucursals = Sucursal::where('isActive', true)->get();
         $estados = [
@@ -70,8 +79,8 @@ class EncomiendasReport extends Component
             ['id' => 'ENTREGADO', 'name' => 'ENTREGADO']
         ];
         $estadosPago = [
-            ['id' => 'CREDITO', 'name' => 'CREDITO'],
-            ['id' => 'PAGADO', 'name' => 'PAGADO'],
+            ['id' => 'Contado', 'name' => 'Contado'],
+            ['id' => 'Credito', 'name' => 'Credito'],
         ];
         return view('livewire.report.encomiendas-report', [
             'encomiendas' => $encomiendas,
@@ -81,7 +90,16 @@ class EncomiendasReport extends Component
         ]);
     }
     public function showEncomienda(Encomienda $encomienda)
-    {   $this->encomienda = $encomienda;
+    {
+        $this->encomienda = $encomienda;
         $this->showDrawer = true;
+    }
+    public function createBoleta(Encomienda $encomienda)
+    {
+        $this->redirectRoute(
+            'facturacion.create-invoice',
+            ['id' => $encomienda->id],
+            false, false
+        );
     }
 }

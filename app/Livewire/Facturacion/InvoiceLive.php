@@ -3,9 +3,9 @@
 namespace App\Livewire\Facturacion;
 
 use App\Models\Facturacion\Invoice;
-use App\Services\SunatService;
 use App\Services\SunatServiceGlobal;
-use App\Services\SunatServiceGre;
+use App\Traits\UtilsTrait;
+use Carbon\Carbon;
 use Greenter\Report\XmlUtils;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -17,9 +17,10 @@ class InvoiceLive extends Component
 {
     use Toast;
     use WithPagination, WithoutUrlPagination;
+    use UtilsTrait;
     public string $title = 'BOLETAS Y FACTURAS';
     public string $sub_title = 'Modulo de facturacion electronica';
-    public int $perPage = 10;
+    public int $perPage = 20;
     public $infoModal = false;
 
     public $cdr_code;
@@ -28,9 +29,46 @@ class InvoiceLive extends Component
     public $errorCode;
     public $errorMessage;
 
+    public $filtroFechaInicio;
+    public $filtroFechaFin;
+    public $search;
+    public $FiltroFormaPagoTipo = 'Todos';
+    public $formaPagos = [
+        ['id' => 'Todos', 'name' => 'Todos'],
+        ['id' => 'Contado', 'name' => 'Contado'],
+        ['id' => 'Credito', 'name' => 'Credito'],
+    ];
+    public function mount()
+    {
+        $this->filtroFechaInicio = Carbon::now()->startOfDay()->format('Y-m-d H:i');//$this->dateNow('Y-m-d');
+        $this->filtroFechaFin = $this->dateNow('Y-m-d H:i:s');
+    }
     public function render()
     {
-        $invoices = Invoice::latest()->paginate($this->perPage);
+        $invoices = Invoice::query()
+            ->when($this->search, function($query) {
+                return $query->where(function($q) {
+                    $q->where('serie', 'like', '%' . $this->search . '%')
+                      ->orWhere('correlativo', 'like', '%' . $this->search . '%')
+                      ->orWhereHas('client', function($query) {
+                          $query->where('code', 'like', '%' . $this->search . '%')
+                                ->orWhere('name', 'like', '%' . $this->search . '%');
+                      });
+                });
+            })
+            ->when($this->filtroFechaInicio && $this->filtroFechaFin, function($query) {
+                return $query->whereBetween('created_at', [
+                    Carbon::parse($this->filtroFechaInicio)->startOfDay(),
+                    Carbon::parse($this->filtroFechaFin)->endOfDay()
+                ]);
+            })
+            ->when($this->FiltroFormaPagoTipo !== 'Todos', function($query) {
+                return $query->where('formaPago_tipo', $this->FiltroFormaPagoTipo);
+            })
+            ->latest()
+            ->paginate($this->perPage);
+
+
         return view('livewire.facturacion.invoice-live', compact('invoices'));
     }
     public function xmlGenerate(Invoice $invoice)
@@ -82,14 +120,15 @@ class InvoiceLive extends Component
             return response()->download(storage_path('app/public/' . $invoice->cdr_path));
         }
     }
-
-    public function refresh($invoice) {
+    public function refresh($invoice)
+    {
         $invoice = Invoice::find($invoice);
 
         $this->infoModal = true;
 
     }
-    public function statusInvoice($invoice) {
+    public function statusInvoice($invoice)
+    {
         $invoice = Invoice::find($invoice);
         $this->cdr_code = $invoice->cdr_code;
         $this->cdr_description = $invoice->cdr_description;

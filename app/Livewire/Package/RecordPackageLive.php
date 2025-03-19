@@ -24,7 +24,7 @@ use Mary\Traits\Toast;
 class RecordPackageLive extends Component
 {
     use LogCustom;
-    use Toast,UtilsTrait;
+    use Toast, UtilsTrait;
     use WithPagination, WithoutUrlPagination;
     public $title = 'ENCOMIENDAS ENTREGADAS';
     public $sub_title = 'Modulo de paquetes entregados';
@@ -53,9 +53,10 @@ class RecordPackageLive extends Component
     public function render()
     {
         $sucursals = Sucursal::where('isActive', true)
+            ->whereNotIn('id', [Auth::user()->sucursal->id])
             ->get();
-            $encomiendas = Encomienda::query()
-            ->when($this->date_ini && $this->date_fin, function($query) {
+        $encomiendas = Encomienda::query()
+            ->when($this->date_ini && $this->date_fin, function ($query) {
                 $query->whereBetween('created_at', [
                     Carbon::parse($this->date_ini)->startOfDay(),
                     Carbon::parse($this->date_fin)->endOfDay()
@@ -64,19 +65,20 @@ class RecordPackageLive extends Component
             ->where([
                 'isActive' => $this->isActive,
                 'sucursal_id' => $this->sucursal_dest_id,
+                'estado_encomienda' => 'ENTREGADO'
             ])
-            ->when($this->search, function($query) {
+            ->when($this->search, function ($query) {
                 $searchTerm = '%' . $this->search . '%';
-                $query->where(function($q) use ($searchTerm) {
-                    $q->whereHas('remitente', function($subQuery) use ($searchTerm) {
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->whereHas('remitente', function ($subQuery) use ($searchTerm) {
                         $subQuery->where('code', 'like', $searchTerm)
-                                ->orWhere('name', 'like', $searchTerm);
+                            ->orWhere('name', 'like', $searchTerm);
                     })
-                    ->orWhere('code', 'like', $searchTerm)
-                    ->orWhereHas('destinatario', function($subQuery) use ($searchTerm) {
-                        $subQuery->where('code', 'like', $searchTerm)
+                        ->orWhere('code', 'like', $searchTerm)
+                        ->orWhereHas('destinatario', function ($subQuery) use ($searchTerm) {
+                            $subQuery->where('code', 'like', $searchTerm)
                                 ->orWhere('name', 'like', $searchTerm);
-                    });
+                        });
                 });
             })
             ->latest()

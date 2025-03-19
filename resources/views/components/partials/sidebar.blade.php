@@ -33,12 +33,12 @@
             <x-mary-menu-separator />
             <x-mary-menu-sub title="REPORTES" icon="o-cog-6-tooth">
                 <x-mary-menu-item title="Encomiendas" icon="o-home" link="{{ route('report.encomiendas') }}" />
-                <x-mary-menu-item title="Ver Boletas y facturas" icon="c-ticket"
+                <x-mary-menu-item title="Boletas y facturas" icon="c-ticket"
                     link="{{ route('facturacion.invoice') }}" />
-                <x-mary-menu-item title="Ver Ticket Envio" icon="c-ticket" link="{{ route('facturacion.ticket') }}" />
-                <x-mary-menu-item title="Ver Guias Transportista" icon="s-ticket"
+                <x-mary-menu-item title="Ticket Envio" icon="c-ticket" link="{{ route('facturacion.ticket') }}" />
+                <x-mary-menu-item title="Guias Transportista" icon="s-ticket"
                     link="{{ route('facturacion.despache') }}" />
-                <x-mary-menu-item title="Ver Notas Credito" icon="s-ticket" link="{{ route('facturacion.note') }}" />
+                <x-mary-menu-item title="Notas Credito" icon="s-ticket" link="{{ route('facturacion.note') }}" />
             </x-mary-menu-sub>
             <x-mary-menu-sub title="CONFIGURACION" icon="o-cog-6-tooth">
                 <x-mary-menu-item title="Company" icon="o-home" link="{{ route('config.company') }}" />

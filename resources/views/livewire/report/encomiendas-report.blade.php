@@ -36,17 +36,17 @@
             <div class="grid col-span-4">
                 <x-mary-card shadow separator progress-indicator>
                     @php
-                    $headers = [
-                    ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1 text-white'],
-                    ['key' => 'code', 'label' => 'Codigo', 'class' => ''],
-                    ['key' => 'remitente', 'label' => 'Remitente', 'class' => ''],
-                    ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
-                    ['key' => 'monto', 'label' => 'Monto', 'class' => ''],
-                    ['key' => 'estado', 'label' => 'Estado Encomienda', 'class' => ''],
-                    ['key' => 'fecha', 'label' => 'Fechas', 'class' => ''],
-                    ['key' => 'comprobante', 'label' => 'Comprobante', 'class' => ''],
-                    ['key' => 'menu', 'label' => 'Menu', 'class' => ''],
-                    ];
+                        $headers = [
+                            ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1 text-white'],
+                            ['key' => 'code', 'label' => 'Codigo', 'class' => ''],
+                            ['key' => 'remitente', 'label' => 'Remitente', 'class' => ''],
+                            ['key' => 'destinatario', 'label' => 'Destinatario', 'class' => ''],
+                            ['key' => 'monto', 'label' => 'Monto', 'class' => ''],
+                            ['key' => 'estado', 'label' => 'Estado Encomienda', 'class' => ''],
+                            ['key' => 'fecha', 'label' => 'Fechas', 'class' => ''],
+                            ['key' => 'comprobante', 'label' => 'Comprobante', 'class' => ''],
+                            ['key' => 'menu', 'label' => 'Menu', 'class' => ''],
+                        ];
                     @endphp
                     <x-mary-table :headers="$headers" :rows="$encomiendas" striped with-pagination per-page="perPage"
                         :per-page-values="[5, 20, 10, 50]">
@@ -54,7 +54,7 @@
                         <div class="flex items-center">
                             <div class="ml-2">
                                 <p class="font-medium">{{ $stuff->estado_encomienda }}</p>
-                                <p class="font-medium">{{ $stuff->estado_pago }}</p>
+                                <p class="font-medium animate-bounce">{{ $stuff->estado_pago }}</p>
                                 <p class="font-medium">{{ $stuff->tipo_pago }}</p>
                             </div>
                         </div>
@@ -91,34 +91,45 @@
                         <div class="grid grid-cols-1 gap-1">
                             <div>
                                 @if ($stuff->invoice)
-                                <x-mary-button label='Recibo' icon="o-printer" target="_blank" no-wire-navigate
-                                    link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
-                                    class="w-full h-full text-white bg-purple-500 btn-xs" />
+                                    <x-mary-button label='Recibo' icon="o-printer" target="_blank" no-wire-navigate
+                                        link="/invoice/80mm/{{ $stuff->invoice->id }}" spinner
+                                        class="w-full h-full text-white bg-purple-500 btn-xs" />
                                 @endif
                             </div>
                             <div>
                                 @if ($stuff->ticket)
-                                <x-mary-button label='Ticket' icon="o-printer" target="_blank" no-wire-navigate
-                                    link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
-                                    class="w-full h-full text-white bg-cyan-500 btn-xs" />
+                                    <x-mary-button label='Ticket' icon="o-printer" target="_blank" no-wire-navigate
+                                        link="/ticket/80mm/{{ $stuff->ticket->id }}" spinner
+                                        class="w-full h-full text-white bg-cyan-500 btn-xs" />
                                 @endif
                             </div>
                             <div>
                                 @if ($stuff->despatche)
-                                <x-mary-button label='Guia T' icon="o-printer" target="_blank" no-wire-navigate
-                                    link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
-                                    class="w-full h-full text-white bg-green-500 btn-xs" />
+                                    <x-mary-button label='Guia T' icon="o-printer" target="_blank" no-wire-navigate
+                                        link="/despache/80mm/{{ $stuff->despatche->id }}" spinner
+                                        class="w-full h-full text-white bg-green-500 btn-xs" />
                                 @endif
                             </div>
                         </div>
                         @endscope
                         @scope('cell_menu', $stuff)
                         <div class="flex items-center">
-                            <div class="ml-2">
-                                <x-mary-button wire:click="showEncomienda({{ $stuff->id }})" label="Ver"
-                                    class="text-white bg-green-500 hover:bg-green-700" spinner />
-                            </div>
+                            <x-mary-dropdown>
+                                <x-slot:trigger>
+                                    <x-mary-button icon="m-bars-3" class="btn-outline" />
+                                </x-slot:trigger>
+
+                                <x-mary-menu-item title="Detalle encomienda" icon="o-archive-box"
+                                    wire:click="showEncomienda({{ $stuff->id }})" />
+                                @if (!$stuff->invoice)
+                                    <x-mary-menu-item title="Crear boleta" icon="o-archive-box"
+                                        wire:click="createBoleta({{ $stuff->id }})" />
+                                    <x-mary-menu-item title="Crear factura" icon="o-archive-box"
+                                        wire:click="createFactura({{ $stuff->id }})" />
+                                @endif
+                            </x-mary-dropdown>
                         </div>
+
                         @endscope
                     </x-mary-table>
                 </x-mary-card>
