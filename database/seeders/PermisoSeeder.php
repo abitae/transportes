@@ -20,13 +20,19 @@ class PermisoSeeder extends Seeder
 
         $permissions = [
             'caja.index',
+            'config.ruta',
+            'menu.encomienda',
+            'menu.entrega',
+            'menu.facturacion',
+            'menu.reporte',
+            'menu.configuracion',
             'config.sucursal',
             'config.vehiculo',
             'config.transportista',
             'config.user',
             'config.role',
             'config.company',
-            'config.configuration',
+            'report.encomienda',
             'package.customer',
             'package.register',
             'package.send',
@@ -61,20 +67,46 @@ class PermisoSeeder extends Seeder
         $role->syncPermissions(Permission::all());
         User::factory()->create([
             'name' => 'Administrador',
-            'email' => 'admin.h28@brayanbruhs.pe',
+            'email' => 'administrador@brayanbruhs.pe',
             'sucursal_id' => 1,
             'isActive' => true,
             'password' => bcrypt('password'),
         ])->assignRole('Administrador');
 
-        User::factory()->create([
-            'name' => 'Administrador',
-            'email' => 'admin.villegas@brayanbruhs.pe',
-            'sucursal_id' => 2,
-            'isActive' => true,
-            'password' => bcrypt('password'),
-        ])->assignRole('Administrador');
+        $role = Role::create(['name' => 'Admin sucursal', 'guard_name' => 'web']);
+        $role->syncPermissions([
+            'caja.index',
+            'config.ruta',
+            'menu.encomienda',
+            'menu.entrega',
+            'menu.facturacion',
+            'menu.reporte',
+            'report.encomienda',
+            'config.sucursal',
+            'package.customer',
+            'package.register',
+            'package.send',
+            'package.receive',
+            'package.deliver',
+            'package.record',
+            'package.home',
+            'package.return',
+            'package.maniesto',
+            'message.frontend',
+            'facturacion.create-invoice',
+            'facturacion.create-note'
+        ]);
 
-
+        // Create admin users for each branch office
+        $sucursales = Sucursal::all();
+        foreach ($sucursales as $sucursal) {
+            User::factory()->create([
+                'name' => 'Administrador ' . $sucursal->code,
+                'email' => 'admin.' . strtolower($sucursal->code) . '@brayanbruhs.pe',
+                'sucursal_id' => $sucursal->id,
+                'isActive' => true,
+                'password' => bcrypt('password'),
+            ])->assignRole('Admin sucursal');
+        }
     }
 }

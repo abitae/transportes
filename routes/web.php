@@ -49,7 +49,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/componentes', Componentes::class)->name('componentes');
-    Route::get('/caja', CajaLive::class)->name('caja.index')->middleware('can:caja.view');
+    Route::get('/caja', CajaLive::class)->name('caja.index')->middleware('can:caja.index');
     Route::get('/sucursal', SucursalLive::class)->name('config.sucursal')->middleware('can:config.sucursal');
     Route::get('/vehiculo', VehiculoLive::class)->name('config.vehiculo')->middleware('can:config.vehiculo');
     Route::get('/transportistas', TransportistaLive::class)->name('config.transportista')->middleware('can:config.transportista');
