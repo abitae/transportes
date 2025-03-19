@@ -37,8 +37,14 @@ return new class extends Migration
 
             $table->decimal('cantidad', 8, 2);
             $table->decimal('monto', 8, 2);
+
+            //descuento
             $table->decimal('monto_descuento', 8, 2)->nullable();
             $table->string('motivo_descuento')->nullable();
+            //documentos relacionados
+            $table->unsignedInteger('doc_ticket')->nullable();
+            $table->unsignedInteger('doc_guia')->nullable();
+            $table->unsignedInteger('doc_factura')->nullable();
 
             $table->string('estado_pago');
             $table->string('tipo_pago')->default('Contado');
@@ -56,10 +62,6 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('encomiendas');

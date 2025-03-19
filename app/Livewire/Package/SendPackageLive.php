@@ -46,9 +46,10 @@ class SendPackageLive extends Component
     public CustomerForm $customerFormDest;
     public $modalFinal;
     public $manifiesto;
+    public $date_traslado;
     public function mount()
     {
-
+        $this->date_traslado = Carbon::now()->endOfDay()->format('Y-m-d H:i');
         $this->date_ini = Carbon::now()->startOfDay()->format('Y-m-d H:i');//$this->dateNow('Y-m-d');
         $this->date_fin = $this->dateNow('Y-m-d H:i:s');
 

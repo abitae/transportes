@@ -8,10 +8,10 @@
         <div class="p-4 border-2 border-green-500 rounded-lg shadow-md">
             <!-- Información del envío -->
             <div class="mb-4">
-                <x-mary-card title="{{ $this->numElementos ?? 0 }}" subtitle="Encomiendas seleccionados" shadow separator class="bg-green-50">
+                <x-mary-card title="{{ $numElementos ?? 0 }}" subtitle="Encomiendas seleccionados" shadow separator class="bg-green-50">
                     <div class="flex items-center mt-2">
                         <span class="font-semibold mr-2">Sucursal de destino:</span>
-                        <span class="text-blue-600 font-medium">{{ $this->sucursal_dest->name ?? 'Sucursal destino' }}</span>
+                        <span class="text-blue-600 font-medium">{{ $sucursal_dest->name ?? 'Sucursal destino' }}</span>
                     </div>
                 </x-mary-card>
             </div>

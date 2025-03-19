@@ -11,7 +11,6 @@ use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
 use App\Traits\UtilsTrait;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -50,14 +49,14 @@ class InvoiceCreateLive extends Component
     public $docAdjunto;
 
     public function mount($id = null)
-    { 
+    {
         $this->paquetes = collect([])->keyBy('id');
         if ($id) {
             $this->id = $id;
             $this->processEncomienda();
         }
     }
-    
+
     private function processEncomienda()
     {
         $encomienda = Encomienda::find($this->id);
@@ -69,7 +68,7 @@ class InvoiceCreateLive extends Component
         $this->razonSocial = $encomienda->remitente->name;
         $this->direccion = $encomienda->remitente->address;
         $this->ubigeo = $encomienda->remitente->ubigeo;
-        $this->client = $encomienda->remitente ;
+        $this->client = $encomienda->remitente;
         $this->paquetes = $encomienda->paquetes;
         $this->calculateTotals();
     }
@@ -108,8 +107,6 @@ class InvoiceCreateLive extends Component
 
         return view('livewire.facturacion.invoice-create-live', compact('tipoDocuments', 'ubigeos', 'headers_paquetes', 'tipoDocs', 'tipoOperaciones', 'monedas', 'tipoDetracciones', 'unidadMedidas'));
     }
-
-
     public function emitFactura()
     {
         if ($this->tipoDoc == '01' && in_array($this->tipoDocumento, ['0', '1'])) {
@@ -228,13 +225,15 @@ class InvoiceCreateLive extends Component
             'ubigeo' => $this->ubigeo,
             'phone' => $this->telefono,
         ]);
-        $encomienda = Encomienda::find($this->id);
-        $encomienda->tipo_comprobante = $factura->tipoDoc = '03' ? 'BOLETA' : 'FACTURA';
-        $encomienda->save();
+        if ($this->id) {
+            $encomienda = Encomienda::find($this->id);
+            $encomienda->tipo_comprobante = $factura->tipoDoc = '03' ? 'BOLETA' : 'FACTURA';
+            $encomienda->save();
+        }
+
         $this->resetForm();
         $this->success('Factura emitida correctamente');
     }
-
     private function resetForm()
     {
         $this->client = null;
@@ -252,8 +251,6 @@ class InvoiceCreateLive extends Component
         $this->tipoDoc = '03';
         $this->success('Factura emitida correctamente');
     }
-
-
     public function buscarDocumento()
     {
         $rules = [
@@ -285,7 +282,6 @@ class InvoiceCreateLive extends Component
 
         $this->fillCustomerDataFromResponse($respuesta, $tipo);
     }
-
     private function fillCustomerData($customer)
     {
         $this->razonSocial = $customer->name;
@@ -294,14 +290,12 @@ class InvoiceCreateLive extends Component
         $this->telefono = $customer->phone;
         $this->client = $customer;
     }
-
     private function resetCustomerData()
     {
         $this->razonSocial = '';
         $this->direccion = '';
         $this->ubigeo = '';
     }
-
     private function fillCustomerDataFromResponse($respuesta, $tipo)
     {
         if ($tipo == 'ruc') {
@@ -319,7 +313,6 @@ class InvoiceCreateLive extends Component
             ['name' => $this->razonSocial, 'address' => $this->direccion, 'ubigeo' => $this->ubigeo, 'phone' => $this->telefono]
         );
     }
-
     public function addPaquete()
     {
         if ($this->validatePaquete()) {
@@ -337,7 +330,6 @@ class InvoiceCreateLive extends Component
             $this->error('Error, verifique los datos!');
         }
     }
-
     private function validatePaquete()
     {
         $validations = [
@@ -361,7 +353,6 @@ class InvoiceCreateLive extends Component
 
         return true;
     }
-
     public function restPaquete($id)
     {
         $this->paquetes->pull($id - 1);

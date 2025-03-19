@@ -170,7 +170,6 @@ class SunatServiceGlobal
             ->setPercent($data->setPercent ?? 12)
             ->setMount($data->setMount ?? 47.20);
     }
-
     public function getNote($note): \Greenter\Model\Sale\Note
     {
         return (new \Greenter\Model\Sale\Note())

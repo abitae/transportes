@@ -29,6 +29,9 @@ class Encomienda extends Model
         'monto',
         'monto_descuento',
         'motivo_descuento',
+        'doc_ticket', //documento de traslado
+        'doc_guia',
+        'doc_factura',
         'estado_pago', //PAGADO , CONTRA ENTREGA
         'tipo_pago', // Contado, Credito
         'metodo_pago',// Efectivo, Yape, Tarjeta, Trasnferencia

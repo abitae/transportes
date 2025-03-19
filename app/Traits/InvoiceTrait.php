@@ -17,14 +17,14 @@ trait InvoiceTrait
 {
     public function storeInvoce(Encomienda $encomienda)
     {
-        if ($encomienda->tipo_comprobante != 'TICKET') {
-            $this->setInvoice($encomienda,$encomienda->tipo_comprobante); // Genera factura o boleta
-            $this->setGuiTrans($encomienda); // Genera guia transportista
+        $this->setTicket($encomienda);
+        if (in_array($encomienda->tipo_comprobante, ['FACTURA', 'BOLETA'])) {
+            $this->setInvoice($encomienda, $encomienda->tipo_comprobante);
         }
-        $this->setTicket($encomienda);   // Genera ticket
-        
+        if ($encomienda->doc_traslado || $encomienda->tipo_comprobante !== 'TICKET') {
+            $this->setGuiTrans($encomienda);
+        }
     }
-
     private function setTicket(Encomienda $encomienda)
     {
         $company = Company::first();
@@ -51,12 +51,12 @@ trait InvoiceTrait
             'subTotal' => $montoTotalIncIGV,
             'mtoImpVenta' => $montoTotalIncIGV, //venta total inc IGV
         ]);
-
+        $encomienda->doc_ticket = $ticket->id;
+        $encomienda->save();
         foreach ($encomienda->paquetes as $paquete) {
             $this->createTicketDetail($ticket->id, $paquete);
         }
     }
-
     private function createTicketDetail($ticketId, $paquete)
     {
         $mtoValorUnitario = round($paquete->amount / 1.18, 2);
@@ -76,8 +76,7 @@ trait InvoiceTrait
             'mtoPrecioUnitario' => $paquete->amount,
         ]);
     }
-
-    private function setInvoice(Encomienda $encomienda,$tipo_comprobante)
+    private function setInvoice(Encomienda $encomienda, $tipo_comprobante)
     {
         $montoTotalIncIGV = $encomienda->paquetes->sum('sub_total');
         $mtoOperGravadas = round($montoTotalIncIGV / 1.18, 2);
@@ -85,15 +84,15 @@ trait InvoiceTrait
         $formatter = new NumeroALetras();
         $monto_letras = $formatter->toInvoice($montoTotalIncIGV, 2, 'SOLES');
 
-        $invoiceData = $this->getInvoiceData($tipo_comprobante,$encomienda, $montoTotalIncIGV, $mtoOperGravadas, $igv, $monto_letras);
+        $invoiceData = $this->getInvoiceData($tipo_comprobante, $encomienda, $montoTotalIncIGV, $mtoOperGravadas, $igv, $monto_letras);
         $invoice = Invoice::create($invoiceData);
-
+        $encomienda->doc_factura = $invoice->id;
+        $encomienda->save();
         foreach ($encomienda->paquetes as $paquete) {
             $this->createInvoiceDetail($invoice->id, $paquete);
         }
     }
-
-    private function getInvoiceData($tipo_comprobante,$encomienda, $montoTotalIncIGV, $mtoOperGravadas, $igv, $monto_letras)
+    private function getInvoiceData($tipo_comprobante, $encomienda, $montoTotalIncIGV, $mtoOperGravadas, $igv, $monto_letras)
     {
         $company = Company::first();
         $data = [
@@ -145,7 +144,6 @@ trait InvoiceTrait
         $data['legends'] = json_encode($legends);
         return $data;
     }
-
     private function createInvoiceDetail($invoiceId, $paquete)
     {
         $mtoValorUnitario = round($paquete->amount / 1.18, 2);
@@ -165,7 +163,6 @@ trait InvoiceTrait
             'mtoPrecioUnitario' => $paquete->amount,
         ]);
     }
-
     private function setGuiTrans(Encomienda $encomienda)
     {   //dd($encomienda);
         $company = Company::first();
@@ -205,12 +202,12 @@ trait InvoiceTrait
             'setMount' => $montoTotalIncIGV * 0.12,
 
         ]);
-
+        $encomienda->doc_guia = $despatch->id;
+        $encomienda->save();
         foreach ($encomienda->paquetes as $paquete) {
             $this->createDespatcheDetail($despatch->id, $paquete);
         }
     }
-
     private function createDespatcheDetail($despatcheId, $paquete)
     {
         $mtoValorUnitario = round($paquete->amount / 1.18, 2);
