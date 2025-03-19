@@ -17,21 +17,19 @@ class PermisoSeeder extends Seeder
     public function run(): void
     {
 
-        $permissions = [
-            'caja.view', 'caja.create', 'caja.edit', 'caja.delete',
-            'config_sucursal.view', 'config_sucursal.create', 'config_sucursal.edit', 'config_sucursal.delete',
-            'registrar_paquetes.view', 'registrar_paquetes.create', 'registrar_paquetes.edit', 'registrar_paquetes.delete',
-            'enviar_paquetes.view', 'enviar_paquetes.create', 'enviar_paquetes.edit', 'enviar_paquetes.delete',
-            'recibir_paquetes.view', 'recibir_paquetes.create', 'recibir_paquetes.edit', 'recibir_paquetes.delete',
-            'entregar_paquetes.view', 'entregar_paquetes.create', 'entregar_paquetes.edit', 'entregar_paquetes.delete',
-            'paquetes_domicilio.view', 'paquetes_domicilio.create', 'paquetes_domicilio.edit', 'paquetes_domicilio.delete',
-            'paquetes_retorno.view', 'paquetes_retorno.create', 'paquetes_retorno.edit', 'paquetes_retorno.delete',
-            'historial_paquetes.view', 'historial_paquetes.create', 'historial_paquetes.edit', 'historial_paquetes.delete',
-            'clientes.view', 'clientes.create', 'clientes.edit', 'clientes.delete',
-            'manifiestos.view', 'manifiestos.create', 'manifiestos.edit', 'manifiestos.delete',
-            'configuracion.view', 'configuracion.create', 'configuracion.edit', 'configuracion.delete',
-            'mensajes.view', 'mensajes.create', 'mensajes.edit', 'mensajes.delete',
+        $permissions = [];
+        $routes = [
+            'caja',
+            'ruta',
         ];
+
+        // Generate permissions based on routes
+        foreach ($routes as $route) {
+            $permissions[] = $route . '.view';
+            $permissions[] = $route . '.create';
+            $permissions[] = $route . '.edit';
+            $permissions[] = $route . '.delete';
+        }
 
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission, 'guard_name' => 'web']);

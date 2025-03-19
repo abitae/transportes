@@ -4,7 +4,10 @@
             <x-mary-menu-separator />
             <x-mary-menu-item title="DASHBOARD" icon="o-rectangle-group" link="{{ route('dashboard') }}" />
             <x-mary-menu-separator />
-            <x-mary-menu-item title="CAJA" icon="o-banknotes" link="{{ route('caja.index') }}" />
+            @can('caja.view')
+                <x-mary-menu-item title="CAJA" icon="o-banknotes" link="{{ route('caja.index') }}" />
+            @endcan
+
             <x-mary-menu-item title="RUTAS" icon="s-paper-airplane" link="{{ route('config.configuration') }}" />
             <x-mary-menu-separator />
             <x-mary-menu-sub title="ENCOMIENDAS" icon="s-truck">

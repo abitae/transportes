@@ -55,16 +55,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/transportistas', TransportistaLive::class)->name('config.transportista');
     Route::get('/user', UserLive::class)->name('config.user');
     Route::get('/role', RoleLive::class)->name('config.role');
-    Route::get('/company', CompanyLive::class)->name('config.company');
+    Route::get('/empresa', CompanyLive::class)->name('config.company');
     Route::get('/configuration', SucursalConfigurationLive::class)->name('config.configuration');
-    Route::get('/customer', CustomerLive::class)->name('package.customer');
+    Route::get('/clientes', CustomerLive::class)->name('package.customer');
     Route::get('/registrar', RegisterLive::class)->name('package.register');
-    Route::get('/send_package', SendPackageLive::class)->name('package.send');
-    Route::get('/receive_package', ReceivePackageLive::class)->name('package.receive');
-    Route::get('/deliver_package', DeliverPackageLive::class)->name('package.deliver');
-    Route::get('/record_package', RecordPackageLive::class)->name('package.record');
-    Route::get('/home_package', HomePackageLive::class)->name('package.home');
-    Route::get('/return_package', ReturnPackageLive::class)->name('package.return');
+    Route::get('/enviar', SendPackageLive::class)->name('package.send');
+    Route::get('/recibir', ReceivePackageLive::class)->name('package.receive');
+    Route::get('/entregar', DeliverPackageLive::class)->name('package.deliver');
+    Route::get('/historial', RecordPackageLive::class)->name('package.record');
+    Route::get('/domicili', HomePackageLive::class)->name('package.home');
+    Route::get('/retorno', ReturnPackageLive::class)->name('package.return');
     Route::get('/maniesto', ManifiestoLive::class)->name('package.maniesto');
     Route::get('/message', MessageLive::class)->name('message.frontend');
     Route::get('/ticket', TicketLive::class)->name('facturacion.ticket');
@@ -72,7 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/despache', DespatcheLive::class)->name('facturacion.despache');
     Route::get('/note', NoteLive::class)->name('facturacion.note');
     Route::get('/facturacion/create-invoice/{id?}', InvoiceCreateLive::class)->name('facturacion.create-invoice');
-    Route::get('create-note', NoteCreateLive::class)->name('facturacion.create-note');
+    Route::get('/facturacion/create-note/{id?}', NoteCreateLive::class)->name('facturacion.create-note');
 });
 Route::middleware('auth')->group(function () {
     Route::get('/report/encomiendas', EncomiendasReport::class)->name('report.encomiendas');

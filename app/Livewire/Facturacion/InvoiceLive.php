@@ -137,4 +137,12 @@ class InvoiceLive extends Component
         $this->errorMessage = $invoice->errorMessage;
         $this->infoModal = true;
     }
+    public function createNote(Invoice $invoice)
+    {
+        $this->redirectRoute(
+            'facturacion.create-note',
+            ['id' => $invoice->id],
+            false, false
+        );
+    }
 }

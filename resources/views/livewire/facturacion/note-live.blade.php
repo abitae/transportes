@@ -11,8 +11,7 @@
         ['key' => 'cliente', 'label' => 'Cliente', 'class' => ''],
         ['key' => 'mtoImpVenta', 'label' => 'Monto', 'class' => ''],
         ['key' => 'pdf', 'label' => 'PDF A4', 'class' => ''],
-        ['key' => 'xml', 'label' => 'XML', 'class' => ''],
-        ['key' => 'cdr', 'label' => 'CDR', 'class' => ''],
+        ['key' => 'xml', 'label' => 'XML/CDR', 'class' => ''],
         ['key' => 'menu', 'label' => 'Menu', 'class' => ''],
         ];
         @endphp
@@ -22,9 +21,10 @@
             @php
             $valor = $stuff->serie . '-' . $stuff->correlativo;
             @endphp
-            <x-mary-badge :value="$valor" class="bg-cyan-500" />
+            <x-mary-badge :value="$valor" class="bg-cyan-500 text-white" />
             <br>
             <div class="text-xs">{{ $stuff->created_at->format('d-m-Y H:i A') }}</div>
+            Modifica:<x-mary-badge :value="$stuff->numDocfectado" class="bg-green-500 text-white" />
             @endscope
 
             @scope('cell_cliente', $stuff)
@@ -51,9 +51,6 @@
             <x-mary-button icon="o-arrow-path" target="_blank" wire:click="xmlGenerate({{ $stuff->id }})"
                 no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
             @endif
-            @endscope
-
-            @scope('cell_cdr', $stuff)
             @if ($stuff->cdr_path)
             <x-mary-button icon="o-document-arrow-down" target="_blank" wire:click="downloadCdrFile({{ $stuff->id }})"
                 no-wire-navigate spinner class="text-white bg-blue-500 btn-xs" />
@@ -62,6 +59,7 @@
                 no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
             @endif
             @endscope
+
 
             @scope('cell_menu', $stuff)
             <x-mary-dropdown>

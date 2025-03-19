@@ -32,8 +32,7 @@
                             ['key' => 'cliente', 'label' => 'Cliente', 'class' => ''],
                             ['key' => 'mtoImpVenta', 'label' => 'Monto', 'class' => ''],
                             ['key' => 'pdf', 'label' => 'PDF A4', 'class' => ''],
-                            ['key' => 'xml', 'label' => 'XML', 'class' => ''],
-                            ['key' => 'cdr', 'label' => 'CDR', 'class' => ''],
+                            ['key' => 'xml', 'label' => 'XML/CDR', 'class' => ''],
                             ['key' => 'menu', 'label' => 'Menu', 'class' => ''],
                         ];
                     @endphp
@@ -75,9 +74,7 @@
                             <x-mary-button icon="o-arrow-path" target="_blank" wire:click="xmlGenerate({{ $stuff->id }})"
                                 no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
                         @endif
-                        @endscope
-
-                        @scope('cell_cdr', $stuff)
+                    
                         @if ($stuff->cdr_path)
                             <x-mary-button icon="o-document-arrow-down" target="_blank"
                                 wire:click="downloadCdrFile({{ $stuff->id }})" no-wire-navigate spinner
@@ -91,10 +88,12 @@
                         @scope('cell_menu', $stuff)
                         <x-mary-dropdown>
                             <x-slot:trigger>
-                                <x-mary-button icon="m-bars-4" class="btn-outline" />
+                                <x-mary-button icon="m-bars-3" class="btn-xs" />
                             </x-slot:trigger>
                             <x-mary-menu-item title="Estado SUNAT" icon="o-archive-box"
                                 wire:click="statusInvoice({{ $stuff->id }})" />
+                                <x-mary-menu-item title="Crear Nota de credito" icon="o-archive-box"
+                                wire:click="createNote({{ $stuff->id }})" />
                         </x-mary-dropdown>
                         @endscope
                     </x-mary-table>
