@@ -17,50 +17,62 @@ class PermisoSeeder extends Seeder
     public function run(): void
     {
 
-        $permissions = [];
-        $routes = [
-            'caja',
-            'ruta',
+
+        $permissions = [
+            'caja.index',
+            'config.sucursal',
+            'config.vehiculo',
+            'config.transportista',
+            'config.user',
+            'config.role',
+            'config.company',
+            'config.configuration',
+            'package.customer',
+            'package.register',
+            'package.send',
+            'package.receive',
+            'package.deliver',
+            'package.record',
+            'package.home',
+            'package.return',
+            'package.maniesto',
+            'message.frontend',
+            'facturacion.ticket',
+            'facturacion.invoice',
+            'facturacion.despache',
+            'facturacion.note',
+            'facturacion.create-invoice',
+            'facturacion.create-note'
         ];
-
-        // Generate permissions based on routes
-        foreach ($routes as $route) {
-            $permissions[] = $route . '.view';
-            $permissions[] = $route . '.create';
-            $permissions[] = $route . '.edit';
-            $permissions[] = $route . '.delete';
-        }
-
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission, 'guard_name' => 'web']);
         }
         $role = Role::create(['name' => 'SuperAdmin', 'guard_name' => 'web']);
-        Permission::create(['name' => 'super.admin', 'guard_name' => 'web']);
         $role->syncPermissions(Permission::all());
         User::factory()->create([
-            'name'        => 'Abel Arana',
-            'email'       => 'abel.arana@hotmail.com',
+            'name' => 'Abel Arana',
+            'email' => 'abel.arana@hotmail.com',
             'sucursal_id' => 1,
-            'isActive'    => true,
-            'password'    => bcrypt('lobomalo123'),
+            'isActive' => true,
+            'password' => bcrypt('lobomalo123'),
         ])->assignRole('SuperAdmin');
 
         $role = Role::create(['name' => 'Administrador', 'guard_name' => 'web']);
         $role->syncPermissions(Permission::all());
         User::factory()->create([
-            'name'        => 'Administrador',
-            'email'       => 'admin.h28@brayanbruhs.pe',
+            'name' => 'Administrador',
+            'email' => 'admin.h28@brayanbruhs.pe',
             'sucursal_id' => 1,
-            'isActive'    => true,
-            'password'    => bcrypt('password'),
+            'isActive' => true,
+            'password' => bcrypt('password'),
         ])->assignRole('Administrador');
 
         User::factory()->create([
-            'name'        => 'Administrador',
-            'email'       => 'admin.villegas@brayanbruhs.pe',
+            'name' => 'Administrador',
+            'email' => 'admin.villegas@brayanbruhs.pe',
             'sucursal_id' => 2,
-            'isActive'    => true,
-            'password'    => bcrypt('password'),
+            'isActive' => true,
+            'password' => bcrypt('password'),
         ])->assignRole('Administrador');
 
 

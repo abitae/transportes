@@ -23,7 +23,7 @@ class UserLive extends Component
     public function render()
     {
         $sucursals = Sucursal::where('isActive', true)->get();
-        $roles     = Role::all();
+        $roles     = Role::whereNotIn('name', ['SuperAdmin'])->get();
         $users     = User::where('email','!=','abel.arana@hotmail.com')->latest()->paginate($this->perPage);
         return view('livewire.configuration.user-live', compact('users', 'sucursals', 'roles'));
     }
