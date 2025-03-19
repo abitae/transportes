@@ -83,6 +83,7 @@ class InvoiceCreateLive extends Component
             ['key' => 'sub_total', 'label' => 'MONTO'],
         ];
     //Hola mundo
+    //Ho
         $service = new ServiceTableSunat();
         $tipoDocs = [
             ['codigo' => '01', 'descripcion' => 'Factura (01)'],
