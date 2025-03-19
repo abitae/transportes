@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Configuration\Sucursal;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -81,8 +80,14 @@ class PermisoSeeder extends Seeder
             'menu.entrega',
             'menu.facturacion',
             'menu.reporte',
-            'report.encomienda',
+            'menu.configuracion',
             'config.sucursal',
+            'config.vehiculo',
+            'config.transportista',
+            'config.user',
+            'config.role',
+            'config.company',
+            'report.encomienda',
             'package.customer',
             'package.register',
             'package.send',
@@ -93,6 +98,10 @@ class PermisoSeeder extends Seeder
             'package.return',
             'package.maniesto',
             'message.frontend',
+            'facturacion.ticket',
+            'facturacion.invoice',
+            'facturacion.despache',
+            'facturacion.note',
             'facturacion.create-invoice',
             'facturacion.create-note'
         ]);

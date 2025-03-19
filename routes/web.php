@@ -56,7 +56,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/user', UserLive::class)->name('config.user')->middleware('can:config.user');
     Route::get('/role', RoleLive::class)->name('config.role')->middleware('can:config.role');
     Route::get('/empresa', CompanyLive::class)->name('config.company')->middleware('can:config.company');
-    Route::get('/configuration', SucursalConfigurationLive::class)->name('config.configuration')->middleware('can:config.configuration');
+    Route::get('/configuration', SucursalConfigurationLive::class)->name('config.configuration')->middleware('can:config.ruta');
     Route::get('/clientes', CustomerLive::class)->name('package.customer')->middleware('can:package.customer');
     Route::get('/registrar', RegisterLive::class)->name('package.register')->middleware('can:package.register');
     Route::get('/enviar', SendPackageLive::class)->name('package.send')->middleware('can:package.send');
