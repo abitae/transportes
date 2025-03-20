@@ -7,6 +7,9 @@ use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
 use App\Models\User;
+use BladeUIKit\Components\DateTime\Carbon;
+use Carbon\Carbon as CarbonCarbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -52,9 +55,6 @@ class EncomiendaFactory extends Factory
             'isReturn' => $this->faker->boolean(),
             'isActive' => $this->faker->boolean(90), // 90% chance of being true
             'created_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
-            'updated_at' => function (array $attributes) {
-                return $this->faker->dateTimeBetween($attributes['created_at'], 'now');
-            },
         ];
     }
 }
