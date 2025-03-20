@@ -32,14 +32,24 @@ class Encomienda extends Model
         'doc_ticket', //documento de traslado
         'doc_guia',
         'doc_factura',
+
+        'fecha_creacion',
+        'fecha_envio',
+        'fecha_recepcion',
+        'fecha_entrega',
+        'fecha_retorno',
+
         'estado_pago', //PAGADO , CONTRA ENTREGA
         'tipo_pago', // Contado, Credito
         'metodo_pago',// Efectivo, Yape, Tarjeta, Trasnferencia
         'tipo_comprobante',// TICKET, FACTURA, BOLETA
+
+        'estado_cretido',// Pendiente, Pagado
+
         'doc_traslado',
         'glosa',
         'observation',
-        'estado_encomienda',//REGISTRADO, ENVIADO,RECIBIDO,RETORNADO, ENTREGADO, ANULADO
+        'estado_encomienda',//REGISTRADO, ENVIADO,RECIBIDO,RETORNADO, ENTREGADO
         'pin',
         'isTransbordo',
         'isHome',

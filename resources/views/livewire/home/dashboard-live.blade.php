@@ -8,6 +8,8 @@
                     ['id' => 'd', 'name' => 'Dia'],
                 ];
             @endphp
+            <x-mary-datetime label="Fecha" wire:model.live="date_ini" icon="o-calendar" type="datetime-local" />
+
             <x-mary-select label="Tipo vista" wire:model.live="selectedTipe" :options="$tipes"
                 class="w-full sm:w-auto" />
         </x-slot:menu>
@@ -37,7 +39,8 @@
                 </div>
             </div>
             <div class="border border-cyan-500 rounded-lg shadow-xl p-4 h-full">
-                <x-mary-icon name="o-chart-pie" class="w-9 h-9 text-green-500 text-2xl" label="Encomiendas al credio o contado" />
+                <x-mary-icon name="o-chart-pie" class="w-9 h-9 text-green-500 text-2xl"
+                    label="Encomiendas al credio o contado" />
                 <div class="chart-container">
                     <x-mary-chart wire:model="myPie" />
                 </div>

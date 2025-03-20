@@ -4,6 +4,7 @@ namespace App\Livewire\Home;
 
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -73,6 +74,7 @@ class DashboardLive extends Component
         ],
     ];
     public $selectedTipe = 'Y';
+    public $date_ini;
 
     private function dataChartYear(DateTime $date)
     {
@@ -349,6 +351,10 @@ class DashboardLive extends Component
             'datasets' => $datasets
         ];
     }
+    public function mount()
+    {
+        $this->date_ini = Carbon::now()->endOfDay()->format('Y-m-d H:i');
+    }
     public function render()
     {
         $dataTipoCobro = $this->dataTipoCobro(new DateTime());
@@ -356,25 +362,25 @@ class DashboardLive extends Component
         Arr::set($this->myBarTipoCobro['data'], 'datasets', $dataTipoCobro['datasets']);
         switch ($this->selectedTipe) {
             case 'Y':
-                $data = $this->dataChartYear(new DateTime());
-                $dataPie = $this->dataPieYear(new DateTime());
-                $dataBar = $this->dataBarYear(new DateTime());
+                $data = $this->dataChartYear(new DateTime($this->date_ini));
+                $dataPie = $this->dataPieYear(new DateTime($this->date_ini));
+                $dataBar = $this->dataBarYear(new DateTime($this->date_ini));
 
                 break;
             case 'm':
-                $data = $this->dataChartMonth(new DateTime());
-                $dataPie = $this->dataPieMonth(new DateTime());
-                $dataBar = $this->dataBarMonth(new DateTime());
+                $data = $this->dataChartMonth(new DateTime($this->date_ini));
+                $dataPie = $this->dataPieMonth(new DateTime($this->date_ini));
+                $dataBar = $this->dataBarMonth(new DateTime($this->date_ini));
                 break;
             case 'd':
-                $data = $this->dataChartDay(new DateTime());
-                $dataPie = $this->dataPieDay(new DateTime());
-                $dataBar = $this->dataBarDay(new DateTime());
+                $data = $this->dataChartDay(new DateTime($this->date_ini));
+                $dataPie = $this->dataPieDay(new DateTime($this->date_ini));
+                $dataBar = $this->dataBarDay(new DateTime($this->date_ini));
                 break;
             default:
-                $data = $this->dataChartMonth(new DateTime());
-                $dataPie = $this->dataPieMonth(new DateTime());
-                $dataBar = $this->dataBarMonth(new DateTime());
+                $data = $this->dataChartMonth(new DateTime($this->date_ini));
+                $dataPie = $this->dataPieMonth(new DateTime($this->date_ini));
+                $dataBar = $this->dataBarMonth(new DateTime($this->date_ini));
                 break;
         }
 
@@ -460,7 +466,6 @@ class DashboardLive extends Component
     }
     public function switch()
     {
-
         $type = $this->myChart['type'] == 'bar' ? 'pie' : 'bar';
         Arr::set($this->myChart, 'type', $type);
     }

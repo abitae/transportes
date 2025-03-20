@@ -18,12 +18,17 @@ class CustomerFactory extends Factory
     {
         return [
             'type_code' => $this->faker->randomElement(['dni', 'ruc']),
-            'code' => $this->faker->randomNumber(8, false),
+            'code' => function (array $attributes) {
+                return $attributes['type_code'] === 'dni' 
+                    ? $this->faker->numerify('########') 
+                    : $this->faker->numerify('###########');
+            },
             'name' => $this->faker->name(),
-            'phone' => $this->faker->phoneNumber,
-            'email' => $this->faker->email,
-            'address' => $this->faker->address,
-            'isActive' => true,
+            'phone' => $this->faker->numerify('9########'), // Peruvian mobile format
+            'email' => $this->faker->safeEmail(),
+            'address' => $this->faker->streetAddress(),
+            'ubigeo' => $this->faker->numerify('######'), // 6-digit Peruvian ubigeo code
+            'isActive' => $this->faker->boolean(90), // 90% chance of being active
         ];
     }
 }

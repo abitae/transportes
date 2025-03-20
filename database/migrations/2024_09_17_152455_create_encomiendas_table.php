@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -45,14 +44,23 @@ return new class extends Migration
             $table->unsignedInteger('doc_ticket')->nullable();
             $table->unsignedInteger('doc_guia')->nullable();
             $table->unsignedInteger('doc_factura')->nullable();
+            //Fechas
+            $table->dateTime('fecha_creacion')->nullable();
+            $table->dateTime('fecha_envio')->nullable();
+            $table->dateTime('fecha_recepcion')->nullable();
+            $table->dateTime('fecha_entrega')->nullable();
+            $table->dateTime('fecha_retorno')->nullable();
 
             $table->string('estado_pago');
             $table->string('tipo_pago')->default('Contado');
             $table->string('metodo_pago')->nullable();
             $table->string('tipo_comprobante');
+
+            $table->string('estado_cretido')->nullable();
+
             $table->string('doc_traslado')->nullable();
-            $table->string('glosa')->nullable();
-            $table->string('observation')->nullable();
+            $table->text('glosa')->nullable();
+            $table->text('observation')->nullable();
             $table->string('estado_encomienda');
             $table->integer('pin')->unsigned();
             $table->boolean('isTransbordo')->default(false)->nullable();
