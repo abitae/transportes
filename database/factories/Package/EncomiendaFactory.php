@@ -54,7 +54,6 @@ class EncomiendaFactory extends Factory
             'isHome' => $this->faker->boolean(),
             'isReturn' => $this->faker->boolean(),
             'isActive' => $this->faker->boolean(90), // 90% chance of being true
-            'created_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
         ];
     }
 }
