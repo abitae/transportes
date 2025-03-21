@@ -44,6 +44,8 @@ class NoteCreateLive extends Component
     public $igv;
     public $total;
     public $id;
+    public $note;
+    public $modalPrintNote = false;
     public function mount($id = null)
     {
         $this->paquetes = collect([])->keyBy('id');
@@ -316,9 +318,15 @@ class NoteCreateLive extends Component
             'ubigeo' => $this->ubigeo,
             'phone' => $this->telefono,
         ]);
-
+        $this->note = $note;
+        $this->modalPrintNote = true;
         $this->resetForm();
-        $this->success('Note emitida correctamente');
+        
+    }
+    public function closePrintNote()  {
+        $this->modalPrintNote = false;
+        $this->note = null;
+        $this->resetForm();
     }
 
     private function resetForm()

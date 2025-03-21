@@ -40,21 +40,42 @@
                     </div>
                 </div>
 
-                <!-- Facturación -->
+
                 <div class="bg-white rounded-lg shadow-sm p-3 border-l-4 border-purple-500">
                     <div class="flex items-center mb-2">
                         <x-mary-icon name="s-document-text" class="text-purple-500 mr-2" />
-                        <h3 class="font-bold text-purple-700">FACTURACIÓN</h3>
+                        <h3 class="font-bold text-purple-700">DETALLE DE PAGO</h3>
                     </div>
-                    <div class="space-y-1 text-sm">
-                        <p class="font-medium">{{ $encomienda->facturacion->name ?? 'name' }}</p>
-                        <p>{{ $encomienda->facturacion->type_code == 1 ? 'DNI:' : 'RUC:' }}
-                            {{ $encomienda->facturacion->code ?? 'code' }}
-                        </p>
-                        @if ($encomienda->facturacion->phone)
-                            <p class="flex items-center"><x-mary-icon name="s-phone" class="text-gray-500 mr-1 h-4 w-4" />
-                                {{ $encomienda->facturacion->phone }}</p>
-                        @endif
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Monto Original:</span>
+                            <span class="font-medium">PEN {{ number_format($encomienda->monto, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-red-600">
+                            <span>Descuento:</span>
+                            @if ($monto_descuento && $monto_descuento < $encomienda->monto)
+                                @if (is_numeric($monto_descuento))
+                                    <span>- PEN {{ number_format($monto_descuento, 2) }}</span>
+                                @else
+                                    <span>NO VALIDO</span>
+                                @endif
+                            @else
+                                <span>0.00</span>
+                            @endif
+
+                        </div>
+                        <div class="border-t pt-2 flex justify-between items-center font-bold text-green-700">
+                            <span>Monto Final:</span>
+                            @if ($monto_descuento && $monto_descuento < $encomienda->monto)
+                                @if (is_numeric($monto_descuento))
+                                    <span>PEN {{ number_format($encomienda->monto - $monto_descuento, 2) }}</span>
+                                @else
+                                    <span>NO VALIDO</span>
+                                @endif
+                            @else
+                                <span>PEN {{ number_format($encomienda->monto, 2) }}</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,12 +118,18 @@
                             <x-mary-select label="Tipo pago" icon="o-user" :options="$tipo_pagos"
                                 wire:model.live="tipo_pago" class="rounded-r-lg" />
                         </div>
-                        <div>
-                            @if ($tipo_pago == 'Contado')
+                        @if ($tipo_pago == 'Contado')
+                            <div>
                                 <x-mary-select label="Metodo de pago" icon="o-user" :options="$metodoPagos"
                                     wire:model.live="metodo_pago" class="rounded-r-lg" />
-                            @endif
-                        </div>
+                            </div>
+                        @endif
+                        @if ($tipo_comprobante == 'TICKET' && !$encomienda->isHome)
+                            <div>
+                                <x-mary-input wire:model.live='monto_descuento' prefix="PEN" numeric label="Generar descuento"
+                                    placeholder="Monto descuento" />
+                            </div>
+                        @endif
                     </div>
 
                 </div>
@@ -141,20 +168,6 @@
                     </div>
                 </div>
             @endif
-        </div>
-        <div>
-            <div>
-                {{ $tipo_comprobante }}
-            </div>
-            <div>
-                {{$tipo_pago}}
-            </div>
-            <div>
-                {{$metodo_pago}}
-            </div>
-            <div>
-                {{$cliFacturacion}}
-            </div>
         </div>
         <x-slot:actions>
             <div class="flex space-x-2">

@@ -1,7 +1,9 @@
 <div>
     <x-mary-card title="{{ $title }}" subtitle="{{ $sub_title }}" shadow separator progress-indicator>
         <x-slot:menu>
-
+            <x-mary-button icon="o-document-arrow-down" label="Descargar Excel"
+                wire:click="excelGenerate" no-wire-navigate spinner
+                class="text-white bg-orange-500 hover:bg-orange-600 transition-colors duration-200" />
         </x-slot:menu>
 
         <div class="grid grid-cols-6 gap-2 p-2 shadow-xl">

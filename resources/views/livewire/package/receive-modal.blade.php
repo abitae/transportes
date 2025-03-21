@@ -8,8 +8,8 @@
         <div class="p-4 border-2 border-green-500 rounded-lg shadow-md">
 
             <div class="mb-4">
-                <x-mary-card title="{{ $this->numElementos ?? 0 }}" subtitle="Paquetes seleccionados" shadow separator>
-                    Sucursal de raiz : {{ $this->sucursal_rem->name ?? 'Sucursal raiz' }}
+                <x-mary-card title="{{ $numElementos ?? 0 }}" subtitle="Paquetes seleccionados" shadow separator>
+                    Sucursal de raiz : {{ $sucursal_rem->name ?? 'Sucursal raiz' }}
                 </x-mary-card>
             </div>
 

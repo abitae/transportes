@@ -24,17 +24,22 @@ class DatabaseSeeder extends Seeder
             VehiculoSeeder::class,
 
         ]);
-        Customer::factory(1000)->create();
+        Customer::factory(10)->create();
         
         foreach (Sucursal::all() as $sucursal) {
-            $encomiendas = Encomienda::factory(200)->create([
-                'sucursal_id' => $sucursal->id,
+            $encomiendas = Encomienda::factory(10)->create([
+                'sucursal_id' => 2,
+                'sucursal_dest_id' => 1,
+                'pin' => '123',
+                'isHome' =>true,
+                'isReturn' =>false,
             ]);
 
             // Create one package for each shipping order
             foreach ($encomiendas as $encomienda) {
                 Paquete::factory()->create([
-                    'encomienda_id' => $encomienda->id
+                    'encomienda_id' => $encomienda->id,
+                    
                 ]);
             }
         }

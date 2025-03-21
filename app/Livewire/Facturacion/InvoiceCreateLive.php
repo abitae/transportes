@@ -47,6 +47,8 @@ class InvoiceCreateLive extends Component
     public $client;
     public $id;
     public $docAdjunto;
+    public $modalPrintInvoice = false;
+    public $invoice;
 
     public function mount($id = null)
     {
@@ -231,9 +233,15 @@ class InvoiceCreateLive extends Component
             $encomienda->tipo_comprobante = $factura->tipoDoc = '03' ? 'BOLETA' : 'FACTURA';
             $encomienda->save();
         }
-
+        
+        $this->invoice = $factura;
+        $this->modalPrintInvoice = true;
         $this->resetForm();
-        $this->success('Factura emitida correctamente');
+    }
+    public function closePrintInvoice()  {
+        $this->modalPrintInvoice = false;
+        $this->invoice = null;
+        $this->resetForm();
     }
     private function resetForm()
     {

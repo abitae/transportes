@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
-use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Facades\Excel;
 use Mary\Traits\Toast;
 
 class SendPackageLive extends Component
@@ -174,8 +174,7 @@ class SendPackageLive extends Component
                     ->where('sucursal_id', Auth::user()->sucursal->id)
                     ->pluck('sucursal_destino_id');
                 if ($p->isEmpty()) {
-
-                    return redirect()->route('caja.index');
+                    return redirect()->route('package.maniesto');
                 } else {
                     $this->sucursal_dest_id = Sucursal::where('isActive', true)
                         ->whereIn('id', $p)
@@ -231,6 +230,7 @@ class SendPackageLive extends Component
     public function excelGenerate(Manifiesto $manifiesto)
     {
         $this->toast('success', 'Generando Excel', 'Manifiesto');
+        $this->modalFinal = false;
         return Excel::download(new ManifiestoExport(json_decode($manifiesto->ids)), 'manifiesto.xlsx');
     }
 }

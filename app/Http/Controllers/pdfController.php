@@ -16,20 +16,19 @@ class pdfController extends Controller
         $data = [
             'ticket' => $ticket,
         ];
-        $heigh        = 600 + $ticket->details->count() * 30;
+        $heigh = 600 + $ticket->details->count() * 30;
         $paper_format = [0, 0, 250, $heigh];
 
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.ticket.80mm', $data);
         return $pdf->stream('invoice.pdf');
     }
-
     public function invoice80mm(Invoice $invoice)
     {
 
         $data = [
             'invoice' => $invoice,
         ];
-        $heigh        = 600 + $invoice->details->count() * 30;
+        $heigh = 600 + $invoice->details->count() * 30;
         $paper_format = [0, 0, 250, $heigh];
 
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.invoice.80mm', $data);
@@ -48,11 +47,11 @@ class pdfController extends Controller
         $data = [
             'despache' => $despache,
         ];
-        $heigh        = 1700 + $despache->details->count() * 30;
+        $heigh = 1700 + $despache->details->count() * 30;
         $paper_format = [0, 0, 250, $heigh];
-        $data         = [
+        $data = [
             'despache' => $despache,
-            'heigh'    => $heigh,
+            'heigh' => $heigh,
         ];
         $pdf = Pdf::setPaper($paper_format, 'portrait')
             ->setOption(['dpi' => 150, 'defaultFont' => 'sans-serif'])
@@ -65,6 +64,25 @@ class pdfController extends Controller
             ->view('pdfs.despache.a4', compact('despache'))
             //->format(Format::A4)
             ->name('despache.pdf');
+    }
+    public function note80mm(Invoice $invoice)
+    {
+
+        $data = [
+            'invoice' => $invoice,
+        ];
+        $heigh = 600 + $invoice->details->count() * 30;
+        $paper_format = [0, 0, 250, $heigh];
+
+        $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.invoice.80mm', $data);
+        return $pdf->stream('invoice.pdf');
+    }
+    public function noteA4(Invoice $invoice)
+    {
+        return pdf()
+            ->view('pdfs.invoice.a4', compact('invoice'))
+            ->format(Format::A4)
+            ->name('invoice.pdf');
     }
     public function stickerA5(Encomienda $encomienda)
     {

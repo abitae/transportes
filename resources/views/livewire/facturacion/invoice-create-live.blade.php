@@ -120,4 +120,5 @@
             <x-mary-button wire:click='emitFactura' label="Guardar" icon="o-plus" class="btn-primary" />
         </div>
     </x-mary-card>
+    @include('livewire.facturacion.print-invoice-modal')
 </div>

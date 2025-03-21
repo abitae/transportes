@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Report;
 
+use App\Exports\ReportEncomiendaExport;
 use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
 use App\Traits\UtilsTrait;
@@ -9,6 +10,7 @@ use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 use Mary\Traits\Toast;
 
 class EncomiendasReport extends Component
@@ -26,6 +28,7 @@ class EncomiendasReport extends Component
     public $filtroMetodoPago;
     public int $perPage = 10;
     public bool $showDrawer = false;
+    public $ids;
     public Encomienda $encomienda;
     public function mount()
     {
@@ -69,7 +72,7 @@ class EncomiendasReport extends Component
         if ($this->filtroMetodoPago) {
             $encomiendas->where('metodo_pago', $this->filtroMetodoPago);
         }
-
+        $this->ids = $encomiendas->pluck('id')->toArray();
         $encomiendas = $encomiendas->latest()->paginate($this->perPage);
         $sucursals = Sucursal::where('isActive', true)->get();
         $estados = [
@@ -101,5 +104,9 @@ class EncomiendasReport extends Component
             ['id' => $encomienda->id],
             false, false
         );
+    }
+    public function excelGenerate()
+    {   
+        return Excel::download(new ReportEncomiendaExport($this->ids), 'report_encomienda.xlsx');
     }
 }
