@@ -5,13 +5,59 @@ use App\Models\Facturacion\Despatche;
 use App\Models\Facturacion\Invoice;
 use App\Models\Facturacion\Ticket;
 use App\Models\Package\Encomienda;
-use Barryvdh\DomPDF\Facade\Pdf;
-use function Spatie\LaravelPdf\Support\pdf;
-use Spatie\LaravelPdf\Enums\Format;
+//use Barryvdh\DomPDF\Facade\Pdf;
+use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as Pdf;
 
 class pdfController extends Controller
 {
     public function ticket80mm(Ticket $ticket)
+    {
+        $data = [
+            'ticket' => $ticket,
+        ];
+        $pdf = Pdf::loadView(
+            'pdfs.ticket.ticket-a4',
+            $data,
+            [],
+            [
+                'mode' => '',
+                'format' => [80, 236],
+                'default_font_size' => '12',
+                'default_font' => 'sans-serif',
+                'margin_left' => 10,
+                'margin_right' => 10,
+                'margin_top' => 10,
+                'margin_bottom' => 10,
+                'margin_header' => 0,
+                'margin_footer' => 0,
+                'orientation' => 'P',
+                'title' => 'Laravel mPDF',
+                'author' => '',
+                'creator' => '',
+                'subject' => '',
+                'keywords' => '',
+                'watermark' => '',
+                'show_watermark' => false,
+                'show_watermark_image' => false,
+                'watermark_font' => 'sans-serif',
+                'display_mode' => 'fullpage',
+                'watermark_text_alpha' => 0.1,
+                'watermark_image_path' => '',
+                'watermark_image_alpha' => 0.2,
+                'watermark_image_size' => 'D',
+                'watermark_image_position' => 'P',
+                'custom_font_dir' => '',
+                'custom_font_data' => [],
+                'auto_language_detection' => false,
+                'temp_dir' => storage_path('app'),
+                'pdfa' => false,
+                'pdfaauto' => false,
+                'use_active_forms' => false,
+            ]
+        );
+        return $pdf->stream('invoice.pdf');
+    }
+    public function ticket80mm1(Ticket $ticket)
     {
         $data = [
             'ticket' => $ticket,
@@ -36,10 +82,7 @@ class pdfController extends Controller
     }
     public function invoiceA4(Invoice $invoice)
     {
-        return pdf()
-            ->view('pdfs.invoice.a4', compact('invoice'))
-            ->format(Format::A4)
-            ->name('invoice.pdf');
+
     }
     //-------------------------------------------------------
     public function despache80mm(Despatche $despache)
@@ -60,10 +103,7 @@ class pdfController extends Controller
     }
     public function despacheA4(Despatche $despache)
     {
-        return pdf()
-            ->view('pdfs.despache.a4', compact('despache'))
-            //->format(Format::A4)
-            ->name('despache.pdf');
+
     }
     public function note80mm(Invoice $invoice)
     {
@@ -79,10 +119,7 @@ class pdfController extends Controller
     }
     public function noteA4(Invoice $invoice)
     {
-        return pdf()
-            ->view('pdfs.invoice.a4', compact('invoice'))
-            ->format(Format::A4)
-            ->name('invoice.pdf');
+
     }
     public function stickerA5(Encomienda $encomienda)
     {
