@@ -1,282 +1,146 @@
+<!DOCTYPE html>
 <html>
+
 <head>
+    <meta charset="UTF-8">
+    <title>Factura A4</title>
     <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
         body {
-            font-family: sans-serif;
-            font-size: 10pt;
-        }
-        p {
-            margin: 0pt;
+            font-family: Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.3;
         }
 
-        table.items {
-            border: 0.1mm solid #000000;
+        .header {
+            width: 100%;
+            border: 1px solid #000;
+            padding: 10px;
+            margin-bottom: 20px;
         }
 
-        td {
-            vertical-align: top;
+        .logo {
+            width: 200px;
+            float: left;
         }
 
-        .items td {
-            border-left: 0.1mm solid #000000;
-            border-right: 0.1mm solid #000000;
-        }
-
-        table thead td {
-            background-color: #EEEEEE;
-            text-align: center;
-            border: 0.1mm solid #000000;
-            font-variant: small-caps;
-        }
-
-        .items td.blanktotal {
-            background-color: #EEEEEE;
-            border: 0.1mm solid #000000;
-            background-color: #FFFFFF;
-            border: 0mm none #000000;
-            border-top: 0.1mm solid #000000;
-            border-right: 0.1mm solid #000000;
-        }
-
-        .items td.totals {
+        .company-info {
+            float: right;
+            width: 60%;
             text-align: right;
-            border: 0.1mm solid #000000;
         }
 
-        .items td.cost {
-            text-align: "." center;
+        .document-type {
+            clear: both;
+            border: 2px solid #000;
+            padding: 10px;
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .customer-details {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .customer-details td {
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .items-table th,
+        .items-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .items-table th {
+            background-color: #f2f2f2;
+        }
+
+        .totals-table {
+            width: 40%;
+            float: right;
+            margin-top: 20px;
+        }
+
+        .totals-table td {
+            padding: 5px;
+            border: 1px solid #000;
+        }
+
+        .qr-section {
+            clear: both;
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #000;
+        }
+
+        .qr-code {
+            width: 100px;
+            margin: 0 auto;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 10pt;
+            border-top: 1px solid #000;
+            padding-top: 10px;
         }
     </style>
 </head>
 
 <body>
-
-    <!--mpdf
-<htmlpageheader name="myheader">
-<table width="100%"><tr>
-<td width="50%" style="color:#0000BB; "><span style="font-weight: bold; font-size: 14pt;">Acme Trading Co.</span><br />123 Anystreet<br />Your City<br />GD12 4LP<br /><span style="font-family:dejavusanscondensed;">&#9742;</span> 01777 123 567</td>
-<td width="50%" style="text-align: right;">Invoice No.<br /><span style="font-weight: bold; font-size: 12pt;">0012345</span></td>
-</tr></table>
-</htmlpageheader>
-
-<htmlpagefooter name="myfooter">
-<div style="border-top: 1px solid #000000; font-size: 9pt; text-align: center; padding-top: 3mm; ">
-Page {PAGENO} of {nb}
-</div>
-</htmlpagefooter>
-
-<sethtmlpageheader name="myheader" value="on" show-this-page="1" />
-<sethtmlpagefooter name="myfooter" value="on" />
-mpdf-->
-
-    <div style="text-align: right">Date: 13th November 2008</div>
-
-    <table width="100%" style="font-family: serif;" cellpadding="10">
+    <tr>
+        <td style="text-align: left">Gravada:</td>
+        <td style="text-align: right">S/ {{ number_format($ticket->valorVenta, 2) }}</td>
+    </tr>
+    <tr>
+        <td style="text-align: left">IGV (18%):</td>
+        <td style="text-align: right">S/ {{ number_format($ticket->mtoIGV, 2) }}</td>
+    </tr>
+    @if ($ticket->monto_descuento)
         <tr>
-            <td width="45%" style="border: 0.1mm solid #888888; "><span
-                    style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><br />345
-                Anotherstreet<br />Little Village<br />Their City<br />CB22 6SO</td>
-            <td width="10%">&nbsp;</td>
-            <td width="45%" style="border: 0.1mm solid #888888;"><span
-                    style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span><br /><br />345
-                Anotherstreet<br />Little Village<br />Their City<br />CB22 6SO</td>
+            <td style="text-align: left">Descuento:</td>
+            <td style="text-align: right">S/ {{ number_format($ticket->monto_descuento, 2) }}</td>
         </tr>
+    @endif
+    <tr>
+        <td style="text-align: left"><strong>Total:</strong></td>
+        <td style="text-align: right"><strong>S/
+                {{ number_format($ticket->mtoImpVenta - $ticket->monto_descuento, 2) }}</strong></td>
+    </tr>
     </table>
+    </div>
 
-    <br />
+    <div class="qr-code">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/500px-Codigo_QR.svg.png?20080824194905"
+            alt="Código QR">
+    </div>
 
-    <table class="items" width="100%" style="font-size: 9pt; border-collapse: collapse; " cellpadding="8">
-        <thead>
-            <tr>
-                <td width="15%">Ref. No.</td>
-                <td width="10%">Quantity</td>
-                <td width="45%">Description</td>
-                <td width="15%">Unit Price</td>
-                <td width="15%">Amount</td>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- ITEMS HERE -->
-            <tr>
-                <td align="center">MF1234567</td>
-                <td align="center">10</td>
-                <td>Large pack Hoover bags</td>
-                <td class="cost">&pound;2.56</td>
-                <td class="cost">&pound;25.60</td>
-            </tr>
-            <tr>
-                <td align="center">MX37801982</td>
-                <td align="center">1</td>
-                <td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-                <td class="cost">&pound;102.11</td>
-                <td class="cost">&pound;102.11</td>
-            </tr>
-            <tr>
-                <td align="center">MR7009298</td>
-                <td align="center">25</td>
-                <td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-                <td class="cost">&pound;12.26</td>
-                <td class="cost">&pound;325.60</td>
-            </tr>
-            <tr>
-                <td align="center">MF1234567</td>
-                <td align="center">10</td>
-                <td>Large pack Hoover bags</td>
-                <td class="cost">&pound;2.56</td>
-                <td class="cost">&pound;25.60</td>
-            </tr>
-            <tr>
-                <td align="center">MX37801982</td>
-                <td align="center">1</td>
-                <td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-                <td class="cost">&pound;102.11</td>
-                <td class="cost">&pound;102.11</td>
-            </tr>
-            <tr>
-                <td align="center">MR7009298</td>
-                <td align="center">25</td>
-                <td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-                <td class="cost">&pound;12.26</td>
-                <td class="cost">&pound;325.60</td>
-            </tr>
-            <tr>
-                <td align="center">MF1234567</td>
-                <td align="center">10</td>
-                <td>Large pack Hoover bags</td>
-                <td class="cost">&pound;2.56</td>
-                <td class="cost">&pound;25.60</td>
-            </tr>
-            <tr>
-                <td align="center">MX37801982</td>
-                <td align="center">1</td>
-                <td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-                <td class="cost">&pound;102.11</td>
-                <td class="cost">&pound;102.11</td>
-            </tr>
-            <tr>
-                <td align="center">MR7009298</td>
-                <td align="center">25</td>
-                <td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-                <td class="cost">&pound;12.26</td>
-                <td class="cost">&pound;325.60</td>
-            </tr>
-            <tr>
-                <td align="center">MF1234567</td>
-                <td align="center">10</td>
-                <td>Large pack Hoover bags</td>
-                <td class="cost">&pound;2.56</td>
-                <td class="cost">&pound;25.60</td>
-            </tr>
-            <tr>
-                <td align="center">MX37801982</td>
-                <td align="center">1</td>
-                <td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-                <td class="cost">&pound;102.11</td>
-                <td class="cost">&pound;102.11</td>
-            </tr>
-            <tr>
-                <td align="center">MR7009298</td>
-                <td align="center">25</td>
-                <td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-                <td class="cost">&pound;12.26</td>
-                <td class="cost">&pound;325.60</td>
-            </tr>
-            <tr>
-                <td align="center">MF1234567</td>
-                <td align="center">10</td>
-                <td>Large pack Hoover bags</td>
-                <td class="cost">&pound;2.56</td>
-                <td class="cost">&pound;25.60</td>
-            </tr>
-            <tr>
-                <td align="center">MX37801982</td>
-                <td align="center">1</td>
-                <td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-                <td class="cost">&pound;102.11</td>
-                <td class="cost">&pound;102.11</td>
-            </tr>
-            <tr>
-                <td align="center">MF1234567</td>
-                <td align="center">10</td>
-                <td>Large pack Hoover bags</td>
-                <td class="cost">&pound;2.56</td>
-                <td class="cost">&pound;25.60</td>
-            </tr>
-            <tr>
-                <td align="center">MX37801982</td>
-                <td align="center">1</td>
-                <td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-                <td class="cost">&pound;102.11</td>
-                <td class="cost">&pound;102.11</td>
-            </tr>
-            <tr>
-                <td align="center">MR7009298</td>
-                <td align="center">25</td>
-                <td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-                <td class="cost">&pound;12.26</td>
-                <td class="cost">&pound;325.60</td>
-            </tr>
-            <tr>
-                <td align="center">MR7009298</td>
-                <td align="center">25</td>
-                <td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-                <td class="cost">&pound;12.26</td>
-                <td class="cost">&pound;325.60</td>
-            </tr>
-            <tr>
-                <td align="center">MF1234567</td>
-                <td align="center">10</td>
-                <td>Large pack Hoover bags</td>
-                <td class="cost">&pound;2.56</td>
-                <td class="cost">&pound;25.60</td>
-            </tr>
-            <tr>
-                <td align="center">MX37801982</td>
-                <td align="center">1</td>
-                <td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-                <td class="cost">&pound;102.11</td>
-                <td class="cost">&pound;102.11</td>
-            </tr>
-            <tr>
-                <td align="center">MR7009298</td>
-                <td align="center">25</td>
-                <td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-                <td class="cost">&pound;12.26</td>
-                <td class="cost">&pound;325.60</td>
-            </tr>
-            <!-- END ITEMS HERE -->
-            <tr>
-                <td class="blanktotal" colspan="3" rowspan="6"></td>
-                <td class="totals">Subtotal:</td>
-                <td class="totals cost">&pound;1825.60</td>
-            </tr>
-            <tr>
-                <td class="totals">Tax:</td>
-                <td class="totals cost">&pound;18.25</td>
-            </tr>
-            <tr>
-                <td class="totals">Shipping:</td>
-                <td class="totals cost">&pound;42.56</td>
-            </tr>
-            <tr>
-                <td class="totals"><b>TOTAL:</b></td>
-                <td class="totals cost"><b>&pound;1882.56</b></td>
-            </tr>
-            <tr>
-                <td class="totals">Deposit:</td>
-                <td class="totals cost">&pound;100.00</td>
-            </tr>
-            <tr>
-                <td class="totals"><b>Balance due:</b></td>
-                <td class="totals cost"><b>&pound;1782.56</b></td>
-            </tr>
-        </tbody>
-    </table>
-
-
-    <div style="text-align: center; font-style: italic;">Payment terms: payment due in 30 days</div>
-
-
+    <div class="footer">
+        Gracias por su compra<br>
+        Políticas de Envío<br>
+        Corporación Logística Brayan Brush EIRL<br>
+        Usuario: {{ $ticket->encomienda->user->name }}
+    </div>
 </body>
 
 </html>

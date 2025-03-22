@@ -1,149 +1,200 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $ticket->serie }}-{{ $ticket->correlativo }}</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            margin: -50px 1px -50px -50px;
-            font-family: Verdana, Arial, Helvetica, sans-serif;
-            width: 340px;
-            /* Ampliado el ancho del body */
+            font-family: sans-serif;
+            font-size: 10pt;
         }
 
-        .ticket {
-            padding: 1rem 1rem 0 1rem;
-            /* Eliminado el padding inferior */
-            background-color: #ffffff;
-            box-shadow: 0 0 5px rgba(214, 10, 10, 0.1);
+        .header {
             text-align: center;
+            margin-bottom: 10px;
         }
 
-        .text-xs {
-            font-size: 0.75rem;
+        .logo {
+            max-width: 150px;
+            margin-bottom: 5px;
         }
 
-        .text-sm {
-            font-size: 0.875rem;
+        .company-info {
+            font-size: 10px;
+            margin-bottom: 10px;
         }
 
-        .font-weight-bold {
+        .ticket-number {
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 5px 0;
+            text-align: center;
             font-weight: bold;
         }
 
-        .table-sm {
-            font-size: 0.6rem;
+        .customer-info {
+            font-size: 10px;
+            margin: 4px 0;
+            border-bottom: 1px solid #000;
+            padding-top: 5px;
         }
 
-        p {
-            padding: 0;
-            margin: 0;
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            margin: 10px 0;
+        }
+
+        .items-table th,
+        .items-table td {
+            padding: 3px;
+            text-align: left;
+        }
+
+        .items-table th {
+            background-color: #f0f0f0;
+        }
+
+        .totals {
+            font-size: 10px;
+            text-align: right;
+            margin: 10px 0;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .qr-code img {
+            width: 100px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 9px;
+            margin-top: 10px;
+            border-top: 1px solid #000;
+            padding-top: 5px;
         }
     </style>
 </head>
 
 <body>
-    <div class="ticket">
-        <!-- Logo y datos de la empresa centrados -->
-        <div class="text-center">
-            <div class="text-xs">
-                <img src="./img/logo_format_ticket.jpg" alt="Infinity" width="200" height="w-auto h-16 mx-auto mb-2"
-                    alt="Logo de la Empresa">
-                <p class="font-weight-bold">BRAYAN BRUSH CORPORACION LOGISTICO</p>
-                <p>R.U.C.: {{ $ticket->company->ruc }}</p>
-                <p>{{ $ticket->encomienda->sucursal_remitente->address }}</p>
-                <p class="m-0">Telf: {{ $ticket->encomienda->sucursal_remitente->phone }}</p>
-                <p class="m-0">Email: {{ $ticket->encomienda->sucursal_remitente->email }}</p>
-            </div>
+    <div class="header">
+        <img src="./img/logo_format_ticket.jpg" alt="Logo" class="logo">
+        <div class="company-info">
+            <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
+            R.U.C.: {{ $ticket->company->ruc }}<br>
+            {{ $ticket->encomienda->sucursal_remitente->address }}<br>
+            Telf: {{ $ticket->encomienda->sucursal_remitente->phone }}<br>
+            Email: {{ $ticket->encomienda->sucursal_remitente->email }}
         </div>
-        <!-- Título de la Factura y Número de Serie en un recuadro -->
-        <div class="text-center border-top border-dark">
-            <h1 class="m-1 text-sm font-weight-bold">TICKET</h1>
-            <p class="m-1 text-sm font-weight-bold">{{ $ticket->serie }}</p>
-        </div>
-        <div class="text-center border-top border-dark">
-            <h1 class="m-1 text-sm font-weight-bold">{{ $ticket->encomienda->estado_pago }}</h1>
-        </div>
-        <section class="text-xs text-left border-top border-dark">
-            <p>Fecha Emisión: {{ $ticket->created_at->format('Y-m-d') }}</p>
-            <p>Fecha Traslado: {{ $ticket->updated_at->format('Y-m-d') }}</p>
-        </section>
-        <!-- Información del Cliente -->
-        <section class="text-xs text-left border-top border-dark">
-            <p>Razón Social: {{ $ticket->client->name }}</p>
-            <p>{{ strtoupper($ticket->client->type_code == 1? 'DNI' : 'RUC') }}: {{ $ticket->client->code }}</p>
-            @if ($ticket->client->address)
-                <p>Dirección: {{ $ticket->client->address }}</p>
-            @endif
+    </div>
 
-        </section>
-        <!-- Detalle de la Factura -->
-        <section class="mb-4">
-            <table class="table table-bordered table-sm">
-                <thead>
-                    <tr class="bg-light">
-                        <th class="px-2 py-1 text-left">Descripción</th>
-                        <th class="px-2 py-1 text-right">Cant</th>
-                        <th class="px-2 py-1 text-right">Precio</th>
-                        <th class="px-2 py-1 text-right">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($ticket->details as $detail)
-                        <tr>
-                            <td class="px-2 py-1 text-left">{{ $detail->descripcion }}</td>
-                            <td class="px-2 py-1 text-right">{{ $detail->cantidad }}</td>
-                            <td class="px-2 py-1 text-right">{{ $detail->mtoPrecioUnitario }}</td>
-                            <td class="px-2 py-1 text-right">
-                                {{ number_format($detail->mtoPrecioUnitario * $detail->cantidad, 2) }}
-                            </td>
-                        </tr>
-                    @empty
-                    @endforelse
-                </tbody>
-            </table>
-        </section>
-        <!-- Totales -->
-        <section class="mb-4 text-sm text-right">
-            <div class="d-flex justify-content-between border-top border-dark">
-                <span class="font-weight-bold">Gravada:</span>
-                <span>S/ {{ number_format($ticket->valorVenta, 2) }}</span>
-            </div>
-            <div class="d-flex justify-content-between">
-                <span class="font-weight-bold">IGV (18%):</span>
-                <span>S/ {{ number_format($ticket->mtoIGV, 2) }}</span>
-            </div>
+    <div class="ticket-number">
+        TICKET N° {{ $ticket->serie }}<br>
+        {{ $ticket->encomienda->estado_pago }}<br>
+    </div>
+    <div class="ticket-number">
+        @if ($ticket->isHome)
+            DOMICILIO
+        @else
+            AGENCIA
+        @endif
+    </div>
+
+    <div class="customer-info">
+        Fecha Emisión: {{ $ticket->created_at->format('Y-m-d') }}<br>
+        Fecha Traslado: {{ $ticket->updated_at->format('Y-m-d') }}<br>
+    </div>
+    <div class="customer-info">
+        <strong>DATOS REMITENTE</strong><br>
+        Razón Social: {{ $ticket->client->name }}<br>
+        {{ strtoupper($ticket->client->type_code == 1 ? 'DNI' : 'RUC') }}: {{ $ticket->client->code }}<br>
+        @if ($ticket->client->address)
+            Dirección: {{ $ticket->client->address }}
+        @endif
+    </div>
+    <div class="customer-info">
+        <strong>DATOS DESTINATARIO</strong><br>
+        Razón Social: {{ $ticket->encomienda->destinatario->name }}<br>
+        {{ strtoupper($ticket->encomienda->destinatario->type_code == 1 ? 'DNI' : 'RUC') }}:
+        {{ $ticket->client->code }}<br>
+        @if ($ticket->encomienda->destinatario->address)
+            Dirección: {{ $ticket->encomienda->destinatario->address }}
+        @endif
+    </div>
+    <div class="customer-info">
+        <strong>DATOS ENVIO</strong><br>
+        <strong>ORIGEN :<br></strong>{{ $ticket->encomienda->sucursal_remitente->address }}<br>
+        <strong>DESTINO:<br></strong>{{ $ticket->encomienda->sucursal_destinatario->address }}
+    </div>
+    <div class="customer-info">
+        <strong>TRANSPORTE</strong><br>
+        <strong>PLACA: :</strong>{{ $ticket->encomienda->vehiculo->name }}<br>
+        <strong>DESTINO:</strong>{{ $ticket->encomienda->vehiculo->marca }} -
+        {{ $ticket->encomienda->vehiculo->modelo }}
+    </div>
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th style="text-align: right">Cant</th>
+                <th style="text-align: right">Precio</th>
+                <th style="text-align: right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($ticket->details as $detail)
+                <tr>
+                    <td>{{ $detail->descripcion }}</td>
+                    <td style="text-align: right">{{ $detail->cantidad }}</td>
+                    <td style="text-align: right">{{ $detail->mtoPrecioUnitario }}</td>
+                    <td style="text-align: right">
+                        {{ number_format($detail->mtoPrecioUnitario * $detail->cantidad, 2) }}</td>
+                </tr>
+            @empty
+            @endforelse
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <table style="width: 100%">
+            <tr>
+                <td style="text-align: left">Gravada:</td>
+                <td style="text-align: right">S/ {{ number_format($ticket->valorVenta, 2) }}</td>
+            </tr>
+            <tr>
+                <td style="text-align: left">IGV (18%):</td>
+                <td style="text-align: right">S/ {{ number_format($ticket->mtoIGV, 2) }}</td>
+            </tr>
             @if ($ticket->monto_descuento)
-                <div class="d-flex justify-content-between">
-                    <span class="font-weight-bold">Descuento:</span>
-                    <span>S/ {{ number_format($ticket->monto_descuento, 2) }}</span>
-                </div>
+                <tr>
+                    <td style="text-align: left">Descuento:</td>
+                    <td style="text-align: right">S/ {{ number_format($ticket->monto_descuento, 2) }}</td>
+                </tr>
             @endif
-            <div class="pt-1 mt-1 d-flex justify-content-between font-weight-bold border-top border-dark">
-                <span>Total:</span>
-                <span>S/ {{ number_format($ticket->mtoImpVenta - $ticket->monto_descuento, 2) }}</span>
-            </div>
-        </section>
-        <!-- Código QR -->
-        <section class="mt-4 text-center">
-            <!-- Imagen de ejemplo para el código QR -->
-            <div class="d-flex justify-content-center">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/500px-Codigo_QR.svg.png?20080824194905"
-                    alt="Código QR" style="width: 100px;">
-            </div>
-        </section>
-        <!-- Pie de página -->
-        <footer class="mt-4 text-xs text-center">
-            <p>Gracias por su compra.</p>
-            Políticas de Envío
-            <br>
-            <span>Corporación Logística Brayan Brush EIRL</span>
-            <br>
-            <p>Usuario: {{ $ticket->encomienda->user->name }}</p>
-        </footer>
+            <tr>
+                <td style="text-align: left"><strong>Total:</strong></td>
+                <td style="text-align: right"><strong>S/
+                        {{ number_format($ticket->mtoImpVenta - $ticket->monto_descuento, 2) }}</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="qr-code">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/100px-Codigo_QR.svg.png?20080824194905"
+            alt="Código QR">
+    </div>
+
+    <div class="footer">
+        Gracias por su compra<br>
+        Políticas de Envío<br>
+        Corporación Logística Brayan Brush EIRL<br>
+        Usuario: {{ $ticket->encomienda->user->name }}
     </div>
 </body>
 

@@ -1,131 +1,167 @@
-<!DOCTYPE html>
-<html lang="es">
-
+<html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $despache->serie }}-{{ $despache->correlativo }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @page {
-            size: A4;
-            margin: 0;
-        }
-
         body {
-            margin: 0;
-            font-family: 'Arial', sans-serif;
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 10pt;
         }
-
-        .page {
-            padding: 1cm;
-            height: 297mm;
-            width: 210mm;
-            margin: auto;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-            background-color: #ffffff;
+        .container {
+            width: 100%;
         }
-
-        .bordered-box {
-            border: 1px solid #000;
-            padding: 1rem;
-            /* Doble del tamaño original */
+        .header-section {
+            border: 1px solid #333;
+            padding: 5mm;
+            margin-bottom: 5mm;
+        }
+        .logo-section {
+            display: inline-block;
+            width: 35%;
+            vertical-align: top;
+        }
+        .company-section {
+            display: inline-block;
+            width: 60%;
+            text-align: right;
+            vertical-align: top;
+        }
+        .invoice-title {
+            border: 2px solid #333;
             text-align: center;
-            width: 300px;
-            /* Ancho fijo para mantener el diseño */
+            padding: 2mm;
+            margin: 5mm 0;
+            font-weight: bold;
+            font-size: 12pt;
+        }
+        .client-info {
+            width: 100%;
+            margin-bottom: 5mm;
+            border-collapse: collapse;
+        }
+        .client-info td {
+            padding: 2mm;
+            border-bottom: 0.1mm solid #ccc;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5mm;
+        }
+        .items-table th, 
+        .items-table td {
+            border: 0.1mm solid #333;
+            padding: 2mm;
+        }
+        .items-table th {
+            background-color: #f0f0f0;
+        }
+        .totals {
+            width: 35%;
+            float: right;
+            margin-top: 5mm;
+            border-collapse: collapse;
+        }
+        .totals td {
+            border: 0.1mm solid #333;
+            padding: 2mm;
+        }
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 8pt;
+            border-top: 0.1mm solid #333;
+            padding-top: 2mm;
         }
     </style>
 </head>
-
 <body>
-    <div class="bg-white page">
-        <!-- Header -->
-        <header class="mb-2">
-            <div class="flex items-center justify-between">
-                <!-- Logo y datos de la empresa -->
-                <div class="flex items-center">
-                    <div class="text-xs text-center">
-                        <img src="{{ env('APP_URL') }}/{{ $despache->company->logo_path }}" alt="Logo" class="w-48 h-18">
-                        <p>{{ $despache->company->address }}</p>
-                        <p>Email:{{ $despache->company->email }}- Telf: {{ $despache->company->telephone }}</p>
-                    </div>
-                </div>
-                <!-- Título de la Factura, Serie y Correlativo en un recuadro -->
-                <div class="bordered-box">
-                    <h1 class="text-lg">R.U.C. {{ $despache->company->ruc }}</h1>
-                    <h1 class="text-lg font-semibold">{{ $despache->tipoDoc ? 'FACTURA ELECTRONICA' : 'BOLETA
-                        ELECTRONICA' }}</h1>
-                    <p class="text-md">{{ $despache->serie }}-{{ $despache->correlativo }}</p>
-                </div>
+    <div class="container">
+        <div class="header-section">
+            <div class="logo-section">
+                <img src="{{ public_path('images/logo.png') }}" style="width: 150px;">
             </div>
-        </header>
-        <!-- Información del Cliente -->
-        <section class="mb-1">
-            <div class="text-sm text-left">
-                <p>Razón Social: {{ $despache->client->name }}</p>
-                <p>{{ strtoupper($despache->client->type_code) }}: {{ $despache->client->code }}</p>
-                <p>Dirección: {{ $despache->client->address }}</p> 
+            <div class="company-section">
+                <h2 style="margin: 0;">EMPRESA S.A.C</h2>
+                <p style="margin: 2mm 0;">RUC: 20123456789</p>
+                <p style="margin: 2mm 0;">Av. Principal 123, Lima</p>
+                <p style="margin: 2mm 0;">Teléfono: (01) 123-4567</p>
             </div>
-        </section>
+        </div>
 
-        <!-- Detalle de la Factura -->
-        <section class="mb-2">
-            <table class="w-full text-sm border-collapse">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="px-2 py-1 text-left border">Descripción</th>
-                        <th class="px-2 py-1 text-right border">Cantidad</th>
-                        <th class="px-2 py-1 text-right border">Precio Unitario (S/.)</th>
-                        <th class="px-2 py-1 text-right border">Total (S/.)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($despache->details as $detail)
-                    <tr>
-                        <td class="px-2 py-1 border">{{ $detail->descripcion }}</td>
-                        <td class="px-2 py-1 text-right border">{{ $detail->cantidad }}</td>
-                        <td class="px-2 py-1 text-right border">{{ $detail->mtoPrecioUnitario }}</td>
-                        <td class="px-2 py-1 text-right border">{{ number_format($detail->mtoPrecioUnitario *
-                            $detail->cantidad,2) }}</td>
-                    </tr>
-                    @empty
+        <div class="invoice-title">
+            FACTURA ELECTRÓNICA<br>
+            F001-000001
+        </div>
 
-                    @endforelse
-
-                </tbody>
+        <table class="client-info">
+            <tr>
+                <td width="15%"><strong>Cliente:</strong></td>
+                <td width="35%">Juan Pérez</td>
+                <td width="15%"><strong>Fecha:</strong></td>
+                <td width="35%">01/01/2024</td>
+            </tr>
+            <tr>
+            <tr>
+                <td><strong>Dirección:</strong></td>
+                <td>Av. Central 123, Lima</td>
+                <td><strong>Condición:</strong></td>
+                <td>Contado</td>
+            </tr>
+            <tr>
+                <td><strong>Teléfono:</strong></td>
+                <td>(01) 987-6543</td>
+                <td><strong>Placa:</strong></td>
+                <td>ABC-123</td>
+            </tr>
+        </table>
+        <table class="items-table">
+            <thead>
+                <tr></tr>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Producto 1</td>
+                    <td>2</td>
+                    <td>S/ 10.00</td>
+                    <td>S/ 20.00</td>
+                </tr>
+                <tr></tr>
+                    <td>Producto 2</td>
+                    <td>1</td>
+                    <td>S/ 15.00</td>
+                    <td>S/ 15.00</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="totals">
+            <table style="width: 100%">
+                <tr>
+                    <td style="text-align: left">Gravada:</td>
+                    <td style="text-align: right">S/ {{ number_format($ticket->valorVenta, 2) }}</td>
+                </tr>
+                <tr></tr>
+                    <td style="text-align: left">Igv:</td>
+                    <td style="text-align: right">S/ {{ number_format($ticket->valorIgv, 2) }}</td>
+                </tr>
+                <tr></tr>
+                    <td style="text-align: left">Total:</td>
+                    <td style="text-align: right">S/ 1222.00</td>
+                </tr>
             </table>
-        </section>
-
-        <!-- Totales -->
-        <section class="mt-4">
-            <div class="flex justify-end">
-                <div class="w-1/3">
-                    <div class="flex justify-between border-t border-gray-400">
-                        <span class="font-semibold">Gravada:</span>
-                        <span>S/ {{ $despache->valorVenta }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="font-semibold">IGV (18%):</span>
-                        <span>S/ {{ $despache->mtoIGV }}</span>
-                    </div>
-                    <div class="flex justify-between pt-2 mt-2 font-semibold border-t border-gray-400">
-                        <span>TOTAL:</span>
-                        <span>S/ {{ $despache->mtoImpVenta }}</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- Código QR -->
-        <section class="mt-6">
-            <!-- Imagen de ejemplo para el código QR -->
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/500px-Codigo_QR.svg.png?20080824194905" alt="Código QR" class="w-32 mx-auto">
-        </section>
-        <!-- Pie de página -->
-        <footer class="mt-6 text-xs text-center">
-            <p>Gracias por su compra.</p>
-            <p>Esta factura ha sido generada según las normas peruanas.</p>
-        </footer>
+        </div>
+        <div class="footer">
+            Gracias por su compra<br>
+            Políticas de Envío<br>
+            Corporación Logística Brayan Brush EIRL<br>
+            Usuario: Abel Arana
+        </div>
     </div>
 </body>
-
 </html>

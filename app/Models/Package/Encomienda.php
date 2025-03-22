@@ -41,15 +41,15 @@ class Encomienda extends Model
 
         'estado_pago', //PAGADO , CONTRA ENTREGA
         'tipo_pago', // Contado, Credito
-        'metodo_pago',// Efectivo, Yape, Tarjeta, Trasnferencia
-        'tipo_comprobante',// TICKET, FACTURA, BOLETA
+        'metodo_pago', // Efectivo, Yape, Tarjeta, Trasnferencia
+        'tipo_comprobante', // TICKET, FACTURA, BOLETA
 
-        'estado_cretido',// Pendiente, Pagado
+        'estado_cretido', // Pendiente, Pagado
 
         'doc_traslado',
         'glosa',
         'observation',
-        'estado_encomienda',//REGISTRADO, ENVIADO,RECIBIDO,RETORNADO, ENTREGADO
+        'estado_encomienda', //REGISTRADO, ENVIADO,RECIBIDO,RETORNADO, ENTREGADO
         'pin',
         'isTransbordo',
         'isHome',
@@ -106,5 +106,4 @@ class Encomienda extends Model
     {
         return $this->hasOne(Despatche::class);
     }
-
 }
