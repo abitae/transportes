@@ -200,6 +200,9 @@ trait InvoiceTrait
             'monto_letras' => $monto_letras,
             'setPercent' => 12,
             'setMount' => $montoTotalIncIGV * 0.12,
+            'mtoIGV' => $igv,
+            'valorVenta' => $mtoOperGravadas,
+            'mtoImpVenta' => $montoTotalIncIGV,
 
         ]);
         $encomienda->doc_guia = $despatch->id;

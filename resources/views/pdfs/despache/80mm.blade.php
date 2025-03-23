@@ -1,219 +1,194 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $despache->serie }}-{{ $despache->correlativo }}</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com/css?family=Inconsolata">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <style>
         body {
-            margin: -50px 1px -50px -50px;
             font-family: sans-serif;
-            width: 340px;
-            /* Ampliado el ancho del body */
+            font-size: 10pt;
         }
 
-        .despache {
-            padding: 1rem 1rem 0 1rem;
-            /* Eliminado el padding inferior */
+        .header {
             text-align: center;
+            margin-bottom: 10px;
         }
 
-        .text-xs {
-            font-size: 0.75rem;
+        .logo {
+            max-width: 150px;
+            margin-bottom: 5px;
         }
 
-        .text-sm {
-            font-size: 0.875rem;
+        .company-info {
+            font-size: 10px;
+            margin-bottom: 10px;
         }
 
-        .font-weight-bold {
+        .despache-number {
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 5px 0;
+            text-align: center;
             font-weight: bold;
         }
 
-        .table-sm {
-            font-size: 0.6rem;
+        .customer-info {
+            font-size: 10px;
+            margin: 4px 0;
+            border-bottom: 1px solid #000;
+            padding-top: 5px;
         }
 
-        p {
-            padding: 0;
-            margin: 0;
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            margin: 10px 0;
         }
 
-        .cuadrado {
-            width: 310px;
-            height: 0;
-            padding-top: 25%;
-            position: relative;
-            border: 1px solid black;
+        .items-table th,
+        .items-table td {
+            padding: 3px;
+            text-align: left;
+        }
+
+        .items-table th {
+            background-color: #f0f0f0;
+        }
+
+        .totals {
+            font-size: 10px;
+            text-align: right;
+            margin: 10px 0;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .qr-code img {
+            width: 100px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 9px;
+            margin-top: 10px;
+            border-top: 1px solid #000;
+            padding-top: 5px;
         }
     </style>
 </head>
 
 <body>
-    <div class="despache">
-        <!-- Logo y datos de la empresa centrados -->
-        <div class="text-center">
-            <div class="text-xs">
-                <img src="./img/logo_format_ticket.jpg" alt="Infinity" width="200" height="w-auto h-16 mx-auto mb-2"
-                    alt="Logo de la Empresa">
-                <p class="font-weight-bold">BRAYAN BRUSH CORPORACION LOGISTICO</p>
-                <p>R.U.C.: {{ $despache->company->ruc }}</p>
-                <p>{{ $despache->encomienda->sucursal_remitente->address }}</p>
-                <p class="m-0">Telf: {{ $despache->encomienda->sucursal_remitente->telephone }}</p>
-                <p class="m-0">Email: {{ $despache->encomienda->sucursal_remitente->email }}</p>
-                <P>N°Reg.MTC : 1553682 CNG</P>
-            </div>
+    <div class="header">
+        <img src="./img/logo_format_ticket.jpg" alt="Logo" class="logo">
+        <div class="company-info">
+            <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
+            R.U.C.: {{ $despache->company->ruc }}<br>
+            {{ $despache->encomienda->sucursal_remitente->address }}<br>
+            Telf: {{ $despache->encomienda->sucursal_remitente->phone }}<br>
+            Email: {{ $despache->encomienda->sucursal_remitente->email }}
         </div>
-        <!-- Título de la Factura y Número de Serie en un recuadro -->
-        <div class="text-center border-top border-dark">
-            <h1 class="m-1 text-sm font-weight-bold">GUIA REMICION TRANSPORTISTA</h1>
-            <p class="m-1 text-sm font-weight-bold">{{ $despache->serie }} - {{ $despache->correlativo }}</p>
-        </div>
-        <section class="text-xs text-left border-top border-dark">
-            <p>Fecha Emición: {{ $despache->fechaEmision }}</p>
-            <p>Fecha Traslado: {{ $despache->fecTraslado }}</p>
-        </section>
-        <!-- Información del Cliente -->
-        <section class="text-xs text-left border-top border-dark">
-            <p class="font-weight-bold">DATOS REMITENTE</p>
-            <p>{{ $despache->remitente->type_code == 1 ? 'DNI': 'RUC' }}: {{ $despache->remitente->code }}</p>
-            <p>{{ $despache->remitente->name }}</p>
-            <p>{{ $despache->remitente->address }}</p>
-            <p>Tel:{{ $despache->remitente->phone }}</p>
-        </section>
-        <section class="text-xs text-left border-top border-dark">
-            <p class="font-weight-bold">DATOS DESTINATARIO</p>
-            <p>{{ $despache->destinatario->type_code == 1 ? 'DNI': 'RUC' }}: {{ $despache->destinatario->code }}</p>
-            <p>{{ $despache->destinatario->name }}</p>
-            <p>{{ $despache->destinatario->address }}</p>
-            <p>Tel:{{ $despache->destinatario->phone }}</p>
-            <!-- Detalle de la Factura -->
-            <section class="text-xs text-left border-top border-dark">
-                <p>ORIGEN:{{ $despache->encomienda->sucursal_remitente->address }}</p>
-                <p>DESTINO:{{ $despache->encomienda->sucursal_destinatario->address }}</p>
-            </section>
-            <section class="text-xs text-left border-top border-dark">
-                <p class="font-weight-bold">TRANSPORTE</p>
-                <p>Placa:{{ $despache->encomienda->vehiculo->name }}</p>
-                <p>{{ $despache->encomienda->vehiculo->marca }} - {{ $despache->encomienda->vehiculo->modelo }}</p>
-            </section>
-            <section class="text-xs text-left border-top border-dark">
-                <p class="font-weight-bold">CONDUCTOR</p>
-                <p>Nombre: {{ $despache->encomienda->transportista->name }}</p>
-                <p>DNI: {{ $despache->encomienda->transportista->dni }}</p>
-                <section class="text-xs text-left border-b border-top border-dark">
-                    <p class="font-weight-bold">ENTREGA</p>
-                    @if ($despache->isHome)
-                    <p>{{ $despache->destinatario->address }}</p>
-                    @else
-                    <p>RECOJO EN AGENCIA</p>
-                    @endif
-                </section>
-                <section class="text-xs text-left border-top border-dark">
-                    <p class="text-center font-weight-bold">FORMA DE PAGO</p>
-                    <p class="text-center font-weight-bold">{{ $despache->encomienda->estado_pago }}</p>
-                </section>
-                <section class="mb-4">
-                    <table class="table table-bordered table-sm">
-                        <thead>
-                            <tr class="bg-light">
-                                <th class="px-2 py-1 text-left">Descripción</th>
-                                <th class="px-2 py-1 text-right">Cant</th>
-                                <th class="px-2 py-1 text-right">Und</th>
-                                <th class="px-2 py-1 text-right">Precio</th>
-                                <th class="px-2 py-1 text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($despache->details as $detail)
-                            <tr>
-                                <td class="px-2 py-1 text-left">{{ $detail->descripcion }}</td>
-                                <td class="px-2 py-1 text-right">{{ $detail->cantidad }}</td>
-                                <td class="px-2 py-1 text-right">{{ $detail->unidad }}</td>
-                                <td class="px-2 py-1 text-right">{{ $detail->mtoPrecioUnitario }}</td>
-                                <td class="px-2 py-1 text-right">{{ number_format($detail->mtoPrecioUnitario *
-                                    $detail->cantidad,2) }}</td>
-                            </tr>
-                            @empty
-                            @endforelse
-                        </tbody>
-                    </table>
-                </section>
-                <!-- Totales -->
-                <section class="mb-4 text-sm text-right">
-                    <div class="d-flex justify-content-between border-top border-dark">
-                        <span class="font-weight-bold">Gravada:</span>
-                        <span>S/ {{ $despache->valorVenta }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span class="font-weight-bold">IGV (18%):</span>
-                        <span>S/ {{ $despache->mtoIGV }}</span>
-                    </div>
-                    <div class="pt-1 mt-1 d-flex justify-content-between font-weight-bold border-top border-dark">
-                        <span>Total:</span>
-                        <span>S/ {{ $despache->mtoImpVenta }}</span>
-                    </div>
-                </section>
-                <div>
-                    <p>User: {{ $despache->encomienda->user->name ?? 'Nombre' }}</p>
-                </div>
-                <div class="cuadrado">
-                    <p class="text-xs">FIRMA</p>
+    </div>
 
-                </div>
-                <!-- Código QR -->
-                <section class="mt-4 text-center">
-                    <!-- Imagen de ejemplo para el código QR -->
-                    <div class="d-flex justify-content-center">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/500px-Codigo_QR.svg.png?20080824194905"
-                            alt="Código QR" style="width: 100px;">
-                    </div>
-                </section>
-                <!-- Pie de página -->
-                <footer class="mt-4 text-xs text-center">
-                    <p>Gracias por su compra.</p>
-                    Políticas de Envío
-                    <br>
-                    <span>Corporación Logística Brayan Brush EIRL</span>
-                    <br>
-                    <section class="text-xs text-left border-top border-dark" style="text-align: justify;">
-                        <p>• El cliente debe proporcionar una dirección completa y un número de teléfono válido. Si no
-                            es posible contactar al destinatario o la dirección es incorrecta, el paquete será devuelto
-                            a nuestros almacenes.</p>
-                        <p>• Después de dos intentos fallidos, el envío será devuelto a nuestros almacenes. El cliente
-                            deberá coordinar el retiro o solicitar un nuevo envío, sujeto a costos adicionales.</p>
-                        <p>• Si el cliente requiere una entrega fuera del horario de 9 a.m. a 6 p.m., debe coordinarlo
-                            previamente. Este servicio está sujeto a disponibilidad y costos adicionales.</p>
-                        <p>• El destinatario puede autorizar a un tercero para recoger la encomienda, siempre que
-                            presente su DNI y la carta poder correspondiente.</p>
-                        <p>• El cliente puede optar por retirar su encomienda en un punto de recogida, acelerando el
-                            proceso y reduciendo riesgos.</p>
-                        <p>• En los envíos contra entrega, el cliente debe realizar el pago antes de recibir el paquete.
-                        </p>
-                        <p>• Si el envío no se recoge en 30 días, la empresa no se hará responsable. Desde el tercer
-                            día, se cobrará 5 soles por día de almacenamiento.</p>
-                        <p>• La empresa no verifica el contenido de los envíos. Es responsabilidad del cliente
-                            asegurarse de que los paquetes estén correctamente empaquetados.</p>
-                        <p>• Si el paquete llega dañado, debe ser revisado y grabado en el momento de la entrega. La
-                            empresa no se hace responsable si el daño es por mal embalaje.</p>
-                        <p>• Si no se recoge un envío con retorno de cargo en 60 días, no habrá regularización
-                            pendiente.</p>
-                        <p>• En caso de extravío, se realizará una conciliación con el destinatario.</p>
-                        <p>• Los reclamos por daños o pérdidas deben presentarse en 3 días hábiles con boleta/factura y
-                            la guía de remisión.</p>
-                        <p>• Recuperar el código de envío tiene un costo de 10 soles y puede tomar entre 1 y 24 horas.
-                        </p>
-                        <p>• Se requiere presentar el DNI físico y el código de verificación para retirar el paquete.
-                        </p>
-                        <p>• La empresa no se responsabiliza por retrasos causados por factores externos como clima o
-                            bloqueos de carreteras.</p>
-                    </section>
-                </footer>
+    <div class="despache-number">
+        GUIA DE REMISION ELECTRONICA<br>
+        {{ $despache->serie }} - {{ $despache->correlativo }}<br>
+    </div>
+    <div class="despache-number">
+        @if ($despache->isHome)
+            DOMICILIO
+        @else
+            AGENCIA
+        @endif
+    </div>
+
+    <div class="customer-info">
+        Fecha Emisión: {{ $despache->created_at->format('Y-m-d') }}<br>
+        Fecha Traslado: {{ $despache->updated_at->format('Y-m-d') }}<br>
+    </div>
+    <div class="customer-info">
+        <strong>DATOS REMITENTE</strong><br>
+        Razón Social: {{ $despache->remitente->name }}<br>
+        {{ strtoupper($despache->remitente->type_code == 1 ? 'DNI' : 'RUC') }}: {{ $despache->remitente->code }}<br>
+        @if ($despache->remitente->address)
+            Dirección: {{ $despache->remitente->address }}
+        @endif
+    </div>
+    <div class="customer-info">
+        <strong>DATOS DESTINATARIO</strong><br>
+        Razón Social: {{ $despache->destinatario->name }}<br>
+        {{ strtoupper($despache->destinatario->type_code == 1 ? 'DNI' : 'RUC') }}:
+        {{ $despache->destinatario->code }}<br>
+        @if ($despache->destinatario->address)
+            Dirección: {{ $despache->destinatario->address }}
+        @endif
+    </div>
+    <div class="customer-info">
+        <strong>DATOS ENVIO</strong><br>
+        <strong>ORIGEN :<br></strong>{{ $despache->encomienda->sucursal_remitente->address }}<br>
+        <strong>DESTINO:<br></strong>{{ $despache->encomienda->sucursal_destinatario->address }}
+    </div>
+    <div class="customer-info">
+        <strong>TRANSPORTE</strong><br>
+        <strong>PLACA: :</strong>{{ $despache->encomienda->vehiculo->name }}<br>
+        <strong>DESTINO:</strong>{{ $despache->encomienda->vehiculo->marca }} -
+        {{ $despache->encomienda->vehiculo->modelo }}
+    </div>
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th style="text-align: right">Cant</th>
+                <th style="text-align: right">Precio</th>
+                <th style="text-align: right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($despache->details as $detail)
+                <tr>
+                    <td>{{ $detail->descripcion }}</td>
+                    <td style="text-align: right">{{ $detail->cantidad }}</td>
+                    <td style="text-align: right">{{ $detail->mtoPrecioUnitario }}</td>
+                    <td style="text-align: right">
+                        {{ number_format($detail->mtoPrecioUnitario * $detail->cantidad, 2) }}</td>
+                </tr>
+            @empty
+            @endforelse
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <table style="width: 100%">
+            <tr>
+                <td style="text-align: left">Gravada:</td>
+                <td style="text-align: right">S/ {{ number_format($despache->valorVenta, 2) }}</td>
+            </tr>
+            <tr>
+                <td style="text-align: left">IGV (18%):</td>
+                <td style="text-align: right">S/ {{ number_format($despache->mtoIGV, 2) }}</td>
+            </tr>
+            <tr>
+                <td style="text-align: left"><strong>Total:</strong></td>
+                <td style="text-align: right"><strong>S/
+                        {{ number_format($despache->mtoImpVenta, 2) }}</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="qr-code">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/100px-Codigo_QR.svg.png?20080824194905"
+            alt="Código QR">
+    </div>
+
+    <div class="footer">
+        Gracias por su compra<br>
+        Políticas de Envío<br>
+        Corporación Logística Brayan Brush EIRL<br>
+        Usuario: {{ $despache->encomienda->user->name }}
     </div>
 </body>
 

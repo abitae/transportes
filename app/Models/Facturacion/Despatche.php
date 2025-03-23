@@ -42,7 +42,9 @@ class Despatche extends Model
         'cdr_code',
         'cdr_note',
         'cdr_path',
-        
+        'mtoIGV',
+        'valorVenta',
+        'mtoImpVenta',
         'monto_letras',
         'setPercent',
         'setMount',

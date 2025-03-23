@@ -1,141 +1,165 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $invoice->serie }}-{{ $invoice->correlativo }}</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            margin: -50px 1px -50px -50px;
-            font-family: 'Arial', sans-serif;
-            width: 340px;
-            /* Ampliado el ancho del body */
-        }|
+            font-family: sans-serif;
+            font-size: 10pt;
+        }
 
-        .invoice {
-            padding: 1rem 1rem 0 1rem;
-            /* Eliminado el padding inferior */
-            background-color: #ffffff;
-            box-shadow: 0 0 5px rgba(214, 10, 10, 0.1);
+        .header {
             text-align: center;
+            margin-bottom: 10px;
         }
 
-        .text-xs {
-            font-size: 0.75rem;
+        .logo {
+            max-width: 150px;
+            margin-bottom: 5px;
         }
 
-        .text-sm {
-            font-size: 0.875rem;
+        .company-info {
+            font-size: 10px;
+            margin-bottom: 10px;
         }
 
-        .font-weight-bold {
+        .invoice-number {
+            border-top: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 5px 0;
+            text-align: center;
             font-weight: bold;
         }
 
-        .table-sm {
-            font-size: 0.6rem;
+        .customer-info {
+            font-size: 10px;
+            margin: 4px 0;
+            border-bottom: 1px solid #000;
+            padding-top: 5px;
         }
 
-        p {
-            padding: 0;
-            margin: 0;
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            margin: 10px 0;
         }
-        .despache {
-            padding: 1rem 1rem 0 1rem;
-            /* Eliminado el padding inferior */
-            background-color: #ffffff;
-            box-shadow: 0 0 5px rgba(214, 10, 10, 0.1);
+
+        .items-table th,
+        .items-table td {
+            padding: 3px;
+            text-align: left;
+        }
+
+        .items-table th {
+            background-color: #f0f0f0;
+        }
+
+        .totals {
+            font-size: 10px;
+            text-align: right;
+            margin: 10px 0;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+        }
+
+        .qr-code {
             text-align: center;
+            margin: 10px 0;
+        }
+
+        .qr-code img {
+            width: 100px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 9px;
+            margin-top: 10px;
+            border-top: 1px solid #000;
+            padding-top: 5px;
         }
     </style>
 </head>
 
 <body>
-    <div class="despache">
-        <!-- Logo y datos de la empresa centrados -->
-        <div class="text-center">
-            <div class="text-xs">
-                <img src="./img/logo_format_ticket.jpg" alt="Infinity" width="200" height="w-auto h-16 mx-auto mb-2" alt="Logo de la Empresa">
-                <p class="font-weight-bold">BRAYAN BRUSH CORPORACION LOGISTICO</p>
-                <p>R.U.C.: {{ $invoice->company->ruc }}</p>
-                <p>{{ $invoice->company->address }}</p>
-                <p class="m-0">Telf: {{ $invoice->company->telephone }}</p>
-                <p class="m-0">Email: {{ $invoice->company->email }}</p>
-            </div>
+    <div class="header">
+        <img src="./img/logo_format_ticket.jpg" alt="Logo" class="logo">
+        <div class="company-info">
+            <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
+            R.U.C.: {{ $invoice->company->ruc }}<br>
+            {{ $invoice->sucursal->address }}<br>
+            Telf: {{ $invoice->sucursal->phone }}<br>
+            Email: {{ $invoice->sucursal->email }}
         </div>
-        <!-- Título de la Factura y Número de Serie en un recuadro -->
-        <div class="text-center border-top border-dark">
-            <h1 class="m-1 text-sm font-weight-bold">{{ $invoice->tipoDoc=='03' ? 'BOLETA ELECTRONICA' : 'FACTURA ELECTRONICA' }}</h1>
-            <p class="m-1 text-sm font-weight-bold">{{ $invoice->serie }} - {{ $invoice->correlativo }}</p>
-        </div>
-        <section class="text-xs text-left border-top border-dark">
-            <p>Fecha Emición: {{ $invoice->fechaEmision }}</p>
-        </section>
-        <!-- Información del Cliente -->
-        <section class="text-xs text-left border-top border-dark">
-            <p>Razón Social: {{ $invoice->client->name }}</p>
-            <p>{{ strtoupper($invoice->client->type_code == '6' ? 'RUC' : 'DNI') }}: {{ $invoice->client->code }}</p>
-            <p>Dirección: {{ $invoice->client->address }}</p>
-        </section>
-        <!-- Detalle de la Factura -->
-        <section class="mb-4">
-            <table class="table table-bordered table-sm">
-                <thead>
-                    <tr class="bg-light">
-                        <th class="px-2 py-1 text-left">Descripción</th>
-                        <th class="px-2 py-1 text-right">Cant</th>
-                        <th class="px-2 py-1 text-right">Precio</th>
-                        <th class="px-2 py-1 text-right">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($invoice->details as $detail)
-                    <tr>
-                        <td class="px-2 py-1 text-left">{{ $detail->descripcion }}</td>
-                        <td class="px-2 py-1 text-right">{{ $detail->cantidad }}</td>
-                        <td class="px-2 py-1 text-right">{{ $detail->mtoPrecioUnitario }}</td>
-                        <td class="px-2 py-1 text-right">{{ number_format($detail->mtoPrecioUnitario *
-                            $detail->cantidad,2) }}</td>
-                    </tr>
-                    @empty
-                    @endforelse
-                </tbody>
-            </table>
-        </section>
-        <!-- Totales -->
-        <section class="mb-4 text-sm text-right">
-            <div class="d-flex justify-content-between border-top border-dark">
-                <span class="font-weight-bold">Gravada:</span>
-                <span>S/ {{ $invoice->valorVenta }}</span>
-            </div>
-            <div class="d-flex justify-content-between">
-                <span class="font-weight-bold">IGV (18%):</span>
-                <span>S/ {{ $invoice->mtoIGV }}</span>
-            </div>
-            <div class="pt-1 mt-1 d-flex justify-content-between font-weight-bold border-top border-dark">
-                <span>Total:</span>
-                <span>S/ {{ $invoice->mtoImpVenta }}</span>
-            </div>
-        </section>
-        <!-- Código QR -->
-        <section class="mt-4 text-center">
-            <!-- Imagen de ejemplo para el código QR -->
-            <div class="d-flex justify-content-center">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/500px-Codigo_QR.svg.png?20080824194905"
-                    alt="Código QR" style="width: 100px;">
-            </div>
-        </section>
-        <!-- Pie de página -->
-        <footer class="mt-4 text-xs text-center">
-            <p>Gracias por su compra.</p>
-            Políticas de Envío
-            <br>
-            <span>Corporación Logística Brayan Brush EIRL</span>
-            <br>
-            <!-- ...existing policy text... -->
-        </footer>
+    </div>
+
+    <div class="invoice-number">
+        {{ $invoice->tipoDoc == '01' ? 'FACTURA ELECTRONICA' : 'BOLETA ELECTRONICA' }}<br>
+        {{ $invoice->serie }} - {{ $invoice->correlativo }}
+    </div>
+    <div class="customer-info">
+        Fecha Emisión: {{ $invoice->created_at->format('Y-m-d') }}<br>
+    </div>
+    <div class="customer-info">
+        <strong>DATOS CLIENTE</strong><br>
+        Razón Social: {{ $invoice->client->name }}<br>
+        {{ strtoupper($invoice->client->type_code == 1 ? 'DNI' : 'RUC') }}: {{ $invoice->client->code }}<br>
+        @if ($invoice->client->address)
+            Dirección: {{ $invoice->client->address }}
+        @endif
+    </div>
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Descripción</th>
+                <th style="text-align: right">Cant</th>
+                <th style="text-align: right">Precio</th>
+                <th style="text-align: right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($invoice->details as $detail)
+                <tr>
+                    <td>{{ $detail->descripcion }}</td>
+                    <td style="text-align: right">{{ $detail->cantidad }}</td>
+                    <td style="text-align: right">{{ $detail->mtoPrecioUnitario }}</td>
+                    <td style="text-align: right">
+                        {{ number_format($detail->mtoPrecioUnitario * $detail->cantidad, 2) }}</td>
+                </tr>
+            @empty
+            @endforelse
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <table style="width: 100%">
+            <tr>
+                <td style="text-align: left">Gravada:</td>
+                <td style="text-align: right">S/ {{ number_format($invoice->valorVenta, 2) }}</td>
+            </tr>
+            <tr>
+                <td style="text-align: left">IGV (18%):</td>
+                <td style="text-align: right">S/ {{ number_format($invoice->mtoIGV, 2) }}</td>
+            </tr>
+            <tr>
+                <td style="text-align: left"><strong>Total:</strong></td>
+                <td style="text-align: right"><strong>S/
+                        {{ number_format($invoice->mtoImpVenta, 2) }}</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="qr-code">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/100px-Codigo_QR.svg.png?20080824194905"
+            alt="Código QR">
+    </div>
+
+    <div class="footer">
+        Gracias por su compra<br>
+        Políticas de Envío<br>
+        Corporación Logística Brayan Brush EIRL<br>
+        Usuario: {{ $invoice->encomienda->user->name ?? Auth::user()->name }}
     </div>
 </body>
 
