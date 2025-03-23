@@ -32,7 +32,7 @@ class ReturnPackageLive extends Component
     public $title = 'ENTREGA PAQUETES CON RETORNO';
     public $sub_title = 'Modulo de entrega de paquetes con retorno';
     public $search = '';
-    public $perPage = 10;
+    public $perPage = 100;
     public $filtroFechaInicio;
     public int $sucursal_id;
     public $filtroFechaFin;

@@ -31,7 +31,7 @@ class HomePackageLive extends Component
     public $title = 'ENTREGA PAQUETES DOMICILIO';
     public $sub_title = 'Modulo de entrega de paquetes a domicilio';
     public $search = '';
-    public $perPage = 10;
+    public $perPage = 100;
     public $filtroFechaInicio;
     public int $sucursal_id;
     public $filtroFechaFin;

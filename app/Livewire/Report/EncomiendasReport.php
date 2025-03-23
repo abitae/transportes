@@ -7,6 +7,7 @@ use App\Models\Configuration\Sucursal;
 use App\Models\Package\Encomienda;
 use App\Traits\UtilsTrait;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -15,98 +16,232 @@ use Mary\Traits\Toast;
 
 class EncomiendasReport extends Component
 {
-    use Toast, UtilsTrait;
-    use WithPagination, WithoutUrlPagination;
-    public $title = 'REPORTE ENCOMIENDAS';
-    public $sub_title = 'Modulo de reporte de encomiendas detallado';
-    public $filtroSucursal;
-    public $filtroFechaInicio;
-    public $filtroFechaFin;
-    public $search;
-    public $FiltroEstadoEncomienda;
-    public $FiltroEstadoPago;
-    public $filtroMetodoPago;
-    public int $perPage = 10;
+    use Toast, UtilsTrait, WithPagination, WithoutUrlPagination;
+
+    // Constantes para valores predeterminados y opciones
+    const DEFAULT_PER_PAGE = 10;
+    const ESTADOS_ENCOMIENDA = [
+        ['id' => 'REGISTRADO', 'name' => 'REGISTRADO'],
+        ['id' => 'ENVIADO', 'name' => 'ENVIADO'],
+        ['id' => 'RECIBIDO', 'name' => 'RECIBIDO'],
+        ['id' => 'ENTREGADO', 'name' => 'ENTREGADO']
+    ];
+    const ESTADOS_PAGO = [
+        ['id' => 'Contado', 'name' => 'Contado'],
+        ['id' => 'Credito', 'name' => 'Credito'],
+    ];
+    const METODOS_PAGO = [
+        ['id' => 'Efectivo', 'name' => 'Efectivo'],
+        ['id' => 'Transferencia', 'name' => 'Transferencia'],
+        ['id' => 'Tarjeta', 'name' => 'Tarjeta'],
+    ];
+
+    // Propiedades principales
+    public string $title = 'REPORTE ENCOMIENDAS';
+    public string $sub_title = 'Módulo de reporte de encomiendas detallado';
+
+    // Propiedades para filtros
+    public ?int $filtroSucursal = null;
+    public ?string $filtroFechaInicio = null;
+    public ?string $filtroFechaFin = null;
+    public ?string $search = null;
+    public ?string $FiltroEstadoEncomienda = null;
+    public ?string $FiltroEstadoPago = null;
+    public ?string $filtroMetodoPago = null;
+    public int $perPage = self::DEFAULT_PER_PAGE;
+
+    // Propiedades para la interfaz
     public bool $showDrawer = false;
-    public $ids;
+    public array $ids = [];
     public Encomienda $encomienda;
-    public function mount()
+
+    /**
+     * Hook que se ejecuta al inicializar el componente
+     * 
+     * @return void
+     */
+    public function mount(): void
     {
-        $this->filtroFechaInicio = Carbon::now()->startOfDay()->format('Y-m-d H:i');//$this->dateNow('Y-m-d');
-        $this->filtroFechaFin = $this->dateNow('Y-m-d H:i:s');
+        $this->resetFilters();
     }
+
+    /**
+     * Reinicia los filtros a sus valores predeterminados
+     * 
+     * @return void
+     */
+    public function resetFilters(): void
+    {
+        $this->filtroFechaInicio = Carbon::now()->startOfDay()->format('Y-m-d H:i');
+        $this->filtroFechaFin = $this->dateNow('Y-m-d H:i:s');
+        $this->FiltroEstadoEncomienda = null;
+        $this->FiltroEstadoPago = null;
+        $this->filtroMetodoPago = null;
+        $this->filtroSucursal = null;
+        $this->search = null;
+    }
+
+    /**
+     * Método principal de renderizado del componente
+     *
+     * @return \Illuminate\View\View
+     */
     public function render()
     {
-        $encomiendas = Encomienda::query();
+        $encomiendas = $this->getEncomiendasQuery();
+        $this->ids = $encomiendas->pluck('id')->toArray();
 
+        return view('livewire.report.encomiendas-report', [
+            'encomiendas' => $encomiendas->latest()->paginate($this->perPage),
+            'sucursals' => $this->getSucursales(),
+            'estados' => self::ESTADOS_ENCOMIENDA,
+            'estadosPago' => self::ESTADOS_PAGO,
+            'metodosPago' => self::METODOS_PAGO,
+            'totalRegistros' => $encomiendas->count(),
+        ]);
+    }
+
+    /**
+     * Obtiene la consulta base de encomiendas con filtros aplicados
+     * 
+     * @return Builder
+     */
+    private function getEncomiendasQuery(): Builder
+    {
+        $query = Encomienda::query();
+
+        // Aplicar filtro por sucursal
         if ($this->filtroSucursal) {
-            $encomiendas->where('sucursal_id', $this->filtroSucursal);
+            $query->where('sucursal_id', $this->filtroSucursal);
         }
 
+        // Aplicar filtro por rango de fechas
         if ($this->filtroFechaInicio && $this->filtroFechaFin) {
-            $encomiendas->whereBetween('created_at', [$this->filtroFechaInicio, $this->filtroFechaFin]);
+            $query->whereBetween('created_at', [
+                $this->filtroFechaInicio,
+                $this->filtroFechaFin
+            ]);
         }
 
+        // Aplicar búsqueda global
         if ($this->search) {
-            $encomiendas->where(function ($query) {
+            $query->where(function (Builder $query) {
                 $query->where('code', 'like', '%' . $this->search . '%')
-                    ->orWhereHas('remitente', function ($query) {
+                    ->orWhereHas('remitente', function (Builder $query) {
                         $query->where('name', 'like', '%' . $this->search . '%')
                             ->orWhere('code', 'like', '%' . $this->search . '%');
                     })
-                    ->orWhereHas('destinatario', function ($query) {
+                    ->orWhereHas('destinatario', function (Builder $query) {
                         $query->where('name', 'like', '%' . $this->search . '%')
                             ->orWhere('code', 'like', '%' . $this->search . '%');
                     });
             });
         }
 
+        // Aplicar filtro por estado de encomienda
         if ($this->FiltroEstadoEncomienda) {
-            $encomiendas->where('estado_encomienda', $this->FiltroEstadoEncomienda);
+            $query->where('estado_encomienda', $this->FiltroEstadoEncomienda);
         }
 
+        // Aplicar filtro por estado de pago
         if ($this->FiltroEstadoPago) {
-            $encomiendas->where('tipo_pago', $this->FiltroEstadoPago);
+            $query->where('tipo_pago', $this->FiltroEstadoPago);
         }
 
+        // Aplicar filtro por método de pago
         if ($this->filtroMetodoPago) {
-            $encomiendas->where('metodo_pago', $this->filtroMetodoPago);
+            $query->where('metodo_pago', $this->filtroMetodoPago);
         }
-        $this->ids = $encomiendas->pluck('id')->toArray();
-        $encomiendas = $encomiendas->latest()->paginate($this->perPage);
-        $sucursals = Sucursal::where('isActive', true)->get();
-        $estados = [
-            ['id' => 'REGISTRADO', 'name' => 'REGISTRADO'],
-            ['id' => 'ENVIADO', 'name' => 'ENVIADO'],
-            ['id' => 'RECIBIDO', 'name' => 'RECIBIDO'],
-            ['id' => 'ENTREGADO', 'name' => 'ENTREGADO']
-        ];
-        $estadosPago = [
-            ['id' => 'Contado', 'name' => 'Contado'],
-            ['id' => 'Credito', 'name' => 'Credito'],
-        ];
-        return view('livewire.report.encomiendas-report', [
-            'encomiendas' => $encomiendas,
-            'sucursals' => $sucursals,
-            'estados' => $estados,
-            'estadosPago' => $estadosPago,
-        ]);
+
+        return $query;
     }
-    public function showEncomienda(Encomienda $encomienda)
+
+    /**
+     * Obtiene las sucursales activas
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function getSucursales()
+    {
+        return Sucursal::where('isActive', true)->get();
+    }
+
+    /**
+     * Muestra el detalle de una encomienda
+     * 
+     * @param Encomienda $encomienda
+     * @return void
+     */
+    public function showEncomienda(Encomienda $encomienda): void
     {
         $this->encomienda = $encomienda;
         $this->showDrawer = true;
     }
+
+    /**
+     * Redirige a la creación de boleta/factura
+     * 
+     * @param Encomienda $encomienda
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function createBoleta(Encomienda $encomienda)
     {
-        $this->redirectRoute(
+        return $this->redirectRoute(
             'facturacion.create-invoice',
             ['id' => $encomienda->id],
-            false, false
+            false,
+            false
         );
     }
+
+    /**
+     * Genera y descarga el reporte en Excel
+     * 
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function excelGenerate()
-    {   
-        return Excel::download(new ReportEncomiendaExport($this->ids), 'report_encomienda.xlsx');
+    {
+        if (empty($this->ids)) {
+            $this->warning('No hay datos para exportar');
+            return null;
+        }
+
+        $filename = 'reporte_encomiendas_' . Carbon::now()->format('Ymd_His') . '.xlsx';
+        $this->success('Reporte generado con éxito');
+
+        return Excel::download(new ReportEncomiendaExport($this->ids), $filename);
+    }
+
+    /**
+     * Actualiza la cantidad de registros por página
+     * 
+     * @param int $value
+     * @return void
+     */
+    public function updatedPerPage($value): void
+    {
+        $this->resetPage();
+    }
+
+    /**
+     * Actualiza cualquier filtro y reinicia la paginación
+     * 
+     * @param mixed $value
+     * @param string $property
+     * @return void
+     */
+    public function updated($property): void
+    {
+        if (in_array($property, [
+            'filtroSucursal',
+            'filtroFechaInicio',
+            'filtroFechaFin',
+            'FiltroEstadoEncomienda',
+            'FiltroEstadoPago',
+            'filtroMetodoPago',
+            'search'
+        ])) {
+            $this->resetPage();
+        }
     }
 }

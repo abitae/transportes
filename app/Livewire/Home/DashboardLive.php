@@ -14,67 +14,128 @@ class DashboardLive extends Component
 {
     public string $title = 'DASHBOARD';
     public string $sub_title = 'Estadistica';
-    public array $myChart = [
-        'type' => 'bar',
-        'data' => [],
+
+    // Configuración de gráficos unificada con opciones comunes
+    private array $chartDefaultOptions = [
+        'responsive' => true,
+        'plugins' => [
+            'legend' => [
+                'position' => 'bottom',
+            ],
+            'title' => [
+                'display' => true,
+                'text' => 'Chart.js Bar Chart'
+            ]
+        ]
     ];
+
+    public array $myChart = ['type' => 'bar', 'data' => []];
+
     public array $myLine = [
         'type' => 'line',
         'data' => [],
-        'option' => [
-            'responsive' => true,
-            'plugins' => [
-                'legend' => [
-                    'position' => 'bottom',
-                ],
-                'title' => [
-                    'display' => true,
-                    'text' => 'Chart.js Bar Chart'
-                ]
-            ]
-        ],
+        'option' => []
     ];
+
     public array $myPie = [
         'type' => 'bar',
         'data' => [],
-        'option' => [
-            'responsive' => true,
-        ],
+        'option' => []
     ];
+
     public array $myBar = [
         'type' => 'bar',
         'data' => [],
-        'option' => [
-            'responsive' => true,
-            'plugins' => [
-                'legend' => [
-                    'position' => 'bottom',
-                ],
-                'title' => [
-                    'display' => true,
-                    'text' => 'Chart.js Bar Chart'
-                ],
-            ],
-        ],
+        'option' => []
     ];
+
     public array $myBarTipoCobro = [
         'type' => 'bar',
         'data' => [],
-        'option' => [
-            'responsive' => true,
-            'plugins' => [
-                'legend' => [
-                    'position' => 'bottom',
-                ],
-                'title' => [
-                    'display' => true,
-                    'text' => 'Chart.js Bar Chart'
-                ],
-            ]
-        ],
+        'option' => []
     ];
+
     public $selectedTipe = 'Y';
     public $date_ini;
+
+    // Mapeo de estados y métodos de pago con colores consistentes
+    private array $estadoColors = [
+        'REGISTRADO' => 'rgba(54, 162, 235, 0.8)',
+        'ENVIADO' => 'rgba(255, 99, 132, 0.8)',
+        'RECIBIDO' => 'rgba(75, 192, 192, 0.8)',
+        'RETORNADO' => 'rgba(255, 206, 86, 0.8)',
+        'ENTREGADO' => 'rgba(153, 102, 255, 0.8)'
+    ];
+
+    private array $paymentTypeColors = [
+        'Contado' => 'rgba(54, 162, 235, 0.8)',
+        'Credito' => 'rgba(255, 99, 132, 0.8)'
+    ];
+
+    private array $metodoPagoColors = [
+        'Efectivo' => 'rgba(54, 162, 235, 0.8)',
+        'Yape' => 'rgba(75, 192, 192, 0.8)',
+        'Transferencia' => 'rgba(255, 206, 86, 0.8)',
+        'Deposito' => 'rgba(153, 102, 255, 0.8)'
+    ];
+
+    public function mount()
+    {
+        $this->date_ini = Carbon::now()->endOfDay()->format('Y-m-d H:i');
+
+        // Inicializar opciones de gráficos
+        $this->myLine['option'] = $this->chartDefaultOptions;
+        $this->myPie['option'] = ['responsive' => true];
+        $this->myBar['option'] = $this->chartDefaultOptions;
+        $this->myBarTipoCobro['option'] = $this->chartDefaultOptions;
+    }
+
+    public function render()
+    {
+        $dateObj = new DateTime($this->date_ini);
+
+        // Obtener todos los datos en una sola llamada según el período seleccionado
+        $chartData = $this->getDataForPeriod($dateObj, 'chart');
+        $pieData = $this->getDataForPeriod($dateObj, 'pie');
+        $barData = $this->getDataForPeriod($dateObj, 'bar');
+        $dataTipoCobro = $this->dataTipoCobro($dateObj);
+
+        // Actualizar gráficos con los datos obtenidos
+        Arr::set($this->myLine['data'], 'labels', $chartData['labels']);
+        Arr::set($this->myLine['data'], 'datasets', $chartData['datasets']);
+
+        Arr::set($this->myPie['data'], 'labels', $pieData['labels']);
+        Arr::set($this->myPie['data'], 'datasets', $pieData['datasets']);
+
+        Arr::set($this->myBar['data'], 'labels', $barData['labels']);
+        Arr::set($this->myBar['data'], 'datasets', $barData['datasets']);
+
+        Arr::set($this->myBarTipoCobro['data'], 'labels', $dataTipoCobro['labels']);
+        Arr::set($this->myBarTipoCobro['data'], 'datasets', $dataTipoCobro['datasets']);
+
+        return view('livewire.home.dashboard-live');
+    }
+
+    // Método unificado para obtener datos según el período seleccionado
+    private function getDataForPeriod(DateTime $date, string $chartType)
+    {
+        switch ($this->selectedTipe) {
+            case 'Y':
+                $methodName = "data{$chartType}Year";
+                break;
+            case 'm':
+                $methodName = "data{$chartType}Month";
+                break;
+            case 'd':
+                $methodName = "data{$chartType}Day";
+                break;
+            default:
+                $methodName = "data{$chartType}Month";
+                break;
+        }
+
+        return $this->$methodName($date);
+    }
 
     private function dataChartYear(DateTime $date)
     {
@@ -90,6 +151,7 @@ class DashboardLive extends Component
     {
         return $this->getChartData($date, 'day');
     }
+
     private function getChartData(DateTime $date, string $timeUnit = 'month')
     {
         $year = $date->format('Y');
@@ -131,35 +193,41 @@ class DashboardLive extends Component
         ];
 
         $config = $timeConfigs[$timeUnit];
-        $datasets = [];
         $sucursals = Sucursal::all();
 
+        // Optimización: Obtener todos los datos en una sola consulta
+        $query = Encomienda::whereYear('created_at', $year);
+
+        // Aplicar cláusulas where adicionales si existen
+        if (isset($config['where'])) {
+            foreach ($config['where'] as $method => $value) {
+                $query->$method('created_at', $value);
+            }
+        }
+
+        $allData = $query->selectRaw(
+            $config['format'] . "(created_at) as period, 
+            SUM(monto) as total_amount,
+            sucursal_id"
+        )
+            ->groupBy('period', 'sucursal_id')
+            ->orderBy('period')
+            ->get()
+            ->groupBy('sucursal_id');
+
+        // Preparar datasets
+        $datasets = [];
         foreach ($sucursals as $sucursal) {
             $periodData = array_fill($config['start'], $config['size'], 0);
 
-            $query = Encomienda::where('sucursal_id', $sucursal->id)
-                ->whereYear('created_at', $year);
-
-            // Apply additional where clauses if they exist
-            if (isset($config['where'])) {
-                foreach ($config['where'] as $method => $value) {
-                    $query->$method('created_at', $value);
+            if (isset($allData[$sucursal->id])) {
+                foreach ($allData[$sucursal->id] as $record) {
+                    $periodData[$record->period] = $record->total_amount;
                 }
             }
 
-            $data = $query->selectRaw(
-                $config['format'] . "(created_at) as period, 
-                    SUM(monto) as total_amount"
-            )
-                ->groupBy('period')
-                ->orderBy('period')
-                ->get();
-
-            foreach ($data as $record) {
-                $periodData[$record->period] = $record->total_amount;
-            }
-
-            $color = sprintf('#%06X', mt_rand(0, 0xFFFFFF));
+            // Usar colores consistentes para cada sucursal
+            $color = sprintf('#%06X', crc32($sucursal->code) & 0xFFFFFF);
             $datasets[] = [
                 'label' => $sucursal->code,
                 'data' => array_values($periodData),
@@ -173,6 +241,7 @@ class DashboardLive extends Component
             'datasets' => $datasets
         ];
     }
+
     private function dataPieYear(DateTime $date)
     {
         return $this->getPaymentTypeData($date, 'year');
@@ -194,40 +263,29 @@ class DashboardLive extends Component
         $month = $date->format('m');
         $day = $date->format('d');
 
-        // Configure time periods and labels
+        // Configurar períodos de tiempo y etiquetas
         $timeConfigs = [
             'year' => [
                 'labels' => ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-                'format' => 'MONTH',
-                'size' => 12,
-                'start' => 1
+                'format' => 'MONTH'
             ],
             'month' => [
                 'format' => 'DAY',
-                'size' => $date->format('t'),
-                'start' => 1,
                 'where' => ['whereMonth' => $month]
             ],
             'day' => [
                 'format' => 'HOUR',
-                'size' => 24,
-                'start' => 0,
                 'where' => ['whereMonth' => $month, 'whereDay' => $day]
             ]
         ];
 
         $config = $timeConfigs[$timeUnit];
         $sucursals = Sucursal::all();
-        
-        // Define fixed colors for payment types
-        $colors = [
-            'Contado' => 'rgba(54, 162, 235, 0.8)',
-            'Credito' => 'rgba(255, 99, 132, 0.8)'
-        ];
+        $paymentTypes = ['Contado', 'Credito'];
 
-        // Get data for all branches and payment types in a single query
+        // Obtener datos para todas las sucursales y tipos de pago en una sola consulta
         $query = Encomienda::whereYear('created_at', $year)
-            ->whereIn('tipo_pago', ['Contado', 'Credito']);
+            ->whereIn('tipo_pago', $paymentTypes);
 
         if (isset($config['where'])) {
             foreach ($config['where'] as $method => $value) {
@@ -244,11 +302,11 @@ class DashboardLive extends Component
             ->get()
             ->groupBy('tipo_pago');
 
-        // Prepare datasets
+        // Preparar datasets
         $datasets = [];
-        foreach (['Contado', 'Credito'] as $paymentType) {
+        foreach ($paymentTypes as $paymentType) {
             $branchData = array_fill_keys($sucursals->pluck('id')->toArray(), 0);
-            
+
             if (isset($data[$paymentType])) {
                 foreach ($data[$paymentType] as $record) {
                     $branchData[$record->sucursal_id] = $record->total_amount;
@@ -258,8 +316,8 @@ class DashboardLive extends Component
             $datasets[] = [
                 'label' => $paymentType,
                 'data' => array_values($branchData),
-                'backgroundColor' => $colors[$paymentType],
-                'borderColor' => $colors[$paymentType],
+                'backgroundColor' => $this->paymentTypeColors[$paymentType],
+                'borderColor' => $this->paymentTypeColors[$paymentType],
                 'borderWidth' => 1,
                 'borderRadius' => 5
             ];
@@ -276,12 +334,14 @@ class DashboardLive extends Component
         $year = $date->format('Y');
         return $this->getBarData($year);
     }
+
     private function dataBarMonth(DateTime $date)
     {
         $year = $date->format('Y');
         $month = $date->format('m');
         return $this->getBarData($year, $month);
     }
+
     private function dataBarDay(DateTime $date)
     {
         $year = $date->format('Y');
@@ -289,56 +349,50 @@ class DashboardLive extends Component
         $day = $date->format('d');
         return $this->getBarData($year, $month, $day);
     }
+
     private function getBarData($year, $month = null, $day = null)
     {
-        $labels = [];
-        $datasets = [];
         $sucursals = Sucursal::all();
-        $estados = ['REGISTRADO', 'ENVIADO', 'RECIBIDO', 'RETORNADO', 'ENTREGADO'];
+        $estados = array_keys($this->estadoColors);
 
-        // Initialize data array for all statuses
-        $labels = [];
+        // Inicializar array de datos para todos los estados
+        $labelsData = [];
         foreach ($sucursals as $sucursal) {
-            $labels[$sucursal->code] = array_fill_keys($estados, 0);
+            $labelsData[$sucursal->code] = array_fill_keys($estados, 0);
         }
 
-        // Get shipment counts by status for each branch
-        foreach ($sucursals as $sucursal) {
-            $query = Encomienda::where('sucursal_id', $sucursal->id)
-                ->whereYear('created_at', $year);
+        // Obtener recuentos de envíos por estado para cada sucursal en una sola consulta
+        $query = Encomienda::whereYear('created_at', $year)
+            ->selectRaw('sucursal_id, estado_encomienda, COUNT(*) as total')
+            ->groupBy('sucursal_id', 'estado_encomienda');
 
-            if ($month) {
-                $query->whereMonth('created_at', $month);
-            }
-            if ($day) {
-                $query->whereDay('created_at', $day);
-            }
+        if ($month) {
+            $query->whereMonth('created_at', $month);
+        }
+        if ($day) {
+            $query->whereDay('created_at', $day);
+        }
 
-            $data = $query->selectRaw('estado_encomienda, COUNT(*) as total')
-                ->groupBy('estado_encomienda')
-                ->get();
+        $data = $query->get();
 
-            foreach ($data as $record) {
-                $labels[$sucursal->code][$record->estado_encomienda] = $record->total;
+        // Organizar datos
+        foreach ($data as $record) {
+            $sucursal = $sucursals->firstWhere('id', $record->sucursal_id);
+            if ($sucursal) {
+                $labelsData[$sucursal->code][$record->estado_encomienda] = $record->total;
             }
         }
 
-        // Prepare datasets for each status
-        foreach ($estados as $index => $estado) {
-            $backgroundColor = sprintf(
-                'rgba(%d, %d, %d, 0.8)',
-                mt_rand(0, 255),
-                mt_rand(0, 255),
-                mt_rand(0, 255)
-            );
-
+        // Preparar datasets para cada estado
+        $datasets = [];
+        foreach ($estados as $estado) {
             $dataset = [
                 'label' => $estado,
                 'data' => array_map(function ($branchData) use ($estado) {
                     return $branchData[$estado];
-                }, $labels),
-                'backgroundColor' => $backgroundColor,
-                'borderColor' => $backgroundColor,
+                }, $labelsData),
+                'backgroundColor' => $this->estadoColors[$estado],
+                'borderColor' => $this->estadoColors[$estado],
                 'borderRadius' => 5,
                 'borderWidth' => 1
             ];
@@ -347,123 +401,73 @@ class DashboardLive extends Component
         }
 
         return [
-            'labels' => array_keys($labels),
+            'labels' => array_keys($labelsData),
             'datasets' => $datasets
         ];
     }
-    public function mount()
-    {
-        $this->date_ini = Carbon::now()->endOfDay()->format('Y-m-d H:i');
-    }
-    public function render()
-    {
-        $dataTipoCobro = $this->dataTipoCobro(new DateTime());
-        Arr::set($this->myBarTipoCobro['data'], 'labels', $dataTipoCobro['labels']);
-        Arr::set($this->myBarTipoCobro['data'], 'datasets', $dataTipoCobro['datasets']);
-        switch ($this->selectedTipe) {
-            case 'Y':
-                $data = $this->dataChartYear(new DateTime($this->date_ini));
-                $dataPie = $this->dataPieYear(new DateTime($this->date_ini));
-                $dataBar = $this->dataBarYear(new DateTime($this->date_ini));
 
-                break;
-            case 'm':
-                $data = $this->dataChartMonth(new DateTime($this->date_ini));
-                $dataPie = $this->dataPieMonth(new DateTime($this->date_ini));
-                $dataBar = $this->dataBarMonth(new DateTime($this->date_ini));
-                break;
-            case 'd':
-                $data = $this->dataChartDay(new DateTime($this->date_ini));
-                $dataPie = $this->dataPieDay(new DateTime($this->date_ini));
-                $dataBar = $this->dataBarDay(new DateTime($this->date_ini));
-                break;
-            default:
-                $data = $this->dataChartMonth(new DateTime($this->date_ini));
-                $dataPie = $this->dataPieMonth(new DateTime($this->date_ini));
-                $dataBar = $this->dataBarMonth(new DateTime($this->date_ini));
-                break;
-        }
-
-        Arr::set($this->myLine['data'], 'labels', $data['labels']);
-        Arr::set($this->myLine['data'], 'datasets', $data['datasets']);
-
-        Arr::set($this->myPie['data'], 'labels', $dataPie['labels']);
-        Arr::set($this->myPie['data'], 'datasets', $dataPie['datasets']);
-
-        Arr::set($this->myBar['data'], 'labels', $dataBar['labels']);
-        Arr::set($this->myBar['data'], 'datasets', $dataBar['datasets']);
-
-        return view('livewire.home.dashboard-live');
-    }
     private function dataTipoCobro(DateTime $date)
     {
-        // Extract date components
-        $dateComponents = [
-            'year' => $date->format('Y'),
-            'month' => $date->format('m'),
-            'day' => $date->format('d')
-        ];
+        // Extraer componentes de fecha
+        $year = $date->format('Y');
+        $month = $date->format('m');
+        $day = $date->format('d');
 
-        // Time period filters configuration
-        $timeConfigs = [
-            'year' => [],
-            'month' => ['whereMonth' => $dateComponents['month']],
-            'day' => ['whereMonth' => $dateComponents['month'], 'whereDay' => $dateComponents['day']]
-        ];
-
-        // Define payment methods and get branches once
-        $metodoPagos = ['Efectivo', 'Yape', 'Transferencia', 'Deposito'];
+        // Definir métodos de pago y obtener sucursales una vez
+        $metodoPagos = array_keys($this->metodoPagoColors);
         $sucursals = Sucursal::all();
 
-        // Build base query
-        $baseQuery = Encomienda::whereYear('created_at', $dateComponents['year']);
+        // Construir consulta base
+        $query = Encomienda::whereYear('created_at', $year)
+            ->whereIn('metodo_pago', $metodoPagos);
 
-        // Apply time filters based on selected time unit
+        // Aplicar filtros de tiempo según la unidad de tiempo seleccionada
         switch ($this->selectedTipe) {
-            case 'Y':
-                break;
             case 'm':
-                $baseQuery->whereMonth('created_at', $dateComponents['month']);
+                $query->whereMonth('created_at', $month);
                 break;
             case 'd':
-                $baseQuery->whereMonth('created_at', $dateComponents['month'])
-                         ->whereDay('created_at', $dateComponents['day']);
-                break;
-            default:
-                $baseQuery->whereMonth('created_at', $dateComponents['month']);
+                $query->whereMonth('created_at', $month)
+                    ->whereDay('created_at', $day);
                 break;
         }
 
-        // Get all payment data in a single query
-        $paymentData = $baseQuery->select('sucursal_id', 'metodo_pago', DB::raw('SUM(monto) as total'))
-            ->whereIn('metodo_pago', $metodoPagos)
+        // Obtener todos los datos de pago en una sola consulta
+        $data = $query->select('sucursal_id', 'metodo_pago', DB::raw('SUM(monto) as total'))
             ->groupBy('sucursal_id', 'metodo_pago')
-            ->get()
-            ->groupBy(['metodo_pago', 'sucursal_id']);
+            ->get();
 
-        // Generate datasets with consistent colors
-        $datasets = array_map(function($metodoPago) use ($paymentData, $sucursals) {
-            $color = sprintf('rgba(%d, %d, %d, 0.8)', mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
-            
-            $data = $sucursals->map(function($sucursal) use ($paymentData, $metodoPago) {
-                return $paymentData[$metodoPago][$sucursal->id][0]['total'] ?? 0;
-            })->toArray();
+        // Organizar datos por método de pago y sucursal
+        $paymentData = [];
+        foreach ($data as $record) {
+            $paymentData[$record->metodo_pago][$record->sucursal_id] = $record->total;
+        }
 
-            return [
+        // Generar datasets con colores consistentes
+        $datasets = [];
+        foreach ($metodoPagos as $metodoPago) {
+            $dataArray = [];
+
+            foreach ($sucursals as $sucursal) {
+                $dataArray[] = $paymentData[$metodoPago][$sucursal->id] ?? 0;
+            }
+
+            $datasets[] = [
                 'label' => $metodoPago,
-                'data' => $data,
-                'backgroundColor' => $color,
-                'borderColor' => $color,
+                'data' => $dataArray,
+                'backgroundColor' => $this->metodoPagoColors[$metodoPago],
+                'borderColor' => $this->metodoPagoColors[$metodoPago],
                 'borderWidth' => 1,
                 'borderRadius' => 5
             ];
-        }, $metodoPagos);
+        }
 
         return [
             'labels' => $sucursals->pluck('code')->toArray(),
             'datasets' => $datasets
         ];
     }
+
     public function switch()
     {
         $type = $this->myChart['type'] == 'bar' ? 'pie' : 'bar';

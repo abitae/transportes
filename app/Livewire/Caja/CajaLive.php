@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Caja;
 
 use App\Livewire\Forms\CajaForm;
@@ -42,31 +43,41 @@ class CajaLive extends Component
 
     public function render()
     {
-        $headersIngreso = [
+        return view('livewire.caja.caja-live', [
+            'cajas' => $this->cajaListPaginate(Auth::user(), $this->perPage),
+            'headersHistory' => $this->getHeadersHistory(),
+            'headersIngreso' => $this->getHeadersIngreso(),
+            'headersEgreso' => $this->getHeadersEgreso(),
+            'tipos' => $this->getTiposIngreso(),
+            'tipos2' => $this->getTiposEgreso(),
+        ]);
+    }
+
+    private function getHeadersIngreso()
+    {
+        return [
             ['key' => 'id', 'label' => '#', 'class' => 'bg-green-500 w-1'],
             ['key' => 'tipo_entry', 'label' => 'Tipo', 'class' => ''],
             ['key' => 'description', 'label' => 'Descripción', 'class' => ''],
             ['key' => 'metodo_pago', 'label' => 'Metodo Pago', 'class' => ''],
             ['key' => 'monto_entry', 'label' => 'Monto', 'class' => ''],
         ];
-        $headersEgreso = [
+    }
+
+    private function getHeadersEgreso()
+    {
+        return [
             ['key' => 'id', 'label' => '#', 'class' => 'bg-red-500 w-1'],
             ['key' => 'tipo_exit', 'label' => 'Tipo', 'class' => ''],
             ['key' => 'description', 'label' => 'Descripción', 'class' => ''],
             ['key' => 'metodo_pago', 'label' => 'Metodo Pago', 'class' => ''],
             ['key' => 'monto_exit', 'label' => 'Monto', 'class' => ''],
         ];
-        $tipos = [
-            ['id' => 'Devolucion', 'name' => 'Devolución'],
-            ['id' => 'Efectivo', 'name' => 'Efectivo'],
-            ['id' => 'Ticket', 'name' => 'Ticket'],
-        ];
-        $tipos2 = [
-            ['id' => 'Devolucion', 'name' => 'Pago'],
-            ['id' => 'Efectivo', 'name' => 'Efectivo'],
-            ['id' => 'Ticket', 'name' => 'Ticket'],
-        ];
-        $headersHistory = [
+    }
+
+    private function getHeadersHistory()
+    {
+        return [
             ['key' => 'id', 'label' => '#', 'class' => 'bg-blue-500 w-1 text-black'],
             ['key' => 'created_at', 'label' => 'Fecha Apertura', 'class' => 'text-black'],
             ['key' => 'updated_at', 'label' => 'Fecha Cierre', 'class' => 'text-black'],
@@ -76,8 +87,24 @@ class CajaLive extends Component
             ['key' => 'monto_cierre', 'label' => 'Cierre', 'class' => 'bg-red-500 text-black'],
             ['key' => 'action', 'label' => 'Imprimir', 'class' => ''],
         ];
-        $cajas = $this->cajaListPaginate(Auth::user(), $this->perPage);
-        return view('livewire.caja.caja-live', compact('cajas', 'headersHistory', 'headersIngreso', 'headersEgreso', 'tipos', 'tipos2'));
+    }
+
+    private function getTiposIngreso()
+    {
+        return [
+            ['id' => 'Devolucion', 'name' => 'Devolución'],
+            ['id' => 'Efectivo', 'name' => 'Efectivo'],
+            ['id' => 'Ticket', 'name' => 'Ticket'],
+        ];
+    }
+
+    private function getTiposEgreso()
+    {
+        return [
+            ['id' => 'Devolucion', 'name' => 'Pago'],
+            ['id' => 'Efectivo', 'name' => 'Efectivo'],
+            ['id' => 'Ticket', 'name' => 'Ticket'],
+        ];
     }
 
     public function openModal()
@@ -97,60 +124,82 @@ class CajaLive extends Component
 
     private function updateCaja()
     {
-        if ($this->cajaForm->monto_cierre == ($this->caja->monto_apertura + $this->caja->entries->whereIn('metodo_pago', ['Efectivo'])->sum('monto_entry') - $this->caja->exits->whereIn('metodo_pago', ['Efectivo'])->sum('monto_exit'))) {
+        $montoEfectivoActual = $this->calcularMontoEfectivoActual();
+
+        if ($this->cajaForm->monto_cierre == $montoEfectivoActual) {
             if ($this->cajaForm->update($this->caja)) {
                 $this->success('Genial, actualizado correctamente!');
                 $this->modalCaja = false;
                 $this->openCaja = false;
-            } else {
-                $this->error('Error, verifique los datos!');
+                return;
             }
+            $this->error('Error, verifique los datos!');
+        } else {
+            $this->error('Error, el monto de cierre no coincide con el saldo actual!');
         }
-        $this->modalCaja = false;
 
+        $this->modalCaja = false;
+    }
+
+    private function calcularMontoEfectivoActual()
+    {
+        return $this->caja->monto_apertura +
+            $this->caja->entries->whereIn('metodo_pago', ['Efectivo'])->sum('monto_entry') -
+            $this->caja->exits->whereIn('metodo_pago', ['Efectivo'])->sum('monto_exit');
     }
 
     private function storeCaja()
     {
         $this->caja = $this->cajaForm->store();
+
         if ($this->caja) {
             $this->success('Genial, guardado correctamente!');
             $this->modalCaja = false;
             $this->openCaja = true;
-        } else {
-            $this->error('Error, verifique los datos!');
-            $this->modalEntry = false;
+            return;
         }
+
+        $this->error('Error, verifique los datos!');
     }
 
     public function entryCaja()
     {
-        if ($this->openCaja) {
-            $this->entryForm->caja_id = $this->caja->id;
-            if ($this->entryForm->store()) {
-                $this->success('Genial, ingresado correctamente!');
-                $this->modalEntry = false;
-                $this->entryForm->reset();
-            } else {
-                $this->error('Error, verifique los datos!');
-                $this->modalEntry = false;
-            }
+        if (!$this->openCaja) {
+            $this->error('No hay caja abierta para registrar ingresos!');
+            return;
         }
+
+        $this->entryForm->caja_id = $this->caja->id;
+
+        if ($this->entryForm->store()) {
+            $this->success('Genial, ingresado correctamente!');
+            $this->modalEntry = false;
+            $this->entryForm->reset();
+            return;
+        }
+
+        $this->error('Error, verifique los datos!');
+        $this->modalEntry = false;
     }
 
     public function exitCaja()
     {
-        if ($this->openCaja) {
-            $this->exitForm->caja_id = $this->caja->id;
-            if ($this->exitForm->store()) {
-                $this->success('Genial, ingresado correctamente!');
-                $this->modalExit = false;
-                $this->exitForm->reset();
-            } else {
-                $this->error('Error, verifique los datos!');
-                $this->modalExit = false;
-            }
+        if (!$this->openCaja) {
+            $this->error('No hay caja abierta para registrar egresos!');
+            return;
         }
+
+        $this->exitForm->caja_id = $this->caja->id;
+
+        if ($this->exitForm->store()) {
+            $this->success('Genial, ingresado correctamente!');
+            $this->modalExit = false;
+            $this->exitForm->reset();
+            return;
+        }
+
+        $this->error('Error, verifique los datos!');
+        $this->modalExit = false;
     }
 
     public function printCaja(Caja $caja)

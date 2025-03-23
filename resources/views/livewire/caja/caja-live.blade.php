@@ -2,7 +2,7 @@
     <x-mary-card title="{{ $title }}" subtitle="{{ $sub_title }}" shadow separator progress-indicator>
         <x-slot:menu>
             <x-mary-button wire:click="openModal" icon="s-eye{{ !$openCaja ? '' : '-slash' }}"
-                label="{{ !$openCaja ? 'Abrir' : 'Cerrar' }} Caja" class="text-white bg-sky-500" responsive />
+                label="{{ !$openCaja ? 'Abrir' : 'Cerrar' }} Caja" class="text-white bg-{{ !$openCaja ? 'green' : 'red' }}-500" responsive />
             <x-mary-button @click="$wire.showHistory = true" icon="s-eye" label="Historial"
                 class="text-white bg-purple-500" responsive />
         </x-slot:menu>

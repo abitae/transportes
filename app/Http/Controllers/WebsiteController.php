@@ -13,23 +13,23 @@ class WebsiteController extends Controller
     {
         $sucursales = Sucursal::where('isActive', 1)->get();
 
-        return view('web2.index', compact('sucursales'));
+        return view('web.index', compact('sucursales'));
     }
     public function rastrea()
     {
-        return view('web2.rastrea');
+        return view('web.rastrea');
     }
     public function abount()
     {
-        return view('web2.nosotros');
+        return view('web.nosotros');
     }
     public function contact()
     {
-        return view('web2.contact');
+        return view('web.contact');
     }
     public function terminos()
     {
-        return view('web2.terminos');
+        return view('web.terminos');
     }
     public function trackingSearch(Request $request){
         $request->validate(
@@ -37,11 +37,19 @@ class WebsiteController extends Controller
                 'tracking' => 'required',
                 'code' => 'required',
             ]);
-        $encomienda = Encomienda::where('code', $request->tracking)->where('pin', $request->code)->first();
+        $encomienda = Encomienda::where('code', $request->tracking)
+            ->whereHas('remitente', function($query) use ($request) {
+                $query->where('code', $request->code);
+            })
+            ->orWhereHas('destinatario', function($query) use ($request) {
+                $query->where('code', $request->code); 
+            })
+            ->first();  
+            
         if($encomienda){
-            return view('web2.trackin', compact('encomienda'));
+            return view('web.rastrea', compact('encomienda'));
         }else{
-            return view('web2.trackin');
+            return view('web.rastrea');
         }
     }
     public function contactForm(Request $request)

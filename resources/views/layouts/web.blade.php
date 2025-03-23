@@ -7,25 +7,13 @@
     <title>Brayan - Servicio de Envíos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'abitae-green': '#00ac3d',
-                        'abitae-yellow': '#ffcc00',
-                    }
-                }
-            }
-        }
-    </script>
     <style>
         .nav-link {
-            @apply flex flex-col items-center text-white hover:text-abitae-yellow transition-colors duration-200;
+            @apply flex flex-col items-center text-green-500 hover:text-yellow-500 transition-colors duration-200;
         }
 
         .nav-icon {
-            @apply w-8 h-8 text-white mb-1;
+            @apply w-8 h-8 text-green-500 mb-1;
         }
 
         .nav-text {
@@ -37,16 +25,16 @@
         }
 
         .mobile-nav-link {
-            @apply block px-3 py-2 text-base font-medium text-white hover:text-abitae-yellow transition-colors duration-200;
+            @apply block px-3 py-2 text-base font-medium text-green-500 hover:text-yellow-500 transition-colors duration-200;
         }
     </style>
 </head>
 
 <body class="font-sans bg-gray-100">
 
-    <nav class="bg-abitae-green sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-24">
+    <nav class="sticky top-0 z-50 border-b border-gray-200 shadow-sm bg-green-50">
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-24">
                 <!-- Logo -->
                 <div class="flex-shrink-0">
                     <a href="/" class="flex items-center">
@@ -56,7 +44,7 @@
 
                 <!-- Mobile menu button -->
                 <div class="flex md:hidden">
-                    <button id="menu-toggle" class="text-white hover:text-abitae-yellow focus:outline-none">
+                    <button id="menu-toggle" class="text-green-500 hover:text-yellow-500 focus:outline-none">
                         <svg id="menu-icon" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16m-7 6h7"></path>
@@ -67,41 +55,41 @@
                 <!-- Main Navigation -->
                 <div id="menu" class="hidden md:flex md:items-center md:space-x-8">
                     <a href="/"
-                        class="flex items-center space-x-2 text-white hover:text-abitae-yellow transition-colors duration-200">
-                        <x-mary-icon name="o-home" class="w-8 h-8 text-white" />
-                        <span class="font-bold text-xl">INICIO</span>
+                        class="flex items-center space-x-2 text-green-500 transition-colors duration-200 hover:text-yellow-500">
+                        <x-mary-icon name="o-home" class="w-8 h-8 text-green-500" />
+                        <span class="text-xl font-bold">INICIO</span>
                     </a>
                     <a href="/rastrea"
-                        class="flex items-center space-x-2 text-white hover:text-abitae-yellow transition-colors duration-200">
-                        <x-mary-icon name="o-eye" class="w-8 h-8 text-white" />
-                        <span class="font-bold text-xl">RASTREA</span>
+                        class="flex items-center space-x-2 text-green-500 transition-colors duration-200 hover:text-yellow-500">
+                        <x-mary-icon name="o-eye" class="w-8 h-8 text-green-500" />
+                        <span class="text-xl font-bold">RASTREA</span>
                     </a>
-                    <a href="/pay"
-                        class="flex items-center space-x-2 text-white hover:text-abitae-yellow transition-colors duration-200">
-                        <x-mary-icon name="o-currency-dollar" class="w-8 h-8 text-white" />
-                        <span class="font-bold text-xl">PAGALO</span>
-                    </a>
-                    <a href="/agencies"
-                        class="flex items-center space-x-2 text-white hover:text-abitae-yellow transition-colors duration-200">
-                        <x-mary-icon name="o-map-pin" class="w-8 h-8 text-white" />
-                        <span class="font-bold text-xl">AGENCIAS</span>
+{{--                     <a href="/pay"
+                        class="flex items-center space-x-2 text-green-500 transition-colors duration-200 hover:text-yellow-500">
+                        <x-mary-icon name="o-currency-dollar" class="w-8 h-8 text-green-500" />
+                        <span class="text-xl font-bold">PAGALO</span>
+                    </a> --}}
+                    <a href="/agencias"
+                        class="flex items-center space-x-2 text-green-500 transition-colors duration-200 hover:text-yellow-500">
+                        <x-mary-icon name="o-map-pin" class="w-8 h-8 text-green-500" />
+                        <span class="text-xl font-bold">AGENCIAS</span>
                     </a>
                     <a href="/rates"
-                        class="flex items-center space-x-2 text-white hover:text-abitae-yellow transition-colors duration-200">
-                        <x-mary-icon name="m-banknotes" class="w-8 h-8 text-white" />
-                        <span class="font-bold text-xl">TARIFAS</span>
+                        class="flex items-center space-x-2 text-green-500 transition-colors duration-200 hover:text-yellow-500">
+                        <x-mary-icon name="m-banknotes" class="w-8 h-8 text-green-500" />
+                        <span class="text-xl font-bold">TARIFAS</span>
                     </a>
                 </div>
 
                 <!-- User Actions -->
                 <div class="flex items-center space-x-4">
-                    <a href="/cart" class="text-white hover:text-abitae-yellow transition-colors duration-200">
-                        <x-mary-icon name="s-shopping-cart" class="w-8 h-8 text-white" />
+                    <a href="#" class="text-green-500 transition-colors duration-200 hover:text-yellow-500">
+                        <x-mary-icon name="s-shopping-cart" class="w-8 h-8 text-green-500" />
                     </a>
                     <div class="relative">
                         <a href="/login"
-                            class="text-white hover:text-abitae-yellow transition-colors duration-200">
-                            <x-mary-icon name="s-user" class="w-8 h-8 text-white" />
+                            class="text-green-500 transition-colors duration-200 hover:text-yellow-500">
+                            <x-mary-icon name="s-user" class="w-8 h-8 text-green-500" />
                         </a>
                     </div>
                 </div>
@@ -110,12 +98,12 @@
 
         <!-- Mobile Navigation -->
         <div class="md:hidden">
-            <div id="mobile-menu" class="px-2 pt-2 pb-3 space-y-1 hidden">
-                <a href="/" class="mobile-nav-link text-white font-bold text-xl">INICIO</a>
-                <a href="/track" class="mobile-nav-link text-white font-bold text-xl">RASTREA</a>
-                <a href="/pay" class="mobile-nav-link text-white font-bold text-xl">PAGALO</a>
-                <a href="/agencies" class="mobile-nav-link text-white font-bold text-xl">AGENCIAS</a>
-                <a href="/rates" class="mobile-nav-link text-white font-bold text-xl">TARIFAS</a>
+            <div id="mobile-menu" class="hidden px-2 pt-2 pb-3 space-y-1">
+                <a href="/" class="text-xl font-bold text-green-500 mobile-nav-link">INICIO</a>
+                <a href="/track" class="text-xl font-bold text-green-500 mobile-nav-link">RASTREA</a>
+                <a href="/pay" class="text-xl font-bold text-green-500 mobile-nav-link">PAGALO</a>
+                <a href="/agencies" class="text-xl font-bold text-green-500 mobile-nav-link">AGENCIAS</a>
+                <a href="/rates" class="text-xl font-bold text-green-500 mobile-nav-link">TARIFAS</a>
             </div>
         </div>
     </nav>
@@ -130,7 +118,7 @@
                             <h1 class="flex items-center text-xl font-semibold">
                                 Flota Brayan
                                 <span
-                                    class="ml-2 text-xs font-medium text-white bg-abitae-green px-2.5 py-0.5 rounded-full">
+                                    class="ml-2 text-xs font-medium text-green-500 bg-abitae-green px-2.5 py-0.5 rounded-full">
                                     NUEVO
                                 </span>
                             </h1>
@@ -143,7 +131,7 @@
                                 <button @click="open = !open"
                                     class="flex items-center w-full p-4 text-left hover:bg-gray-50 group">
                                     <span class="text-abitae-green">🔧</span>
-                                    <span class="ml-3 text-gray-900 font-medium">Servicios</span>
+                                    <span class="ml-3 font-medium text-gray-900">Servicios</span>
                                     <svg class="w-5 h-5 ml-auto text-gray-400 transition-transform"
                                         :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24"
                                         stroke="currentColor">
@@ -175,7 +163,7 @@
                                 <button @click="open = !open"
                                     class="flex items-center w-full p-4 text-left hover:bg-gray-50 group">
                                     <span class="text-abitae-green">📦</span>
-                                    <span class="ml-3 text-gray-900 font-medium">Envíos</span>
+                                    <span class="ml-3 font-medium text-gray-900">Envíos</span>
                                     <svg class="w-5 h-5 ml-auto text-gray-400 transition-transform"
                                         :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24"
                                         stroke="currentColor">
@@ -214,26 +202,26 @@
     </main>
 
     <!-- Footer -->
-    <footer class="py-10 text-white bg-gray-800">
+    <footer class="py-10 text-green-500 bg-gray-800">
         <div class="px-5 mx-auto max-w-7xl">
             <div class="grid grid-cols-1 gap-8 md:grid-cols-4">
                 <div>
                     <h3 class="mb-4 text-xl font-bold">Brayan</h3>
                     <p class="mb-4 text-gray-400">Tu mejor opción para envíos seguros y confiables en todo el país.</p>
                     <div class="flex space-x-4">
-                        <a href="#" class="text-gray-400 transition-colors duration-300 hover:text-white">
+                        <a href="#" class="text-gray-400 transition-colors duration-300 hover:text-green-500">
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                 <path
                                     d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" />
                             </svg>
                         </a>
-                        <a href="#" class="text-gray-400 transition-colors duration-300 hover:text-white">
+                        <a href="#" class="text-gray-400 transition-colors duration-300 hover:text-green-500">
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                 <path
                                     d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.054 10.054 0 01-3.127 1.184 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
                             </svg>
                         </a>
-                        <a href="#" class="text-gray-400 transition-colors duration-300 hover:text-white">
+                        <a href="#" class="text-gray-400 transition-colors duration-300 hover:text-green-500">
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                 <path
                                     d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z" />
@@ -245,36 +233,36 @@
                     <h3 class="mb-4 text-lg font-semibold">Enlaces rápidos</h3>
                     <ul class="space-y-2">
                         <li><a href="#"
-                                class="text-gray-400 transition-colors duration-300 hover:text-white">Inicio</a>
+                                class="text-gray-400 transition-colors duration-300 hover:text-green-500">Inicio</a>
                         </li>
                         <li><a href="#"
-                                class="text-gray-400 transition-colors duration-300 hover:text-white">Servicios</a>
+                                class="text-gray-400 transition-colors duration-300 hover:text-green-500">Servicios</a>
                         </li>
                         <li><a href="#"
-                                class="text-gray-400 transition-colors duration-300 hover:text-white">Tarifas</a></li>
+                                class="text-gray-400 transition-colors duration-300 hover:text-green-500">Tarifas</a></li>
                         <li><a href="#"
-                                class="text-gray-400 transition-colors duration-300 hover:text-white">Agencias</a></li>
+                                class="text-gray-400 transition-colors duration-300 hover:text-green-500">Agencias</a></li>
                         <li><a href="#"
-                                class="text-gray-400 transition-colors duration-300 hover:text-white">Contacto</a></li>
+                                class="text-gray-400 transition-colors duration-300 hover:text-green-500">Contacto</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3 class="mb-4 text-lg font-semibold">Servicios</h3>
                     <ul class="space-y-2">
                         <li><a href="#"
-                                class="text-gray-400 transition-colors duration-300 hover:text-white">Envíos
+                                class="text-gray-400 transition-colors duration-300 hover:text-green-500">Envíos
                                 nacionales</a></li>
                         <li><a href="#"
-                                class="text-gray-400 transition-colors duration-300 hover:text-white">Envíos
+                                class="text-gray-400 transition-colors duration-300 hover:text-green-500">Envíos
                                 internacionales</a></li>
                         <li><a href="#"
-                                class="text-gray-400 transition-colors duration-300 hover:text-white">Paquetería</a>
+                                class="text-gray-400 transition-colors duration-300 hover:text-green-500">Paquetería</a>
                         </li>
                         <li><a href="#"
-                                class="text-gray-400 transition-colors duration-300 hover:text-white">Carga
+                                class="text-gray-400 transition-colors duration-300 hover:text-green-500">Carga
                                 pesada</a></li>
                         <li><a href="#"
-                                class="text-gray-400 transition-colors duration-300 hover:text-white">Logística
+                                class="text-gray-400 transition-colors duration-300 hover:text-green-500">Logística
                                 integral</a></li>
                     </ul>
                 </div>

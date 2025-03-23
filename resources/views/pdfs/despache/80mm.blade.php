@@ -84,7 +84,8 @@
 
 <body>
     <div class="header">
-        <img src="./img/logo_format_ticket.jpg" alt="Logo" class="logo">
+        <img src="{{ $despache->company->logo_path ? 'storage/' . $despache->company->logo_path : './img/logo.png' }}"
+            alt="Logo" class="logo">
         <div class="company-info">
             <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
             R.U.C.: {{ $despache->company->ruc }}<br>

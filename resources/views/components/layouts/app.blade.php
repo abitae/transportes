@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'ELIZA-CARGO v1.0') }}</title>
+    <title>{{ config('app.name', 'INFINITY-CARGO v2.0') }}</title>
     <link rel="icon" href="img/logo01.ico">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
@@ -36,13 +36,12 @@
             </label>
 
             {{-- Brand --}}
-            <img src="{{ asset('img/logo01.png') }}" alt='Infinity.ut' class='w-auto h-10 invisible md:visible'>
+            <img src="{{ asset('img/logo01.png') }}" alt='Infinity.ut' class='invisible w-auto h-10 md:visible'>
 
         </x-slot:brand>
 
         {{-- Right side actions --}}
         <x-slot:actions>
-
             <x-mary-icon name="s-home" class="text-center text-green-500 text-md"
                 label="{{ auth()->user()->sucursal->name }}" />
 

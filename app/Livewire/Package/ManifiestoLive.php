@@ -15,7 +15,7 @@ class ManifiestoLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination;
 
-    public string $title     = 'Manifiestos';
+    public string $title     = 'MANIFIESTOS';
     public string $sub_title = 'Historial de Manifiestos';
     public string $search    = '';
     public int $perPage      = 10;

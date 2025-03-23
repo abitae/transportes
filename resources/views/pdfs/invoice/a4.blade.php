@@ -1,7 +1,6 @@
 <html>
 
 <head>
-    <title>Factura {{ $invoice->serie }} - {{ $invoice->correlativo }}</title>
     <style>
         body {
             font-size: 12px;
@@ -48,7 +47,12 @@
             border: 1px solid #000;
             text-align: center;
             padding: 10px;
-            vertical-align: top;
+            padding-top: 20px;
+            font-size: 16px;
+            vertical-align: middle;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .invoice-title {
@@ -165,7 +169,7 @@
     <table class="header">
         <tr>
             <td class="company-info">
-                <img class="company-logo" src="./img/logo_format_ticket.jpg"
+                <img class="company-logo" src="{{ $invoice->company->logo_path ? 'storage/' . $invoice->company->logo_path : './img/logo.jpg' }}"
                     alt="BRAYAN BRUSH CORPORACION LOGISTICO" /><br>
                 <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
                 R.U.C.: {{ $invoice->company->ruc }}<br>

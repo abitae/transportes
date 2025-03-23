@@ -31,7 +31,7 @@ class DeliverPackageLive extends Component
     public $title = 'ENTREGA PAQUETES AGENCIA';
     public $sub_title = 'Modulo de entrega de paquetes en agencia';
     public $search = '';
-    public $perPage = 10;
+    public $perPage = 100;
     public $filtroFechaInicio;
     public int $sucursal_id;
     public $filtroFechaFin;

@@ -1,10 +1,10 @@
 <div>
     <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator>
         <x-slot:menu>
-            <x-mary-button wire:click='openModal' responsive icon="s-truck" label="Receive paquetes"
-                class="text-white bg-green-500 w-full" />
+            <x-mary-button wire:click='openModal' responsive icon="s-truck" label="Recibir paquetes"
+                class="w-full text-white bg-green-500" />
         </x-slot:menu>
-        <div class="grid grid-cols-1 md:grid-cols-6 gap-2 p-2 shadow-md">
+        <div class="grid grid-cols-1 gap-2 p-2 shadow-md md:grid-cols-6">
             <div>
                 <x-mary-input type='search' label="Buscar encomienda" icon="o-funnel" wire:model.live="search"
                     placeholder="Buscar encomienda" />
@@ -21,7 +21,7 @@
             </div>
         </div>
         <x-mary-menu-separator />
-        <div class="grid grid-cols-1 gap-2 shadow-xl p-2">
+        <div class="grid grid-cols-1 gap-2 p-2 shadow-xl">
             <div class="w-full">
                 <x-mary-card shadow separator>
                     @php
@@ -41,10 +41,10 @@
                             <x-mary-icon name="o-cube" label="No se encontraron registros." />
                         </x-slot:empty>
                         @scope('cell_remitente', $stuff)
-                        <div class="grid grid-cols-1 grid-rows-auto gap-1 text-xs">
+                        <div class="grid grid-cols-1 gap-1 text-xs grid-rows-auto">
                             <div>
                                 <x-mary-badge :value="$stuff->remitente->code"
-                                    class="text-white bg-purple-500 w-full sm:w-auto" />
+                                    class="w-full text-white bg-purple-500 sm:w-auto" />
                             </div>
                             <div class="font-medium">
                                 {{ strtoupper($stuff->remitente->name) }}
@@ -61,10 +61,10 @@
                         </div>
                         @endscope
                         @scope('cell_destinatario', $stuff)
-                        <div class="grid grid-cols-1 grid-rows-auto gap-1 text-xs">
+                        <div class="grid grid-cols-1 gap-1 text-xs grid-rows-auto">
                             <div>
                                 <x-mary-badge :value="$stuff->destinatario->code"
-                                    class="text-white bg-purple-500 w-full sm:w-auto" />
+                                    class="w-full text-white bg-purple-500 sm:w-auto" />
                             </div>
                             <div class="font-medium">
                                 {{ strtoupper($stuff->destinatario->name)}}
