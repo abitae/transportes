@@ -85,7 +85,8 @@
 <body>
     <div class="header">
 
-        <img src="./img/logo_format_ticket.jpg" alt="Logo" class="logo">
+        <img src="{{ $ticket->company->logo_path ? 'storage/' . $despache->company->logo_path : './img/logo.png' }}"
+            alt="Logo" class="logo">
         <div class="company-info">
             <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
             R.U.C.: {{ $ticket->company->ruc }}<br>
@@ -100,7 +101,7 @@
         {{ $ticket->encomienda->estado_pago }}<br>
     </div>
     <div class="ticket-number">
-        @if ($ticket->isHome)
+        @if ($ticket->encomienda->isHome)
             DOMICILIO
         @else
             AGENCIA

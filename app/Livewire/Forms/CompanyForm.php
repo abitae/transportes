@@ -4,9 +4,7 @@ namespace App\Livewire\Forms;
 
 use App\Models\Configuration\Company;
 use App\Traits\LogCustom;
-use Storage;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Validate;
 use Livewire\Form;
 use Livewire\WithFileUploads;
 
@@ -16,29 +14,17 @@ class CompanyForm extends Form
     use LogCustom;
 
     public ?Company $company;
-    #[Validate(['required', 'string', 'max:11', 'min:11'])]
     public $ruc = '';
-    #[Validate(['required', 'string'])]
     public $razonSocial = '';
-    #[Validate(['required', 'string', 'max:255'])]
     public $address = '';
-    #[Validate(['required', 'string', 'email'])]
     public $email = '';
-    #[Validate(['required', 'string'])]
     public $telephone = '';
-    #[Validate(['required', 'string'])]
     public $ubigeo = '';
-    #[Validate(['required', 'string'])]
     public $ctaBanco = '';
-    #[Validate(['required', 'string'])]
     public $pin = '';
-    #[Validate(['required', 'string'])]
     public $sol_user = '';
-    #[Validate(['required', 'string'])]
     public $sol_pass = '';
-    #[Validate(['required', 'string'])]
     public $client_id = '';
-    #[Validate(['required', 'string'])]
     public $client_secret = '';
 
     public function setCompany(Company $company)
@@ -48,19 +34,46 @@ class CompanyForm extends Form
     }
     public function update()
     {
-        return $this->saveCompany($this->company);
-    }
 
-    private function saveCompany(Company $company)
-    {
         try {
-            $this->validate();
-            $company->fill($this->validate())->save();
-            $this->infoLog('Company ' . ($company->exists ? 'update' : 'store') . ' ' . Auth::user()->name);
+            $rules = [
+                'ruc' => 'required|string|max:11|min:11',
+                'razonSocial' => 'required|string',
+                'address' => 'required|string|max:255',
+                'email' => 'required|string|email',
+                'telephone' => 'required|string',
+                'pin' => 'required|string',
+                'ctaBanco' => 'required|string',
+                'ubigeo' => 'required|string',
+                'sol_user' => 'required|string',
+                'sol_pass' => 'required|string',
+                'client_id' => 'required|string',
+                'client_secret' => 'required|string',
+            ];
+
+            $this->validate($rules);
+            $this->company->update(
+                [
+                    'ruc' => $this->ruc,
+                    'razonSocial' => $this->razonSocial,
+                    'address' => $this->address,
+                    'email' => $this->email,
+                    'telephone' => $this->telephone,
+                    'pin' => $this->pin,
+                    'ctaBanco' => $this->ctaBanco,
+                    'ubigeo' => $this->ubigeo,
+                    'sol_user' => $this->sol_user,
+                    'sol_pass' => $this->sol_pass,
+                    'client_id' => $this->client_id,
+                    'client_secret' => $this->client_secret,
+                ]
+            );
+            $this->infoLog('Company ' . ($this->company->exists ? 'update' : 'store') . ' ' . Auth::user()->name);
             return true;
         } catch (\Exception $e) {
-            $this->errorLog('Company ' . ($company->exists ? 'update' : 'store'), $e);
+            $this->errorLog('Company ' . ($this->company->exists ? 'update' : 'store'), $e);
             return false;
         }
     }
+
 }

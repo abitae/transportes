@@ -100,7 +100,7 @@
         {{ $despache->serie }} - {{ $despache->correlativo }}<br>
     </div>
     <div class="despache-number">
-        @if ($despache->isHome)
+        @if ($despache->encomienda->isHome)
             DOMICILIO
         @else
             AGENCIA
