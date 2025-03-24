@@ -24,7 +24,6 @@
         }
 
         .despache-number {
-            border-top: 1px solid #000;
             border-bottom: 1px solid #000;
             padding: 5px 0;
             text-align: center;
@@ -56,7 +55,7 @@
         }
 
         .totals {
-            font-size: 10px;
+            font-size: 8px;
             text-align: right;
             margin: 10px 0;
             border-top: 1px solid #000;
@@ -91,7 +90,8 @@
             R.U.C.: {{ $despache->company->ruc }}<br>
             {{ $despache->encomienda->sucursal_remitente->address }}<br>
             Telf: {{ $despache->encomienda->sucursal_remitente->phone }}<br>
-            Email: {{ $despache->encomienda->sucursal_remitente->email }}
+            Email: {{ $despache->encomienda->sucursal_remitente->email }}<br>
+            <strong>Registro MTC: 1553682CNG</strong>
         </div>
     </div>
 
@@ -108,8 +108,8 @@
     </div>
 
     <div class="customer-info">
-        Fecha Emisión: {{ $despache->created_at->format('Y-m-d') }}<br>
-        Fecha Traslado: {{ $despache->updated_at->format('Y-m-d') }}<br>
+        Fecha Emisión: {{ $despache->created_at->format('Y-m-d H:i') }}<br>
+        Fecha Traslado: {{ $despache->updated_at->format('Y-m-d H:i') }}<br>
     </div>
     <div class="customer-info">
         <strong>DATOS REMITENTE</strong><br>
@@ -118,20 +118,23 @@
         @if ($despache->remitente->address)
             Dirección: {{ $despache->remitente->address }}
         @endif
+        Documento de Traslado: {{ $despache->encomienda->doc_traslado ?? 'S/G' }}
     </div>
     <div class="customer-info">
         <strong>DATOS DESTINATARIO</strong><br>
-        Razón Social: {{ $despache->destinatario->name }}<br>
+        Razón Social: <strong>{{ $despache->destinatario->name }}</strong><br>
         {{ strtoupper($despache->destinatario->type_code == 1 ? 'DNI' : 'RUC') }}:
-        {{ $despache->destinatario->code }}<br>
+        <strong>{{ $despache->destinatario->code }}</strong><br>
         @if ($despache->destinatario->address)
             Dirección: {{ $despache->destinatario->address }}
         @endif
     </div>
+    <div class="despache-number">
+        {{ $despache->encomienda->estado_pago }}
+    </div>
     <div class="customer-info">
-        <strong>DATOS ENVIO</strong><br>
-        <strong>ORIGEN :<br></strong>{{ $despache->encomienda->sucursal_remitente->address }}<br>
-        <strong>DESTINO:<br></strong>{{ $despache->encomienda->sucursal_destinatario->address }}
+        <strong>ORIGEN :</strong>{{ $despache->encomienda->sucursal_remitente->name }}<br>
+        <strong>DESTINO:{{ $despache->encomienda->sucursal_destinatario->name }}</strong>
     </div>
     <div class="customer-info">
         <strong>TRANSPORTE y CONDUCTOR</strong><br>
@@ -145,6 +148,7 @@
             <tr>
                 <th>Descripción</th>
                 <th style="text-align: right">Cant</th>
+                <th style="text-align: right">Unidad</th>
                 <th style="text-align: right">Precio</th>
                 <th style="text-align: right">Total</th>
             </tr>
@@ -154,6 +158,7 @@
                 <tr>
                     <td>{{ $detail->descripcion }}</td>
                     <td style="text-align: right">{{ $detail->cantidad }}</td>
+                    <td style="text-align: right">{{ $detail->unidad }}</td>
                     <td style="text-align: right">{{ $detail->mtoPrecioUnitario }}</td>
                     <td style="text-align: right">
                         {{ number_format($detail->mtoPrecioUnitario * $detail->cantidad, 2) }}</td>
@@ -174,13 +179,36 @@
                 <td style="text-align: right">S/ {{ number_format($despache->mtoIGV, 2) }}</td>
             </tr>
             <tr>
-                <td style="text-align: left"><strong>Total:</strong></td>
+                <td style="text-align: left"><strong>Importe total:</strong></td>
                 <td style="text-align: right"><strong>S/
                         {{ number_format($despache->mtoImpVenta, 2) }}</strong></td>
             </tr>
         </table>
     </div>
-
+    <div class="customer-info">
+        <strong>GLOSA Y OBSERVACIONES</strong><br>
+        {{ $despache->encomienda->glosa }}<br>
+        {{ $despache->encomienda->observation }}<br>
+        <div style="text-align: center">MERCADERIA SIN VERIFICAR Y SIN RESPONSABILIDAD PARA LA EMPRESA DE TRANSPORTES
+        </div>
+    </div>
+    <div>
+        <table style="width: 100%; margin-top: 20px;">
+            <tr>
+                <td style="width: 70%;">
+                    <p style="font-size: 8px; text-transform: uppercase; margin-bottom: 30px;">USTED ESTA ACEPTANDO LAS CONDICIONES DE ENVÍO DEL COMPROBANTE QUE SE LE ENTREGO</p>
+                    <p style="margin-bottom: 40px;">                           </p>
+                    <p style="margin-top: 40px;">
+                        ____________________________<br>
+                        <span style="font-size: 8px;">Firma y Huella Digital</span><br>
+                        <span style="font-size: 8px;">DNI: _________________</span>
+                    </p>
+                </td>
+                <td style="width: 30%; border: 1px dashed #000; height: 100px; vertical-align: top;">
+                </td>
+            </tr>
+        </table>
+    </div>
     <div class="qr-code">
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/100px-Codigo_QR.svg.png?20080824194905"
             alt="Código QR">
