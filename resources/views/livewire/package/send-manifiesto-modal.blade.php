@@ -1,5 +1,5 @@
-@isset($manifiesto)
-    <x-mary-modal wire:model.live="modalFinal" persistent class="backdrop-blur" box-class="w-full max-w-lg">
+@if($manifiesto)
+    <x-mary-modal title="Descargar Manifiesto" wire:model.live="modalFinal">
         <x-mary-card shadow class="p-4">
             <div class="flex flex-col items-center space-y-4">
                 <h2 class="text-xl font-bold text-gray-800">Descargar Manifiesto</h2>
@@ -17,4 +17,4 @@
             </div>
         </x-mary-card>
     </x-mary-modal>
-@endisset
+@endif

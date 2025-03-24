@@ -1,4 +1,4 @@
-@isset($encomienda)
+@if($encomienda)
     <x-mary-drawer wire:model="showDrawer" title="Detalle de encomienda" subtitle="Code {{ $encomienda->code }}" separator
         with-close-button close-on-escape class="w-11/12 lg:w-2/3" right>
         <x-mary-card shadow class="p-4">
@@ -63,4 +63,4 @@
                 </x-mary-table>
         </x-mary-card>
     </x-mary-drawer>
-@endisset
+@endif

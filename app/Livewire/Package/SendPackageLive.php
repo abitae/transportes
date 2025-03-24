@@ -47,6 +47,7 @@ class SendPackageLive extends Component
     public $modalFinal;
     public $manifiesto;
     public $date_traslado;
+    public $editEncomiendaModal = false;
     public function mount()
     {
         $this->date_traslado = Carbon::now()->endOfDay()->format('Y-m-d H:i');
@@ -207,7 +208,7 @@ class SendPackageLive extends Component
     public function editEncomienda(Encomienda $encomienda)
     {
         $this->encomienda = $encomienda;
-        $this->editModal = true;
+        $this->editEncomiendaModal = true;
     }
     public function updateEncomienda()
     {
