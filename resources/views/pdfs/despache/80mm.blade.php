@@ -87,7 +87,7 @@
         <img src="{{ $despache->company->logo_path ? 'storage/' . $despache->company->logo_path : './img/logo.png' }}"
             alt="Logo" class="logo">
         <div class="company-info">
-            <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
+            <strong>{{ $despache->company->razonSocial }}</strong><br>
             R.U.C.: {{ $despache->company->ruc }}<br>
             {{ $despache->encomienda->sucursal_remitente->address }}<br>
             Telf: {{ $despache->encomienda->sucursal_remitente->phone }}<br>

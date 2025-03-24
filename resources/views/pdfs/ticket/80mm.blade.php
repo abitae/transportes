@@ -88,7 +88,7 @@
         <img src="{{ $ticket->company->logo_path ? 'storage/' . $ticket->company->logo_path : './img/logo.png' }}"
             alt="Logo" class="logo">
         <div class="company-info">
-            <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
+            <strong>{{ $ticket->company->razonSocial }}</strong><br>
             R.U.C.: {{ $ticket->company->ruc }}<br>
             {{ $ticket->encomienda->sucursal_remitente->address }}<br>
             Telf: {{ $ticket->encomienda->sucursal_remitente->phone }}<br>
