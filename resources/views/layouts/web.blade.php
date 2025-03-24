@@ -116,11 +116,9 @@
                         <!-- Brand Header -->
                         <div class="p-4 border-b">
                             <h1 class="flex items-center text-xl font-semibold">
-                                Flota Brayan
-                                <span
-                                    class="ml-2 text-xs font-medium text-green-500 bg-abitae-green px-2.5 py-0.5 rounded-full">
-                                    NUEVO
-                                </span>
+                                <a href="/nosotros" class="text-green-500 transition-colors duration-200 hover:text-blue-500">
+                                    NOSOTROS
+                                </a>
                             </h1>
                         </div>
 
@@ -163,7 +161,7 @@
                                 <button @click="open = !open"
                                     class="flex items-center w-full p-4 text-left hover:bg-gray-50 group">
                                     <span class="text-abitae-green">📦</span>
-                                    <span class="ml-3 font-medium text-gray-900">Envíos</span>
+                                    <span class="ml-3 font-medium text-gray-900">Ubicanos</span>
                                     <svg class="w-5 h-5 ml-auto text-gray-400 transition-transform"
                                         :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24"
                                         stroke="currentColor">
@@ -178,14 +176,11 @@
                                     x-transition:leave-start="opacity-100 transform translate-y-0"
                                     x-transition:leave-end="opacity-0 transform -translate-y-2"
                                     class="px-4 py-2 bg-gray-50">
-                                    <a href="#"
-                                        class="block py-2 pl-8 text-sm text-gray-600 hover:text-abitae-green">Crear
-                                        Envío</a>
-                                    <a href="/rastrea"
-                                        class="block py-2 pl-8 text-sm text-gray-600 hover:text-abitae-green">Rastrear
-                                        Envío</a>
-                                    <a href="#"
-                                        class="block py-2 pl-8 text-sm text-gray-600 hover:text-abitae-green">Cotizar</a>
+                                    <a href="/reclamaciones"
+                                        class="block py-2 pl-8 text-sm text-gray-600 hover:text-abitae-green">Contactanos</a>
+                                    <a href="/reclamaciones"
+                                        class="block py-2 pl-8 text-sm text-gray-600 hover:text-abitae-green">Libro de
+                                        Reclamaciones</a>
                                 </div>
                             </div>
                         </nav>

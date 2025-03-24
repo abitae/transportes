@@ -114,8 +114,7 @@
             @endcan
             <x-mary-menu-separator />
             <x-mary-menu-item title="Messages" icon="o-envelope" link="{{ route('message.frontend') }}" />
-            <x-mary-menu-item title="Reclamaciones" icon="o-envelope" link="{{ route('message.frontend') }}" />
-            <x-mary-menu-item title="Cotizaciones" icon="o-envelope" link="{{ route('message.frontend') }}" />
+            <x-mary-menu-item title="Reclamaciones" icon="o-envelope" link="{{ route('reclamaciones.frontend') }}" />
             <x-mary-menu-separator />
         </x-mary-menu>
     </x-slot:sidebar>

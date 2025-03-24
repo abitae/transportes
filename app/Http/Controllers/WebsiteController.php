@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Configuration\Sucursal;
 use App\Models\Frontend\Message;
+use App\Models\Frontend\Reclamacion;
 use App\Models\Package\Encomienda;
 use Illuminate\Http\Request;
 
@@ -25,48 +26,93 @@ class WebsiteController extends Controller
     }
     public function contact()
     {
-        return view('web.contact');
+        return view('web.contacto');
     }
     public function terminos()
     {
         return view('web.terminos');
     }
-    public function trackingSearch(Request $request){
+    public function trackingSearch(Request $request)
+    {
         $request->validate(
             [
                 'tracking' => 'required',
                 'code' => 'required',
-            ]);
+            ]
+        );
         $encomienda = Encomienda::where('code', $request->tracking)
-            ->whereHas('remitente', function($query) use ($request) {
+            ->whereHas('remitente', function ($query) use ($request) {
                 $query->where('code', $request->code);
             })
-            ->orWhereHas('destinatario', function($query) use ($request) {
-                $query->where('code', $request->code); 
+            ->orWhereHas('destinatario', function ($query) use ($request) {
+                $query->where('code', $request->code);
             })
-            ->first();  
-            
-        if($encomienda){
+            ->first();
+
+        if ($encomienda) {
             return view('web.rastrea', compact('encomienda'));
-        }else{
+        } else {
             return view('web.rastrea');
         }
     }
     public function contactForm(Request $request)
     {
-        $validated = $request->validate([
+        $rules = [
             'name' => 'required',
             'email' => 'required|email',
             'phone' => 'required',
             'select' => 'required',
             'message' => 'required',
-        ]);
-        Message::create($validated);
-        return view('web2.contact');
+            'politicas' => 'required',
+        ];
+        $messages = [
+            'name.required' => 'El nombre es requerido',
+            'email.required' => 'El email es requerido',
+            'email.email' => 'El email no es válido',
+            'phone.required' => 'El teléfono es requerido',
+        ];
+        $validated = $request->validate($rules, $messages);
+        if ($validated['politicas'] == 'on') {
+            Message::create($validated);
+            return view('web.contacto')->with('success', 'Mensaje enviado correctamente');
+        } else {
+            return redirect()->back()->with('error', 'Debes aceptar las políticas de privacidad');
+        }
     }
     public function servicios()
     {
         return view('web.services');
     }
+    public function reclamaciones()
+    {
+        return view('web.reclamos');
+    }
+    public function reclamacionesForm(Request $request)
+    {
+        $rules = [
+            'reclamo_nombre' => 'required',
+            'reclamo_documento' => 'required|numeric',
+            'reclamo_telefono' => 'required',
+            'reclamo_email' => 'required|email',
+            'reclamo_direccion' => 'required',
+            'reclamo_tipo' => 'required',
+            'reclamo_producto' => 'required',
+            'reclamo_monto' => 'required|numeric',
+            'reclamo_descripcion' => 'required',
+            'reclamo_politicas' => 'required',
+        ];
+        $messages = [
+            'reclamo_nombre.required' => 'El nombre es requerido',
+            'reclamo_documento.required' => 'El documento es requerido',
+            'reclamo_documento.numeric' => 'El documento debe ser un número',
+        ];
+        $validated = $request->validate($rules, $messages);
 
+        if ($validated['reclamo_politicas'] == 'on') {
+            Reclamacion::create($validated);
+            return view('web.reclamos')->with('success', 'Reclamación enviada correctamente');
+        } else {
+            return redirect()->back()->with('error', 'Debes aceptar las políticas de privacidad');
+        }
+    }
 }

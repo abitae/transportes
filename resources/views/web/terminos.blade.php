@@ -1,3 +1,3 @@
 <x-web-layout>
-    @include('web2.partial.terminos')
+    @include('web.partial.terminos')
 </x-web-layout>

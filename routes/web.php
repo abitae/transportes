@@ -19,6 +19,7 @@ use App\Livewire\Facturacion\NoteCreateLive;
 use App\Livewire\Facturacion\NoteLive;
 use App\Livewire\Facturacion\TicketLive;
 use App\Livewire\Frontend\MessageLive;
+use App\Livewire\Frontend\ReclamoLive;
 use App\Livewire\Home\DashboardLive;
 use App\Livewire\Package\CustomerLive;
 use App\Livewire\Package\DeliverPackageLive;
@@ -38,11 +39,13 @@ Route::get('/test', function () {
 Route::get('/', [WebsiteController::class, 'index'])->name('index');
 Route::get('/nosotros', [WebsiteController::class, 'abount'])->name('abount');
 Route::get('/servicios', [WebsiteController::class, 'servicios'])->name('servicios');
-Route::get('/terminos', [WebsiteController::class, 'terminos'])->name('terminos');
+Route::get('/terminos', [WebsiteController::class, 'terminos'])->name('politicas-privacidad');
 Route::get('/rastrea', [WebsiteController::class, 'rastrea'])->name('rastrea');
 Route::post('/tracking', [WebsiteController::class, 'trackingSearch'])->name('tracking.search');
-Route::post('/contactoform', [WebsiteController::class, 'contactForm'])->name('contacto.form');
-
+Route::get('/contacto', [WebsiteController::class, 'contact'])->name('contact');
+Route::post('/contacto', [WebsiteController::class, 'contactForm'])->name('contacto.enviar');
+Route::get('/reclamaciones', [WebsiteController::class, 'reclamaciones'])->name('reclamos');
+Route::post('/reclamaciones', [WebsiteController::class, 'reclamacionesForm'])->name('reclamaciones.enviar');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardLive::class)->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -67,6 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/retorno', ReturnPackageLive::class)->name('package.return')->middleware('can:package.return');
     Route::get('/maniesto', ManifiestoLive::class)->name('package.maniesto')->middleware('can:package.maniesto');
     Route::get('/message', MessageLive::class)->name('message.frontend')->middleware('can:message.frontend');
+    Route::get('/reclamos', ReclamoLive::class)->name('reclamaciones.frontend');
     Route::get('/ticket', TicketLive::class)->name('facturacion.ticket')->middleware('can:facturacion.ticket');
     Route::get('/invoice', InvoiceLive::class)->name('facturacion.invoice')->middleware('can:facturacion.invoice');
     Route::get('/despache', DespatcheLive::class)->name('facturacion.despache')->middleware('can:facturacion.despache');
