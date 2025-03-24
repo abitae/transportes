@@ -85,7 +85,7 @@
 <body>
     <div class="header">
 
-        <img src="{{ $ticket->company->logo_path ? 'storage/' . $despache->company->logo_path : './img/logo.png' }}"
+        <img src="{{ $ticket->company->logo_path ? 'storage/' . $ticket->company->logo_path : './img/logo.png' }}"
             alt="Logo" class="logo">
         <div class="company-info">
             <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
