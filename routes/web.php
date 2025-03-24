@@ -46,6 +46,19 @@ Route::get('/contacto', [WebsiteController::class, 'contact'])->name('contact');
 Route::post('/contacto', [WebsiteController::class, 'contactForm'])->name('contacto.enviar');
 Route::get('/reclamaciones', [WebsiteController::class, 'reclamaciones'])->name('reclamos');
 Route::post('/reclamaciones', [WebsiteController::class, 'reclamacionesForm'])->name('reclamaciones.enviar');
+Route::get('/prohibiciones', [WebsiteController::class, 'prohibiciones'])->name('prohibiciones');
+Route::get('/comunicate', [WebsiteController::class, 'comunicate'])->name('comunicate');
+Route::get('/cotiza', [WebsiteController::class, 'cotiza'])->name('cotiza');
+Route::get('/rastreo', [WebsiteController::class, 'rastreo'])->name('rastreo');
+Route::get('/agencias', [WebsiteController::class, 'agencias'])->name('agencias');
+Route::get('/tarifario', [WebsiteController::class, 'tarifario'])->name('tarifario');
+Route::get('/terminales', [WebsiteController::class, 'terminales'])->name('terminales');
+Route::get('/envia', [WebsiteController::class, 'envia'])->name('envia');
+
+
+
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardLive::class)->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

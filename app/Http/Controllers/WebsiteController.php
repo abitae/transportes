@@ -32,6 +32,43 @@ class WebsiteController extends Controller
     {
         return view('web.terminos');
     }
+
+    public function comunicate()
+    {
+        return view('web.partial.comunicate');
+    }
+
+    public function cotiza()
+    {
+        return view('web.partial.cotiza');
+    }
+
+    public function rastreo()
+    {
+        return view('web.partial.rastreo');
+    }
+
+    public function agencias()
+    {
+        return view('web.partial.agencias');
+    }
+
+    public function tarifario()
+    {
+        return view('web.partial.tarifario');
+    }
+    public function prohibiciones()
+    {
+        return view('web.partial.prohibiciones');
+    }
+    public function terminales()
+    {
+        return view('web.partial.terminales');
+    }
+    public function envia()
+    {
+        return view('web.partial.envia');
+    }
     public function trackingSearch(Request $request)
     {
         $request->validate(
