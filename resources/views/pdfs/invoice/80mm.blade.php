@@ -101,6 +101,7 @@
     </div>
     <div class="customer-info">
         Fecha Emisión: {{ $invoice->created_at->format('Y-m-d') }}<br>
+        Metodo de Pago: {{ $invoice->encomienda->metodo_pago }}<br>
     </div>
     <div class="customer-info">
         <strong>DATOS CLIENTE</strong><br>
