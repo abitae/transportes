@@ -96,7 +96,7 @@
     </div>
 
     <div class="despache-number">
-        GUIA DE REMISION ELECTRONICA<br>
+        GUIA DE REMISION ELECTRONICA TRANSPORTISTA<br>
         {{ $despache->serie }} - {{ $despache->correlativo }}<br>
     </div>
     <div class="despache-number">
@@ -134,10 +134,11 @@
         <strong>DESTINO:<br></strong>{{ $despache->encomienda->sucursal_destinatario->address }}
     </div>
     <div class="customer-info">
-        <strong>TRANSPORTE</strong><br>
-        <strong>PLACA: :</strong>{{ $despache->encomienda->vehiculo->name }}<br>
-        <strong>DESTINO:</strong>{{ $despache->encomienda->vehiculo->marca }} -
-        {{ $despache->encomienda->vehiculo->modelo }}
+        <strong>TRANSPORTE y CONDUCTOR</strong><br>
+        <strong>PLACA N°: :</strong>{{ $despache->encomienda->vehiculo->name }}<br>
+        <strong>DNI:</strong>{{ $despache->encomienda->transportista->dni }}<br>
+        <strong>NOMBRE:</strong>{{ $despache->encomienda->transportista->name }}<br>
+        <strong>LICENCIA:</strong>{{ $despache->encomienda->transportista->licencia }}
     </div>
     <table class="items-table">
         <thead>

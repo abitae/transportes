@@ -15,7 +15,7 @@ class CompanyLive extends Component
 {
     use WithFileUploads, Toast;
 
-    public $title = 'Company';
+    public $title = 'EMPRESA';
     public $sub_title = 'Configuracion de empresa';
     public CompanyForm $companyForm;
     public $type_code = 'ruc';

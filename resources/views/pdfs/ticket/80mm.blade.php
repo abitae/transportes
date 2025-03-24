@@ -84,7 +84,7 @@
 
 <body>
     <div class="header">
-        
+
         <img src="./img/logo_format_ticket.jpg" alt="Logo" class="logo">
         <div class="company-info">
             <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
@@ -134,10 +134,11 @@
         <strong>DESTINO:<br></strong>{{ $ticket->encomienda->sucursal_destinatario->address }}
     </div>
     <div class="customer-info">
-        <strong>TRANSPORTE</strong><br>
-        <strong>PLACA: :</strong>{{ $ticket->encomienda->vehiculo->name }}<br>
-        <strong>DESTINO:</strong>{{ $ticket->encomienda->vehiculo->marca }} -
-        {{ $ticket->encomienda->vehiculo->modelo }}
+        <strong>TRANSPORTE y CONDUCTOR</strong><br>
+        <strong>PLACA N°: :</strong>{{ $ticket->encomienda->vehiculo->name }}<br>
+        <strong>DNI:</strong>{{ $ticket->encomienda->transportista->dni }}<br>
+        <strong>NOMBRE:</strong>{{ $ticket->encomienda->transportista->name }}<br>
+        <strong>LICENCIA:</strong>{{ $ticket->encomienda->transportista->licencia }}
     </div>
     <table class="items-table">
         <thead>

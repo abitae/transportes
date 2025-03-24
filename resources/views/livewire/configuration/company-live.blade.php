@@ -42,12 +42,12 @@
         <div class="grid grid-cols-2 gap-1 p-2 border border-gray-300 rounded-lg">
             <div>
                 @if ($company->cert_path)
-                <a href="{{ $company->cert_path ?? '' }}" class="bg-purple-500 btntext-white" target="_blank">Descargar Certificado</a>
+                <a href="{{ 'storage/'.$company->cert_path ?? '' }}" class="bg-purple-500 btntext-white" target="_blank">Descargar Certificado</a>
                 @endif
             </div>
             <div>
                 @if ($company->logo_path)
-                <img src="{{ $company->logo_path ?? '/empty-user.jpg' }}" class="h-24 rounded-lg" />
+                <img src="{{ 'storage/'.$company->logo_path ?? '/empty-user.jpg' }}" class="h-24 rounded-lg" />
                 @endif
 
             </div>
