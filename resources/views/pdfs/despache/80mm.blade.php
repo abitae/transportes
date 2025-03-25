@@ -172,16 +172,16 @@
         <table style="width: 100%">
             <tr>
                 <td style="text-align: left">Gravada:</td>
-                <td style="text-align: right">S/ {{ number_format($despache->valorVenta, 2) }}</td>
+                <td style="text-align: right">S/ {{ number_format($despache->encomienda->valorVenta, 2) }}</td>
             </tr>
             <tr>
                 <td style="text-align: left">IGV (18%):</td>
-                <td style="text-align: right">S/ {{ number_format($despache->mtoIGV, 2) }}</td>
+                <td style="text-align: right">S/ {{ number_format($despache->encomienda->mtoIGV, 2) }}</td>
             </tr>
             <tr>
                 <td style="text-align: left"><strong>Importe total:</strong></td>
                 <td style="text-align: right"><strong>S/
-                        {{ number_format($despache->mtoImpVenta, 2) }}</strong></td>
+                        {{ number_format($despache->encomienda->mtoImpVenta, 2) }}</strong></td>
             </tr>
         </table>
     </div>
@@ -195,16 +195,27 @@
     <div>
         <table style="width: 100%; margin-top: 20px;">
             <tr>
-                <td style="width: 70%;">
-                    <p style="font-size: 8px; text-transform: uppercase; margin-bottom: 30px;">USTED ESTA ACEPTANDO LAS CONDICIONES DE ENVÍO DEL COMPROBANTE QUE SE LE ENTREGO</p>
-                    <p style="margin-bottom: 40px;">                           </p>
-                    <p style="margin-top: 40px;">
-                        ____________________________<br>
-                        <span style="font-size: 8px;">Firma y Huella Digital</span><br>
-                        <span style="font-size: 8px;">DNI: _________________</span>
-                    </p>
+                <td style="width: 75%;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="padding-bottom: 20px;">
+                                <p style="font-size: 8px; text-transform: uppercase;">USTED ESTA ACEPTANDO LAS
+                                    CONDICIONES DE ENVÍO
+                                    DEL COMPROBANTE QUE SE LE ENTREGO</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding-top: 20px;">
+                                <p style="margin-top: 60px;">
+                                    ____________________________<br>
+                                    <span style="font-size: 8px;">Firma y Huella Digital</span><br>
+                                    <span style="font-size: 8px;">DNI: _________________</span>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
-                <td style="width: 30%; border: 1px dashed #000; height: 100px; vertical-align: top;">
+                <td style="width: 25%;border: 1px dashed #000; height: 50px;margin-bottom: 5px;height: 80px;">
                 </td>
             </tr>
         </table>
