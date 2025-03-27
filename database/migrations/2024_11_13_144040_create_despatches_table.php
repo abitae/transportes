@@ -24,19 +24,24 @@ return new class extends Migration
             $table->foreignId('destinatario_id')->constrained('customers');
             $table->string('codTraslado');
             $table->string('modTraslado');
-            $table->string('fecTraslado');
-            $table->string('pesoTotal');
-            $table->string('undPesoTotal');
-            $table->string('llegada_ubigueo');
-            $table->string('llegada_direccion');
-            $table->string('partida_ubigueo');
-            $table->string('partida_direccion');
-            $table->string('chofer_tipoDoc');
-            $table->string('chofer_nroDoc');
-            $table->string('chofer_licencia');
-            $table->string('chofer_nombres');
-            $table->string('chofer_apellidos');
-            $table->string('vehiculo_placa');
+            
+            $table->string('tipoDocTraslado')->nullable();
+            $table->string('docTraslado')->nullable();
+            $table->string('emisorDocTraslado')->nullable();
+
+            $table->string('fecTraslado')->nullable();
+            $table->string('pesoTotal')->nullable();
+            $table->string('undPesoTotal')->nullable();
+            $table->string('llegada_ubigueo')->nullable();
+            $table->string('llegada_direccion')->nullable();
+            $table->string('partida_ubigueo')->nullable();
+            $table->string('partida_direccion')->nullable();
+            $table->string('chofer_tipoDoc')->nullable();
+            $table->string('chofer_nroDoc')->nullable();
+            $table->string('chofer_licencia')->nullable();
+            $table->string('chofer_nombres')->nullable();
+            $table->string('chofer_apellidos')->nullable();
+            $table->string('vehiculo_placa')->nullable();
             $table->string('xml_path')->nullable();
             $table->string('xml_hash')->nullable();
             $table->string('cdr_description')->nullable();

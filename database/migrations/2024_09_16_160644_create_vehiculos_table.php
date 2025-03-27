@@ -16,7 +16,15 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('marca');
             $table->string('modelo');
-            $table->string('tipo');
+            $table->string('tipo');//configuracion de vehiculo
+            $table->string('color')->nullable();
+            $table->string('largo')->nullable();
+            $table->string('ancho')->nullable();
+            $table->string('alto')->nullable();
+            $table->string('pesoBruto')->nullable();
+            $table->string('pesoNeto')->nullable();
+            $table->json('images')->nullable();
+            $table->string('mtc')->nullable();
             $table->boolean('isActive')->default(true);
             $table->timestamps();
         });

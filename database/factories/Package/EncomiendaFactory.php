@@ -7,9 +7,7 @@ use App\Models\Configuration\Transportista;
 use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
 use App\Models\User;
-use BladeUIKit\Components\DateTime\Carbon;
-use Carbon\Carbon as CarbonCarbon;
-use DateTime;
+
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -45,7 +43,9 @@ class EncomiendaFactory extends Factory
             'tipo_pago' => $this->faker->randomElement(['Contado', 'Credito']),
             'metodo_pago' => $this->faker->randomElement(['Efectivo', 'Yape', 'Tarjeta', 'Transferencia']),
             'tipo_comprobante' => $this->faker->randomElement(['TICKET', 'FACTURA', 'BOLETA']),
-            'doc_traslado' => 'DT-' . $this->faker->unique()->numerify('#####'),
+            'tipoDocTraslado' => $this->faker->randomElement(['01', '03', '07', '31']),
+            'docTraslado' => 'DT-' . $this->faker->unique()->numerify('#####'),
+            'emisorDocTraslado' => $this->faker->unique()->numerify('###########'),
             'glosa' => $this->faker->sentence(),
             'observation' => $this->faker->optional()->paragraph(),
             'estado_encomienda' => $this->faker->randomElement(['REGISTRADO']),

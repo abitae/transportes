@@ -21,6 +21,7 @@ class Company extends Model
         'ubigeo',
         'ctaBanco',
         'pin',
+        'nroMtc',
         'logo_path',
         'sol_user',
         'sol_pass',

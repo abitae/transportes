@@ -57,7 +57,6 @@ class NoteCreateLive extends Component
     public function processInvoice()
     {
         $invoice = Invoice::findOrFail($this->id);
-        dump($invoice);
         $this->tipoDocAfectado = $invoice->tipoDoc;
         $this->numDocfectado = $invoice->id;
         $this->motivo = '01';
@@ -321,7 +320,7 @@ class NoteCreateLive extends Component
         $this->note = $note;
         $this->modalPrintNote = true;
         $this->resetForm();
-        
+
     }
     public function closePrintNote()  {
         $this->modalPrintNote = false;

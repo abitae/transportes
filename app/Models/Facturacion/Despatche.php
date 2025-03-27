@@ -21,8 +21,11 @@ class Despatche extends Model
         'flete_id',
         'remitente_id',
         'destinatario_id',
-        'codTraslado',
+        'codTraslado', //
         'modTraslado',
+        'tipoDocTraslado',
+        'docTraslado',
+        'emisorDocTraslado',
         'fecTraslado',
         'pesoTotal',
         'undPesoTotal',

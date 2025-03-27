@@ -10,6 +10,7 @@ class Transportista extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'type_code',
         'licencia',
         'dni',
         'name',

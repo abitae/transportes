@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Package;
 
 use App\Livewire\Forms\EncomiendaForm;
@@ -34,7 +35,7 @@ class RegisterLive extends Component
     public EntryCajaForm $entryForm;
 
     public $cantidad, $und_medida = 'NIU', $description, $peso, $amount;
-    public $paquetes, $sucursal_destino, $sucursal_dest_id, $pin1, $pin2, $doc_traslado;
+    public $paquetes, $sucursal_destino, $sucursal_dest_id, $pin1, $pin2;
     public $estado_pago = 'PAGADO', $tipo_comprobante = 'TICKET', $metodo_pago = 'Efectivo', $tipo_pago = 'Contado';
     public $glosa, $observation;
     public $transportista_id, $vehiculo_id, $modalConfimation = false, $caja, $isReturn = false, $isHome = false, $modalFinal = false;
@@ -43,7 +44,7 @@ class RegisterLive extends Component
     public $remitente, $remitente_type_code = 1, $remitente_code, $remitente_name, $remitente_address, $remitente_phone, $remitente_ubigeo;
     public $destinatario, $destinatario_type_code = 1, $destinatario_code, $destinatario_name, $destinatario_address, $destinatario_phone, $destinatario_ubigeo;
     public $cliFacturacion, $cliFacturacion_type_code = 1, $cliFacturacion_code, $cliFacturacion_name, $cliFacturacion_address, $cliFacturacion_phone, $cliFacturacion_ubigeo;
-
+    public $tipoDocTraslado = '0', $docTraslado, $emisorDocTraslado;
     public function mount()
     {
         $this->caja = $this->cajaIsActive(Auth::user());
@@ -432,7 +433,6 @@ class RegisterLive extends Component
         $paquete->sub_total = $this->amount * $this->cantidad;
         $this->paquetes->push($paquete->toArray());
         $this->success('Genial', 'Paquete ingresado correctamente!');
-
     }
     public function restPaquete($id)
     {
@@ -459,6 +459,13 @@ class RegisterLive extends Component
         if ($this->isHome) {
             $this->pin1 = $this->pin2 = 123;
         }
+        if ($this->tipoDocTraslado == '0') {
+            $this->docTraslado = 'S/G';
+            $this->emisorDocTraslado = '';
+        }
+        if (!$this->validateDocumentTraslado()) {
+            return;
+        }
 
         if (isset($this->sucursal_dest_id, $this->pin1, $this->pin2) && $this->pin1 == $this->pin2) {
             $this->sucursal_destino = Sucursal::findOrFail($this->sucursal_dest_id);
@@ -467,7 +474,31 @@ class RegisterLive extends Component
             $this->error('Error, el pin ingresado no es correcto!');
         }
     }
+    public function validateDocumentTraslado():bool
+    {
+        $documentRules = [
+            '1' => ['prefix' => 'F', 'message' => 'F001-123'],
+            '3' => ['prefix' => 'B', 'message' => 'B001-123'],
+            '7' => ['prefix' => 'T', 'message' => 'T001-123'],
+            '31' => ['prefix' => 'V', 'message' => 'V001-123']
+        ];
 
+        if (array_key_exists($this->tipoDocTraslado, $documentRules)) {
+            $rule = $documentRules[$this->tipoDocTraslado];
+            $pattern = '/^' . $rule['prefix'] . '[A-Z0-9]\d{2}-\d{1,6}$/';
+
+            if (!preg_match($pattern, $this->docTraslado)) {
+                $this->error('Ingrese el formato correcto ' . $rule['message']);
+                return false;
+            }
+
+            if (!preg_match('/^(10|20)\d{9}$/', $this->emisorDocTraslado)) {
+                $this->error('Ingrese el numero RUC correcto');
+                return false;
+            }
+        }
+        return true;
+    }
     public function confirmEncomienda()
     {
 
@@ -485,6 +516,8 @@ class RegisterLive extends Component
             $this->modalConfimation = false;
             return;
         }
+
+
         $this->encomiendaForm->fill([
             'code' => $this->generateCode(),
             'user_id' => Auth::user()->id,
@@ -501,7 +534,11 @@ class RegisterLive extends Component
             'tipo_pago' => $this->estado_pago == 'CONTRA ENTREGA' ? 'Credito' : 'Contado',
             'metodo_pago' => $this->metodo_pago,
             'tipo_comprobante' => $this->estado_pago == 'CONTRA ENTREGA' ? 'TICKET' : $this->tipo_comprobante,
-            'doc_traslado' => $this->doc_traslado,
+
+            'tipoDocTraslado' => $this->tipoDocTraslado ?? '',
+            'docTraslado' => $this->docTraslado ?? 'S/G',
+            'emisorDocTraslado' => $this->emisorDocTraslado ?? '',
+            'estado_credito' => $this->estado_pago == 'CONTRA ENTREGA' ? 'Pendiente' : 'Cancelado',
             'glosa' => $this->glosa,
             'observation' => $this->observation,
             'estado_encomienda' => 'REGISTRADO',
@@ -538,7 +575,7 @@ class RegisterLive extends Component
         $this->entryForm->fill([
             'caja_id' => $this->caja->id,
             'monto_entry' => $encomienda->monto,
-            'description' => 'REGISTRO '.$encomienda->tipo_comprobante,
+            'description' => 'REGISTRO ' . $encomienda->tipo_comprobante,
             'metodo_pago' => $encomienda->metodo_pago,
             'tipo_entry' => $encomienda->code,
         ]);

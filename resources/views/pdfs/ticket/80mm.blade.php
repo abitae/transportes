@@ -85,8 +85,7 @@
 <body>
     <div class="header">
 
-        <img src="{{ $ticket->company->logo_path ? 'storage/' . $ticket->company->logo_path : './img/logo.png' }}"
-            alt="Logo" class="logo">
+        <img src="./img/logo.jpg" alt="Logo" class="logo">
         <div class="company-info">
             <strong>{{ $ticket->company->razonSocial }}</strong><br>
             R.U.C.: {{ $ticket->company->ruc }}<br>

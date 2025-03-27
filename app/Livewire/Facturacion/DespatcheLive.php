@@ -33,6 +33,7 @@ class DespatcheLive extends Component
         $sunat = new SunatServiceGlobal();
         $api = $sunat->getSee($company);
         $guiaT = $sunat->getDespatch($despatche);
+        //dd($guiaT);
         $xml = $api->getXmlSigned($guiaT);
         $hash = (new XmlUtils())->getHashSign($xml);
         $despatche->xml_hash = $hash;
@@ -52,9 +53,9 @@ class DespatcheLive extends Component
     {
         $company = $despatche->company;
         $sunat = new SunatServiceGlobal();
-        $guiaT = $sunat->getDespatch();
+        $guiaT = $sunat->getDespatch($despatche);
         $api = $sunat->getSeeApi($company);
-        $result = $api->send($guiaT);   
+        $result = $api->send($guiaT);
         $ticket = $result->getTicket();
         $result = $api->getStatus($ticket);
         $response = $sunat->sunatResponse($result);

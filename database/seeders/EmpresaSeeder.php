@@ -20,14 +20,16 @@ class EmpresaSeeder extends Seeder
             'address'         => 'PJ. LOS PEDREGALES MZA. D LOTE. 4 GRU.SECTOR 3 LOS PEDREGAL   JUNíN -  HUANCAYO  -  EL TAMBO',
             'email'           => 'abel.arana@gmail.com',
             'telephone'       => '947199138',
-            'logo_path'       => 'company/logo/sq2vGUegnQe99UcdIXABpm8c6cmMWfwKl0saNmFm.png',
+            'logo_path'       => '/img/logo.png',
             'ctaBanco'        => '0004-3342343243',
+            'pin'             => '123',
             'sol_user'        => 'MODDATOS',
             'sol_pass'        => 'MODDATOS',
-            'cert_path'       => 'company/certificado/certificado_prueba.pem',
+            'cert_path'       => './certificado_prueba.pem',
             'client_id'       => 'test-85e5b0ae-255c-4891-a595-0b98c65c9854',
             'client_secret'   => 'test-Hty/M6QshYvPgItX2P0+Kw==',
             'production'      => false,
+            'nroMtc'          => '1553682CNG',
         ]);
     }
 }

@@ -15,7 +15,7 @@
                         <x-mary-icon name="o-printer" class="mr-2 text-indigo-600 h-5 w-5" />
                         <span class="border-b-2 border-indigo-300 pb-1">DOCUMENTOS PARA IMPRIMIR</span>
                     </h3>
-                    
+
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <div class="col-span-1">
                             @if ($this->encomienda->ticket)
@@ -52,30 +52,34 @@
                         <x-mary-icon name="o-arrow-right-circle" class="mr-2 text-indigo-600 h-5 w-5" />
                         <span class="border-b-2 border-indigo-300 pb-1">ACCIONES DISPONIBLES</span>
                     </h3>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                         <div>
                             <x-mary-button icon="o-newspaper" link="{{ route('package.register') }}" spinner
-                                label="NUEVA ENCOMIENDA" 
-                                class="w-full text-white bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all duration-200 font-medium" />
+                                label="NUEVA ENCOMIENDA"
+                                class="w-full text-white bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all duration-200 text-xs" />
                         </div>
                         <div>
-                            <x-mary-button icon="s-list-bullet" link="{{ route('package.send') }}" spinner 
+                            <x-mary-button icon="s-list-bullet" link="{{ route('package.send') }}" spinner
                                 label="LISTA ENCOMIENDAS"
-                                class="w-full text-white bg-purple-500 hover:bg-purple-700 shadow-md hover:shadow-lg transition-all duration-200 font-medium" />
+                                class="w-full text-white bg-purple-500 hover:bg-purple-700 shadow-md hover:shadow-lg transition-all duration-200 text-xs" />
                         </div>
                         <div>
                             <x-mary-button icon="o-cursor-arrow-ripple" link="{{ route('package.deliver') }}" no-wire-navigate
-                                label="ENTREGAR" spinner 
-                                class="w-full text-white bg-blue-500 hover:bg-blue-700 shadow-md hover:shadow-lg transition-all duration-200 font-medium" />
+                                label="ENTREGAR" spinner
+                                class="w-full text-white bg-blue-500 hover:bg-blue-700 shadow-md hover:shadow-lg transition-all duration-200 text-xs" />
+                        </div>
+                        <div>
+                            <x-mary-button icon="o-arrow-down-on-square" link="/declaracion/{{ $this->encomienda->id }}" target="_blank" no-wire-navigate
+                                label="DECLARACIÓN JURADA"
+                                class="w-full text-white bg-indigo-600 hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all duration-200 text-xs" />
                         </div>
                     </div>
                 </div>
             </div>
-            
             <!-- Botón para cerrar el modal -->
             <div class="mt-6 text-center">
-                <x-mary-button link="{{ route('package.register') }}" label="CERRAR" icon="o-x-mark" 
+                <x-mary-button link="{{ route('package.register') }}" label="CERRAR" icon="o-x-mark"
                     class="bg-gray-200 hover:bg-gray-300 text-gray-700 shadow-sm transition-all duration-200" />
             </div>
         </x-mary-card>

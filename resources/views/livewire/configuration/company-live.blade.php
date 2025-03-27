@@ -42,12 +42,12 @@
         <div class="grid grid-cols-2 gap-1 p-2 border border-gray-300 rounded-lg">
             <div>
                 @if ($company->cert_path)
-                <a href="{{ 'storage/'.$company->cert_path ?? '' }}" class="bg-purple-500 btntext-white" target="_blank">Descargar Certificado</a>
+                    <textarea class="w-full h-24 p-2 text-sm font-mono bg-gray-100 border border-gray-300 rounded-lg" readonly>{{ Storage::get($company->cert_path) }}</textarea>
                 @endif
             </div>
             <div>
                 @if ($company->logo_path)
-                <img src="{{ 'storage/'.$company->logo_path ?? '/empty-user.jpg' }}" class="h-24 rounded-lg" />
+                    <img src="{{ 'storage/' . $company->logo_path ?? '/empty-user.jpg' }}" class="h-24 rounded-lg" />
                 @endif
 
             </div>

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use DateTime;
@@ -53,7 +54,7 @@ class SunatServiceGlobal
         return $api;
     }
 
-    public function getInvoce($data) //: \Greenter\Model\Sale\Invoice
+    public function getInvoce($data)
     {
         $invoice = new \Greenter\Model\Sale\Invoice();
         $invoice->setUblVersion($data->ublVersion ?? '2.1');
@@ -63,7 +64,7 @@ class SunatServiceGlobal
         $invoice->setSerie($data->serie ?? null);
         $invoice->setCorrelativo($data->correlativo ?? null);
         $invoice->setFechaEmision(new DateTime($data->fechaEmision) ?? null);
-        $invoice->setFormaPago($data->formaPago_tipo == 'Contado' ? new FormaPagoContado() : new FormaPagoCredito($data->mtoCredito, 'PEN'));
+        $invoice->setFormaPago($data->formaPago_tipo == 'Contado' ? new FormaPagoContado() : new FormaPagoCredito($data->mtoImpVenta, 'PEN'));
         $invoice->setTipoMoneda($data->tipoMoneda ?? 'PEN');
         $invoice->setMtoOperGravadas($data->mtoOperGravadas);
         $invoice->setMtoOperExoneradas($data->mtoOperExoneradas);
@@ -91,7 +92,6 @@ class SunatServiceGlobal
 
     public function getCompany($data): \Greenter\Model\Company\Company
     {
-        //dd($data->sucursal);
         $address = (new \Greenter\Model\Company\Address())
             ->setUbigueo($data->sucursal->ubigeo)
             ->setCodigoPais($data->sucursal->codigoPais ?? 'PE')
@@ -123,6 +123,7 @@ class SunatServiceGlobal
             ->setRznSocial($client->name)
             ->setAddress($address);
     }
+
     public function getDetails($details): array
     {
         $items = [];
@@ -170,6 +171,7 @@ class SunatServiceGlobal
             ->setPercent($data->setPercent ?? 12)
             ->setMount($data->setMount ?? 47.20);
     }
+
     public function getNote($note): \Greenter\Model\Sale\Note
     {
         return (new \Greenter\Model\Sale\Note())
@@ -195,34 +197,38 @@ class SunatServiceGlobal
 
     public function getDespatch($guiaT): \Greenter\Model\Despatch\Despatch
     {
-
         $pagaflete = new Client();
         $pagaflete->setTipoDoc($guiaT->flete->type_code ?? null)
             ->setNumDoc($guiaT->flete->code ?? null)
             ->setRznSocial($guiaT->flete->name ?? null);
-        $item = new AdditionalDoc();
-        $item->setTipo("01")
-            ->setTipoDesc("Factura")
-            ->setNro("F001-00000007")
-            ->setEmisor("10436493903");
-        $relDoc[]     = $item;
+        if ($guiaT->docTraslado) {
+            $item = new AdditionalDoc();
+            $item->setTipo("01")
+                ->setTipoDesc("Factura")
+                ->setNro($guiaT->docTraslado)
+                ->setEmisor($guiaT->company->ruc);
+            $relDoc[]     = $item;
+        }
         $destinatario = new Client();
         $destinatario->setTipoDoc($guiaT->destinatario->type_code ?? null)
-            ->setNumDoc($guiaT->destinatario->type_code ?? null)
-            ->setRznSocial($guiaT->destinatario->type_code ?? null);
-        return (new \Greenter\Model\Despatch\Despatch())
-            ->setVersion('2022')
+            ->setNumDoc($guiaT->destinatario->code ?? null)
+            ->setRznSocial($guiaT->destinatario->name ?? null);
+        $despatch = (new \Greenter\Model\Despatch\Despatch());
+        $despatch->setVersion('2022')
             ->setTipoDoc($guiaT->tipoDoc)
             ->setSerie($guiaT->serie)
             ->setCorrelativo($guiaT->correlativo)
-            ->setFechaEmision(new DateTime($guiaT->fechaEmision))
-            ->setPagaFlete($pagaflete)
+            ->setFechaEmision(new DateTime($guiaT->fechaEmision));
+        $despatch->setPagaFlete($pagaflete)
             ->setCompany($this->getGRECompany($guiaT->company))
             ->setDestinatario($destinatario)
             ->setEnvio($this->getEnvio($guiaT))
-            ->setObservacion('glosa')
-            ->setAddDocs($relDoc)
-            ->setDetails($this->getDespatchDetail());
+            ->setObservacion('glosa');
+        if ($guiaT->docTraslado) {
+            $despatch->setAddDocs($relDoc);
+        }
+        $despatch->setDetails($this->getDespatchDetail($guiaT->details));
+        return $despatch;
     }
 
     public function getGRECompany($company): \Greenter\Model\Company\Company
@@ -234,31 +240,30 @@ class SunatServiceGlobal
 
     public function getEnvio($guiaT)
     {
-        dd($guiaT);
+        //dd($guiaT);
         $indicadores[] = "SUNAT_Envio_IndicadorPagadorFlete_Remitente";
         $transp        = new Transportist();
         $transp->setTipoDoc('6')
-            ->setNumDoc($guiaT->$company->ruc)
-            ->setRznSocial($guiaT->$company->razonSocial)
-            ->setNroMtc($guiaT->$company->nroMtc ?? "123456");
+            ->setNumDoc($guiaT->company->ruc)
+            ->setRznSocial($guiaT->company->razonSocial)
+            ->setNroMtc($guiaT->company->nroMtc ?? "1553682CNG");
         $remitente = new Client();
         $remitente->setTipoDoc($guiaT->remitente->type_code)
             ->setNumDoc($guiaT->remitente->code)
             ->setRznSocial($guiaT->remitente->name);
         return (new \Greenter\Model\Despatch\Shipment())
-            ->setCodTraslado('01') //catalogo 20 sunat
-            ->setModTraslado('02') //catalogo 18 sunat
+            ->setCodTraslado($guiaT->codTraslado) //catalogo 20 sunat
+            ->setModTraslado($guiaT->modTraslado) //catalogo 18 sunat
             ->setFecTraslado(new \DateTime($guiaT->created_at))
             ->setPesoTotal(100)
             ->setUndPesoTotal($guiaT->undPesoTotal)
             ->setTransportista($transp)
-            ->setVehiculo($this->getVehiculos())
-            ->setChoferes($this->getChoferes())
+            ->setVehiculo($this->getVehiculos($guiaT))
+            ->setChoferes($this->getChoferes($guiaT))
             ->setIndicador($indicadores)
-            ->setLlegada(new \Greenter\Model\Despatch\Direction('150101', 'AV LIMA'))
-            ->setPartida(new \Greenter\Model\Despatch\Direction('150203', 'AV ITALIA'))
+            ->setLlegada(new \Greenter\Model\Despatch\Direction($guiaT->llegada_ubigueo, $guiaT->llegada_direccion))
+            ->setPartida(new \Greenter\Model\Despatch\Direction($guiaT->partida_ubigueo, $guiaT->partida_direccion))
             ->setRemitente($remitente);
-
     }
 
     public function getTransportista(): \Greenter\Model\Despatch\Transportist
@@ -270,21 +275,26 @@ class SunatServiceGlobal
             ->setNroMtc('0001');
     }
 
-    public function getDespatchDetail(): array
+    public function getDespatchDetail($details): array
     {
-        $item = (new \Greenter\Model\Despatch\DespatchDetail())
-            ->setCantidad(2)
-            ->setUnidad('ZZ')
-            ->setDescripcion('PROD 1')
-            ->setCodigo('PROD1');
+        $items = [];
+        foreach ($details as $detail) {
+            $detail = (object) $detail;
+            $item = (new \Greenter\Model\Despatch\DespatchDetail())
+                ->setCantidad($detail->cantidad)
+                ->setUnidad($detail->unidad)
+                ->setDescripcion($detail->descripcion)
+                ->setCodigo($detail->codProducto);
+            $items[] = $item;
+        }
 
-        return [$item];
+        return $items;
     }
 
-    public function getVehiculos(): \Greenter\Model\Despatch\Vehicle
+    public function getVehiculos($guiaT): \Greenter\Model\Despatch\Vehicle
     {
         $vehiculos = collect([
-            ['placa' => 'ABC123'],
+            ['placa' => $guiaT->vehiculo_placa],
         ]);
 
         $secundarios = $vehiculos->slice(1)->map(function ($item) {
@@ -296,10 +306,10 @@ class SunatServiceGlobal
             ->setSecundarios($secundarios);
     }
 
-    public function getChoferes(): array
+    public function getChoferes($guiaT): array
     {
         $choferes = collect([
-            ['tipoDoc' => '1', 'numDoc' => '41234567', 'nombre' => 'JUAN PEREZ'],
+            ['tipoDoc' => $guiaT->chofer_tipoDoc, 'numDoc' => $guiaT->chofer_nroDoc, 'licencia' => $guiaT->chofer_licencia, 'nombre' => $guiaT->chofer_nombres, 'apellidos' => $guiaT->chofer_apellidos],
         ]);
 
         $drivers = $choferes->map(function ($item, $key) {
@@ -307,9 +317,9 @@ class SunatServiceGlobal
                 ->setTipo($key === 0 ? 'Principal' : 'Secundario')
                 ->setTipoDoc($item['tipoDoc'])
                 ->setNroDoc($item['numDoc'])
-                ->setLicencia('0001122020')
+                ->setLicencia($item['licencia'])
                 ->setNombres($item['nombre'])
-                ->setApellidos('Arana');
+                ->setApellidos($item['apellidos']);
         })->toArray();
 
         return $drivers;

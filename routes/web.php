@@ -21,6 +21,7 @@ use App\Livewire\Facturacion\TicketLive;
 use App\Livewire\Frontend\MessageLive;
 use App\Livewire\Frontend\ReclamoLive;
 use App\Livewire\Home\DashboardLive;
+use App\Livewire\Home\TutorialesLive;
 use App\Livewire\Package\CustomerLive;
 use App\Livewire\Package\DeliverPackageLive;
 use App\Livewire\Package\HomePackageLive;
@@ -59,20 +60,33 @@ Route::get('/envia', [WebsiteController::class, 'envia'])->name('envia');
 
 
 
+// Rutas de Dashboard y Perfil
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardLive::class)->name('dashboard');
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
     Route::get('/componentes', Componentes::class)->name('componentes');
+});
+Route::middleware('auth')->group(function () {
+    Route::get('/tutoriales', TutorialesLive::class)->name('tutoriales');
+});
+// Rutas de Configuración
+Route::middleware('auth')->group(function () {
     Route::get('/caja', CajaLive::class)->name('caja.index')->middleware('can:caja.index');
     Route::get('/sucursal', SucursalLive::class)->name('config.sucursal')->middleware('can:config.sucursal');
     Route::get('/vehiculo', VehiculoLive::class)->name('config.vehiculo')->middleware('can:config.vehiculo');
     Route::get('/transportistas', TransportistaLive::class)->name('config.transportista')->middleware('can:config.transportista');
-    Route::get('/user', UserLive::class)->name('config.user')->middleware('can:config.user');
+    Route::get('/usuarios', UserLive::class)->name('config.user')->middleware('can:config.user');
     Route::get('/role', RoleLive::class)->name('config.role')->middleware('can:config.role');
     Route::get('/empresa', CompanyLive::class)->name('config.company')->middleware('can:config.company');
     Route::get('/rutas', SucursalConfigurationLive::class)->name('config.configuration')->middleware('can:config.ruta');
+});
+
+// Rutas de Paquetes y Encomiendas
+Route::middleware('auth')->group(function () {
     Route::get('/clientes', CustomerLive::class)->name('package.customer')->middleware('can:package.customer');
     Route::get('/registrar', RegisterLive::class)->name('package.register')->middleware('can:package.register');
     Route::get('/enviar', SendPackageLive::class)->name('package.send')->middleware('can:package.send');
@@ -81,9 +95,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/historial', RecordPackageLive::class)->name('package.record')->middleware('can:package.record');
     Route::get('/domicili', HomePackageLive::class)->name('package.home')->middleware('can:package.home');
     Route::get('/retorno', ReturnPackageLive::class)->name('package.return')->middleware('can:package.return');
-    Route::get('/maniesto', ManifiestoLive::class)->name('package.maniesto')->middleware('can:package.maniesto');
+    Route::get('/manifiesto', ManifiestoLive::class)->name('package.manifiesto')->middleware('can:package.manifiesto');
+});
+
+// Rutas de Frontend
+Route::middleware('auth')->group(function () {
     Route::get('/message', MessageLive::class)->name('message.frontend')->middleware('can:message.frontend');
-    Route::get('/reclamos', ReclamoLive::class)->name('reclamaciones.frontend');
+    Route::get('/reclamos', ReclamoLive::class)->name('reclamaciones.frontend')->middleware('can:reclamaciones.frontend');
+});
+
+// Rutas de Facturación
+Route::middleware('auth')->group(function () {
     Route::get('/ticket', TicketLive::class)->name('facturacion.ticket')->middleware('can:facturacion.ticket');
     Route::get('/invoice', InvoiceLive::class)->name('facturacion.invoice')->middleware('can:facturacion.invoice');
     Route::get('/despache', DespatcheLive::class)->name('facturacion.despache')->middleware('can:facturacion.despache');
@@ -91,9 +113,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/facturacion/create-invoice/{id?}', InvoiceCreateLive::class)->name('facturacion.create-invoice')->middleware('can:facturacion.create-invoice');
     Route::get('/facturacion/create-note/{id?}', NoteCreateLive::class)->name('facturacion.create-note')->middleware('can:facturacion.create-note');
 });
+
 Route::middleware('auth')->group(function () {
     Route::get('/report/encomiendas', EncomiendasReport::class)->name('report.encomiendas');
 });
+
 Route::get('/ticket/80mm/{ticket}', [pdfController::class, 'ticket80mm']);
 Route::get('/ticket/a4/{ticket}', [pdfController::class, 'ticketA4']);
 Route::get('/invoice/80mm/{invoice}', [pdfController::class, 'invoice80mm']);
@@ -101,5 +125,5 @@ Route::get('/invoice/a4/{invoice}', [pdfController::class, 'invoiceA4']);
 Route::get('/despache/80mm/{despache}', [pdfController::class, 'despache80mm']);
 Route::get('/despache/a4/{despache}', [pdfController::class, 'despacheA4']);
 Route::get('/sticker/a5/{encomienda}', [pdfController::class, 'stickerA5']);
-
+Route::get('/declaracion/{encomienda}', [pdfController::class, 'declaracion']);
 require __DIR__ . '/auth.php';

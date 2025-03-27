@@ -26,7 +26,10 @@ class EncomiendaForm extends Form
     public $metodo_pago;
     public $tipo_pago;
     public $tipo_comprobante;
-    public $doc_traslado;
+    public $estado_credito;
+    public $tipoDocTraslado;
+    public $docTraslado;
+    public $emisorDocTraslado;
     public $glosa;
     public $observation;
     public $estado_encomienda;
@@ -53,7 +56,11 @@ class EncomiendaForm extends Form
                 'metodo_pago' => $this->metodo_pago,
                 'tipo_pago' => $this->tipo_pago,
                 'tipo_comprobante' => $this->tipo_comprobante,
-                'doc_traslado' => $this->doc_traslado,
+                'estado_credito' => $this->estado_credito,
+                'tipoDocTraslado' => $this->tipoDocTraslado,
+                'docTraslado' => $this->docTraslado,
+                'emisorDocTraslado' => $this->emisorDocTraslado,
+
                 'glosa' => $this->glosa,
                 'observation' => $this->observation,
                 'estado_encomienda' => $this->estado_encomienda,

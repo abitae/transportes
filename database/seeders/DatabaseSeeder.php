@@ -24,9 +24,9 @@ class DatabaseSeeder extends Seeder
             VehiculoSeeder::class,
 
         ]);
-        Customer::factory(10)->create();
-        
-        foreach (Sucursal::all() as $sucursal) {
+        //Customer::factory(10)->create();
+
+        /* foreach (Sucursal::all() as $sucursal) {
             $encomiendas = Encomienda::factory(10)->create([
                 'sucursal_id' => 2,
                 'sucursal_dest_id' => 1,
@@ -39,9 +39,9 @@ class DatabaseSeeder extends Seeder
             foreach ($encomiendas as $encomienda) {
                 Paquete::factory()->create([
                     'encomienda_id' => $encomienda->id,
-                    
+
                 ]);
             }
-        }
+        } */
     }
 }

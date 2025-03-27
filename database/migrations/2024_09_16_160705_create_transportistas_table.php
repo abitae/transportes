@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('transportistas', function (Blueprint $table) {
             $table->id();
-            $table->string('licencia')->unique();
+            $table->string('type_code');
             $table->string('dni')->unique();
+            $table->string('licencia')->unique();
             $table->string('name');
             $table->string('tipo');
+            
             $table->boolean('isActive')->default(true);
             $table->timestamps();
         });

@@ -29,10 +29,11 @@ class Encomienda extends Model
         'monto',
         'monto_descuento',
         'motivo_descuento',
+
         'doc_ticket', //documento de traslado
         'doc_guia',
         'doc_factura',
-
+        //Fechas
         'fecha_creacion',
         'fecha_envio',
         'fecha_recepcion',
@@ -44,9 +45,12 @@ class Encomienda extends Model
         'metodo_pago', // Efectivo, Yape, Tarjeta, Trasnferencia
         'tipo_comprobante', // TICKET, FACTURA, BOLETA
 
-        'estado_cretido', // Pendiente, Pagado
+        'estado_credito', // Pendiente, Cancelado
 
-        'doc_traslado',
+        'tipoDocTraslado', // 01, 03, 07 - factura, boleta, guia
+        'docTraslado',
+        'emisorDocTraslado',
+
         'glosa',
         'observation',
         'estado_encomienda', //REGISTRADO, ENVIADO,RECIBIDO,RETORNADO, ENTREGADO
