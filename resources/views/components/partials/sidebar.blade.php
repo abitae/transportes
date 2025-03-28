@@ -3,7 +3,10 @@
         <x-mary-menu activate-by-route>
             <x-mary-menu-separator />
             <x-mary-menu-item title="DASHBOARD" icon="o-rectangle-group" link="{{ route('dashboard') }}" />
-            <x-mary-menu-item title="TUTORIALES" icon="o-rectangle-group" link="{{ route('tutoriales') }}" />
+            
+            @can('tutoriales')
+                <x-mary-menu-item title="TUTORIALES" icon="o-rectangle-group" link="{{ route('tutoriales') }}" />
+            @endcan
             @can('caja.index')
                 <x-mary-menu-separator />
                 <x-mary-menu-item title="CAJA" icon="o-banknotes" link="{{ route('caja.index') }}" />

@@ -71,7 +71,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/componentes', Componentes::class)->name('componentes');
 });
 Route::middleware('auth')->group(function () {
-    Route::get('/tutoriales', TutorialesLive::class)->name('tutoriales');
+    Route::get('/tutoriales', TutorialesLive::class)->name('tutoriales')->middleware('can:tutoriales');
 });
 // Rutas de Configuración
 Route::middleware('auth')->group(function () {

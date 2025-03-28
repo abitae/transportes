@@ -48,7 +48,8 @@ class PermisoSeeder extends Seeder
             'facturacion.despache',
             'facturacion.note',
             'facturacion.create-invoice',
-            'facturacion.create-note'
+            'facturacion.create-note',
+            'tutoriales'
         ];
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission, 'guard_name' => 'web']);
@@ -105,7 +106,8 @@ class PermisoSeeder extends Seeder
             'facturacion.despache',
             'facturacion.note',
             'facturacion.create-invoice',
-            'facturacion.create-note'
+            'facturacion.create-note',
+            'tutoriales'
         ]);
 
         // Create admin users for each branch office
