@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire\Facturacion;
 
 use App\Models\Configuration\Company;
@@ -84,8 +85,8 @@ class InvoiceCreateLive extends Component
             ['key' => 'amount', 'label' => 'P.UNIT'],
             ['key' => 'sub_total', 'label' => 'MONTO'],
         ];
-    //Hola mundo
-    //Ho
+        //Hola mundo
+        //Ho
         $service = new ServiceTableSunat();
         $tipoDocs = [
             ['codigo' => '01', 'descripcion' => 'Factura (01)'],
@@ -100,11 +101,15 @@ class InvoiceCreateLive extends Component
             ['codigo' => 'PEN', 'descripcion' => 'Sol (PEN)'],
             ['codigo' => 'USD', 'descripcion' => 'Dólar (USD)'],
         ];
+        if ($this->tipoDoc == '01') {
+            $this->tipoDocumento = '6';
+        }
         $tipoDocuments = [
             ['codigo' => '0', 'sigla' => 'OTRO DOCUMENTO cod(0)'],
             ['codigo' => '1', 'sigla' => 'DNI cod(1)'],
             ['codigo' => '6', 'sigla' => 'RUC cod(6)'],
         ];
+
         $ubigeos = $service->getAll('ubigeo');
         $unidadMedidas = $service->getAll('sunat_03');
 
@@ -233,12 +238,13 @@ class InvoiceCreateLive extends Component
             $encomienda->tipo_comprobante = $factura->tipoDoc = '03' ? 'BOLETA' : 'FACTURA';
             $encomienda->save();
         }
-        
+
         $this->invoice = $factura;
         $this->modalPrintInvoice = true;
         $this->resetForm();
     }
-    public function closePrintInvoice()  {
+    public function closePrintInvoice()
+    {
         $this->modalPrintInvoice = false;
         $this->invoice = null;
         $this->resetForm();

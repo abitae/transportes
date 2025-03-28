@@ -188,7 +188,7 @@
                             ];
                         @endphp
                         <div class="flex flex-row gap-2">
-                            <x-mary-select label="Documento de traslado" icon="o-user" :options="$tiposDocTraslado"
+                            <x-mary-select label="Tipo de documento" icon="o-user" :options="$tiposDocTraslado"
                                 wire:model.live="tipoDocTraslado" class="rounded-r-lg" />
                             @switch($tipoDocTraslado)
                                 @case('0')
@@ -212,7 +212,7 @@
                                 @break
                             @endswitch
                             @if ($tipoDocTraslado != '0')
-                                <x-mary-input label="Documento de traslado" wire:model="docTraslado"
+                                <x-mary-input label="Documento" wire:model="docTraslado"
                                     class="rounded-r-lg" placeholder="{{ $placeholder ?? 'S/G' }}" />
                                 <x-mary-input label="RUC del emisor" placeholder="10436493903"
                                     wire:model="emisorDocTraslado" class="rounded-r-lg" />

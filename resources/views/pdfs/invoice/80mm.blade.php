@@ -84,8 +84,7 @@
 
 <body>
     <div class="header">
-        <img src="{{ $invoice->company->logo_path ? 'storage/' . $invoice->company->logo_path : './img/logo.png' }}"
-            alt="Logo" class="logo">
+        <img src="./img/logo.jpg" alt="Logo" class="logo">
         <div class="company-info">
             <strong>{{ $invoice->company->razonSocial }}</strong><br>
             R.U.C.: {{ $invoice->company->ruc }}<br>

@@ -83,8 +83,7 @@
 
 <body>
     <div class="header">
-        <img src="{{ $despache->company->logo_path ? 'storage/' . $despache->company->logo_path : './img/logo.png' }}"
-            alt="Logo" class="logo">
+        <img src="./img/logo.jpg" alt="Logo" class="logo">
         <div class="company-info">
             <strong>{{ $despache->company->razonSocial }}</strong><br>
             R.U.C.: {{ $despache->company->ruc }}<br>
