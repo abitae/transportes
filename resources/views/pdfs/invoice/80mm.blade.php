@@ -54,6 +54,18 @@
         .items-table th {
             background-color: #f0f0f0;
         }
+        .items-tableL {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            margin: 0px 0;
+            border: 1px solid #000;
+        }
+
+        .items-tableL td {
+            padding: 1px;
+            text-align: left;
+        }
 
         .totals {
             font-size: 10px;
@@ -79,6 +91,12 @@
             border-top: 1px solid #000;
             padding-top: 5px;
         }
+
+        .legends {
+            font-size: 10px;
+            margin-top: 10px;
+            border-top: 1px solid #000;
+        }
     </style>
 </head>
 
@@ -100,7 +118,12 @@
     </div>
     <div class="customer-info">
         Fecha Emisión: {{ $invoice->created_at->format('Y-m-d') }}<br>
-        Metodo de Pago: {{ $invoice->encomienda->metodo_pago }}<br>
+        Metodo de Pago: {{ $invoice->encomienda->metodo_pago ?? 'Efectivo' }}<br>
+        @php
+            $guia = $invoice->encomienda->doc_guia;
+            $despatche = App\Models\Facturacion\Despatche::where('id', $guia)->first();
+        @endphp
+        Guia de Remisión Transportista: {{ $despatche ? $despatche->serie . ' ' . $despatche->correlativo : 'No tiene' }}
     </div>
     <div class="customer-info">
         <strong>DATOS CLIENTE</strong><br>
@@ -150,7 +173,45 @@
             </tr>
         </table>
     </div>
+    <div class="legends">
+        @php
+            $legends = json_decode($invoice->legends, true);
+        @endphp
+        @foreach ($legends as $legend)
+            {{ strtoupper(str_replace('"', '', str_replace('Leyenda', '', $legend['value']))) }}<br>
+        @endforeach
+        @if ($invoice->setPercent && $invoice->setMount)
+            <table class="items-tableL">
+                <tr>
+                    <td>
+                        Servicio:
+                    </td>
+                    <td>
+                        027 - Servicio de Transporte de Carga
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Metodo de Pago:
+                    </td>
+                    <td>
+                        001 - Depósito en cuenta
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Numero de Cuenta:
+                    </td>
+                    <td>
+                        {{ $invoice->ctaBanco }} Porcentaje: {{ $invoice->setPercent }}% Monto:
+                        {{ $invoice->setMount }}
+                    </td>
+                </tr>
+            </table>
+        @endif
 
+
+    </div>
     <div class="qr-code">
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/100px-Codigo_QR.svg.png?20080824194905"
             alt="Código QR">

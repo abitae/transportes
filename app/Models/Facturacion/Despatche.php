@@ -23,9 +23,9 @@ class Despatche extends Model
         'destinatario_id',
         'codTraslado', //
         'modTraslado',
-        'tipoDocTraslado',
-        'docTraslado',
-        'emisorDocTraslado',
+
+        'docsTraslado', //array de documentos
+
         'fecTraslado',
         'pesoTotal',
         'undPesoTotal',

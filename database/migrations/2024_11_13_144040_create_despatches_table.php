@@ -24,10 +24,9 @@ return new class extends Migration
             $table->foreignId('destinatario_id')->constrained('customers');
             $table->string('codTraslado');
             $table->string('modTraslado');
-            
-            $table->string('tipoDocTraslado')->nullable();
-            $table->string('docTraslado')->nullable();
-            $table->string('emisorDocTraslado')->nullable();
+
+
+            $table->json('docsTraslado')->nullable();
 
             $table->string('fecTraslado')->nullable();
             $table->string('pesoTotal')->nullable();

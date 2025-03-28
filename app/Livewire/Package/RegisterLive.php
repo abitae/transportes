@@ -44,9 +44,11 @@ class RegisterLive extends Component
     public $remitente, $remitente_type_code = 1, $remitente_code, $remitente_name, $remitente_address, $remitente_phone, $remitente_ubigeo;
     public $destinatario, $destinatario_type_code = 1, $destinatario_code, $destinatario_name, $destinatario_address, $destinatario_phone, $destinatario_ubigeo;
     public $cliFacturacion, $cliFacturacion_type_code = 1, $cliFacturacion_code, $cliFacturacion_name, $cliFacturacion_address, $cliFacturacion_phone, $cliFacturacion_ubigeo;
-    public $tipoDocTraslado = '0', $docTraslado, $emisorDocTraslado;
+    public $tipoDocTraslado, $docTraslado, $emisorDocTraslado;
+    public $docsTraslado;
     public function mount()
     {
+        $this->docsTraslado = collect([])->keyBy('id');
         $this->caja = $this->cajaIsActive(Auth::user());
         $this->paquetes = collect([])->keyBy('id');
 
@@ -445,10 +447,58 @@ class RegisterLive extends Component
         $this->success('Genial', 'Paquetes eliminados correctamente!');
         $this->paquetes = collect([]);
     }
+    public function addDocTraslado()
+    {
+        $rules = [
+            'docTraslado' => 'required',
+            'emisorDocTraslado' => 'required',
+        ];
+        $messages = [
+            'docTraslado.required' => 'Error, es necesario ingresar el documento!',
+            'emisorDocTraslado.required' => 'Error, es necesario ingresar el RUC del emisor!',
+        ];
+        $this->validate($rules, $messages);
 
+        // Reconocer el tipo de documento según el prefijo
+        $firstChar = substr($this->docTraslado, 0, 1);
+
+        switch ($firstChar) {
+            case 'F':
+                $this->tipoDocTraslado = 'Factura'; // Factura
+                break;
+            case 'B':
+                $this->tipoDocTraslado = 'Boleta'; // Boleta
+                break;
+            case 'T':
+                $this->tipoDocTraslado = 'Guía de Remisión'; // Guía de Remisión
+                break;
+            case 'V':
+                $this->tipoDocTraslado = 'Guía de Transportista'; // Guía de Transportista
+                break;
+            default:
+                $this->tipoDocTraslado = 'Otro documento'; // Otro documento
+                break;
+        }
+        $this->docsTraslado->push([
+            'id' => $this->docsTraslado->count() + 1,
+            'tipoDoc' => $this->tipoDocTraslado,
+            'documento' => $this->docTraslado,
+            'ruc' => $this->emisorDocTraslado
+        ]);
+        $this->reset('docTraslado', 'emisorDocTraslado');
+    }
+    public function resetDocTraslado()
+    {
+        $this->success('Genial', 'Paquetes eliminados correctamente!');
+        $this->docsTraslado = collect([]);
+    }
+    public function deleteDocTraslado($id)
+    {
+        $this->success('Genial', 'Paquetes eliminados correctamente!');
+        $this->docsTraslado->pull($id - 1);
+    }
     public function finish()
     {
-
         if ($this->isReturn && !$this->destinatario_address) {
             $this->error('Error, es necesario ingresar la dirección de entrega!');
             $this->step = 2;
@@ -459,13 +509,8 @@ class RegisterLive extends Component
         if ($this->isHome) {
             $this->pin1 = $this->pin2 = 123;
         }
-        if ($this->tipoDocTraslado == '0') {
-            $this->docTraslado = 'S/G';
-            $this->emisorDocTraslado = '';
-        }
-        if (!$this->validateDocumentTraslado()) {
-            return;
-        }
+
+        
 
         if (isset($this->sucursal_dest_id, $this->pin1, $this->pin2) && $this->pin1 == $this->pin2) {
             $this->sucursal_destino = Sucursal::findOrFail($this->sucursal_dest_id);
@@ -474,31 +519,7 @@ class RegisterLive extends Component
             $this->error('Error, el pin ingresado no es correcto!');
         }
     }
-    public function validateDocumentTraslado():bool
-    {
-        $documentRules = [
-            '1' => ['prefix' => 'F', 'message' => 'F001-123'],
-            '3' => ['prefix' => 'B', 'message' => 'B001-123'],
-            '7' => ['prefix' => 'T', 'message' => 'T001-123'],
-            '31' => ['prefix' => 'V', 'message' => 'V001-123']
-        ];
 
-        if (array_key_exists($this->tipoDocTraslado, $documentRules)) {
-            $rule = $documentRules[$this->tipoDocTraslado];
-            $pattern = '/^' . $rule['prefix'] . '[A-Z0-9]\d{2}-\d{1,6}$/';
-
-            if (!preg_match($pattern, $this->docTraslado)) {
-                $this->error('Ingrese el formato correcto ' . $rule['message']);
-                return false;
-            }
-
-            if (!preg_match('/^(10|20)\d{9}$/', $this->emisorDocTraslado)) {
-                $this->error('Ingrese el numero RUC correcto');
-                return false;
-            }
-        }
-        return true;
-    }
     public function confirmEncomienda()
     {
 
@@ -517,7 +538,7 @@ class RegisterLive extends Component
             return;
         }
 
-
+        //dd(json_encode($this->docsTraslado));
         $this->encomiendaForm->fill([
             'code' => $this->generateCode(),
             'user_id' => Auth::user()->id,
@@ -535,9 +556,8 @@ class RegisterLive extends Component
             'metodo_pago' => $this->metodo_pago,
             'tipo_comprobante' => $this->estado_pago == 'CONTRA ENTREGA' ? 'TICKET' : $this->tipo_comprobante,
 
-            'tipoDocTraslado' => $this->tipoDocTraslado ?? '',
-            'docTraslado' => $this->docTraslado ?? 'S/G',
-            'emisorDocTraslado' => $this->emisorDocTraslado ?? '',
+            'docsTraslado' => json_encode($this->docsTraslado),
+
             'estado_credito' => $this->estado_pago == 'CONTRA ENTREGA' ? 'Pendiente' : 'Cancelado',
             'glosa' => $this->glosa,
             'observation' => $this->observation,

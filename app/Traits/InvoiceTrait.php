@@ -21,7 +21,8 @@ trait InvoiceTrait
         if (in_array($encomienda->tipo_comprobante, ['FACTURA', 'BOLETA'])) {
             $this->setInvoice($encomienda, $encomienda->tipo_comprobante);
         }
-        if ($encomienda->doc_traslado || $encomienda->tipo_comprobante !== 'TICKET') {
+        $docsTraslado = collect(json_decode($encomienda->docsTraslado, true));
+        if (!$docsTraslado->isEmpty() || $encomienda->tipo_comprobante !== 'TICKET') {
             $this->setGuiTrans($encomienda);
         }
     }
@@ -131,8 +132,8 @@ trait InvoiceTrait
                 $data['codBienDetraccion'] = '027';
                 $data['codMedioPago'] = '001';
                 $data['ctaBanco'] = $company->ctaBanco;
-                $data['setPercent'] = 12;
-                $data['setMount'] = $montoTotalIncIGV * 0.12;
+                $data['setPercent'] = 4;
+                $data['setMount'] = $montoTotalIncIGV * 0.04;
                 $legends[] = [
                     'code' => '2006',
                     'value' => 'Leyenda "Operación sujeta a detracción"',
@@ -184,9 +185,9 @@ trait InvoiceTrait
             'destinatario_id' => $encomienda->destinatario->id,
             'codTraslado' => '01',
             'modTraslado' => '02',
-            'tipoDocTraslado' => $encomienda->tipoDocTraslado,
-            'docTraslado' => $encomienda->docTraslado,
-            'emisorDocTraslado' => $encomienda->emisorDocTraslado,
+
+            'docsTraslado' => $encomienda->docsTraslado,
+
             'fecTraslado' => $encomienda->created_at,
             'pesoTotal' => $encomienda->paquetes->sum('peso'),
             'undPesoTotal' => 'KGM',

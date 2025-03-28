@@ -40,7 +40,7 @@ return new class extends Migration {
             //descuento
             $table->decimal('monto_descuento', 8, 2)->nullable();
             $table->string('motivo_descuento')->nullable();
-            
+
             //documentos relacionados
             $table->unsignedInteger('doc_ticket')->nullable();
             $table->unsignedInteger('doc_guia')->nullable();
@@ -59,9 +59,7 @@ return new class extends Migration {
 
             $table->string('estado_credito')->nullable();
 
-            $table->string('tipoDocTraslado')->nullable();
-            $table->string('docTraslado')->nullable();
-            $table->string('emisorDocTraslado')->nullable();
+            $table->json('docsTraslado')->nullable();
 
             $table->text('glosa')->nullable();
             $table->text('observation')->nullable();

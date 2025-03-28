@@ -178,49 +178,35 @@
                     </div>
 
                     <div class="grid col-span-4">
-                        @php
-                            $tiposDocTraslado = [
-                                ['id' => '0', 'name' => 'S/G'],
-                                ['id' => '1', 'name' => 'Factura'],
-                                ['id' => '3', 'name' => 'Boleta'],
-                                ['id' => '7', 'name' => 'Guia de remision'],
-                                ['id' => '31', 'name' => 'Guia de remision de transporte'],
-                            ];
-                        @endphp
+
                         <div class="flex flex-row gap-2">
-                            <x-mary-select label="Tipo de documento" icon="o-user" :options="$tiposDocTraslado"
-                                wire:model.live="tipoDocTraslado" class="rounded-r-lg" />
-                            @switch($tipoDocTraslado)
-                                @case('0')
-                                    @php $placeholder = 'S/G' @endphp
-                                @break
 
-                                @case('1')
-                                    @php $placeholder = 'F001-001' @endphp
-                                @break
+                            <x-mary-input label="Documento" wire:model="docTraslado" class="rounded-r-lg"
+                                placeholder="Documento" />
+                            <x-mary-input label="RUC del emisor" placeholder="10436493903"
+                                wire:model="emisorDocTraslado" class="rounded-r-lg" />
 
-                                @case('3')
-                                    @php $placeholder = 'B001-001' @endphp
-                                @break
+                            <x-mary-button icon="o-plus" wire:click='addDocTraslado'
+                                class="text-white rounded-lg bg-sky-500 btn-xs" />
+                            <x-mary-button icon="o-no-symbol" wire:click='resetDocTraslado'
+                                class="text-white bg-red-500 rounded-lg btn-xs" />
 
-                                @case('7')
-                                    @php $placeholder = 'T001-001' @endphp
-                                @break
-
-                                @case('31')
-                                    @php $placeholder = 'V001-001' @endphp
-                                @break
-                            @endswitch
-                            @if ($tipoDocTraslado != '0')
-                                <x-mary-input label="Documento" wire:model="docTraslado"
-                                    class="rounded-r-lg" placeholder="{{ $placeholder ?? 'S/G' }}" />
-                                <x-mary-input label="RUC del emisor" placeholder="10436493903"
-                                    wire:model="emisorDocTraslado" class="rounded-r-lg" />
-                            @endif
                         </div>
                     </div>
                     <div class="grid col-span-4">
-
+                        @php
+                            $headers_docsTraslado = [
+                                ['key' => 'tipoDoc', 'label' => 'Tipo'],
+                                ['key' => 'documento', 'label' => 'Documento'],
+                                ['key' => 'ruc', 'label' => 'RUC'],
+                            ];
+                        @endphp
+                        <x-mary-table :headers="$headers_docsTraslado" :rows="$docsTraslado" striped
+                            @row-click="$wire.deleteDocTraslado($event.detail.id)">
+                            <x-slot:empty>
+                                <x-mary-icon name="o-cube" label="No se encontro registros." />
+                            </x-slot:empty>
+                        </x-mary-table>
                     </div>
                     <div class="grid col-span-4">
                         <x-mary-textarea label="Glosa" wire:model="glosa" placeholder="Escribe una glosa"

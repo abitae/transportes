@@ -46,11 +46,7 @@ class Encomienda extends Model
         'tipo_comprobante', // TICKET, FACTURA, BOLETA
 
         'estado_credito', // Pendiente, Cancelado
-
-        'tipoDocTraslado', // 01, 03, 07 - factura, boleta, guia
-        'docTraslado',
-        'emisorDocTraslado',
-
+        'docsTraslado', //json de documentos
         'glosa',
         'observation',
         'estado_encomienda', //REGISTRADO, ENVIADO,RECIBIDO,RETORNADO, ENTREGADO

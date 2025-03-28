@@ -175,7 +175,7 @@ class SendPackageLive extends Component
                     ->where('sucursal_id', Auth::user()->sucursal->id)
                     ->pluck('sucursal_destino_id');
                 if ($p->isEmpty()) {
-                    return redirect()->route('package.maniesto');
+                    return redirect()->route('package.manifiesto');
                 } else {
                     $this->sucursal_dest_id = Sucursal::where('isActive', true)
                         ->whereIn('id', $p)
