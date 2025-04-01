@@ -4,9 +4,9 @@
             <x-mary-menu-separator />
             <x-mary-menu-item title="DASHBOARD" icon="o-rectangle-group" link="{{ route('dashboard') }}" />
 
-            @can('tutorial.video')
-                <x-mary-menu-item title="TUTORIALES" icon="o-rectangle-group" link="{{ route('tutorial.video') }}" />
-            @endcan
+
+            <x-mary-menu-item title="TUTORIALES" icon="o-rectangle-group" link="{{ route('tutorial.video') }}" />
+
             @can('caja.index')
                 <x-mary-menu-separator />
                 <x-mary-menu-item title="CAJA" icon="o-banknotes" link="{{ route('caja.index') }}" />
@@ -29,7 +29,8 @@
                         <x-mary-menu-item title="Recibir" icon="c-arrow-down-tray" link="{{ route('package.receive') }}" />
                     @endcan
                     @can('package.manifiesto')
-                        <x-mary-menu-item title="Descarga manifiestos" icon="s-inbox-arrow-down" link="{{ route('package.manifiesto') }}" />
+                        <x-mary-menu-item title="Descarga manifiestos" icon="s-inbox-arrow-down"
+                            link="{{ route('package.manifiesto') }}" />
                     @endcan
                 </x-mary-menu-sub>
             @endcan
@@ -58,11 +59,14 @@
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="FACTURACION" icon="s-banknotes">
                     @can('facturacion.create-invoice')
-                        <x-mary-menu-item title="Emitir Factura" icon="o-ticket" link="{{ route('facturacion.create-invoice') }}" />
-                        <x-mary-menu-item title="Emitir Boleta" icon="o-ticket" link="{{ route('facturacion.create-invoice') }}" />
+                        <x-mary-menu-item title="Emitir Factura" icon="o-ticket"
+                            link="{{ route('facturacion.create-invoice') }}" />
+                        <x-mary-menu-item title="Emitir Boleta" icon="o-ticket"
+                            link="{{ route('facturacion.create-invoice') }}" />
                     @endcan
                     @can('facturacion.create-note')
-                        <x-mary-menu-item title="Emitir Nota Credito" icon="o-ticket" link="{{ route('facturacion.create-note') }}" />
+                        <x-mary-menu-item title="Emitir Nota Credito" icon="o-ticket"
+                            link="{{ route('facturacion.create-note') }}" />
                     @endcan
                 </x-mary-menu-sub>
             @endcan
@@ -74,13 +78,15 @@
                         <x-mary-menu-item title="Encomiendas" icon="o-home" link="{{ route('report.encomiendas') }}" />
                     @endcan
                     @can('facturacion.invoice')
-                        <x-mary-menu-item title="Boletas y facturas" icon="c-ticket" link="{{ route('facturacion.invoice') }}" />
+                        <x-mary-menu-item title="Boletas y facturas" icon="c-ticket"
+                            link="{{ route('facturacion.invoice') }}" />
                     @endcan
                     @can('facturacion.ticket')
                         <x-mary-menu-item title="Ticket Envio" icon="c-ticket" link="{{ route('facturacion.ticket') }}" />
                     @endcan
                     @can('facturacion.despache')
-                        <x-mary-menu-item title="Guias Transportista" icon="s-ticket" link="{{ route('facturacion.despache') }}" />
+                        <x-mary-menu-item title="Guias Transportista" icon="s-ticket"
+                            link="{{ route('facturacion.despache') }}" />
                     @endcan
                     @can('facturacion.note')
                         <x-mary-menu-item title="Notas Credito" icon="s-ticket" link="{{ route('facturacion.note') }}" />
