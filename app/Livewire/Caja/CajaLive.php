@@ -33,7 +33,7 @@ class CajaLive extends Component
     public $fechaActual;
     public $caja;
     public int $perPage = 10;
-
+    public bool $showCajaStats = false;
     public function mount()
     {
         $this->fechaActual = $this->dateNow('Y-m-d');

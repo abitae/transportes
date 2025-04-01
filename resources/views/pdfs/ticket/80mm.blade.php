@@ -127,6 +127,17 @@
         @if ($ticket->encomienda->destinatario->address)
             Dirección: {{ $ticket->encomienda->destinatario->address }}
         @endif
+        @if ($ticket->docsTraslado)
+            Documento de Traslado: <br>
+            @php
+                $docsTraslado = json_decode($ticket->docsTraslado, true);
+            @endphp
+            @forelse ($docsTraslado as $doc)
+                {{ $doc['tipoDoc'] }}: {{ $doc['documento'] }} - {{ $doc['ruc'] }}<br>
+            @empty
+                Sin documentos<br>
+            @endforelse
+        @endif
     </div>
     <div class="customer-info">
         <strong>DATOS ENVIO</strong><br>

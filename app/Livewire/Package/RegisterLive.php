@@ -46,6 +46,7 @@ class RegisterLive extends Component
     public $cliFacturacion, $cliFacturacion_type_code = 1, $cliFacturacion_code, $cliFacturacion_name, $cliFacturacion_address, $cliFacturacion_phone, $cliFacturacion_ubigeo;
     public $tipoDocTraslado, $docTraslado, $emisorDocTraslado;
     public $docsTraslado;
+    public $showDocTraslado = false;
     public function mount()
     {
         $this->docsTraslado = collect([])->keyBy('id');
@@ -98,7 +99,7 @@ class RegisterLive extends Component
         $transportistas = Transportista::where('isActive', true)->get();
         $vehiculos = Vehiculo::where('isActive', true)->get();
         $tipoDocuments = [
-            ['codigo' => '0', 'sigla' => 'OTRO DOCUMENTO cod(0)'],
+            ['codigo' => '0', 'sigla' => 'OTRO cod(0)'],
             ['codigo' => '1', 'sigla' => 'DNI cod(1)'],
             ['codigo' => '6', 'sigla' => 'RUC cod(6)'],
         ];
@@ -396,6 +397,9 @@ class RegisterLive extends Component
             $this->tipo_comprobante = 'TICKET';
             $this->metodo_pago = 'Efectivo';
         }
+        if ($this->remitente_type_code == '6' && strlen($this->remitente_code) == 11) {
+            $this->emisorDocTraslado = $this->remitente_code;
+        }
         $this->step++;
     }
     public function prev()
@@ -458,7 +462,7 @@ class RegisterLive extends Component
             'emisorDocTraslado.required' => 'Error, es necesario ingresar el RUC del emisor!',
         ];
         $this->validate($rules, $messages);
-
+        $this->docTraslado = strtoupper($this->docTraslado);
         // Reconocer el tipo de documento según el prefijo
         $firstChar = substr($this->docTraslado, 0, 1);
 
@@ -485,7 +489,7 @@ class RegisterLive extends Component
             'documento' => $this->docTraslado,
             'ruc' => $this->emisorDocTraslado
         ]);
-        $this->reset('docTraslado', 'emisorDocTraslado');
+        $this->reset('docTraslado');
     }
     public function resetDocTraslado()
     {

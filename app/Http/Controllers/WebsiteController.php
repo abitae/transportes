@@ -45,12 +45,12 @@ class WebsiteController extends Controller
 
     public function rastreo()
     {
-        return view('web.partial.rastreo');
+        return view('web.rastrea');
     }
 
     public function agencias()
     {
-        return view('web.partial.agencias');
+        return view('web.partial.terminales');
     }
 
     public function tarifario()
@@ -151,5 +151,37 @@ class WebsiteController extends Controller
         } else {
             return redirect()->back()->with('error', 'Debes aceptar las políticas de privacidad');
         }
+    }
+    public function courier()
+    {
+        return view('web.services.courier');
+    }
+    public function mudanza()
+    {
+        return view('web.services.mudanza');
+    }
+    public function almacen()
+    {
+        return view('web.services.almacen');
+    }
+    public function doorToDoor()
+    {
+        return view('web.services.door-to-door');
+    }
+    public function recojo()
+    {
+        return view('web.services.recojo');
+    }
+    public function cargaConsolidada()
+    {
+        return view('web.services.carga-consolidada');
+    }
+    public function trasladoVehiculos()
+    {
+        return view('web.services.traslado-vehiculos');
+    } 
+    public function trasladoContenedores()
+    {
+        return view('web.services.traslado-contenedores');
     }
 }

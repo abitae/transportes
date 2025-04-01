@@ -55,6 +55,15 @@ Route::get('/agencias', [WebsiteController::class, 'agencias'])->name('agencias'
 Route::get('/tarifario', [WebsiteController::class, 'tarifario'])->name('tarifario');
 Route::get('/terminales', [WebsiteController::class, 'terminales'])->name('terminales');
 Route::get('/envia', [WebsiteController::class, 'envia'])->name('envia');
+Route::get('/servicios/courier', [WebsiteController::class, 'courier'])->name('courier');
+Route::get('/servicios/mudanza', [WebsiteController::class, 'mudanza'])->name('mudanza');
+Route::get('/servicios/almacen', [WebsiteController::class, 'almacen'])->name('almacen');
+Route::get('/servicios/door-to-door', [WebsiteController::class, 'doorToDoor'])->name('door-to-door');
+Route::get('/servicios/recojo', [WebsiteController::class, 'recojo'])->name('recojo');
+Route::get('/servicios/carga-consolidada', [WebsiteController::class, 'cargaConsolidada'])->name('carga-consolidada');
+Route::get('/servicios/traslados-vehiculos', [WebsiteController::class, 'trasladoVehiculos'])->name('traslado-vehiculos');
+Route::get('/servicios/traslados-contenedores', [WebsiteController::class, 'trasladoContenedores'])->name('traslado-contenedores');
+
 
 
 

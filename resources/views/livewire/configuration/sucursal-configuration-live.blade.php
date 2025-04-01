@@ -16,30 +16,30 @@
                             <x-mary-select label="VEHICULO" icon="m-truck" :options="$vehiculos"
                                 wire:model.live="vehiculo_id" placeholder="NO SELECT" placeholder-value="0" />
                         </div>
+                        <div class="flex items-end">
+                            <x-mary-button label="Actualizar" class="btn-primary w-full" type="submit" spinner="save" />
+                        </div>
                     </div>
-                    <x-slot:actions>
-                        <x-mary-button label="Guardar" class="btn-primary" type="submit" spinner="save" />
-                    </x-slot:actions>
                 </x-mary-form>
                 <div class="grid grid-cols-1">
                     <div>
                         @php
-                        $headers = [
-                        ['key' => 'destino', 'label' => 'DESTINO'],
-                        ['key' => 'transportista', 'label' => 'TRANSPORTISTA'],
-                        ['key' => 'vehiculo', 'label' => 'VEHICULO'],
-                        ];
+                            $headers = [
+                                ['key' => 'destino', 'label' => 'DESTINO'],
+                                ['key' => 'transportista', 'label' => 'TRANSPORTISTA'],
+                                ['key' => 'vehiculo', 'label' => 'VEHICULO'],
+                            ];
                         @endphp
                         <x-mary-table :headers="$headers" :rows="$configurations" striped class="mt-6">
                             @scope('cell_destino', $config)
-                            <p>{{ $config->destino->name }}</p>
+                                <p>{{ $config->destino->name }}</p>
                             @endscope
                             @scope('cell_transportista', $config)
-                            <x-mary-badge :value="$config->transportista->name" class="text-xs" />
+                                <x-mary-badge :value="$config->transportista->name" class="text-xs" />
                             @endscope
                             @scope('cell_vehiculo', $config)
-                            <x-mary-badge :value="$config->vehiculo->name" class="text-xs badge-primary" />
-                            <x-mary-badge :value="$config->vehiculo->modelo" class="text-xs bg-cyan-500" />
+                                <x-mary-badge :value="$config->vehiculo->name" class="text-xs badge-primary" />
+                                <x-mary-badge :value="$config->vehiculo->modelo" class="text-xs bg-cyan-500" />
                             @endscope
                         </x-mary-table>
                     </div>

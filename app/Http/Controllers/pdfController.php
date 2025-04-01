@@ -113,7 +113,7 @@ class pdfController extends Controller
         $data = [
             'despache' => $despache,
         ];
-        $heigh = 300 + $despache->details->count() * 8;
+        $heigh = 320 + $despache->details->count() * 8;
         $pdf = Pdf::loadView(
             'pdfs.despache.80mm',
             $data,

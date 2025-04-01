@@ -115,9 +115,19 @@
         Razón Social: {{ $despache->remitente->name }}<br>
         {{ strtoupper($despache->remitente->type_code == 1 ? 'DNI' : 'RUC') }}: {{ $despache->remitente->code }}<br>
         @if ($despache->remitente->address)
-            Dirección: {{ $despache->remitente->address }}
+            Dirección: {{ $despache->remitente->address }}<br>
         @endif
-        Documento de Traslado: {{ $despache->encomienda->doc_traslado ?? 'S/G' }}
+        @if ($despache->docsTraslado)
+            Documento de Traslado: <br>
+            @php
+                $docsTraslado = json_decode($despache->docsTraslado, true);
+            @endphp
+            @forelse ($docsTraslado as $doc)
+                {{ $doc['tipoDoc'] }}: {{ $doc['documento'] }} - {{ $doc['ruc'] }}<br>
+            @empty
+                Sin documentos<br>
+            @endforelse
+        @endif
     </div>
     <div class="customer-info">
         <strong>DATOS DESTINATARIO</strong><br>
@@ -171,16 +181,16 @@
         <table style="width: 100%">
             <tr>
                 <td style="text-align: left">Gravada:</td>
-                <td style="text-align: right">S/ {{ number_format($despache->encomienda->valorVenta, 2) }}</td>
+                <td style="text-align: right">S/ {{ number_format($despache->valorVenta, 2) }}</td>
             </tr>
             <tr>
                 <td style="text-align: left">IGV (18%):</td>
-                <td style="text-align: right">S/ {{ number_format($despache->encomienda->mtoIGV, 2) }}</td>
+                <td style="text-align: right">S/ {{ number_format($despache->mtoIGV, 2) }}</td>
             </tr>
             <tr>
                 <td style="text-align: left"><strong>Importe total:</strong></td>
                 <td style="text-align: right"><strong>S/
-                        {{ number_format($despache->encomienda->mtoImpVenta, 2) }}</strong></td>
+                        {{ number_format($despache->mtoImpVenta, 2) }}</strong></td>
             </tr>
         </table>
     </div>
