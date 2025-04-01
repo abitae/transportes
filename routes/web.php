@@ -80,7 +80,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/componentes', Componentes::class)->name('componentes');
 });
 Route::middleware('auth')->group(function () {
-    Route::get('/tutoriales', TutorialesLive::class)->name('tutoriales')->middleware('can:tutoriales');
+        Route::get('/tutoriales', TutorialesLive::class)->name('tutorial.video')->middleware('can:tutorial.video');
 });
 // Rutas de Configuración
 Route::middleware('auth')->group(function () {
