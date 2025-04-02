@@ -69,7 +69,7 @@ class DespatcheLive extends Component
         $ticket = $result->getTicket();
         $result = $api->getStatus($ticket);
         $response = $sunat->sunatResponse($result);
-        $this->infoLog('prueba ' . $response);
+
         if ($response['success']) {
             $despatche->cdr_description = $response['cdrResponse']['description'];
             $despatche->cdr_code = $response['cdrResponse']['code'];
@@ -111,6 +111,7 @@ class DespatcheLive extends Component
         $api = $sunat->getSeeApi($company);
         $result = $api->getStatus($despatche->ticket);
         $response = $sunat->sunatResponse($result);
+
         if ($response['success']) {
             $despatche->cdr_description = $response['cdrResponse']['description'];
             $despatche->cdr_code = $response['cdrResponse']['code'];
