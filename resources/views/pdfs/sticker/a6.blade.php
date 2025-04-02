@@ -168,7 +168,8 @@
             </div>
             <div>
                 <p class="package-details">FECHA DE ENVIO: <span class="package-value">{{ date('d/m/Y') }}</span></p>
-                <p class="package-details">PESO: <span class="package-value">{{ $encomienda->paquetes->sum('peso') ?? 'N/A' }} kg</span>
+                <p class="package-details">PESO: <span
+                        class="package-value">{{ $encomienda->paquetes->sum('peso') ?? 'N/A' }} kg</span>
                 </p>
             </div>
         </div>
@@ -178,7 +179,8 @@
         </div>
 
         <div class="barcode">
-            <img src="{{ public_path('img/barcode.png') }}" alt="Código de Barras">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/100px-Codigo_QR.svg.png?20080824194905"
+                alt="Código QR">
         </div>
     </div>
 </body>

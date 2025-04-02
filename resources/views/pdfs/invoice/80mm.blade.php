@@ -119,11 +119,13 @@
     <div class="customer-info">
         Fecha Emisión: {{ $invoice->created_at->format('Y-m-d') }}<br>
         Metodo de Pago: {{ $invoice->encomienda->metodo_pago ?? 'Efectivo' }}<br>
-        @php
-            $guia = $invoice->encomienda->doc_guia;
-            $despatche = App\Models\Facturacion\Despatche::where('id', $guia)->first();
-        @endphp
-        Guia de Remisión Transportista: {{ $despatche ? $despatche->serie . ' ' . $despatche->correlativo : 'No tiene' }}
+        @if (isset($invoice->encomienda) && $invoice->encomienda->doc_guia)
+            @php
+                $guia = $invoice->encomienda->doc_guia;
+                $despatche = App\Models\Facturacion\Despatche::find($guia);
+            @endphp
+            Guia de Remisión Transportista: {{ $despatche ? "{$despatche->serie} {$despatche->correlativo}" : 'No disponible' }}
+        @endif
     </div>
     <div class="customer-info">
         <strong>DATOS CLIENTE</strong><br>
