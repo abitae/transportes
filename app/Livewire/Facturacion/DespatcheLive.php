@@ -70,24 +70,7 @@ class DespatcheLive extends Component
         if ($ticket) {
             $despatche->ticket = $ticket;
             $despatche->save();
-        }
-        $result = $api->getStatus($ticket);
-        $response = $sunat->sunatResponse($result);
-        if ($response['success']) {
-            $despatche->cdr_description = $response['cdrResponse']['description'];
-            $despatche->cdr_code = $response['cdrResponse']['code'];
-            $despatche->cdr_note = $response['cdrResponse']['notes'];
-            $despatche->cdr_path = 'cdr/' . 'R-' . $despatche->company->ruc . '-' . $despatche->tipoDoc . '-' . $despatche->serie . '-' . $despatche->correlativo . '.zip';
-            $despatche->ticket = $ticket;
-            $despatche->save();
-            $cdr = $result->getCdrZip();
-            Storage::disk('public')->put($despatche->cdr_path, $cdr);
             $this->toast('success', 'Comprobante enviado a la sunat');
-        } else {
-            $despatche->errorCode = $response['error']['code'];
-            $despatche->errorMessage = $response['error']['message'];
-            $despatche->save();
-            $this->toast('error', 'Error al enviar el comprobante a la sunat');
         }
     }
     public function downloadCdrFile(Despatche $despatche)
