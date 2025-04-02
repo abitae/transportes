@@ -93,11 +93,11 @@ class DespatcheLive extends Component
     public function statusDespatch(Despatche $despatche)
     {
         $this->despatche = $despatche;
-        $this->cdr_code = $despatche->cdr_code;
-        $this->cdr_description = $despatche->cdr_description;
-        $this->cdr_note = $despatche->cdr_note;
-        $this->errorCode = $despatche->errorCode;
-        $this->errorMessage = $despatche->errorMessage;
+        $this->cdr_code = $despatche->cdr_code ?? 'No hay código';
+        $this->cdr_description = $despatche->cdr_description ?? 'No hay descripción';
+        $this->cdr_note = $despatche->cdr_note ?? 'No hay nota';
+        $this->errorCode = $despatche->errorCode ?? 'No hay error';
+        $this->errorMessage = $despatche->errorMessage ?? 'No hay error';
         $this->ticket = $despatche->ticket ?? 'No hay ticket';
         $this->infoModal = true;
     }
