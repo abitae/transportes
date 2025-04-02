@@ -66,6 +66,7 @@ class DespatcheLive extends Component
         $ticket = $result->getTicket();
         $result = $api->getStatus($ticket);
         $response = $sunat->sunatResponse($result);
+        dump($response);
         if ($response['success']) {
             $despatche->cdr_description = $response['cdrResponse']['description'];
             $despatche->cdr_code = $response['cdrResponse']['code'];
