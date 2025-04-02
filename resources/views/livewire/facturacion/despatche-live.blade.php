@@ -82,9 +82,9 @@
                 <div class="space-y-3 text-sm">
                     @php
                         $statusItems = [
-                            ['label' => 'Código', 'value' => $cdr_code],
-                            ['label' => 'Descripción', 'value' => $cdr_description],
-                            ['label' => 'Nota', 'value' => $cdr_note],
+                            ['label' => 'Código', 'value' => $cdr_code ?? 'No hay código'],
+                            ['label' => 'Descripción', 'value' => $cdr_description ?? 'No hay descripción'],
+                            ['label' => 'Nota', 'value' => $cdr_note ?? 'No hay nota'],
                             [
                                 'label' => 'Error Code',
                                 'value' => $errorCode ?? 'No hay error',
