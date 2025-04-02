@@ -5,8 +5,10 @@ namespace App\Livewire\Facturacion;
 use App\Models\Facturacion\Despatche;
 use App\Services\SunatServiceGlobal;
 use App\Services\SunatServiceGre;
+use App\Traits\LogCustom;
 use Greenter\Model\DocumentInterface;
 use Greenter\Report\XmlUtils;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -15,6 +17,7 @@ use Mary\Traits\Toast;
 
 class DespatcheLive extends Component
 {
+    use LogCustom;
     use Toast;
     use WithPagination, WithoutUrlPagination;
     public string $title = 'GUIA DE REMICION TRANSPORTISTA';
@@ -66,7 +69,7 @@ class DespatcheLive extends Component
         $ticket = $result->getTicket();
         $result = $api->getStatus($ticket);
         $response = $sunat->sunatResponse($result);
-        dump($response);
+        $this->infoLog('prueba ' . $response);
         if ($response['success']) {
             $despatche->cdr_description = $response['cdrResponse']['description'];
             $despatche->cdr_code = $response['cdrResponse']['code'];
@@ -142,5 +145,4 @@ class DespatcheLive extends Component
         $this->toast('success', 'Ticket actualizado');
         $this->infoModal = false;
     }
-
 }
