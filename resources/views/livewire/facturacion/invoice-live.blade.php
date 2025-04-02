@@ -74,7 +74,7 @@
                             <x-mary-button icon="o-arrow-path" target="_blank" wire:click="xmlGenerate({{ $stuff->id }})"
                                 no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
                         @endif
-                    
+
                         @if ($stuff->cdr_path)
                             <x-mary-button icon="o-document-arrow-down" target="_blank"
                                 wire:click="downloadCdrFile({{ $stuff->id }})" no-wire-navigate spinner

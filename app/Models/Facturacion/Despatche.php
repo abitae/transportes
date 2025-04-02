@@ -52,7 +52,8 @@ class Despatche extends Model
         'setPercent',
         'setMount',
         'errorCode',
-        'errorMessage'
+        'errorMessage',
+        'ticket',
     ];
     public function company()
     {

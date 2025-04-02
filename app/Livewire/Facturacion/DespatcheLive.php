@@ -20,7 +20,14 @@ class DespatcheLive extends Component
     public string $title = 'GUIA DE REMICION TRANSPORTISTA';
     public string $sub_title = 'Modulo de facturacion';
     public int $perPage = 10;
-
+    public string $cdr_code;
+    public string $cdr_description;
+    public string $cdr_note;
+    public string $errorCode;
+    public string $errorMessage;
+    public string $ticket;
+    public bool $infoModal = false;
+    public Despatche $despatche;
     public function render()
     {
         $despaches = Despatche::latest()->paginate($this->perPage);
@@ -59,15 +66,15 @@ class DespatcheLive extends Component
         $ticket = $result->getTicket();
         $result = $api->getStatus($ticket);
         $response = $sunat->sunatResponse($result);
-
         if ($response['success']) {
             $despatche->cdr_description = $response['cdrResponse']['description'];
             $despatche->cdr_code = $response['cdrResponse']['code'];
             $despatche->cdr_note = $response['cdrResponse']['notes'];
             $despatche->cdr_path = 'cdr/' . 'R-' . $despatche->company->ruc . '-' . $despatche->tipoDoc . '-' . $despatche->serie . '-' . $despatche->correlativo . '.zip';
+            $despatche->ticket = $ticket;
             $despatche->save();
             $cdr = $result->getCdrZip();
-            Storage::disk('public')->put($despatche->cdr_path, $cdr );
+            Storage::disk('public')->put($despatche->cdr_path, $cdr);
             $this->toast('success', 'Comprobante enviado a la sunat');
         } else {
             $despatche->errorCode = $response['error']['code'];
@@ -82,4 +89,57 @@ class DespatcheLive extends Component
             return response()->download(storage_path('app/public/' . $despatche->cdr_path));
         }
     }
+    public function statusDespatch(Despatche $despatche)
+    {
+        $this->despatche = $despatche;
+        $this->cdr_code = $despatche->cdr_code;
+        $this->cdr_description = $despatche->cdr_description;
+        $this->cdr_note = $despatche->cdr_note;
+        $this->errorCode = $despatche->errorCode;
+        $this->errorMessage = $despatche->errorMessage;
+        $this->ticket = $despatche->ticket ?? 'No hay ticket';
+        $this->infoModal = true;
+    }
+    public function ActualizarDespatche(Despatche $despatche)
+    {
+        $company = $despatche->company;
+        $sunat = new SunatServiceGlobal();
+        $api = $sunat->getSeeApi($company);
+        $result = $api->getStatus($despatche->ticket);
+        $response = $sunat->sunatResponse($result);
+        if ($response['success']) {
+            $despatche->cdr_description = $response['cdrResponse']['description'];
+            $despatche->cdr_code = $response['cdrResponse']['code'];
+            $despatche->cdr_note = $response['cdrResponse']['notes'];
+            $despatche->cdr_path = 'cdr/' . 'R-' . $despatche->company->ruc . '-' . $despatche->tipoDoc . '-' . $despatche->serie . '-' . $despatche->correlativo . '.zip';
+            $despatche->ticket = $despatche->ticket;
+            $despatche->save();
+            $cdr = $result->getCdrZip();
+            Storage::disk('public')->put($despatche->cdr_path, $cdr);
+            $this->toast('success', 'Comprobante enviado a la sunat');
+        } else {
+            $despatche->errorCode = $response['error']['code'];
+            $despatche->errorMessage = $response['error']['message'];
+            $despatche->save();
+            $this->toast('error', 'Error al enviar el comprobante a la sunat');
+        }
+        $this->infoModal = false;
+    }
+    public function save()
+    {
+        $rules = [
+            'ticket' => 'required|string|max:255',
+        ];
+        $messages = [
+            'ticket.required' => 'El ticket es requerido',
+            'ticket.string' => 'El ticket debe ser una cadena de caracteres',
+            'ticket.max' => 'El ticket debe tener máximo 255 caracteres',
+        ];
+        $this->validate($rules, $messages);
+        $this->despatche->ticket = $this->ticket;
+        $this->despatche->save();
+        $this->toast('success', 'Ticket actualizado');
+        $this->infoModal = false;
+    }
+
 }
