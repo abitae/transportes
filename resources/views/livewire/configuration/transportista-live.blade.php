@@ -1,8 +1,7 @@
 <div>
     <x-mary-card title="{{ $title ?? 'title' }}" subtitle="{{ $sub_title ?? 'title' }}" shadow separator>
         <x-slot:menu>
-            <x-mary-button wire:click='openModal' responsive icon="o-plus" label="NUEVO"
-                class="text-white bg-sky-500" />
+            <x-mary-button wire:click='openModal' responsive icon="o-plus" label="NUEVO" class="text-white bg-sky-500" />
         </x-slot:menu>
     </x-mary-card>
     <div class="grid grid-cols-4 space-x-2">
@@ -18,7 +17,9 @@
                         ['key' => 'isActive', 'label' => 'isActive', 'class' => ''],
                     ];
                     $row_decoration = [
-                        'bg-red-50' => fn(App\Models\Configuration\Transportista $transportista) => !$transportista->isActive,
+                        'bg-red-50' => fn(
+                            App\Models\Configuration\Transportista $transportista,
+                        ) => !$transportista->isActive,
                     ];
                 @endphp
                 <x-mary-table :headers="$headers" :rows="$transportistas" with-pagination per-page="perPage" :row-decoration="$row_decoration"
@@ -64,17 +65,19 @@
                     <div class="grid col-span-4 pt-2">
                         @php
                             $tipos = [
-                                ['id'=> 'INTERNO' ,  'name' => 'INTERNO'],
-                                ['id'=> 'EXTERNO',  'name' => 'EXTERNO'],
-                            ]
+                                ['id' => 'INTERNO', 'name' => 'INTERNO'],
+                                ['id' => 'EXTERNO', 'name' => 'EXTERNO'],
+                            ];
                         @endphp
-                        <x-mary-select label="Tipo" icon="o-user" :options="$tipos" wire:model="transportistaForm.tipo" inline />
+                        <x-mary-select label="Tipo" icon="o-user" :options="$tipos"
+                            wire:model="transportistaForm.tipo" inline />
                     </div>
                 </div>
                 <x-slot:actions>
                     <x-mary-button label="Cancel" @click="$wire.modalTransportista = false" class="bg-red-500" />
-                    <x-mary-button type="submit" spinner="{{ !isset($transportistaForm->transportista) ? 'create' : 'edit' }}"
-                        label="Save" class="bg-blue-500" />
+                    <x-mary-button type="submit"
+                        spinner="{{ !isset($transportistaForm->transportista) ? 'create' : 'edit' }}" label="Save"
+                        class="bg-blue-500" />
                 </x-slot:actions>
             </div>
         </x-mary-form>
