@@ -69,7 +69,7 @@
         }
 
         .qr-code img {
-            width: 100px;
+            width: 50px;
         }
 
         .footer {
