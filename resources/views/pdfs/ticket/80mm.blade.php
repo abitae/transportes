@@ -199,8 +199,7 @@
     </div>
 
     <div class="qr-code">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/100px-Codigo_QR.svg.png?20080824194905"
-            alt="Código QR">
+        <img src="./img/terminos_qr.png" alt="Código QR">
     </div>
 
     <div class="footer">
