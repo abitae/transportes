@@ -207,6 +207,7 @@ class SendPackageLive extends Component
     }
     public function editEncomienda(Encomienda $encomienda)
     {
+        //dd($encomienda);
         $this->encomienda = $encomienda;
         $this->editEncomiendaModal = true;
     }
