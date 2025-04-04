@@ -77,7 +77,7 @@
                 <td>{{ $encomiendaLibre->code }}</td>
 
                 <td>
-                    @forelse (json_decode($encomiendaLibre->docsTraslado) as $doc)
+                    @forelse (json_decode($encomiendaLibre->docsTraslado,true) as $doc)
                         {{ $doc['documento'] }}
                     @empty
                         S/D
@@ -142,7 +142,7 @@
             <tr>
                 <td>{{ $encomienda->code }}</td>
                 <td>
-                    @forelse (json_decode($encomienda->docsTraslado) as $doc)
+                    @forelse (json_decode($encomienda->docsTraslado,true) as $doc)
                         {{ $doc['documento'] }}
                     @empty
                         S/D
@@ -205,7 +205,7 @@
             <tr>
                 <td>{{ $encomiendaReturn->code }}</td>
                 <td>
-                    @forelse (json_decode($encomiendaReturn->docsTraslado) as $doc)
+                    @forelse (json_decode($encomiendaReturn->docsTraslado,true) as $doc)
                         {{ $doc['documento'] }}
                     @empty
                         S/D
