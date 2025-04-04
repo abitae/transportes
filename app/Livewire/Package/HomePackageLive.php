@@ -278,7 +278,7 @@ class HomePackageLive extends Component
         }
         if ($this->tipo_comprobante != 'TICKET') {
             $this->setInvoice($this->encomienda, $this->tipo_comprobante);
-            $this->setGuiTrans($this->encomienda);
+            //$this->setGuiTrans($this->encomienda);
         }
         $this->modalCobrar = false;
         $this->modalFinal = true;

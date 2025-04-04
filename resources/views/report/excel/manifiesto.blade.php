@@ -57,49 +57,65 @@
 <table>
     <thead>
         <tr>
-            <th>NRO GUIA
-            </th>
-            <th>GUIA CLIENTE
-            </th>
+            <th>NRO GUIA</th>
+            <th>GUIA CLIENTE</th>
+            <th>REMITENTE</th>
+            <th>TELEFONO</th>
             <th>DESTINATARIO</th>
             <th>TELEFONO</th>
-            <th>REMITENTE</th>
+            <th>DIRECCION</th>
             <th>CANTIDAD</th>
             <th>PAQUETES</th>
             <th>MONTO</th>
-            <th>RETORNO</th>
+            <th>AGENCIA</th>
             <th>PAGO</th>
         </tr>
     </thead>
     <tbody>
-        @foreach($encomiendas as $encomiendaLibre)
+        @foreach ($encomiendas as $encomiendaLibre)
+            <tr>
+                <td>{{ $encomiendaLibre->code }}</td>
+
+                <td>
+                    @forelse (json_decode($encomiendaLibre->docsTraslado) as $doc)
+                        {{ $doc['documento'] }}
+                    @empty
+                        S/D
+                    @endforelse
+
+                </td>
+
+                <td>{{ $encomiendaLibre->remitente->name }}</td>
+                <td>{{ $encomiendaLibre->remitente->phone }}</td>
+                <td>{{ $encomiendaLibre->destinatario->name }}</td>
+                <td>{{ $encomiendaLibre->destinatario->phone }}</td>
+                <td>{{ $encomiendaLibre->destinatario->address }}</td>
+                <td>{{ $encomiendaLibre->cantidad }}</td>
+                <td>
+                    @php
+                        $packsLibre = '';
+                    @endphp
+                    @forelse ($encomiendaLibre->paquetes as $paquete)
+                        {{ $packsLibre . '' . $paquete->description . '(' . $paquete->cantidad . ')' . '(' . $paquete->amount . ')-' }}
+                    @empty
+                    @endforelse
+                </td>
+                <td>
+                    {{ $encomiendaLibre->monto }}
+                </td>
+                <td>
+                    {{ $encomiendaLibre->isHome ? 'SI' : 'NO' }}
+                </td>
+                <td>
+                    {{ $encomiendaLibre->estado_pago }}
+                </td>
+            </tr>
+        @endforeach
         <tr>
-            <td>{{ $encomiendaLibre->code }}</td>
-            <td>{{ $encomiendaLibre->doc_traslado ?? 'S/D' }}</td>
-            <td>{{ $encomiendaLibre->remitente->name }}</td>
-            <td>{{ $encomiendaLibre->remitente->phone }}</td>
-            <td>{{ $encomiendaLibre->destinatario->name }}</td>
-            <td>{{ $encomiendaLibre->cantidad }}</td>
-            <td>
-                @php
-                $packsLibre = '';
-                @endphp
-                @forelse ($encomiendaLibre->paquetes as $paquete)
-                {{ $packsLibre.''.$paquete->description.'('.$paquete->cantidad.')'.'('.$paquete->amount.')-' }}
-                @empty
-                @endforelse
-            </td>
-            <td>
-                {{ $encomiendaLibre->monto }}
-            </td>
-            <td>
-                {{ $encomiendaLibre->isReturn ? 'SI' : 'NO' }}
-            </td>
-            <td>
-                {{ $encomiendaLibre->estado_pago}}
+            <td colspan="10">
+                Total: {{ $encomiendas->sum('monto') }}
             </td>
         </tr>
-        @endforeach
     </tbody>
 </table>
 
@@ -108,45 +124,61 @@
         <tr>
             <th>NRO GUIA</th>
             <th>GUIA CLIENTE</th>
+            <th>REMITENTE</th>
+            <th>TELEFONO</th>
             <th>DESTINATARIO</th>
             <th>TELEFONO</th>
-            <th>REMITENTE</th>
+            <th>DIRECCION</th>
             <th>CANTIDAD</th>
             <th>PAQUETES</th>
             <th>MONTO</th>
-            <th>RETORNO</th>
+            <th>AGENCIA</th>
             <th>PAGO</th>
+            <th>DOMICILIO</th>
         </tr>
     </thead>
     <tbody>
-        @foreach($encomiendasIsHome as $encomienda)
+        @foreach ($encomiendasIsHome as $encomienda)
+            <tr>
+                <td>{{ $encomienda->code }}</td>
+                <td>
+                    @forelse (json_decode($encomienda->docsTraslado) as $doc)
+                        {{ $doc['documento'] }}
+                    @empty
+                        S/D
+                    @endforelse
+                </td>
+                <td>{{ $encomienda->remitente->name }}</td>
+                <td>{{ $encomienda->remitente->phone }}</td>
+                <td>{{ $encomienda->destinatario->name }}</td>
+                <td>{{ $encomienda->destinatario->phone }}</td>
+                <td>{{ $encomienda->destinatario->address }}</td>
+                <td>{{ $encomienda->cantidad }}</td>
+                <td>
+                    @php
+                        $packs = '';
+                    @endphp
+                    @forelse ($encomienda->paquetes as $paquete)
+                        {{ $packs . '' . $paquete->description . '(' . $paquete->cantidad . ')' . '(' . $paquete->amount . ')-' }}
+                    @empty
+                    @endforelse
+                </td>
+                <td>
+                    {{ $encomienda->monto }}
+                </td>
+                <td>
+                    {{ $encomienda->isHome ? 'SI' : 'NO' }}
+                </td>
+                <td>
+                    {{ $encomienda->estado_pago }}
+                </td>
+            </tr>
+        @endforeach
         <tr>
-            <td>{{ $encomienda->code }}</td>
-            <td>{{ $encomienda->doc_traslado ?? 'S/D' }}</td>
-            <td>{{ $encomienda->remitente->name }}</td>
-            <td>{{ $encomienda->remitente->phone }}</td>
-            <td>{{ $encomienda->destinatario->name }}</td>
-            <td>{{ $encomienda->cantidad }}</td>
-            <td>
-                @php
-                $packs = '';
-                @endphp
-                @forelse ($encomienda->paquetes as $paquete)
-                {{ $packs.''.$paquete->description.'('.$paquete->cantidad.')'.'('.$paquete->amount.')-' }}
-                @empty
-                @endforelse
-            </td>
-            <td>
-                {{ $encomienda->monto }}
-            </td>
-            <td>
-                {{ $encomienda->isReturn ? 'SI' : 'NO' }}
-            </td>
-            <td>
-                {{ $encomienda->estado_pago}}
+            <td colspan="10">
+                Total: {{ $encomiendasIsHome->sum('monto') }}
             </td>
         </tr>
-        @endforeach
     </tbody>
 </table>
 
@@ -155,44 +187,60 @@
         <tr>
             <th>NRO GUIA</th>
             <th>GUIA CLIENTE</th>
+            <th>REMITENTE</th>
+            <th>TELEFONO</th>
             <th>DESTINATARIO</th>
             <th>TELEFONO</th>
-            <th>REMITENTE</th>
+            <th>DIRECCION</th>
             <th>CANTIDAD</th>
             <th>PAQUETES</th>
             <th>MONTO</th>
-            <th>RETORNO</th>
+            <th>AGENCIA</th>
             <th>PAGO</th>
+            <th>RETORNO</th>
         </tr>
     </thead>
     <tbody>
-        @foreach($encomiendasIsReturn as $encomiendaReturn)
+        @foreach ($encomiendasIsReturn as $encomiendaReturn)
+            <tr>
+                <td>{{ $encomiendaReturn->code }}</td>
+                <td>
+                    @forelse (json_decode($encomiendaReturn->docsTraslado) as $doc)
+                        {{ $doc['documento'] }}
+                    @empty
+                        S/D
+                    @endforelse
+                </td>
+                <td>{{ $encomiendaReturn->remitente->name }}</td>
+                <td>{{ $encomiendaReturn->remitente->phone }}</td>
+                <td>{{ $encomiendaReturn->destinatario->name }}</td>
+                <td>{{ $encomiendaReturn->destinatario->phone }}</td>
+                <td>{{ $encomiendaReturn->destinatario->address }}</td>
+                <td>{{ $encomiendaReturn->cantidad }}</td>
+                <td>
+                    @php
+                        $packs = '';
+                    @endphp
+                    @forelse ($encomiendaReturn->paquetes as $paquete)
+                        {{ $packs . '' . $paquete->description . '(' . $paquete->cantidad . ')' . '(' . $paquete->amount . ')-' }}
+                    @empty
+                    @endforelse
+                </td>
+                <td>
+                    {{ $encomiendaReturn->monto }}
+                </td>
+                <td>
+                    {{ $encomiendaReturn->isReturn ? 'SI' : 'NO' }}
+                </td>
+                <td>
+                    {{ $encomiendaReturn->estado_pago }}
+                </td>
+            </tr>
+        @endforeach
         <tr>
-            <td>{{ $encomiendaReturn->code }}</td>
-            <td>{{ $encomiendaReturn->doc_traslado ?? 'S/D' }}</td>
-            <td>{{ $encomiendaReturn->remitente->name }}</td>
-            <td>{{ $encomiendaReturn->remitente->phone }}</td>
-            <td>{{ $encomiendaReturn->destinatario->name }}</td>
-            <td>{{ $encomiendaReturn->cantidad }}</td>
-            <td>
-                @php
-                $packs = '';
-                @endphp
-                @forelse ($encomiendaReturn->paquetes as $paquete)
-                {{ $packs.''.$paquete->description.'('.$paquete->cantidad.')'.'('.$paquete->amount.')-' }}
-                @empty
-                @endforelse
-            </td>
-            <td>
-                {{ $encomiendaReturn->monto }}
-            </td>
-            <td>
-                {{ $encomiendaReturn->isReturn ? 'SI' : 'NO' }}
-            </td>
-            <td>
-                {{ $encomiendaReturn->estado_pago}}
+            <td colspan="10">
+                Total: {{ $encomiendasIsReturn->sum('monto') }}
             </td>
         </tr>
-        @endforeach
     </tbody>
 </table>

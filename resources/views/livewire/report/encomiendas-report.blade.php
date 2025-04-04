@@ -124,10 +124,8 @@
                                 <x-mary-menu-item title="Detalle encomienda" icon="o-archive-box"
                                     wire:click="showEncomienda({{ $stuff->id }})" />
                                 @if (!$stuff->invoice)
-                                    <x-mary-menu-item title="Crear boleta" icon="o-archive-box"
+                                    <x-mary-menu-item title="Crear comprobante" icon="o-archive-box"
                                         wire:click="createBoleta({{ $stuff->id }})" />
-                                    <x-mary-menu-item title="Crear factura" icon="o-archive-box"
-                                        wire:click="createFactura({{ $stuff->id }})" />
                                 @endif
                             </x-mary-dropdown>
                         </div>
