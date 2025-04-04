@@ -6,7 +6,7 @@
             <x-mary-step step="1" text="Remitente">
                 <div class="grid grid-cols-4 gap-3 p-4 bg-white rounded-lg shadow-sm">
                     <div class="col-span-4 md:col-span-2">
-                        <x-mary-input label="Número de documento" wire:model='remitente_code'
+                        <x-mary-input label="Número de documento" wire:model='remitente_code' wire:keydown.enter="searchRemitente"
                             placeholder="Ingrese documento">
                             <x-slot:prepend>
                                 <x-mary-select wire:model='remitente_type_code' icon="o-user" :options="$tipoDocuments"
@@ -35,7 +35,7 @@
             <x-mary-step step="2" text="Destinatario">
                 <div class="grid grid-cols-4 gap-3 p-4 bg-white rounded-lg shadow-sm">
                     <div class="col-span-4 md:col-span-2">
-                        <x-mary-input label="Número de documento" wire:model='destinatario_code'
+                        <x-mary-input label="Número de documento" wire:model='destinatario_code' wire:keydown.enter="searchDestinatario"
                             placeholder="Ingrese documento">
                             <x-slot:prepend>
                                 <x-mary-select wire:model='destinatario_type_code' icon="o-user" option-value="codigo"
@@ -96,7 +96,7 @@
                             </div>
                             <div>
                                 <div class="flex flex-col">
-                                    <x-mary-input label="MONTO" wire:model="amount" suffix="S/"
+                                    <x-mary-input label="MONTO" wire:model="amount" suffix="S/" wire:keydown.enter="addPaquete"
                                         placeholder="0.00" />
                                     <div class="flex justify-end gap-2 mt-2">
                                         <x-mary-button icon="o-plus" wire:click='addPaquete'
@@ -148,7 +148,7 @@
                     <div class="mt-4 p-4 bg-white rounded-lg shadow-sm">
                         <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
                             <div>
-                                <x-mary-input label="Número de documento" wire:model='cliFacturacion_code'
+                                <x-mary-input label="Número de documento" wire:model='cliFacturacion_code' wire:keydown.enter="searchFacturacion"
                                     class="w-full">
                                     <x-slot:prepend>
                                         <x-mary-select wire:model.live='cliFacturacion_type_code'
@@ -205,7 +205,7 @@
 
                     <!-- Sección de Documentos de Traslado -->
                     <div class="bg-white p-4 rounded-lg shadow-sm">
-                        <div class="p-2 my-2 border rounded-lg border-sky-200 bg-sky-50">   
+                        <div class="p-2 my-2 border rounded-lg border-sky-200 bg-sky-50">
                             <x-mary-toggle label="Retorno de guía" wire:model="isReturn"
                                 hint="Active para retorno de guía" />
                         </div>
@@ -266,7 +266,7 @@
                         </div>
                     </div>
                     </div>
-                    
+
                 </div>
                 <!-- Sección de Glosa (oculta) -->
                 <div class="hidden">
@@ -280,9 +280,9 @@
                 <x-mary-button label="Anterior" wire:click="prev" class='shadow-xl' />
             @endif
             @if ($step == 5)
-                <x-mary-button label="Confirmacion" wire:click="finish" class='shadow-xl' />
+                <x-mary-button label="Confirmacion" wire:click="finish" class='shadow-xl'/>
             @else
-                <x-mary-button label="Siguiente" wire:click="next" class='shadow-xl' />
+                <x-mary-button label="Siguiente" wire:click="next" class='shadow-xl'/>
             @endif
         </x-slot:actions>
     </x-mary-card>
