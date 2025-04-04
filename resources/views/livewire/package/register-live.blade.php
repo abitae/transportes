@@ -6,7 +6,7 @@
             <x-mary-step step="1" text="Remitente">
                 <div class="grid grid-cols-4 gap-3 p-4 bg-white rounded-lg shadow-sm">
                     <div class="col-span-4 md:col-span-2">
-                        <x-mary-input label="Número de documento" wire:model='remitente_code' wire:keydown.enter="searchRemitente"
+                        <x-mary-input label="Número de documento" wire:model='remitente_code' wire:keydown.enter="searchRemitente" wire:keydown.ctrl.enter="next"
                             placeholder="Ingrese documento">
                             <x-slot:prepend>
                                 <x-mary-select wire:model='remitente_type_code' icon="o-user" :options="$tipoDocuments"
@@ -35,7 +35,7 @@
             <x-mary-step step="2" text="Destinatario">
                 <div class="grid grid-cols-4 gap-3 p-4 bg-white rounded-lg shadow-sm">
                     <div class="col-span-4 md:col-span-2">
-                        <x-mary-input label="Número de documento" wire:model='destinatario_code' wire:keydown.enter="searchDestinatario"
+                        <x-mary-input label="Número de documento" wire:model='destinatario_code' wire:keydown.enter="searchDestinatario"  wire:keydown.ctrl.enter="next"
                             placeholder="Ingrese documento">
                             <x-slot:prepend>
                                 <x-mary-select wire:model='destinatario_type_code' icon="o-user" option-value="codigo"
@@ -96,7 +96,7 @@
                             </div>
                             <div>
                                 <div class="flex flex-col">
-                                    <x-mary-input label="MONTO" wire:model="amount" suffix="S/" wire:keydown.enter="addPaquete"
+                                    <x-mary-input label="MONTO" wire:model="amount" suffix="S/" wire:keydown.enter="addPaquete" wire:keydown.ctrl.enter="addPaquete"
                                         placeholder="0.00" />
                                     <div class="flex justify-end gap-2 mt-2">
                                         <x-mary-button icon="o-plus" wire:click='addPaquete'
@@ -259,9 +259,9 @@
                         <div class="bg-white p-4 rounded-lg shadow-sm">
                             <div class="grid grid-cols-1 gap-2">
                                 <x-mary-select label="Transportista" icon="o-user" :options="$transportistas"
-                                    wire:model.live="transportista_id" />
+                                    wire:model="transportista_id" />
                                 <x-mary-select label="Vehículo" icon="o-truck" :options="$vehiculos"
-                                    wire:model.live="vehiculo_id" />
+                                    wire:model="vehiculo_id" />
                             </div>
                         </div>
                     </div>
