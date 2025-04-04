@@ -53,7 +53,7 @@
                                 {{ strtoupper($stuff->sucursal_remitente->name) }}
                             </div>
                             <div>
-                                {{ strtoupper($stuff->sucursal_remitente->created_at->format('d/m/Y')) }}
+                                {{ strtoupper($stuff->sucursal_remitente->created_at->format('d/m/Y')) }} - {{ $stuff->pin }}
                             </div>
                             <div class="truncate">
                                 {{ $stuff->sucursal_remitente->address }}

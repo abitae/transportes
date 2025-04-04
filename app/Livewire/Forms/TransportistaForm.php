@@ -33,6 +33,7 @@ class TransportistaForm extends Form
         try {
             $this->validate();
             Transportista::create([
+                'type_code' => '1',
                 'name' => $this->name,
                 'licencia' => $this->licencia,
                 'dni' => $this->dni,
@@ -50,6 +51,7 @@ class TransportistaForm extends Form
         try {
             $this->validate();
             $this->transportista->update([
+                'type_code' => '1',
                 'name' => $this->name,
                 'licencia' => $this->licencia,
                 'dni' => $this->dni,
