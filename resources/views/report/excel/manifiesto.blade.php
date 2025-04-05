@@ -1,7 +1,7 @@
 <table>
     <tbody>
         <tr>
-            <th colspan="5">9/2/2024</th>
+            <th colspan="5">{{ $encomienda->created_at->format('d/m/Y') }}</th>
         </tr>
         <tr>
             <td colspan="1">
@@ -104,7 +104,7 @@
                     {{ $encomiendaLibre->monto }}
                 </td>
                 <td>
-                    {{ $encomiendaLibre->isHome ? 'SI' : 'NO' }}
+                    {{ $encomiendaLibre->isHome ? 'DOMICILIO' : 'AGENCIA' }}
                 </td>
                 <td>
                     {{ $encomiendaLibre->estado_pago }}
@@ -132,9 +132,8 @@
             <th>CANTIDAD</th>
             <th>PAQUETES</th>
             <th>MONTO</th>
-            <th>AGENCIA</th>
-            <th>PAGO</th>
             <th>DOMICILIO</th>
+            <th>PAGO</th>
         </tr>
     </thead>
     <tbody>
@@ -167,7 +166,7 @@
                     {{ $encomienda->monto }}
                 </td>
                 <td>
-                    {{ $encomienda->isHome ? 'SI' : 'NO' }}
+                    {{ $encomienda->isHome ? 'DOMICILIO' : 'AGENCIA' }}
                 </td>
                 <td>
                     {{ $encomienda->estado_pago }}
@@ -195,9 +194,8 @@
             <th>CANTIDAD</th>
             <th>PAQUETES</th>
             <th>MONTO</th>
-            <th>AGENCIA</th>
-            <th>PAGO</th>
             <th>RETORNO</th>
+            <th>PAGO</th>
         </tr>
     </thead>
     <tbody>
@@ -230,7 +228,7 @@
                     {{ $encomiendaReturn->monto }}
                 </td>
                 <td>
-                    {{ $encomiendaReturn->isReturn ? 'SI' : 'NO' }}
+                    {{ $encomiendaReturn->isReturn ? 'RETORNO' : 'NO' }}
                 </td>
                 <td>
                     {{ $encomiendaReturn->estado_pago }}
