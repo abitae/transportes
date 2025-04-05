@@ -123,7 +123,7 @@
         <strong>DATOS DESTINATARIO</strong><br>
         Razón Social: {{ $ticket->encomienda->destinatario->name }}<br>
         {{ strtoupper($ticket->encomienda->destinatario->type_code == 1 ? 'DNI' : 'RUC') }}:
-        {{ $ticket->destinatario->code }}<br>
+        {{ $ticket->encomienda->destinatario->code }}<br>
         @if ($ticket->encomienda->destinatario->address)
             Dirección: {{ $ticket->encomienda->destinatario->address }}
         @endif
