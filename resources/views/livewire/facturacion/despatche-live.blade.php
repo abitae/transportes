@@ -40,6 +40,9 @@
                     <x-mary-button icon="o-document-arrow-down" target="_blank"
                         wire:click="downloadCdrFile({{ $stuff->id }})" no-wire-navigate spinner
                         class="text-white bg-blue-500 btn-xs" />
+                @elseif ($stuff->ticket)
+                    <x-mary-button icon="o-arrow-path" target="_blank" wire:click="actualizarDespatche({{ $stuff }})"
+                        no-wire-navigate spinner class="text-white bg-blue-500 btn-xs" />
                 @else
                     <x-mary-button icon="o-arrow-path" target="_blank" wire:click="sendXmlFile({{ $stuff->id }})"
                         no-wire-navigate spinner class="text-white bg-orange-500 btn-xs" />
@@ -102,7 +105,7 @@
                     @endforeach
                     <x-mary-input label="Ticket" wire:model="ticket" />
                     @if ($despatche->ticket)
-                        <x-mary-button label="Actualizar" wire:click="ActualizarDespatche({{ $despatche }})" />
+                        <x-mary-button label="Actualizar" wire:click="actualizarDespatche({{ $despatche }})" />
                     @endif
                 </div>
             </div>
