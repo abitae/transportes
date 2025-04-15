@@ -95,6 +95,7 @@ class ReceivePackageLive extends Component
     {
         $retorno = Encomienda::whereIn('id', $this->selected)->update([
             'estado_encomienda' => 'RECIBIDO',
+            'fecha_recepcion' => Carbon::now(),
             'updated_at' => now()->setTimezone('America/Lima')->format('Y-m-d H:i:s'),
         ]);
         if (count($this->selected) == $retorno) {

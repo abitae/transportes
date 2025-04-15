@@ -110,11 +110,10 @@
         <div class="company-name">CORPORACIÓN LOGÍSTICO BRAYAN BRUHS E.I.R.L</div>
         <div class="company-info">RUC: 20568031734</div>
         <div class="company-info">PJ. LOS PEDREGALES MZA. D LOTE. 4 GRU.SECTOR 3 LOS PEDREGAL - JUNÍN - HUANCAYO - EL TAMBO</div>
-        <div class="company-info">Teléfono: 947199138 | Email: abel.arana@gmail.com</div>
     </div>
 
     <h1>REPORTE DE CIERRE DE CAJA</h1>
-    
+
     <div class="info-section">
         <p>Fecha Apertura: <span>{{ $caja->created_at->format('d/m/Y H:i:s') }}</span></p>
         <p>Fecha Cierre: <span>{{ $caja->updated_at->format('d/m/Y H:i:s') }}</span></p>

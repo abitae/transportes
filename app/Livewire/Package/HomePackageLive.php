@@ -162,6 +162,7 @@ class HomePackageLive extends Component
     public function confirmEncomienda()
     {
         if ($this->encomienda->estado_pago == 'PAGADO') {
+            $this->encomienda->fecha_entrega = Carbon::now();
             $this->encomienda->estado_encomienda = 'ENTREGADO';
             $this->encomienda->save();
         }
@@ -243,6 +244,9 @@ class HomePackageLive extends Component
     {
         if ($this->tipo_comprobante == 'TICKET') {
             $this->cliFacturacion = $this->encomienda->facturacion;
+            if(is_numeric($this->monto_descuento) && $this->monto_descuento < $this->encomienda->monto){
+                $this->descuentoCreate();
+            }
         }
         if ($this->tipo_comprobante == 'FACTURA' && $this->cliFacturacion_type_code != '6') {
             $this->error('Ops', 'El cliente de Facturacion debe ser un RUC!');
@@ -299,53 +303,21 @@ class HomePackageLive extends Component
         $this->modalDescuento = true;
     }
 
-    public function descuentoCreate()
+    private function descuentoCreate()
     {
-
-        $rules = [
-            'monto_descuento' => 'required|numeric|min:0',
-            'motivo_descuento' => 'required|string|max:255',
-        ];
-        $messages = [
-            'monto_descuento.required' => 'El monto de descuento es requerido',
-            'monto_descuento.numeric' => 'El monto de descuento debe ser un número',
-            'monto_descuento.min' => 'El monto de descuento debe ser mayor que 0',
-            'motivo_descuento.required' => 'El motivo del descuento es requerido',
-            'motivo_descuento.string' => 'El motivo del descuento debe ser una cadena de texto',
-            'motivo_descuento.max' => 'El motivo del descuento debe tener menos de 255 caracteres',
-        ];
-
-        $this->validate($rules, $messages);
-
-        if ($this->encomienda->monto < $this->monto_descuento) {
-            $this->modalDescuento = false;
-            $this->error('Error', 'El monto de descuento no puede ser mayor al monto de la encomienda');
-            return;
-        }
         $this->encomienda->monto_descuento = $this->monto_descuento;
-        $this->encomienda->motivo_descuento = $this->motivo_descuento;
+        $this->encomienda->save();
         if ($this->encomienda->ticket) {
             $this->encomienda->ticket->monto_descuento = $this->monto_descuento;
-            $this->encomienda->ticket->motivo_descuento = $this->motivo_descuento;
             $this->encomienda->ticket->save();
         }
-        $this->encomienda->save();
-        $this->modalDescuento = false;
-        $this->success('Descuento aplicado correctamente');
+        $this->cajaExit(
+            $this->cajaIsActive(Auth::user())->id,
+            $this->monto_descuento,
+            ' DESCUENTO '.$this->tipo_comprobante,
+            $this->metodo_pago,
+            $this->encomienda->code
+        );
     }
 
-    public function descuentoDelete(Encomienda $encomienda)
-    {
-        $encomienda->monto_descuento = null;
-        $encomienda->motivo_descuento = null;
-        if ($encomienda->ticket) {
-            $encomienda->ticket->monto_descuento = null;
-            $encomienda->ticket->motivo_descuento = null;
-            $encomienda->ticket->save();
-        }
-
-        $encomienda->save();
-        $this->dispatch('refreshEncomienda');
-        $this->success('Descuento eliminado correctamente');
-    }
 }

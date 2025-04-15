@@ -8,7 +8,8 @@
                     ['id' => 'd', 'name' => 'Dia'],
                 ];
             @endphp
-            <x-mary-datetime label="Fecha" wire:model.live="date_ini" icon="o-calendar" type="datetime-local" />
+            <x-mary-datetime label="Desde" wire:model.live="date_ini" icon="o-calendar" type="datetime-local" />
+            <x-mary-datetime label="Hasta" wire:model.live="date_end" icon="o-calendar" type="datetime-local" />
 
             <x-mary-select label="Tipo vista" wire:model.live="selectedTipe" :options="$tipes"
                 class="w-full sm:w-auto" />

@@ -147,12 +147,14 @@ class SendPackageLive extends Component
                         'vehiculo_id' => $this->vehiculo_id,
                         'transportista_id' => $this->transportista_id,
                         'isTransbordo' => true,
+                        'fecha_envio' => Carbon::now(),
                     ]);
             } else {
                 $num_encomiendas_enviadas = Encomienda::where('isActive', true)
                     ->whereIn('id', $this->selected)
                     ->update([
                         'estado_encomienda' => 'ENVIADO',
+                        'fecha_envio' => Carbon::now(),
                         'vehiculo_id' => $this->vehiculo_id,
                         'transportista_id' => $this->transportista_id,
                     ]);

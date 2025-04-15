@@ -11,7 +11,7 @@
             </div>
             <x-slot:actions>
                 <x-mary-button label="Cancelar" @click="$wire.modalCaja = false" class="bg-red-500" />
-                <x-mary-button type="submit" spinner="save3" label="Guardar" class="bg-blue-500" />
+                <x-mary-button type="submit" spinner="save" label="Guardar" class="bg-blue-500" />
             </x-slot:actions>
         </div>
     </x-mary-form>

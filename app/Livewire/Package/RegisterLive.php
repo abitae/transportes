@@ -17,6 +17,7 @@ use App\Traits\InvoiceTrait;
 use App\Traits\LogCustom;
 use App\Traits\SearchDocument;
 use App\Traits\UtilsTrait;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -514,7 +515,7 @@ class RegisterLive extends Component
             $this->pin1 = $this->pin2 = 123;
         }
 
-        
+
 
         if (isset($this->sucursal_dest_id, $this->pin1, $this->pin2) && $this->pin1 == $this->pin2) {
             $this->sucursal_destino = Sucursal::findOrFail($this->sucursal_dest_id);
@@ -555,14 +556,17 @@ class RegisterLive extends Component
             'customer_fact_id' => $this->cliFacturacion->id,
             'cantidad' => $this->paquetes->sum('cantidad'),
             'monto' => $this->paquetes->sum('sub_total'),
+
+            'fecha_creacion' => Carbon::now(), //fecha de creacion
+
             'estado_pago' => $this->estado_pago,
             'tipo_pago' => $this->estado_pago == 'CONTRA ENTREGA' ? 'Credito' : 'Contado',
             'metodo_pago' => $this->metodo_pago,
             'tipo_comprobante' => $this->estado_pago == 'CONTRA ENTREGA' ? 'TICKET' : $this->tipo_comprobante,
 
+            'estado_credito' => $this->estado_pago == 'CONTRA ENTREGA' ? 'Pendiente' : 'Cancelado',
             'docsTraslado' => json_encode($this->docsTraslado),
 
-            'estado_credito' => $this->estado_pago == 'CONTRA ENTREGA' ? 'Pendiente' : 'Cancelado',
             'glosa' => $this->glosa,
             'observation' => $this->observation,
             'estado_encomienda' => 'REGISTRADO',

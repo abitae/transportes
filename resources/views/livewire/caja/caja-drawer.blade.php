@@ -17,25 +17,31 @@
                     @scope('cell_ingresos', $stuff)
                     <div class="grid grid-cols-2 text-white">
                         <div>Efectivo: S/</div>
-                        <div>{{$stuff->entries->whereIn('metodo_pago', ['Contado'])->sum('monto_entry')}}</div>
+                        <div>{{$stuff->entries->whereIn('metodo_pago', ['Efectivo'])->sum('monto_entry')}}</div>
+                        <div>Yape: S/</div>
+                        <div>{{$stuff->entries->whereIn('metodo_pago', ['Yape'])->sum('monto_entry')}}</div>
                         <div>Transferencia: S/</div>
-                        <div>{{$stuff->entries->whereIn('metodo_pago', ['Yape', 'Transferencia', 'Deposito'])->sum('monto_entry')}}
-                        </div>
+                        <div>{{$stuff->entries->whereIn('metodo_pago', ['Transferencia'])->sum('monto_entry')}}</div>
+                        <div>Deposito: S/</div>
+                        <div>{{$stuff->entries->whereIn('metodo_pago', ['Deposito'])->sum('monto_entry')}}</div>
                     </div>
                     @endscope
                     @scope('cell_egresos', $stuff)
                     <div class="grid grid-cols-2 text-white">
                         <div>Efectivo: S/</div>
-                        <div>{{$stuff->exits->whereIn('metodo_pago', ['Contado'])->sum('monto_exit')}}</div>
+                        <div>{{$stuff->exits->whereIn('metodo_pago', ['Efectivo'])->sum('monto_exit')}}</div>
+                        <div>Yape: S/</div>
+                        <div>{{$stuff->exits->whereIn('metodo_pago', ['Yape'])->sum('monto_exit')}}</div>
                         <div>Transferencia: S/</div>
-                        <div>{{$stuff->exits->whereIn('metodo_pago', ['Yape', 'Transferencia', 'Deposito'])->sum('monto_exit')}}
-                        </div>
+                        <div>{{$stuff->exits->whereIn('metodo_pago', ['Transferencia'])->sum('monto_exit')}}</div>
+                        <div>Deposito: S/</div>
+                        <div>{{$stuff->exits->whereIn('metodo_pago', ['Deposito'])->sum('monto_exit')}}</div>
                     </div>
                     @endscope
                     @scope('cell_action', $stuff)
                     @if (!$stuff->isActive)
-                        <x-mary-button icon="o-printer" wire:click="printCaja({{ $stuff->id }})" spinner
-                            class="text-white bg-purple-500 btn-xs" />
+                    <x-mary-button icon="o-printer" target="_blank" no-wire-navigate
+                            link="/caja/80mm/{{ $stuff->id }}" spinner class="text-white bg-purple-500 btn-xs" />
                     @endif
                     @endscope
                 </x-mary-table>

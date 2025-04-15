@@ -16,11 +16,11 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased text-gray-900 bg-gray-50">
+<body class="font-sans antialiased text-gray-900 bg-gray-100">
     <div class="flex flex-col min-h-screen md:flex-row">
         <!-- Image section - visible on medium screens and up -->
         <div class="hidden bg-white md:flex md:w-1/2 lg:w-2/3">
-            <img src="{{ asset('img/imagen_login.jpg') }}" alt="{{ config('app.name', 'INFINITY-CARGO') }}" 
+            <img src="{{ asset('img/imagen_login.jpg') }}" alt="{{ config('app.name', 'INFINITY-CARGO') }}"
                  class="object-cover w-full h-full transition-opacity duration-300 hover:opacity-95">
         </div>
 
@@ -34,14 +34,14 @@
             </div>
 
             <!-- Form container -->
-            <div class="w-full max-w-md px-6 py-8 mx-auto bg-white border border-gray-200 shadow-lg rounded-xl">
+            <div class="w-full max-w-md px-6 py-8 mx-auto bg-white border border-gray-500 shadow-2xl rounded-xl">
                 {{ $slot }}
             </div>
-            
+
             <!-- Footer -->
             <div class="w-full max-w-md mt-8 mb-4 text-sm text-center text-gray-500">
-                <p>Versión v2.0.0</p>
-                <p class="mt-1">© {{ date('Y') }} <a href="https://open9.cloud" target="_blank" 
+                <p>Versión v3.0.0</p>
+                <p class="mt-1">© {{ date('Y') }} <a href="https://open9.cloud" target="_blank"
                    class="font-medium text-green-600 transition-colors hover:text-green-800 hover:underline">OPEN9</a></p>
             </div>
         </div>

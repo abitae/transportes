@@ -4,6 +4,7 @@
             <x-mary-button wire:click="openModal" icon="s-eye{{ !$openCaja ? '' : '-slash' }}"
                 label="{{ !$openCaja ? 'Abrir' : 'Cerrar' }} Caja"
                 class="text-white bg-{{ !$openCaja ? 'green' : 'red' }}-500" responsive />
+                
             <x-mary-button @click="$wire.showHistory = true" icon="s-eye" label="Historial"
                 class="text-white bg-purple-500" responsive />
         </x-slot:menu>
@@ -11,7 +12,7 @@
             <div class="flex justify-end mb-4">
                 <x-mary-toggle wire:model.live="showCajaStats" label="Mostrar estadísticas" wire:change="$set('showCajaStats', !$showCajaStats)" />
             </div>
-            
+
             @if($showCajaStats)
             <div class="grid grid-cols-1 border border-gray-100 sm:grid-cols-2 md:grid-cols-4">
                 <div>

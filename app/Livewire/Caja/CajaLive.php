@@ -110,6 +110,9 @@ class CajaLive extends Component
     public function openModal()
     {
         $this->cajaForm->reset();
+        if ($this->openCaja) {
+            $this->cajaForm->monto_cierre = $this->calcularMontoEfectivoActual();
+        }
         $this->modalCaja = true;
     }
 

@@ -34,7 +34,7 @@ class EncomiendaForm extends Form
     public $pin;
     public $isReturn;
     public $isHome;
-
+    public $fecha_creacion;
     public function store($paquetes)
     {
         try {
@@ -55,7 +55,7 @@ class EncomiendaForm extends Form
                 'tipo_pago' => $this->tipo_pago,
                 'tipo_comprobante' => $this->tipo_comprobante,
                 'estado_credito' => $this->estado_credito,
-
+                'fecha_creacion' => $this->fecha_creacion,
                 'docsTraslado' => $this->docsTraslado,
 
                 'glosa' => $this->glosa,

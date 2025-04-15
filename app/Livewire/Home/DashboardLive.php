@@ -57,6 +57,7 @@ class DashboardLive extends Component
 
     public $selectedTipe = 'Y';
     public $date_ini;
+    public $date_end;
 
     // Mapeo de estados y métodos de pago con colores consistentes
     private array $estadoColors = [
@@ -81,8 +82,8 @@ class DashboardLive extends Component
 
     public function mount()
     {
-        $this->date_ini = Carbon::now()->endOfDay()->format('Y-m-d H:i');
-
+        $this->date_ini = Carbon::now()->startOfDay()->format('Y-m-d H:i');
+        $this->date_end = Carbon::now()->endOfDay()->format('Y-m-d H:i');
         // Inicializar opciones de gráficos
         $this->myLine['option'] = $this->chartDefaultOptions;
         $this->myPie['option'] = ['responsive' => true];
@@ -119,6 +120,8 @@ class DashboardLive extends Component
     // Método unificado para obtener datos según el período seleccionado
     private function getDataForPeriod(DateTime $date, string $chartType)
     {
+        $dateEnd = new DateTime($this->date_end);
+
         switch ($this->selectedTipe) {
             case 'Y':
                 $methodName = "data{$chartType}Year";
@@ -134,69 +137,55 @@ class DashboardLive extends Component
                 break;
         }
 
-        return $this->$methodName($date);
+        return $this->$methodName($date, $dateEnd);
     }
 
-    private function dataChartYear(DateTime $date)
+    private function dataChartYear(DateTime $date, DateTime $dateEnd)
     {
-        return $this->getChartData($date, 'year');
+        return $this->getChartData($date, $dateEnd, 'year');
     }
 
-    private function dataChartMonth(DateTime $date)
+    private function dataChartMonth(DateTime $date, DateTime $dateEnd)
     {
-        return $this->getChartData($date, 'month');
+        return $this->getChartData($date, $dateEnd, 'month');
     }
 
-    private function dataChartDay(DateTime $date)
+    private function dataChartDay(DateTime $date, DateTime $dateEnd)
     {
-        return $this->getChartData($date, 'day');
+        return $this->getChartData($date, $dateEnd, 'day');
     }
 
-    private function getChartData(DateTime $date, string $timeUnit = 'month')
+    private function getChartData(DateTime $date, DateTime $dateEnd, string $timeUnit = 'month')
     {
-        $year = $date->format('Y');
-        $month = $date->format('m');
-        $day = $date->format('d');
-
         $timeConfigs = [
             'year' => [
                 'size' => 12,
                 'start' => 1,
                 'format' => 'MONTH',
                 'labels' => [
-                    'Enero',
-                    'Febrero',
-                    'Marzo',
-                    'Abril',
-                    'Mayo',
-                    'Junio',
-                    'Julio',
-                    'Agosto',
-                    'Septiembre',
-                    'Octubre',
-                    'Noviembre',
-                    'Diciembre'
+                    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
                 ]
             ],
             'month' => [
                 'size' => $date->format('t'),
                 'start' => 1,
                 'format' => 'DAY',
-                'where' => ['whereMonth' => $month]
+                'where' => ['whereMonth' => $date->format('m')]
             ],
             'day' => [
                 'size' => 24,
                 'start' => 0,
                 'format' => 'HOUR',
-                'where' => ['whereMonth' => $month, 'whereDay' => $day]
+                'where' => ['whereMonth' => $date->format('m'), 'whereDay' => $date->format('d')]
             ]
         ];
 
         $config = $timeConfigs[$timeUnit];
         $sucursals = Sucursal::all();
 
-        // Optimización: Obtener todos los datos en una sola consulta
-        $query = Encomienda::whereYear('created_at', $year);
+        // Optimización: Obtener todos los datos en una sola consulta con rango de fechas
+        $query = Encomienda::whereBetween('created_at', [$date, $dateEnd]);
 
         // Aplicar cláusulas where adicionales si existen
         if (isset($config['where'])) {
@@ -206,7 +195,7 @@ class DashboardLive extends Component
         }
 
         $allData = $query->selectRaw(
-            $config['format'] . "(created_at) as period, 
+            $config['format'] . "(created_at) as period,
             SUM(monto) as total_amount,
             sucursal_id"
         )
@@ -242,27 +231,23 @@ class DashboardLive extends Component
         ];
     }
 
-    private function dataPieYear(DateTime $date)
+    private function dataPieYear(DateTime $date, DateTime $dateEnd)
     {
-        return $this->getPaymentTypeData($date, 'year');
+        return $this->getPaymentTypeData($date, $dateEnd, 'year');
     }
 
-    private function dataPieMonth(DateTime $date)
+    private function dataPieMonth(DateTime $date, DateTime $dateEnd)
     {
-        return $this->getPaymentTypeData($date, 'month');
+        return $this->getPaymentTypeData($date, $dateEnd, 'month');
     }
 
-    private function dataPieDay(DateTime $date)
+    private function dataPieDay(DateTime $date, DateTime $dateEnd)
     {
-        return $this->getPaymentTypeData($date, 'day');
+        return $this->getPaymentTypeData($date, $dateEnd, 'day');
     }
 
-    private function getPaymentTypeData(DateTime $date, string $timeUnit = 'month')
+    private function getPaymentTypeData(DateTime $date, DateTime $dateEnd, string $timeUnit = 'month')
     {
-        $year = $date->format('Y');
-        $month = $date->format('m');
-        $day = $date->format('d');
-
         // Configurar períodos de tiempo y etiquetas
         $timeConfigs = [
             'year' => [
@@ -271,11 +256,11 @@ class DashboardLive extends Component
             ],
             'month' => [
                 'format' => 'DAY',
-                'where' => ['whereMonth' => $month]
+                'where' => ['whereMonth' => $date->format('m')]
             ],
             'day' => [
                 'format' => 'HOUR',
-                'where' => ['whereMonth' => $month, 'whereDay' => $day]
+                'where' => ['whereMonth' => $date->format('m'), 'whereDay' => $date->format('d')]
             ]
         ];
 
@@ -283,8 +268,8 @@ class DashboardLive extends Component
         $sucursals = Sucursal::all();
         $paymentTypes = ['Contado', 'Credito'];
 
-        // Obtener datos para todas las sucursales y tipos de pago en una sola consulta
-        $query = Encomienda::whereYear('created_at', $year)
+        // Obtener datos para todas las sucursales y tipos de pago en una sola consulta con rango de fechas
+        $query = Encomienda::whereBetween('created_at', [$date, $dateEnd])
             ->whereIn('tipo_pago', $paymentTypes);
 
         if (isset($config['where'])) {
@@ -329,28 +314,28 @@ class DashboardLive extends Component
         ];
     }
 
-    private function dataBarYear(DateTime $date)
+    private function dataBarYear(DateTime $date, DateTime $dateEnd)
     {
         $year = $date->format('Y');
-        return $this->getBarData($year);
+        return $this->getBarData($date, $dateEnd, 'year');
     }
 
-    private function dataBarMonth(DateTime $date)
+    private function dataBarMonth(DateTime $date, DateTime $dateEnd)
     {
         $year = $date->format('Y');
         $month = $date->format('m');
-        return $this->getBarData($year, $month);
+        return $this->getBarData($date, $dateEnd, 'month', $month);
     }
 
-    private function dataBarDay(DateTime $date)
+    private function dataBarDay(DateTime $date, DateTime $dateEnd)
     {
         $year = $date->format('Y');
         $month = $date->format('m');
         $day = $date->format('d');
-        return $this->getBarData($year, $month, $day);
+        return $this->getBarData($date, $dateEnd, 'day', $month, $day);
     }
 
-    private function getBarData($year, $month = null, $day = null)
+    private function getBarData(DateTime $date, DateTime $dateEnd, string $timeUnit = 'month', $month = null, $day = null)
     {
         $sucursals = Sucursal::all();
         $estados = array_keys($this->estadoColors);
@@ -361,8 +346,8 @@ class DashboardLive extends Component
             $labelsData[$sucursal->code] = array_fill_keys($estados, 0);
         }
 
-        // Obtener recuentos de envíos por estado para cada sucursal en una sola consulta
-        $query = Encomienda::whereYear('created_at', $year)
+        // Obtener recuentos de envíos por estado para cada sucursal en una sola consulta con rango de fechas
+        $query = Encomienda::whereBetween('created_at', [$date, $dateEnd])
             ->selectRaw('sucursal_id, estado_encomienda, COUNT(*) as total')
             ->groupBy('sucursal_id', 'estado_encomienda');
 

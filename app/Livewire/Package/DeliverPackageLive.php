@@ -160,6 +160,7 @@ class DeliverPackageLive extends Component
     public function confirmEncomienda()
     {
         if ($this->encomienda->estado_pago == 'PAGADO') {
+            $this->encomienda->fecha_entrega = Carbon::now();
             $this->encomienda->estado_encomienda = 'ENTREGADO';
             $this->encomienda->save();
         }

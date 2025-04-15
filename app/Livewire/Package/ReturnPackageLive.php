@@ -160,7 +160,7 @@ class ReturnPackageLive extends Component
     /**
      * Process package return to home delivery
      */
-    private function processReturn(bool $isHome): void 
+    private function processReturn(bool $isHome): void
     {
         // Check if destination branch configuration exists
         $hasDestination = SucursalConfiguration::where('isActive', true)
@@ -176,6 +176,7 @@ class ReturnPackageLive extends Component
         $this->encomienda->update([
             'sucursal_dest_id' => $this->encomienda->sucursal_id,
             'sucursal_id' => Auth::user()->sucursal->id,
+            'fecha_retorno' => Carbon::now(),
             'estado_encomienda' => 'RETORNADO',
             'isHome' => $isHome,
             'created_at' => Carbon::now(),
@@ -198,7 +199,7 @@ class ReturnPackageLive extends Component
     /**
      * Handle return to agency
      */
-    public function retornoAgencia() 
+    public function retornoAgencia()
     {
         $this->processReturn(false);
     }

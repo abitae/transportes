@@ -124,7 +124,7 @@
                                     wire:model.live="metodo_pago" class="rounded-r-lg" />
                             </div>
                         @endif
-                        @if ($tipo_comprobante == 'TICKET' && !$encomienda->isHome)
+                        @if ($tipo_comprobante == 'TICKET')
                             <div>
                                 <x-mary-input wire:model.live='monto_descuento' prefix="PEN" numeric label="Generar descuento"
                                     placeholder="Monto descuento" />
