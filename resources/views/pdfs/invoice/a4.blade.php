@@ -147,6 +147,19 @@
             width: 100%;
         }
 
+        .items-tableL {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            margin: 0px 0;
+            border: 1px solid #000;
+        }
+
+        .items-tableL td {
+            padding: 1px;
+            text-align: left;
+        }
+
         .footer-table {
             width: 100%;
         }
@@ -169,7 +182,8 @@
     <table class="header">
         <tr>
             <td class="company-info">
-                <img class="company-logo" src="{{ $invoice->company->logo_path ? 'storage/' . $invoice->company->logo_path : './img/logo.jpg' }}"
+                <img class="company-logo"
+                    src="{{ $invoice->company->logo_path ? 'storage/' . $invoice->company->logo_path : './img/logo.jpg' }}"
                     alt="BRAYAN BRUSH CORPORACION LOGISTICO" /><br>
                 <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
                 R.U.C.: {{ $invoice->company->ruc }}<br>
@@ -238,14 +252,42 @@
             <td class="text-right">S/ {{ number_format($invoice->valorVenta + $invoice->mtoIGV, 2) }}</td>
         </tr>
     </table>
-
+    @if ($invoice->setPercent && $invoice->setMount)
+        <table class="items-tableL">
+            <tr>
+                <td>
+                    Servicio:
+                </td>
+                <td>
+                    027 - Servicio de Transporte de Carga
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Metodo de Pago:
+                </td>
+                <td>
+                    001 - Depósito en cuenta
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Numero de Cuenta:
+                </td>
+                <td>
+                    {{ $invoice->ctaBanco }} Porcentaje: {{ $invoice->setPercent }}% Monto:
+                    {{ $invoice->setMount }}
+                </td>
+            </tr>
+        </table>
+    @endif
     <!-- Footer Section -->
     <div class="footer">
         <table class="footer-table">
             <tr>
                 <td width="20%">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/100px-Codigo_QR.svg.png?20080824194905"
-            alt="Código QR">
+                        alt="Código QR">
                 </td>
                 <td class="footer-content">
                     Gracias por su compra<br>

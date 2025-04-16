@@ -197,8 +197,8 @@ class InvoiceCreateLive extends Component
                 'codBienDetraccion' => $this->tipoDetraccion,
                 'codMedioPago' => '001',
                 'ctaBanco' => $company->ctaBanco,
-                'setPercent' => 12,
-                'setMount' => $this->total * 0.12,
+                'setPercent' => 4,
+                'setMount' => $this->total * 0.04,
             ]);
             $legends[] = [
                 'code' => '2006',
