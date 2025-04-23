@@ -4,6 +4,7 @@ use App\Http\Controllers\pdfController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WebsiteController;
 use App\Livewire\Caja\CajaLive;
+use App\Livewire\Cobrar\EncomiendaCobrar;
 use App\Livewire\Componentes;
 use App\Livewire\Configuration\CompanyLive;
 use App\Livewire\Configuration\RoleLive;
@@ -125,6 +126,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/report/encomiendas', EncomiendasReport::class)->name('report.encomiendas');
+    Route::get('/cobrar/encomiendas', EncomiendaCobrar::class)->name('cobrar.encomiendas');
 });
 
 Route::get('/ticket/80mm/{ticket}', [pdfController::class, 'ticket80mm']);

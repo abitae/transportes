@@ -162,6 +162,7 @@ class DeliverPackageLive extends Component
         if ($this->encomienda->estado_pago == 'PAGADO') {
             $this->encomienda->fecha_entrega = Carbon::now();
             $this->encomienda->estado_encomienda = 'ENTREGADO';
+            $this->encomienda->estado_credito = 'Cancelado';
             $this->encomienda->save();
         }
         $this->modalConfimation = false;
@@ -267,6 +268,7 @@ class DeliverPackageLive extends Component
         $this->encomienda->tipo_pago = $this->tipo_pago;
         $this->encomienda->metodo_pago = $this->metodo_pago;
         $this->encomienda->estado_encomienda = 'ENTREGADO';
+        $this->encomienda->estado_credito = 'Cancelado';
         $this->encomienda->save();
         if ($this->tipo_pago == 'Contado') {
             $this->cajaEntry(

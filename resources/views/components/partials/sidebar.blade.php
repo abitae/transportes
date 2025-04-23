@@ -94,6 +94,11 @@
                 </x-mary-menu-sub>
             @endcan
 
+            <x-mary-menu-separator />
+            <x-mary-menu-sub title="CUENTAS POR COBRAR" icon="o-cog-6-tooth">
+                <x-mary-menu-item title="Cobrar encomiendas" icon="o-home" link="{{ route('cobrar.encomiendas') }}" />
+            </x-mary-menu-sub>
+
             @can('menu.configuracion')
                 <x-mary-menu-separator />
                 <x-mary-menu-sub title="CONFIGURACION" icon="o-cog-6-tooth">
@@ -123,7 +128,8 @@
                 <x-mary-menu-item title="Messages" icon="o-envelope" link="{{ route('message.frontend') }}" />
             @endcan
             @can('reclamaciones.frontend')
-                <x-mary-menu-item title="Reclamaciones" icon="o-envelope" link="{{ route('reclamaciones.frontend') }}" />
+                <x-mary-menu-item title="Reclamaciones" icon="o-envelope"
+                    link="{{ route('reclamaciones.frontend') }}" />
             @endcan
             <x-mary-menu-separator />
         </x-mary-menu>
