@@ -86,7 +86,6 @@ class NoteCreateLive extends Component
     {
         $docElectronicos = Invoice::where('tipoDoc', $this->tipoDocAfectado)
             ->latest()
-            ->take(10)
             ->get();
         $tipoDocs = [
             ['codigo' => '01', 'descripcion' => 'Factura (01)'],
