@@ -104,6 +104,8 @@
         @else
             AGENCIA
         @endif
+        <br>
+        <strong>{{ $despache->encomienda->code }}</strong>
     </div>
 
     <div class="customer-info">
