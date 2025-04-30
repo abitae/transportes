@@ -12,6 +12,7 @@ use App\Models\Package\Encomienda;
 use App\Traits\CajaTrait;
 use App\Traits\InvoiceTrait;
 use App\Traits\LogCustom;
+use App\Traits\SearchDocument;
 use App\Traits\UtilsTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +24,7 @@ use Mary\Traits\Toast;
 class DeliverPackageLive extends Component
 {
     use LogCustom, Toast, WithPagination, WithoutUrlPagination, InvoiceTrait;
-    use CajaTrait, UtilsTrait;
+    use CajaTrait, UtilsTrait, SearchDocument;
     use InvoiceTrait;
     public EntryCajaForm $entryForm;
     public ExitCajaForm $exitForm;
@@ -42,7 +43,7 @@ class DeliverPackageLive extends Component
     public $document;
     public $pin;
     public $showDrawer;
-    public $estado_pago;//PAGADO, CONTRA ENTREGA
+    public $estado_pago; //PAGADO, CONTRA ENTREGA
     public $tipo_pago = 'Contado';
     public $tipo_comprobante = 'TICKET';
     public $metodo_pago = 'Efectivo';
@@ -72,7 +73,7 @@ class DeliverPackageLive extends Component
         $this->sucursal_id = Sucursal::where('isActive', true)
             ->whereNotIn('id', [Auth::user()->sucursal->id])
             ->first()->id;
-        $this->filtroFechaInicio = Carbon::now()->startOfDay()->format('Y-m-d H:i');//$this->dateNow('Y-m-d');
+        $this->filtroFechaInicio = Carbon::now()->startOfDay()->format('Y-m-d H:i'); //$this->dateNow('Y-m-d');
         $this->filtroFechaFin = $this->dateNow('Y-m-d H:i:s');
     }
 
@@ -242,7 +243,7 @@ class DeliverPackageLive extends Component
     {
         if ($this->tipo_comprobante == 'TICKET') {
             $this->cliFacturacion = $this->encomienda->facturacion;
-            if(is_numeric($this->monto_descuento) && $this->monto_descuento < $this->encomienda->monto){
+            if (is_numeric($this->monto_descuento) && $this->monto_descuento < $this->encomienda->monto) {
                 $this->descuentoCreate();
             }
         }
@@ -268,20 +269,22 @@ class DeliverPackageLive extends Component
         $this->encomienda->tipo_pago = $this->tipo_pago;
         $this->encomienda->metodo_pago = $this->metodo_pago;
         $this->encomienda->estado_encomienda = 'ENTREGADO';
-        $this->encomienda->estado_credito = 'Cancelado';
-        $this->encomienda->save();
+
         if ($this->tipo_pago == 'Contado') {
             $this->cajaEntry(
                 $this->cajaIsActive(Auth::user())->id,
                 $this->encomienda->monto,
-                'ENTREGA '.$this->encomienda->tipo_comprobante,
+                'ENTREGA ' . $this->encomienda->tipo_comprobante,
                 $this->metodo_pago,
                 $this->encomienda->code
             );
+            $this->encomienda->estado_credito = 'Cancelado';
+        } else {
+            $this->encomienda->estado_credito = 'Pendiente';
         }
+        $this->encomienda->save();
         if ($this->tipo_comprobante != 'TICKET') {
             $this->setInvoice($this->encomienda, $this->tipo_comprobante);
-            //$this->setGuiTrans($this->encomienda);
         }
         $this->modalCobrar = false;
         $this->modalFinal = true;
@@ -297,7 +300,7 @@ class DeliverPackageLive extends Component
         $this->cajaExit(
             $this->cajaIsActive(Auth::user())->id,
             $this->monto_descuento,
-            ' DESCUENTO '.$this->tipo_comprobante,
+            ' DESCUENTO ' . $this->tipo_comprobante,
             $this->metodo_pago,
             $this->encomienda->code
         );

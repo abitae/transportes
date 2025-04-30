@@ -146,7 +146,7 @@ trait SearchDocument
             $resp['data_resp']  = $data;
             return $resp;
         }
-        
+
         $departamento = '';
         $provincia    = '';
         $distrito     = '';

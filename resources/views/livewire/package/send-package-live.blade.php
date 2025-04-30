@@ -145,8 +145,8 @@
             </div>
         </div>
     </x-mary-card>
+    @include('livewire.package.send-edit-encomienda-modal')
     @include('livewire.package.send-modal')
     @include('livewire.package.send-detail-drawer')
-    @include('livewire.package.send-edit-encomienda-modal')
     @include('livewire.package.send-manifiesto-modal')
 </div>

@@ -10,6 +10,8 @@ use App\Models\Configuration\Vehiculo;
 use App\Models\Package\Customer;
 use App\Models\Package\Encomienda;
 use App\Models\Package\Manifiesto;
+use App\Models\Package\Paquete;
+use App\Services\ServiceTableSunat;
 use App\Traits\CajaTrait;
 use App\Traits\LogCustom;
 use App\Traits\UtilsTrait;
@@ -48,6 +50,19 @@ class SendPackageLive extends Component
     public $manifiesto;
     public $date_traslado;
     public $editEncomiendaModal = false;
+    public $paquetes;
+    public $destinatario_code;
+    public $destinatario_type_code;
+    public $destinatario_name;
+    public $destinatario_address;
+    public $destinatario_phone;
+    public $destinatario_ubigeo;
+    public $destinatario;
+    public $und_medida = 'NIU';
+    public $description;
+    public $peso;
+    public $amount;
+    public $cantidad;
     public function mount()
     {
         $this->date_traslado = Carbon::now()->endOfDay()->format('Y-m-d H:i');
@@ -66,6 +81,7 @@ class SendPackageLive extends Component
             ->whereIn('id', $p)
             ->first()
             ->id;
+        $this->paquetes = collect([])->keyBy('id');
     }
     public function render()
     {
@@ -119,8 +135,31 @@ class SendPackageLive extends Component
 
         $transportistas = Transportista::where('isActive', true)->get();
         $vehiculos = Vehiculo::where('isActive', true)->get();
-
-        return view('livewire.package.send-package-live', compact('encomiendas', 'sucursals', 'transportistas', 'vehiculos'));
+        $service = new ServiceTableSunat();
+        $unidadMedidas = $service->getAll('sunat_03');
+        $metodoPagos = [
+            ['id' => 'Efectivo', 'name' => 'Efectivo'],
+            ['id' => 'Yape', 'name' => 'Yape'],
+            ['id' => 'Transferencia', 'name' => 'Transferencia'],
+            ['id' => 'Deposito', 'name' => 'Deposito'],
+        ];
+        $headers_paquetes = [
+            ['key' => 'cantidad', 'label' => 'Cantidad'],
+            ['key' => 'und_medida', 'label' => 'Unidad'],
+            ['key' => 'description', 'label' => 'Descripcion'],
+            ['key' => 'peso', 'label' => 'Peso'],
+            ['key' => 'amount', 'label' => 'P.UNIT'],
+            ['key' => 'sub_total', 'label' => 'MONTO'],
+        ];
+        return view('livewire.package.send-package-live', compact(
+            'encomiendas',
+            'sucursals',
+            'transportistas',
+            'vehiculos',
+            'unidadMedidas',
+            'metodoPagos',
+            'headers_paquetes'
+        ));
     }
     public function openModal()
     {
@@ -209,9 +248,19 @@ class SendPackageLive extends Component
     }
     public function editEncomienda(Encomienda $encomienda)
     {
-        //dd($encomienda);
         $this->encomienda = $encomienda;
         $this->editEncomiendaModal = true;
+        $this->paquetes = $encomienda->paquetes;
+        $this->paquetes = $this->paquetes->map(function($paquete) {
+            $paquete->amount = number_format($paquete->amount, 2, '.', '');
+            return $paquete;
+        });
+        $this->destinatario_code = $encomienda->destinatario->code;
+        $this->destinatario_type_code = $encomienda->destinatario->type_code;
+        $this->destinatario_name = $encomienda->destinatario->name;
+        $this->destinatario_address = $encomienda->destinatario->address;
+        $this->destinatario_phone = $encomienda->destinatario->phone;
+        $this->isHome = $encomienda->isHome;
     }
     public function updateEncomienda()
     {
@@ -227,14 +276,113 @@ class SendPackageLive extends Component
             $this->editModal = false;
         }
     }
-    public function searchDestinatario()
-    {
-        $this->customerFormDest->store();
-    }
     public function excelGenerate(Manifiesto $manifiesto)
     {
         $this->toast('success', 'Generando Excel', 'Manifiesto');
         $this->modalFinal = false;
         return Excel::download(new ManifiestoExport(json_decode($manifiesto->ids)), 'manifiesto.xlsx');
+    }
+    public function searchDestinatario()
+    {
+        $rules = [
+            'destinatario_type_code' => 'required',
+            'destinatario_code' => 'required|min:8|max:11',
+        ];
+        $messages = [
+            'destinatario_type_code.required' => 'El tipo de documento es requerido',
+            'destinatario_code.required' => 'El número de documento es requerido',
+            'destinatario_code.min' => 'El número de documento debe tener 8 dígitos',
+            'destinatario_code.max' => 'El número de documento debe tener 11 dígitos',
+        ];
+        //dd($this->destinatario_type_code);
+        $this->validate($rules, $messages);
+        $destinatario = Customer::where('type_code', $this->destinatario_type_code)
+            ->where('code', $this->destinatario_code)
+            ->first();
+        //dd($destinatario);
+        if ($destinatario) {
+            $this->destinatario = $destinatario;
+            $this->destinatario_name = $destinatario->name;
+            $this->destinatario_address = $destinatario->address;
+            $this->destinatario_phone = $destinatario->phone;
+            $this->destinatario_ubigeo = $destinatario->ubigeo;
+            return;
+        }
+        $tipo = $this->destinatario_type_code == '6' ? 'ruc' : 'dni';
+        $respuesta = $this->searchComplete($tipo, $this->destinatario_code);
+
+        if (!$respuesta['encontrado']) {
+            $this->destinatario_name = '';
+            $this->destinatario_address = '';
+            $this->destinatario_phone = '';
+            $this->destinatario_ubigeo = '';
+            $this->error('El destinatario no existe!, verifique el número de documento!');
+            return;
+        }
+        if ($tipo == 'ruc') {
+            $this->destinatario_name = $respuesta['data']->razon_social;
+            $this->destinatario_address = $respuesta['data']->direccion;
+            $this->destinatario_ubigeo = $respuesta['data']->codigo_ubigeo;
+        } else {
+            $this->destinatario_name = $respuesta['data']->nombre;
+            $this->destinatario_phone = '';
+            $this->destinatario_ubigeo = '';
+        }
+
+        $this->destinatario = Customer::firstOrCreate(
+            [
+                'type_code' => $this->destinatario_type_code,
+                'code' => $this->destinatario_code
+            ],
+            [
+                'name' => $this->destinatario_name,
+                'address' => $this->destinatario_address,
+                'ubigeo' => $this->destinatario_ubigeo
+            ]
+        );
+    }
+    public function addPaquete()
+    {
+        $rules = [
+            'cantidad' => 'required|numeric',
+            'und_medida' => 'required',
+            'description' => 'required',
+            'peso' => 'required|numeric',
+            'amount' => 'required|numeric',
+        ];
+        $messages = [
+            'cantidad.required' => 'Error, es necesario ingresar la cantidad!',
+            'cantidad.numeric' => 'Error, la cantidad debe ser un número!',
+            'und_medida.required' => 'Error, es necesario ingresar la unidad de medida!',
+            'description.required' => 'Error, es necesario ingresar la descripción!',
+            'peso.required' => 'Error, es necesario ingresar el peso!',
+            'peso.numeric' => 'Error, el peso debe ser un número!',
+            'amount.required' => 'Error, es necesario ingresar el precio unitario!',
+            'amount.numeric' => 'Error, el precio unitario debe ser un número!',
+        ];
+        $this->validate($rules, $messages);
+        $paquete = new Paquete();
+        $paquete->id = $this->paquetes->count() + 1;
+        $paquete->encomienda_id = $this->encomienda->id;
+        $paquete->cantidad = $this->cantidad;
+        $paquete->und_medida = $this->und_medida;
+        $paquete->description = $this->description;
+        $paquete->peso = $this->peso;
+        $paquete->amount = $this->amount;
+        $paquete->sub_total = $this->amount * $this->cantidad;
+        //dd($this->paquetes);
+        $this->paquetes->push($paquete->toArray());
+        $this->success('Genial', 'Paquete ingresado correctamente!');
+    }
+    public function restPaquete($id)
+    {
+        $this->success('Genial', 'Paquete eliminado correctamente!');
+        $this->paquetes->pull($id - 1);
+    }
+
+    public function resetPaquete()
+    {
+        $this->success('Genial', 'Paquetes eliminados correctamente!');
+        $this->paquetes = collect([]);
     }
 }
