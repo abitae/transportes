@@ -92,15 +92,16 @@ class SunatServiceGlobal
 
     public function getCompany($data): \Greenter\Model\Company\Company
     {
+        
         $address = (new \Greenter\Model\Company\Address())
             ->setUbigueo($data->sucursal->ubigeo)
             ->setCodigoPais($data->sucursal->codigoPais ?? 'PE')
-            ->setDepartamento($data->sucursal->departamento)
-            ->setProvincia($data->sucursal->provincia)
-            ->setDistrito($data->sucursal->distrito)
-            ->setDireccion($data->sucursal->address)
-            ->setUrbanizacion($data->sucursal->urbanizacion)
-            ->setCodLocal($data->sucursal->codeSunat);
+            ->setDepartamento($data->sucursal->departamento ?? 'LIMA')
+            ->setProvincia($data->sucursal->provincia ?? 'LIMA')
+            ->setDistrito($data->sucursal->distrito ?? 'LIMA')
+            ->setDireccion($data->sucursal->address ?? 'AV. LOS ALISOS 123')
+            ->setUrbanizacion($data->sucursal->urbanizacion ?? 'LIMA')
+            ->setCodLocal($data->sucursal->codeSunat ?? '0000');
         return (new \Greenter\Model\Company\Company())
             ->setRuc($data->company->ruc)
             ->setRazonSocial($data->company->razonSocial)
