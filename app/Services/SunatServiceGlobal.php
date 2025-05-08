@@ -92,7 +92,7 @@ class SunatServiceGlobal
 
     public function getCompany($data): \Greenter\Model\Company\Company
     {
-        
+
         $address = (new \Greenter\Model\Company\Address())
             ->setUbigueo($data->sucursal->ubigeo)
             ->setCodigoPais($data->sucursal->codigoPais ?? 'PE')
@@ -198,10 +198,11 @@ class SunatServiceGlobal
 
     public function getDespatch($guiaT): \Greenter\Model\Despatch\Despatch
     {
+
         $pagaflete = new Client();
         $pagaflete->setTipoDoc($guiaT->flete->type_code ?? null)
             ->setNumDoc($guiaT->flete->code ?? null)
-            ->setRznSocial($guiaT->flete->name ?? null);
+            ->setRznSocial(str_replace('&', '&amp;', $guiaT->flete->name ?? null));
         if ($guiaT->docTraslado) {
             $item = new AdditionalDoc();
             $item->setTipo("01")
@@ -213,7 +214,7 @@ class SunatServiceGlobal
         $destinatario = new Client();
         $destinatario->setTipoDoc($guiaT->destinatario->type_code ?? null)
             ->setNumDoc($guiaT->destinatario->code ?? null)
-            ->setRznSocial($guiaT->destinatario->name ?? null);
+            ->setRznSocial(str_replace('&', '&amp;', $guiaT->destinatario->name ?? null));
         $despatch = (new \Greenter\Model\Despatch\Despatch());
         $despatch->setVersion('2022')
             ->setTipoDoc($guiaT->tipoDoc)
@@ -236,7 +237,7 @@ class SunatServiceGlobal
     {
         return (new \Greenter\Model\Company\Company())
             ->setRuc($company->ruc)
-            ->setRazonSocial($company->razonSocial);
+            ->setRazonSocial(str_replace('&', '&amp;', $company->razonSocial));
     }
 
     public function getEnvio($guiaT)

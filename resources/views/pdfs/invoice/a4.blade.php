@@ -72,7 +72,7 @@
         .client-heading {
             font-size: 14px;
             margin-bottom: 5px;
-            color: #e74c3c;
+            color: #33ad48;
         }
 
         .client-detail {
@@ -174,6 +174,13 @@
             padding-left: 15px;
             text-align: left;
         }
+
+        .info-table{
+            width: 100%;
+            border: 1px solid #ddd;
+            padding: 2px;
+            border-collapse: collapse;
+        }
     </style>
 </head>
 
@@ -182,10 +189,9 @@
     <table class="header">
         <tr>
             <td class="company-info">
-                <img class="company-logo"
-                    src="{{ $invoice->company->logo_path ? 'storage/' . $invoice->company->logo_path : './img/logo.jpg' }}"
-                    alt="BRAYAN BRUSH CORPORACION LOGISTICO" /><br>
-                <strong>BRAYAN BRUSH CORPORACION LOGISTICO</strong><br>
+                <img height="80" src="./img/logo.jpg" alt="Logo" class="logo">
+                <br>
+                <strong>{{ $invoice->company->razonSocial }}</strong><br>
                 R.U.C.: {{ $invoice->company->ruc }}<br>
                 {{ $invoice->sucursal->address }}<br>
                 Telf: {{ $invoice->sucursal->phone }}<br>
@@ -207,13 +213,45 @@
         <div class="client-detail"><span class="client-label">RAZON SOCIAL:</span>{{ $invoice->client->name }}</div>
         <div class="client-detail"><span class="client-label">DIRECCION:</span>{{ $invoice->client->address }}</div>
     </div>
-
+    <table class="info-table">
+        <tr>
+            <td>
+                <h4>Fecha de Emisión:</h4>
+            </td>
+            <td>
+                <h4>Forma de Pago:</h4>
+            </td>
+            <td>
+                <h4>Moneda:</h4>
+            </td>
+            <td>
+                <h4>Guía de Remisión:</h4>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{ $invoice->fechaEmision }}
+            </td>
+            <td>
+                {{ $invoice->formaPago_tipo }}
+            </td>
+            <td>
+                {{ $invoice->tipoMoneda }}
+            </td>
+            <td>
+                @if ($invoice->encomienda->despatche)
+                    {{ $invoice->encomienda->despatche->serie }} -
+                    {{ $invoice->encomienda->despatche->correlativo }}
+                @endif
+            </td>
+        </tr>
+    </table>
     <!-- Products Table Section -->
     <table class="products-table">
         <thead>
             <tr class="products-header">
-                <th width="60%">Descripción</th>
                 <th width="10%" class="text-right">Cant</th>
+                <th width="60%">Descripción</th>
                 <th width="15%" class="text-right">Precio</th>
                 <th width="15%" class="text-right">Total</th>
             </tr>
@@ -221,8 +259,9 @@
         <tbody>
             @forelse ($invoice->details as $detail)
                 <tr class="product-item">
-                    <td>{{ $detail->descripcion }}</td>
                     <td class="text-right">{{ $detail->cantidad }}</td>
+                    <td>{{ $detail->descripcion }}</td>
+
                     <td class="text-right">{{ number_format($detail->mtoPrecioUnitario, 2) }}</td>
                     <td class="text-right">{{ number_format($detail->mtoPrecioUnitario * $detail->cantidad, 2) }}</td>
                 </tr>
@@ -281,18 +320,21 @@
             </tr>
         </table>
     @endif
+
     <!-- Footer Section -->
     <div class="footer">
         <table class="footer-table">
             <tr>
                 <td width="20%">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/100px-Codigo_QR.svg.png?20080824194905"
-                        alt="Código QR">
+                    <img height="100" src="./img/consultaqr.png" alt="Logo" class="logo">
                 </td>
                 <td class="footer-content">
                     Gracias por su compra<br>
                     Políticas de Envío<br>
                     Corporación Logística Brayan Brush EIRL<br>
+                    @if ($invoice->xml_hash)
+                        Hash: {{ $invoice->xml_hash }}<br>
+                    @endif
                     Usuario: {{ $invoice->encomienda->user->name ?? Auth::user()->name }}
                 </td>
             </tr>

@@ -112,7 +112,7 @@ trait InvoiceTrait
             'subTotal' => $montoTotalIncIGV,
             'mtoImpVenta' => $montoTotalIncIGV, //venta total inc IGV
             'monto_letras' => $monto_letras ?? '',
-            'observacion' => $encomienda->observation,
+            'observacion' => $encomienda->observation ?? '',
         ];
         $legends[] = [
             'code' => '1000',

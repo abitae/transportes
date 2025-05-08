@@ -1,6 +1,7 @@
 <div>
     <x-mary-card title="{{ $title }}" subtitle="{{ $sub_title }}" separator class="max-w-6xl">
         <x-slot:menu>
+            
             <x-mary-button @click="$wire.showHistory = true" icon="s-eye" label="Historial"
                 class="text-white bg-purple-500" responsive />
         </x-slot:menu>

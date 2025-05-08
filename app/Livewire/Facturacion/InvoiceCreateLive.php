@@ -23,7 +23,7 @@ class InvoiceCreateLive extends Component
     use LogCustom, Toast, WithPagination, WithoutUrlPagination, SearchDocument, UtilsTrait;
 
     public $title = 'EMITIR RECIBOS';
-    public $sub_title = 'Emitir Factura';
+    public $sub_title = 'Emitir Recibo';
     public $tipoDocumento = '1';
     public $numDocumento = '';
     public $razonSocial = '';
@@ -39,6 +39,7 @@ class InvoiceCreateLive extends Component
     public $sub_total;
     public $igv;
     public $total;
+    public $observacion;
     public $moneda = 'PEN';
     public $formaPago = 'Contado';
     public $tipoDoc = '03'; // boleta
@@ -185,7 +186,7 @@ class InvoiceCreateLive extends Component
             'subTotal' => $this->total,
             'mtoImpVenta' => $this->total,
             'monto_letras' => $formatter->toInvoice($this->total, 2, 'SOLES'),
-            'observacion' => 'Observación de prueba',
+            'observacion' => $this->observacion,
         ]);
 
         $legends = [

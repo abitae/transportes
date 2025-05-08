@@ -124,7 +124,7 @@
                 $guia = $invoice->encomienda->doc_guia;
                 $despatche = App\Models\Facturacion\Despatche::find($guia);
             @endphp
-            Guia de Remisión Transportista: {{ $despatche ? "{$despatche->serie} {$despatche->correlativo}" : 'No disponible' }}
+            Guia de Remisión Transportista: {{ $despatche ? "{$despatche->serie}-{$despatche->correlativo}" : 'No disponible' }}
         @endif
     </div>
     <div class="customer-info">
@@ -175,6 +175,11 @@
             </tr>
         </table>
     </div>
+    @if ($invoice->observacion)
+        <div class="legends">
+            <strong>Observación:</strong> {{ $invoice->observacion }}
+        </div>
+    @endif
     <div class="legends">
         @php
             $legends = json_decode($invoice->legends, true);
@@ -211,18 +216,18 @@
                 </tr>
             </table>
         @endif
-
-
     </div>
     <div class="qr-code">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Codigo_QR.svg/100px-Codigo_QR.svg.png?20080824194905"
-            alt="Código QR">
+        <img height="100" src="./img/consultaqr.png" alt="Logo" class="logo">
     </div>
 
     <div class="footer">
         Gracias por su compra<br>
         Políticas de Envío<br>
         Corporación Logística Brayan Brush EIRL<br>
+        @if ($invoice->xml_hash)
+            Hash: {{ $invoice->xml_hash }}<br>
+        @endif
         Usuario: {{ $invoice->encomienda->user->name ?? Auth::user()->name }}
     </div>
 </body>
