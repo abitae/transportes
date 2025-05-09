@@ -23,9 +23,7 @@ class Despatche extends Model
         'destinatario_id',
         'codTraslado', //
         'modTraslado',
-
         'docsTraslado', //array de documentos
-
         'fecTraslado',
         'pesoTotal',
         'undPesoTotal',
@@ -79,5 +77,4 @@ class Despatche extends Model
     {
         return $this->belongsTo(Encomienda::class);
     }
-
 }

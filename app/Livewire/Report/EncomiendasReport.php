@@ -57,7 +57,7 @@ class EncomiendasReport extends Component
 
     /**
      * Hook que se ejecuta al inicializar el componente
-     * 
+     *
      * @return void
      */
     public function mount(): void
@@ -67,7 +67,7 @@ class EncomiendasReport extends Component
 
     /**
      * Reinicia los filtros a sus valores predeterminados
-     * 
+     *
      * @return void
      */
     public function resetFilters(): void
@@ -103,7 +103,7 @@ class EncomiendasReport extends Component
 
     /**
      * Obtiene la consulta base de encomiendas con filtros aplicados
-     * 
+     *
      * @return Builder
      */
     private function getEncomiendasQuery(): Builder
@@ -158,7 +158,7 @@ class EncomiendasReport extends Component
 
     /**
      * Obtiene las sucursales activas
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Collection
      */
     private function getSucursales()
@@ -168,7 +168,7 @@ class EncomiendasReport extends Component
 
     /**
      * Muestra el detalle de una encomienda
-     * 
+     *
      * @param Encomienda $encomienda
      * @return void
      */
@@ -180,7 +180,7 @@ class EncomiendasReport extends Component
 
     /**
      * Redirige a la creación de boleta/factura
-     * 
+     *
      * @param Encomienda $encomienda
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -196,7 +196,7 @@ class EncomiendasReport extends Component
 
     /**
      * Genera y descarga el reporte en Excel
-     * 
+     *
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function excelGenerate()
@@ -214,7 +214,7 @@ class EncomiendasReport extends Component
 
     /**
      * Actualiza la cantidad de registros por página
-     * 
+     *
      * @param int $value
      * @return void
      */
@@ -225,7 +225,7 @@ class EncomiendasReport extends Component
 
     /**
      * Actualiza cualquier filtro y reinicia la paginación
-     * 
+     *
      * @param mixed $value
      * @param string $property
      * @return void

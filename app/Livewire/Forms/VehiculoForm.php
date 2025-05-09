@@ -20,6 +20,11 @@ class VehiculoForm extends Form
     public $modelo = '';
     #[Validate('required')]
     public $tipo = '';
+    public $mtc = '';
+    #[Validate('required')]
+    public $nroCirculacion = '';
+    #[Validate('required')]
+    public $nroAutorizacion = '';
     public function setVehiculo(Vehiculo $vehiculo)
     {
         $this->vehiculo = $vehiculo;
@@ -27,6 +32,9 @@ class VehiculoForm extends Form
         $this->marca = $vehiculo->marca;
         $this->modelo = $vehiculo->modelo;
         $this->tipo = $vehiculo->tipo;
+        $this->mtc = $vehiculo->mtc;
+        $this->nroCirculacion = $vehiculo->nroCirculacion;
+        $this->nroAutorizacion = $vehiculo->nroAutorizacion;
     }
     public function store()
     {
@@ -37,6 +45,9 @@ class VehiculoForm extends Form
                 'marca' => $this->marca,
                 'modelo' => $this->modelo,
                 'tipo' => $this->tipo,
+                'mtc' => $this->mtc,
+                'nroCirculacion' => $this->nroCirculacion,
+                'nroAutorizacion' => $this->nroAutorizacion,
             ]);
             $this->infoLog('Vehiculo store ' . Auth::user()->name);
             return true;
@@ -54,6 +65,9 @@ class VehiculoForm extends Form
                 'marca' => $this->marca,
                 'modelo' => $this->modelo,
                 'tipo' => $this->tipo,
+                'mtc' => $this->mtc,
+                'nroCirculacion' => $this->nroCirculacion,
+                'nroAutorizacion' => $this->nroAutorizacion,
             ]);
             $this->infoLog('Vehiculo update ' . Auth::user()->name);
             return true;

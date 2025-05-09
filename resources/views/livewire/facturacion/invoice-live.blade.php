@@ -3,7 +3,7 @@
         <x-slot:menu>
 
         </x-slot:menu>
-        <div class="grid grid-cols-6 gap-2 p-2 shadow-xl">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 p-2 shadow-xl">
             <div>
                 <x-mary-input type='search' label="Buscar encomienda" icon="o-funnel" wire:model.live="search"
                     placeholder="Buscar comprobante" />

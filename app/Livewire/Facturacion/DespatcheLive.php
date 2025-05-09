@@ -2,10 +2,13 @@
 
 namespace App\Livewire\Facturacion;
 
+use App\Exports\GuiaTransportistaExport;
+use App\Models\Configuration\Sucursal;
 use App\Models\Facturacion\Despatche;
 use App\Services\SunatServiceGlobal;
 use App\Services\SunatServiceGre;
 use App\Traits\LogCustom;
+use Carbon\Carbon;
 use Greenter\Model\DocumentInterface;
 use Greenter\Report\XmlUtils;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 use Mary\Traits\Toast;
 
 class DespatcheLive extends Component
@@ -31,10 +35,45 @@ class DespatcheLive extends Component
     public string $ticket;
     public bool $infoModal = false;
     public Despatche $despatche;
+    public $filtroFechaInicio;
+    public $filtroFechaFin;
+    public $search;
+    public $FiltroSucursal;
+    public $despatches;
+    public function mount()
+    {
+        $this->filtroFechaInicio = Carbon::now()->startOfDay()->format('Y-m-d H:i'); //$this->dateNow('Y-m-d');
+        $this->filtroFechaFin = Carbon::now()->endOfDay()->format('Y-m-d H:i:s'); //$this->dateNow('Y-m-d H:i:s');
+    }
     public function render()
     {
-        $despaches = Despatche::latest()->paginate($this->perPage);
-        return view('livewire.facturacion.despatche-live', compact('despaches'));
+        $despaches = Despatche::query()
+            ->when($this->search, function ($query) {
+                return $query->where(function ($q) {
+                    $q->where('serie', 'like', '%' . $this->search . '%')
+                        ->orWhere('correlativo', 'like', '%' . $this->search . '%')
+                        ->orWhereHas('remitente', function ($subQuery) {
+                            $subQuery->where('code', 'like', '%' . $this->search . '%')
+                                ->orWhere('name', 'like', '%' . $this->search . '%');
+                        });
+                });
+            })
+            ->when($this->FiltroSucursal, function ($query) {
+                return $query->whereHas('encomienda', function ($subQuery) {
+                    $subQuery->where('sucursal_id', $this->FiltroSucursal);
+                });
+            })
+            ->when($this->filtroFechaInicio && $this->filtroFechaFin, function ($query) {
+                return $query->whereBetween('fechaEmision', [
+                    Carbon::parse($this->filtroFechaInicio)->startOfDay(),
+                    Carbon::parse($this->filtroFechaFin)->endOfDay()
+                ]);
+            })
+            ->latest('id');
+        $this->despatches = $despaches->get();
+        $despaches = $despaches->paginate($this->perPage);
+        $sucursales = Sucursal::where('isActive', true)->get();
+        return view('livewire.facturacion.despatche-live', compact('despaches', 'sucursales'));
     }
 
     public function xmlGenerate(Despatche $despatche)
@@ -131,5 +170,11 @@ class DespatcheLive extends Component
         $this->despatche->save();
         $this->toast('success', 'Ticket actualizado');
         $this->infoModal = false;
+    }
+    public function excelGenerate()
+    {
+
+        $despaches = $this->despatches;
+        return Excel::download(new GuiaTransportistaExport($despaches), 'despatches.xlsx');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Configuration\Vehiculo;
 use DateTime;
 use Greenter\Api;
 use Greenter\Model\Client\Client;
@@ -295,16 +296,24 @@ class SunatServiceGlobal
 
     public function getVehiculos($guiaT): \Greenter\Model\Despatch\Vehicle
     {
+        $vehiculo = Vehiculo::where('name', $guiaT->vehiculo_placa)->first();
         $vehiculos = collect([
-            ['placa' => $guiaT->vehiculo_placa],
+            ['placa' => $vehiculo->name],
+            ['nroCirculacion' => $vehiculo->nroCirculacion],
+            ['nroAutorizacion' => $vehiculo->nroAutorizacion],
         ]);
 
         $secundarios = $vehiculos->slice(1)->map(function ($item) {
-            return (new \Greenter\Model\Despatch\Vehicle())->setPlaca($item['placa']);
+            return (new \Greenter\Model\Despatch\Vehicle())
+                ->setPlaca($item['placa'])
+                ->setNroCirculacion($item['nroCirculacion'])
+                ->setNroAutorizacion($item['nroAutorizacion']);
         })->toArray();
 
         return (new \Greenter\Model\Despatch\Vehicle())
             ->setPlaca($vehiculos->first()['placa'])
+            ->setNroCirculacion($vehiculos->first()['nroCirculacion'])
+            ->setNroAutorizacion($vehiculos->first()['nroAutorizacion'])
             ->setSecundarios($secundarios);
     }
 

@@ -14,6 +14,18 @@ class Vehiculo extends Model
         'marca',
         'modelo',
         'tipo',
+        'color',
+        'largo',
+        'ancho',
+        'alto',
+        'pesoBruto',
+        'pesoNeto',
+        'images',
+        'mtc',
+        'placa',
+        'nroCirculacion',
+        'codEmisor',
+        'nroAutorizacion',
         'isActive',
     ];
     public function encomiendas()

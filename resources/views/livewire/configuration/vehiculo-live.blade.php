@@ -63,6 +63,13 @@
                         <x-mary-input label="Modelo" inline wire:model='vehiculoForm.modelo' />
                     </div>
                     <div class="grid col-span-4 pt-2">
+                        <x-mary-input label="nroCirculacion" inline wire:model='vehiculoForm.nroCirculacion' />
+                    </div>
+                    <div class="grid col-span-4 pt-2">
+                        <x-mary-input label="nroAutorizacion" inline wire:model='vehiculoForm.nroAutorizacion' />
+                    </div>
+
+                    <div class="grid col-span-4 pt-2">
                         @php
                         $tipos = [
                         ['id'=> 'INTERNO' , 'name' => 'INTERNO'],
