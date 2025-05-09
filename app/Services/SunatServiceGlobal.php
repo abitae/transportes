@@ -296,24 +296,16 @@ class SunatServiceGlobal
 
     public function getVehiculos($guiaT): \Greenter\Model\Despatch\Vehicle
     {
-        $vehiculo = Vehiculo::where('name', $guiaT->vehiculo_placa)->first();
         $vehiculos = collect([
-            ['placa' => $vehiculo->name],
-            ['nroCirculacion' => $vehiculo->nroCirculacion],
-            ['nroAutorizacion' => $vehiculo->nroAutorizacion],
+            ['placa' => $guiaT->vehiculo_placa],
         ]);
 
         $secundarios = $vehiculos->slice(1)->map(function ($item) {
-            return (new \Greenter\Model\Despatch\Vehicle())
-                ->setPlaca($item['placa'])
-                ->setNroCirculacion($item['nroCirculacion'])
-                ->setNroAutorizacion($item['nroAutorizacion']);
+            return (new \Greenter\Model\Despatch\Vehicle())->setPlaca($item['placa']);
         })->toArray();
 
         return (new \Greenter\Model\Despatch\Vehicle())
             ->setPlaca($vehiculos->first()['placa'])
-            ->setNroCirculacion($vehiculos->first()['nroCirculacion'])
-            ->setNroAutorizacion($vehiculos->first()['nroAutorizacion'])
             ->setSecundarios($secundarios);
     }
 
