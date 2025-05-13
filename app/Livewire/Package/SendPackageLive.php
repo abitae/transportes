@@ -264,6 +264,7 @@ class SendPackageLive extends Component
     }
     public function updateEncomienda()
     {
+        //revisar si el destinatario existe
         if ($this->customerFormDest->code && $this->customerFormDest->type_code) {
             $this->encomienda->customer_dest_id = Customer::where('code', $this->customerFormDest->code)
                 ->where('type_code', $this->customerFormDest->type_code)

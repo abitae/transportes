@@ -55,7 +55,7 @@
                                     {{ strtoupper($stuff->sucursal_remitente->name) }}
                                 </div>
                                 <div>
-                                    {{ strtoupper($stuff->sucursal_remitente->created_at->format('d/m/Y')) }}
+                                    {{ strtoupper($stuff->created_at->format('d/m/Y')) }}
                                 </div>
                                 <div class="truncate">
                                     {{ $stuff->sucursal_remitente->address }}
@@ -74,7 +74,7 @@
                                     {{ strtoupper($stuff->sucursal_destinatario->name) }}
                                 </div>
                                 <div>
-                                    {{ strtoupper($stuff->sucursal_destinatario->created_at->format('d/m/Y')) }}
+                                    {{ strtoupper($stuff->created_at->format('d/m/Y')) }}
                                 </div>
                                 <div class="truncate">
                                     @if ($stuff->isHome)

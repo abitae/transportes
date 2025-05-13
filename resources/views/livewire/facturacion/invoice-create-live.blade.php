@@ -1,7 +1,7 @@
 <div>
-    <x-mary-card title="{{ $title }}" subtitle="{{ $sub_title }}" separator class="max-w-6xl">
+    <x-mary-card title="{{ $title }} - {{ $tipoDoc == '03' ? 'BOLETA' : 'FACTURA' }}" subtitle="{{ $sub_title }}" separator class="max-w-6xl">
         <x-slot:menu>
-            
+            <p class="text-green-500 text-4xl font-bold">{{ $tipoDoc == '03' ? 'BOLETA' : 'FACTURA' }}</p>
             <x-mary-button @click="$wire.showHistory = true" icon="s-eye" label="Historial"
                 class="text-white bg-purple-500" responsive />
         </x-slot:menu>
