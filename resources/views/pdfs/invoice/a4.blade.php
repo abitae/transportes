@@ -175,7 +175,7 @@
             text-align: left;
         }
 
-        .info-table{
+        .info-table {
             width: 100%;
             border: 1px solid #ddd;
             padding: 2px;
@@ -225,7 +225,10 @@
                 <h4>Moneda:</h4>
             </td>
             <td>
-                <h4>Guía de Remisión:</h4>
+                <h4>G.R.T:</h4>
+            </td>
+            <td>
+                <h4>G.R.R:</h4>
             </td>
         </tr>
         <tr>
@@ -239,9 +242,22 @@
                 {{ $invoice->tipoMoneda }}
             </td>
             <td>
-                @if ($invoice->encomienda->despatche)
+                @if ($invoice->encomienda)
                     {{ $invoice->encomienda->despatche->serie }} -
                     {{ $invoice->encomienda->despatche->correlativo }}
+                @endif
+            </td>
+            <td>
+                @if ($invoice->encomienda->despatche && $invoice->encomienda->despatche->docsTraslado)
+                    @php
+                        $docsTraslado = json_decode($invoice->encomienda->despatche->docsTraslado, true);
+                    @endphp
+                    @forelse ($docsTraslado as $doc)
+                        <div class="customer-detail">{{ $doc['tipoDoc'] }}: {{ $doc['documento'] }} -
+                            {{ $doc['ruc'] }}</div>
+                    @empty
+                        <div class="customer-detail">Sin documentos</div>
+                    @endforelse
                 @endif
             </td>
         </tr>
@@ -320,7 +336,16 @@
             </tr>
         </table>
     @endif
-
+    <table class="items-tableL">
+        <tr>
+            <td>
+                Observaciones:
+            </td>
+            <td>
+                {{ $invoice->observacion }}
+            </td>
+        </tr>
+    </table>
     <!-- Footer Section -->
     <div class="footer">
         <table class="footer-table">
