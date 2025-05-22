@@ -180,7 +180,7 @@ class DespatcheLive extends Component
     public function enviarBloque()
     {
 
-        $despaches = Despatche::where('xml_path', null)
+        $despaches = Despatche::whereNull('xml_path')
             ->when($this->filtroFechaInicio && $this->filtroFechaFin, function ($query) {
                 return $query->whereBetween('fechaEmision', [
                     Carbon::parse($this->filtroFechaInicio)->startOfDay(),
@@ -194,8 +194,8 @@ class DespatcheLive extends Component
             }
         }
 
-        $despaches = Despatche::where('cdr_code', null)
-            ->whereNotNull('ticket')
+        $despaches = Despatche::whereNull('cdr_code')
+            ->whereNull('ticket')
             ->when($this->filtroFechaInicio && $this->filtroFechaFin, function ($query) {
                 return $query->whereBetween('fechaEmision', [
                     Carbon::parse($this->filtroFechaInicio)->startOfDay(),
