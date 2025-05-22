@@ -40,6 +40,7 @@ class DespatcheLive extends Component
     public $search;
     public $FiltroSucursal;
     public $despatches;
+    public $num_despaches = 0;
     public function mount()
     {
         $this->filtroFechaInicio = Carbon::now()->startOfDay()->format('Y-m-d H:i'); //$this->dateNow('Y-m-d');
@@ -173,8 +174,53 @@ class DespatcheLive extends Component
     }
     public function excelGenerate()
     {
-
         $despaches = $this->despatches;
         return Excel::download(new GuiaTransportistaExport($despaches), 'despatches.xlsx');
+    }
+    public function enviarBloque()
+    {
+
+        $despaches = Despatche::where('xml_path', null)
+            ->when($this->filtroFechaInicio && $this->filtroFechaFin, function ($query) {
+                return $query->whereBetween('fechaEmision', [
+                    Carbon::parse($this->filtroFechaInicio)->startOfDay(),
+                    Carbon::parse($this->filtroFechaFin)->endOfDay()
+                ]);
+            })->get();
+
+        if ($despaches->count() != 0) {
+            foreach ($despaches as $despatche) {
+                $this->xmlGenerate($despatche);
+            }
+        }
+
+        $despaches = Despatche::where('cdr_code', null)
+            ->whereNotNull('ticket')
+            ->when($this->filtroFechaInicio && $this->filtroFechaFin, function ($query) {
+                return $query->whereBetween('fechaEmision', [
+                    Carbon::parse($this->filtroFechaInicio)->startOfDay(),
+                    Carbon::parse($this->filtroFechaFin)->endOfDay()
+                ]);
+            })->get();
+
+        if ($despaches->count() != 0) {
+            foreach ($despaches as $despatche) {
+                $this->sendXmlFile($despatche);
+            }
+        }
+        $despaches = Despatche::whereNotNull('ticket')
+            ->when($this->filtroFechaInicio && $this->filtroFechaFin, function ($query) {
+                return $query->whereBetween('created_at', [
+                    Carbon::parse($this->filtroFechaInicio)->startOfDay(),
+                    Carbon::parse($this->filtroFechaFin)->endOfDay()
+                ]);
+            })->get();
+
+        if ($despaches->count() != 0) {
+            foreach ($despaches as $despatche) {
+                $this->ActualizarDespatche($despatche);
+            }
+        }
+        $this->toast('info', 'Enviando ' . $this->num_despaches . ' comprobantes');
     }
 }

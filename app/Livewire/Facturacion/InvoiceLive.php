@@ -22,7 +22,7 @@ class InvoiceLive extends Component
     public string $sub_title = 'Modulo de facturacion electronica';
     public int $perPage = 20;
     public $infoModal = false;
-
+    public $num_invoices = 0;
     public $cdr_code;
     public $cdr_description;
     public $cdr_note;
@@ -40,29 +40,29 @@ class InvoiceLive extends Component
     ];
     public function mount()
     {
-        $this->filtroFechaInicio = Carbon::now()->startOfDay()->format('Y-m-d H:i');//$this->dateNow('Y-m-d');
+        $this->filtroFechaInicio = Carbon::now()->startOfDay()->format('Y-m-d H:i'); //$this->dateNow('Y-m-d');
         $this->filtroFechaFin = $this->dateNow('Y-m-d H:i:s');
     }
     public function render()
     {
         $invoices = Invoice::query()
-            ->when($this->search, function($query) {
-                return $query->where(function($q) {
+            ->when($this->search, function ($query) {
+                return $query->where(function ($q) {
                     $q->where('serie', 'like', '%' . $this->search . '%')
-                      ->orWhere('correlativo', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('client', function($query) {
-                          $query->where('code', 'like', '%' . $this->search . '%')
+                        ->orWhere('correlativo', 'like', '%' . $this->search . '%')
+                        ->orWhereHas('client', function ($query) {
+                            $query->where('code', 'like', '%' . $this->search . '%')
                                 ->orWhere('name', 'like', '%' . $this->search . '%');
-                      });
+                        });
                 });
             })
-            ->when($this->filtroFechaInicio && $this->filtroFechaFin, function($query) {
+            ->when($this->filtroFechaInicio && $this->filtroFechaFin, function ($query) {
                 return $query->whereBetween('created_at', [
                     Carbon::parse($this->filtroFechaInicio)->startOfDay(),
                     Carbon::parse($this->filtroFechaFin)->endOfDay()
                 ]);
             })
-            ->when($this->FiltroFormaPagoTipo !== 'Todos', function($query) {
+            ->when($this->FiltroFormaPagoTipo !== 'Todos', function ($query) {
                 return $query->where('formaPago_tipo', $this->FiltroFormaPagoTipo);
             })
             ->latest()
@@ -95,8 +95,13 @@ class InvoiceLive extends Component
         $company = $invoice->company;
         $sunat = new SunatServiceGlobal();
         $see = $sunat->getSee($company);
-        $xml = Storage::disk('public')->get($invoice->xml_path);
-        $result = $see->sendXmlFile($xml);
+        if ($invoice->xml_path) {
+            $xml = Storage::disk('public')->get($invoice->xml_path);
+            $result = $see->sendXmlFile($xml);
+        } else {
+            $this->toast('error', 'No se encontró el archivo XML');
+            return;
+        }
         $response = $sunat->sunatResponse($result);
         if ($response['success']) {
             $invoice->cdr_description = $response['cdrResponse']['description'];
@@ -125,7 +130,6 @@ class InvoiceLive extends Component
         $invoice = Invoice::find($invoice);
 
         $this->infoModal = true;
-
     }
     public function statusInvoice($invoice)
     {
@@ -142,7 +146,38 @@ class InvoiceLive extends Component
         $this->redirectRoute(
             'facturacion.create-note',
             ['id' => $invoice->id],
-            false, false
+            false,
+            false
         );
+    }
+    public function enviarBloque()
+    {
+        $invoices = Invoice::whereNotNull('xml_path')
+            ->when($this->filtroFechaInicio && $this->filtroFechaFin, function ($query) {
+                return $query->whereBetween('created_at', [
+                    Carbon::parse($this->filtroFechaInicio)->startOfDay(),
+                    Carbon::parse($this->filtroFechaFin)->endOfDay()
+                ]);
+            })->get();
+        if ($invoices->count() != 0) {
+            foreach ($invoices as $invoice) {
+                $this->xmlGenerate($invoice);
+            }
+        }
+        $invoices = Invoice::whereNull('cdr_path')
+            ->whereNotNull('xml_path')
+            ->when($this->filtroFechaInicio && $this->filtroFechaFin, function ($query) {
+                return $query->whereBetween('created_at', [
+                    Carbon::parse($this->filtroFechaInicio)->startOfDay(),
+                    Carbon::parse($this->filtroFechaFin)->endOfDay()
+                ]);
+            })->get();
+        $this->num_invoices = $invoices->count();
+        if ($invoices->count() != 0) {
+            foreach ($invoices as $invoice) {
+                $this->sendXmlFile($invoice);
+            }
+        }
+        $this->toast('info', 'Enviando ' . $invoices->count() . ' comprobantes');
     }
 }

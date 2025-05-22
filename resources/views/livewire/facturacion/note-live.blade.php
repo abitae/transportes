@@ -1,7 +1,7 @@
 <div>
     <x-mary-card title="{{ $title }}" subtitle="{{ $sub_title }}" separator>
         <x-slot:menu>
-            
+
         </x-slot:menu>
         @php
         $headers = [
@@ -37,8 +37,8 @@
 
             @scope('cell_pdf', $stuff)
             <x-mary-button icon="o-document-chart-bar" target="_blank" no-wire-navigate
-                link="/invoice/a4/{{ $stuff->id }}" spinner class="text-white bg-purple-500 btn-xs" />
-            <x-mary-button icon="o-ticket" target="_blank" no-wire-navigate link="/invoice/80mm/{{ $stuff->id }}"
+                link="/note/a4/{{ $stuff->id }}" spinner class="text-white bg-purple-500 btn-xs" />
+            <x-mary-button icon="o-ticket" target="_blank" no-wire-navigate link="/note/80mm/{{ $stuff->id }}"
                 spinner class="text-white bg-green-500 btn-xs" />
             @endscope
 

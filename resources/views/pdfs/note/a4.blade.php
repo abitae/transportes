@@ -230,13 +230,13 @@
                 {{ $note->fechaEmision }}
             </td>
             <td>
-                {{ $note->docReferencia_tipo }} {{ $note->docReferencia_serie }}-{{ $note->docReferencia_correlativo }}
+                {{ $note->tipoDocAfectado == '01' ? 'FACTURA' : 'BOLETA' }} {{ $note->numDocfectado }}
             </td>
             <td>
                 {{ $note->tipoMoneda }}
             </td>
             <td>
-                {{ $note->motivo }}
+                {{ $note->desMotivo }}
             </td>
         </tr>
     </table>
@@ -272,7 +272,7 @@
         <tr>
             <td width="60%" class="amount-in-words">SON: {{ $note->monto_letras }}</td>
             <td width="25%" class="text-right">Gravada:</td>
-            <td width="15%" class="text-right">S/ {{ number_format($note->valorVenta, 2) }}</td>
+            <td width="15%" class="text-right">S/ {{ number_format($note->mtoOperGravadas, 2) }}</td>
         </tr>
         <tr>
             <td></td>
@@ -282,16 +282,16 @@
         <tr class="total-final">
             <td></td>
             <td class="text-right">Total:</td>
-            <td class="text-right">S/ {{ number_format($note->valorVenta + $note->mtoIGV, 2) }}</td>
+            <td class="text-right">S/ {{ number_format($note->mtoOperGravadas + $note->mtoIGV, 2) }}</td>
         </tr>
     </table>
 
     <table class="items-tableL">
         <tr>
-            <td class="font-bold text-gray-700">
-                Observaciones:
+            <td class="text-sm text-left">
+                <strong>Observaciones:</strong>
             </td>
-            <td class="text-sm">
+            <td class="text-sm text-left">
                 @if($note->observacion)
                     {{ $note->observacion }}
                 @else

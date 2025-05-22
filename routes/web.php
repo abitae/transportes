@@ -137,5 +137,7 @@ Route::get('/despache/80mm/{despache}', [pdfController::class, 'despache80mm']);
 Route::get('/despache/a4/{despache}', [pdfController::class, 'despacheA4']);
 Route::get('/sticker/a5/{encomienda}', [pdfController::class, 'stickerA5']);
 Route::get('/declaracion/{encomienda}', [pdfController::class, 'declaracion']);
+Route::get('/note/80mm/{note}', [pdfController::class, 'note80mm']);
+Route::get('/note/a4/{note}', [pdfController::class, 'noteA4']);
 Route::get('/caja/80mm/{caja}', [pdfController::class, 'caja']);
 require __DIR__ . '/auth.php';

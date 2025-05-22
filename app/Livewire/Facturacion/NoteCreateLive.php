@@ -47,11 +47,11 @@ class NoteCreateLive extends Component
     public $note;
     public $modalPrintNote = false;
 
-    public function mount($numDocfectado = null)
+    public function mount($id = null)
     {
         $this->paquetes = collect([])->keyBy('id');
-        if ($numDocfectado) {
-            $this->numDocfectado = $numDocfectado;
+        if ($id) {
+            $this->numDocfectado = $id;
             $this->processInvoice();
         }
     }

@@ -114,6 +114,7 @@
                 class="btn-primary hover:bg-blue-600 transition-colors" />
         </div>
     </x-mary-card>
+@if ($note)
 <x-mary-modal wire:model="modalPrintNote" title="Nota de Crédito" separator>
     <div class="p-4">
         <div class="text-center mb-4">
@@ -140,7 +141,9 @@
 
     <x-slot:actions>
         <x-mary-button label="Cerrar" wire:click="closePrintNote" class="btn-ghost" />
-        <x-mary-button label="Descargar PDF" icon="o-document-arrow-down" class="btn-primary" />
+        <x-mary-button label="Descargar PDF" icon="o-document-arrow-down" class="btn-primary" target="_blank"
+            link="/note/a4/{{ $note->id }}" />
     </x-slot:actions>
 </x-mary-modal>
+@endif
 </div>
