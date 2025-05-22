@@ -1,5 +1,4 @@
 <html>
-
 <head>
     <style>
         body {
@@ -8,10 +7,7 @@
             line-height: 1.4;
         }
 
-        h1,
-        h2,
-        h3,
-        h4 {
+        h1, h2, h3, h4 {
             margin: 0;
             font-weight: bold;
             color: #222;
@@ -42,7 +38,7 @@
             margin-bottom: 5px;
         }
 
-        .invoice-box {
+        .note-box {
             width: 40%;
             border: 1px solid #000;
             text-align: center;
@@ -55,7 +51,7 @@
             align-items: center;
         }
 
-        .invoice-title {
+        .note-title {
             font-size: 18px;
             margin: 5px 0;
         }
@@ -185,23 +181,22 @@
 </head>
 
 <body>
-    <!-- Header with Company and Invoice Information -->
+    <!-- Header with Company and Note Information -->
     <table class="header">
         <tr>
             <td class="company-info">
                 <img height="80" src="./img/logo.jpg" alt="Logo" class="logo">
                 <br>
-                <strong>{{ $invoice->company->razonSocial }}</strong><br>
-                R.U.C.: {{ $invoice->company->ruc }}<br>
-                {{ $invoice->sucursal->address }}<br>
-                Telf: {{ $invoice->sucursal->phone }}<br>
-                Email: {{ $invoice->sucursal->email }}
+                <strong>{{ $note->company->razonSocial }}</strong><br>
+                R.U.C.: {{ $note->company->ruc }}<br>
+                {{ $note->sucursal->address }}<br>
+                Telf: {{ $note->sucursal->phone }}<br>
+                Email: {{ $note->sucursal->email }}
             </td>
-            <td class="invoice-box">
-                <h4>R.U.C.: {{ $invoice->company->ruc }}</h4>
-                <h3 class="invoice-title">{{ $invoice->tipoDoc == '01' ? 'FACTURA ELECTRONICA' : 'BOLETA ELECTRONICA' }}
-                </h3>
-                <h4>{{ $invoice->serie }} - {{ $invoice->correlativo }}</h4>
+            <td class="note-box">
+                <h4>R.U.C.: {{ $note->company->ruc }}</h4>
+                <h3 class="note-title">NOTA DE CRÉDITO ELECTRÓNICA</h3>
+                <h4>{{ $note->serie }} - {{ $note->correlativo }}</h4>
             </td>
         </tr>
     </table>
@@ -209,62 +204,43 @@
     <!-- Client Information Section -->
     <div class="client-info">
         <h4 class="client-heading">DATOS CLIENTE:</h4>
-        <div class="client-detail"><span class="client-label">RUC:</span>{{ $invoice->client->code }}</div>
-        <div class="client-detail"><span class="client-label">RAZON SOCIAL:</span>{{ $invoice->client->name }}</div>
-        <div class="client-detail"><span class="client-label">DIRECCION:</span>{{ $invoice->client->address }}</div>
+        <div class="client-detail"><span class="client-label">RUC:</span>{{ $note->client->code }}</div>
+        <div class="client-detail"><span class="client-label">RAZON SOCIAL:</span>{{ $note->client->name }}</div>
+        <div class="client-detail"><span class="client-label">DIRECCION:</span>{{ $note->client->address }}</div>
     </div>
+
+    <!-- Document Reference Information -->
     <table class="info-table">
         <tr>
             <td>
                 <h4>Fecha de Emisión:</h4>
             </td>
             <td>
-                <h4>Forma de Pago:</h4>
+                <h4>Documento Afectado:</h4>
             </td>
             <td>
                 <h4>Moneda:</h4>
             </td>
             <td>
-                <h4>G.R.T:</h4>
-            </td>
-            <td>
-                <h4>G.R.R:</h4>
+                <h4>Motivo:</h4>
             </td>
         </tr>
         <tr>
             <td>
-                {{ $invoice->fechaEmision }}
+                {{ $note->fechaEmision }}
             </td>
             <td>
-                {{ $invoice->formaPago_tipo }}
+                {{ $note->docReferencia_tipo }} {{ $note->docReferencia_serie }}-{{ $note->docReferencia_correlativo }}
             </td>
             <td>
-                {{ $invoice->tipoMoneda }}
+                {{ $note->tipoMoneda }}
             </td>
             <td>
-                @if ($invoice->encomienda)
-                    {{ $invoice->encomienda->despatche->serie }} -
-                    {{ $invoice->encomienda->despatche->correlativo }}
-                @endif
-            </td>
-            <td>
-                @if ($invoice->encomienda)
-                    @php
-                        $docsTraslado = json_decode($invoice->encomienda->despatche->docsTraslado, true);
-                    @endphp
-                    @forelse ($docsTraslado as $doc)
-                        <div class="customer-detail">{{ $doc['tipoDoc'] }}: {{ $doc['documento'] }}</div>
-                    @empty
-                        <div class="customer-detail">Sin documentos</div>
-                    @endforelse
-                @elseif ($invoice->docAdjunto)
-                    <div class="customer-detail">{{ $invoice->docAdjunto_type }}: {{ $invoice->docAdjunto }}</div>
-                @else
-                    <div class="customer-detail">Sin documentos</div>
-                @endif
+                {{ $note->motivo }}
             </td>
         </tr>
     </table>
+
     <!-- Products Table Section -->
     <table class="products-table">
         <thead>
@@ -276,11 +252,10 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($invoice->details as $detail)
+            @forelse ($note->details as $detail)
                 <tr class="product-item">
                     <td class="text-right">{{ $detail->cantidad }}</td>
                     <td>{{ $detail->descripcion }}</td>
-
                     <td class="text-right">{{ number_format($detail->mtoPrecioUnitario, 2) }}</td>
                     <td class="text-right">{{ number_format($detail->mtoPrecioUnitario * $detail->cantidad, 2) }}</td>
                 </tr>
@@ -295,64 +270,37 @@
     <!-- Totals Section -->
     <table class="totals-table">
         <tr>
-            <td width="60%" class="amount-in-words">SON: {{ $invoice->monto_letras }}</td>
+            <td width="60%" class="amount-in-words">SON: {{ $note->monto_letras }}</td>
             <td width="25%" class="text-right">Gravada:</td>
-            <td width="15%" class="text-right">S/ {{ number_format($invoice->valorVenta, 2) }}</td>
+            <td width="15%" class="text-right">S/ {{ number_format($note->valorVenta, 2) }}</td>
         </tr>
         <tr>
             <td></td>
             <td class="text-right">IGV (18%):</td>
-            <td class="text-right">S/ {{ number_format($invoice->mtoIGV, 2) }}</td>
+            <td class="text-right">S/ {{ number_format($note->mtoIGV, 2) }}</td>
         </tr>
         <tr class="total-final">
             <td></td>
             <td class="text-right">Total:</td>
-            <td class="text-right">S/ {{ number_format($invoice->valorVenta + $invoice->mtoIGV, 2) }}</td>
+            <td class="text-right">S/ {{ number_format($note->valorVenta + $note->mtoIGV, 2) }}</td>
         </tr>
     </table>
-    @if ($invoice->setPercent && $invoice->setMount)
-        <table class="items-tableL">
-            <tr>
-                <td>
-                    Servicio:
-                </td>
-                <td>
-                    027 - Servicio de Transporte de Carga
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Metodo de Pago:
-                </td>
-                <td>
-                    001 - Depósito en cuenta
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Numero de Cuenta:
-                </td>
-                <td>
-                    {{ $invoice->ctaBanco }} Porcentaje: {{ $invoice->setPercent }}% Monto:
-                    {{ $invoice->setMount }}
-                </td>
-            </tr>
-        </table>
-    @endif
+
     <table class="items-tableL">
         <tr>
             <td class="font-bold text-gray-700">
                 Observaciones:
             </td>
             <td class="text-sm">
-                @if($invoice->observacion)
-                    {{ $invoice->observacion }}
+                @if($note->observacion)
+                    {{ $note->observacion }}
                 @else
                     <span class="text-gray-400 italic">Sin observaciones</span>
                 @endif
             </td>
         </tr>
     </table>
+
     <!-- Footer Section -->
     <div class="footer">
         <table class="footer-table">
@@ -364,14 +312,13 @@
                     Gracias por su compra<br>
                     Políticas de Envío<br>
                     Corporación Logística Brayan Brush EIRL<br>
-                    @if ($invoice->xml_hash)
-                        Hash: {{ $invoice->xml_hash }}<br>
+                    @if ($note->xml_hash)
+                        Hash: {{ $note->xml_hash }}<br>
                     @endif
-                    Usuario: {{ $invoice->encomienda->user->name ?? Auth::user()->name }}
+                    Usuario: {{ $note->user->name ?? Auth::user()->name }}
                 </td>
             </tr>
         </table>
     </div>
 </body>
-
 </html>

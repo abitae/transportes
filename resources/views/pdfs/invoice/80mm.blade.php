@@ -54,6 +54,7 @@
         .items-table th {
             background-color: #f0f0f0;
         }
+
         .items-tableL {
             width: 100%;
             border-collapse: collapse;
@@ -124,7 +125,22 @@
                 $guia = $invoice->encomienda->doc_guia;
                 $despatche = App\Models\Facturacion\Despatche::find($guia);
             @endphp
-            Guia de Remisión Transportista: {{ $despatche ? "{$despatche->serie}-{$despatche->correlativo}" : 'No disponible' }}
+            Guia de Remisión Transportista:
+            {{ $despatche ? "{$despatche->serie}-{$despatche->correlativo}" : 'No disponible' }}
+        @endif
+        @if ($invoice->encomienda)
+            @php
+                $docsTraslado = json_decode($invoice->encomienda->despatche->docsTraslado, true);
+            @endphp
+            @forelse ($docsTraslado as $doc)
+                <div class="customer-detail">{{ $doc['tipoDoc'] }}: {{ $doc['documento'] }}</div>
+            @empty
+                <div class="customer-detail">Sin documentos</div>
+            @endforelse
+        @elseif ($invoice->docAdjunto)
+            <div class="customer-detail">{{ $invoice->docAdjunto_type }}: {{ $invoice->docAdjunto }}</div>
+        @else
+            <div class="customer-detail">Sin documentos</div>
         @endif
     </div>
     <div class="customer-info">

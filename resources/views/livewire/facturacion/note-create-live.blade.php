@@ -1,121 +1,146 @@
-<div>
-    <x-mary-card title="{{ $title }}" subtitle="{{ $sub_title }}" separator class="max-w-6xl">
+<div class="max-w-7xl mx-auto">
+    <x-mary-card title="{{ $title }}" subtitle="{{ $sub_title }}" separator class="shadow-lg">
         <x-slot:menu>
             <x-mary-button wire:click='test' icon="s-eye" label="Historial"
-                class="text-white bg-purple-500" responsive />
+                class="text-white bg-purple-500 hover:bg-purple-600 transition-colors" responsive />
         </x-slot:menu>
-        @if ($errors->any())
-        <x-mary-alert title="Error!" description="{{ $errors->first() }}" icon="o-exclamation-triangle"
-            class="text-white bg-red-500" dismissible />
-        @endif
-        <div class="grid grid-cols-5 grid-rows-1 gap-4 p-2 mt-4 border border-green-500 rounded-lg">
-            <div>
-                <x-mary-select label="Tipo Doc. Afectado" :options="$tipoDocs" option-value="codigo" option-label="descripcion"
-                    wire:model.live="tipoDocAfectado" class="max-w-sm" />
-            </div>
-            <div  class="col-span-2">
-                <x-mary-choices-offline label="Serie y numero CEP" :options="$docElectronicos"
-                    wire:model="numDocfectado" single searchable>
-                    @scope('item', $numDocfectado)
-                    {{ $numDocfectado->serie }} - {{ $numDocfectado->correlativo }}
-                    @endscope
-                    @scope('selection', $numDocfectado)
-                    {{ $numDocfectado->serie }} - {{ $numDocfectado->correlativo }}
-                    @endscope
-                </x-mary-choices-offline>
-            </div>
-            <div  class="col-span-2">
-                <x-mary-select label="Tipo Doc." :options="$motivos" option-value="codigo" option-label="descripcion"
-                    wire:model="motivo" class="max-w-sm" />
-            </div>
-        </div>
-        <div class="grid grid-cols-3 grid-rows-2 gap-1 p-2 mt-4 border border-green-500 rounded-lg">
-            <div>
-                <x-mary-select label="Tipo Doc.Ident." icon="o-user" option-value="codigo" option-label="sigla"
-                    :options="$tipoDocuments" wire:model.live="tipoDocumento" class="max-w-sm" />
-            </div>
-            <div>
-                <x-mary-input label="Documento" wire:model.live="numDocumento" class="max-w-sm">
-                    <x-slot:append>
-                        <x-mary-button wire:click='buscarDocumento' icon="o-magnifying-glass"
-                            class="btn-primary rounded-s-none" />
-                    </x-slot:append>
-                </x-mary-input>
-            </div>
-            <div>
-                <x-mary-input label="Razon Social" wire:model.live='razonSocial' class="h-12 max-w-sm" />
-            </div>
-            <div class="row-start-2">
-                <x-mary-input label="Direccion" wire:model.live='direccion' class="h-12 max-w-sm" />
-            </div>
-            <div class="row-start-2">
-                <x-mary-select label="Ubigeo" option-value="ubigeo2" option-label="texto_ubigeo"
-                    placeholder="Select ubigeo" wire:model.live='ubigeo' :options="$ubigeos" wire:model="selectedUser"
-                    class="max-w-sm" />
-            </div>
-            <div class="row-start-2">
-                <x-mary-input label="Telefono" wire:model.live='telefono' class="h-12 max-w-sm" />
-            </div>
-        </div>
-        <div class="flex justify-end p-2 pt-4 mt-2 mb-2 border border-t border-green-500 rounded-lg">
-            <div class="grid grid-cols-8 grid-rows-1 gap-1">
-                <div>
-                    <x-mary-input label="CANT." wire:model="cantidad" class="text-xs rounded-r-lg" />
-                </div>
-                <div>
-                    <x-mary-select label="MEDIDA" :options="$unidadMedidas" wire:model="und_medida"
-                        option-value="codigo" option-label="descripcion" />
-                </div>
-                <div class="col-span-3">
-                    <x-mary-input label="DESCRIPCION" wire:model="description" class="rounded-r-lg" />
-                </div>
-                <div class="col-start-6">
-                    <x-mary-input label="PESO (KG)" wire:model="peso" suffix="KG" locale="es-PE" />
-                </div>
-                <div class="col-start-7">
-                    <x-mary-input label="MONTO" wire:model="amount" suffix="S/" />
-                </div>
-                <div class="flex items-end col-start-8">
-                    <x-mary-button icon="o-plus" wire:click='addPaquete' class="text-white rounded-lg bg-sky-500" />
-                    <x-mary-button icon="o-no-symbol" wire:click='resetPaquete'
-                        class="text-white bg-red-500 rounded-lg" />
-                </div>
-            </div>
-            <div class="grid grid-cols-8 gap-1">
-                <div class="col-span-8">
 
+        @if ($errors->any())
+            <x-mary-alert title="Error!" description="{{ $errors->first() }}" icon="o-exclamation-triangle"
+                class="text-white bg-red-500 mb-4" dismissible />
+        @endif
+
+        {{-- Sección de Documento Afectado --}}
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <h3 class="text-lg font-semibold mb-4 text-gray-700">Documento Afectado</h3>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div>
+                    <x-mary-select label="Tipo Doc. Afectado" :options="$tipoDocs" option-value="codigo"
+                        option-label="descripcion" wire:model.live="tipoDocAfectado" class="w-full" />
+                </div>
+                <div class="md:col-span-2">
+                    <x-mary-choices-offline label="Serie y numero CEP" :options="$docElectronicos"
+                        wire:model.live="numDocfectado" single searchable>
+                        @scope('item', $numDocfectado)
+                            {{ $numDocfectado->serie }} - {{ $numDocfectado->correlativo }}
+                        @endscope
+                        @scope('selection', $numDocfectado)
+                            {{ $numDocfectado->serie }} - {{ $numDocfectado->correlativo }}
+                        @endscope
+                    </x-mary-choices-offline>
+                </div>
+                <div class="md:col-span-2">
+                    <x-mary-select label="Tipo Doc." :options="$motivos" option-value="codigo"
+                        option-label="descripcion" wire:model="motivo" class="w-full" />
                 </div>
             </div>
         </div>
-        <div class="p-2 pt-4 mt-2 mb-2 border border-t border-green-500 rounded-lg">
-            <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped
-                @row-click="$wire.restPaquete($event.detail.id)">
+
+        {{-- Sección de Datos del Cliente --}}
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <h3 class="text-lg font-semibold mb-4 text-gray-700">Datos del Cliente</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <x-mary-select label="Tipo Doc.Ident." icon="o-user" option-value="codigo" disabled readonly
+                        option-label="sigla" :options="$tipoDocuments" wire:model.live="tipoDocumento" class="w-full"/>
+                </div>
+                <div>
+                    <x-mary-input label="Documento" wire:model.live="numDocumento" class="w-full" disabled>
+                        <x-slot:append>
+                            <x-mary-button wire:click='buscarDocumento' icon="o-magnifying-glass" disabled readonly
+                                class="btn-primary rounded-s-none" />
+                        </x-slot:append>
+                    </x-mary-input>
+                </div>
+                <div>
+                    <x-mary-input label="Razon Social" wire:model.live='razonSocial' class="w-full" disabled readonly />
+                </div>
+                <div>
+                    <x-mary-input label="Direccion" wire:model.live='direccion' class="w-full" disabled readonly />
+                </div>
+                <div>
+                    <x-mary-select label="Ubigeo" option-value="ubigeo2" option-label="texto_ubigeo"
+                        placeholder="Seleccione ubigeo" wire:model.live='ubigeo' :options="$ubigeos"
+                        class="w-full" disabled readonly />
+                </div>
+                <div>
+                    <x-mary-input label="Telefono" wire:model.live='telefono' class="w-full" disabled readonly />
+                </div>
+            </div>
+        </div>
+
+        {{-- Tabla de Paquetes --}}
+        <div wire:ignore.self class="bg-white rounded-lg shadow p-4 mb-6">
+            <h3 class="text-lg font-semibold mb-4 text-gray-700">Detalle de Paquetes</h3>
+            <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped hoverable>
                 <x-slot:empty>
-                    <x-mary-icon name="o-cube" label="No se encontro registros." />
+                    <div class="text-center py-4">
+                        <x-mary-icon name="o-cube" class="text-gray-400 text-4xl mb-2" />
+                        <p class="text-gray-500">No se encontraron registros</p>
+                    </div>
                 </x-slot:empty>
             </x-mary-table>
         </div>
 
-        <div class="grid grid-cols-3 grid-rows-2 gap-1 p-2 border border-t border-green-500 rounded-lg">
-            <div class="col-span-2">
-                <x-mary-textarea label="Observación" wire:model="observacion" class="h-16 max-w-sm" />
-            </div>
+        {{-- Resumen y Observaciones --}}
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2">
+                    <x-mary-textarea label="Observación" wire:model="observacion" class="h-32 w-full" />
+                </div>
 
-            <div class="col-start-3 row-span-3 row-start-1">
-                <div class="grid grid-cols-2 gap-1 gap-y-2">
-                    <div>Resumen</div>
-                    <div></div>
-                    <div class="border-t">Sub Total</div>
-                    <div class="text-right border-t">S/ {{ $sub_total ? $sub_total : 0 }}</div>
-                    <div class="border-t">IGV</div>
-                    <div class="text-right border-t">S/ {{ $igv ? $igv : 0 }}</div>
-                    <div class="border-t border-b"><strong>Total</strong></div>
-                    <div class="text-xl text-right text-blue-500 border-t">S/ {{ $total ? $total : 0 }}</div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700">Resumen</h4>
+                    <div class="space-y-2">
+                        <div class="flex justify-between border-b pb-2">
+                            <span>Sub Total</span>
+                            <span class="font-medium">S/ {{ number_format($sub_total ?? 0, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span>IGV</span>
+                            <span class="font-medium">S/ {{ number_format($igv ?? 0, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between pt-2">
+                            <span class="font-bold">Total</span>
+                            <span class="text-xl font-bold text-blue-600">S/ {{ number_format($total ?? 0, 2) }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="flex justify-end">
-            <x-mary-button wire:click='emitNote' label="Guardar" icon="o-plus" class="btn-primary" />
+            <x-mary-button wire:click='emitNote' label="Guardar" icon="o-plus"
+                class="btn-primary hover:bg-blue-600 transition-colors" />
         </div>
     </x-mary-card>
+<x-mary-modal wire:model="modalPrintNote" title="Nota de Crédito" separator>
+    <div class="p-4">
+        <div class="text-center mb-4">
+            <x-mary-icon name="o-document-check" class="text-green-500 text-5xl mb-2" />
+            <h3 class="text-xl font-semibold text-gray-700">Nota de Crédito Generada</h3>
+            <p class="text-gray-500">La nota de crédito ha sido generada exitosamente</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <span class="font-medium">Serie:</span>
+                <span>{{ $note->serie ?? '' }}</span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <span class="font-medium">Correlativo:</span>
+                <span>{{ $note->correlativo ?? '' }}</span>
+            </div>
+            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <span class="font-medium">Total:</span>
+                <span class="font-bold text-blue-600">S/ {{ number_format($note->mtoImpVenta ?? 0, 2) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <x-slot:actions>
+        <x-mary-button label="Cerrar" wire:click="closePrintNote" class="btn-ghost" />
+        <x-mary-button label="Descargar PDF" icon="o-document-arrow-down" class="btn-primary" />
+    </x-slot:actions>
+</x-mary-modal>
 </div>

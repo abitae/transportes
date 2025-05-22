@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Caja\Caja;
 use App\Models\Facturacion\Despatche;
 use App\Models\Facturacion\Invoice;
+use App\Models\Facturacion\Note;
 use App\Models\Facturacion\Ticket;
 use App\Models\Package\Encomienda;
 use Mccarlosen\LaravelMpdf\Facades\LaravelMpdf as Pdf;
@@ -321,7 +322,53 @@ class pdfController extends Controller
         $pdf = Pdf::setPaper($paper_format, 'portrait')->loadView('pdfs.invoice.80mm', $data);
         return $pdf->stream('invoice.pdf');
     }
-    public function noteA4(Invoice $invoice) {}
+    public function noteA4(Note $note)
+    {
+        $data = [
+            'note' => $note,
+        ];
+        $pdf = Pdf::loadView(
+            'pdfs.note.a4',
+            $data,
+            [],
+            [
+                'mode' => '',
+                'format' => 'A4',
+                'default_font_size' => '12',
+                'default_font' => 'sans-serif',
+                'margin_left' => 15,
+                'margin_right' => 15,
+                'margin_top' => 10,
+                'margin_bottom' => 5,
+                'margin_header' => 0,
+                'margin_footer' => 0,
+                'orientation' => 'P',
+                'title' => $note->serie . '-' . $note->correlativo,
+                'author' => 'Abel Arana',
+                'creator' => 'Abel Arana',
+                'subject' => 'Abel Arana',
+                'keywords' => 'Abel Arana',
+                //'watermark' => $despache->encomienda->estado_pago,
+                'show_watermark' => true,
+                'show_watermark_image' => false,
+                'watermark_font' => 'sans-serif',
+                'display_mode' => 'fullpage',
+                'watermark_text_alpha' => 0.1,
+                'watermark_image_path' => '',
+                'watermark_image_alpha' => 0.2,
+                'watermark_image_size' => 'D',
+                'watermark_image_position' => 'P',
+                'custom_font_dir' => '',
+                'custom_font_data' => [],
+                'auto_language_detection' => false,
+                'temp_dir' => storage_path('app'),
+                'pdfa' => false,
+                'pdfaauto' => false,
+                'use_active_forms' => false,
+            ]
+        );
+        return $pdf->stream($note->serie . '.pdf');
+    }
     public function declaracion(Encomienda $encomienda)
     {
         $data = [

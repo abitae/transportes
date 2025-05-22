@@ -47,7 +47,9 @@ class Invoice extends Model
         'cdr_note',
         'cdr_path',
         'errorCode',
-        'errorMessage'
+        'errorMessage',
+        'docAdjunto',
+        'docAdjunto_type',
     ];
 
     /**

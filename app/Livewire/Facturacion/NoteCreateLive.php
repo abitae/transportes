@@ -46,17 +46,19 @@ class NoteCreateLive extends Component
     public $id;
     public $note;
     public $modalPrintNote = false;
-    public function mount($id = null)
+
+    public function mount($numDocfectado = null)
     {
         $this->paquetes = collect([])->keyBy('id');
-        if ($id) {
-            $this->id = $id;
+        if ($numDocfectado) {
+            $this->numDocfectado = $numDocfectado;
             $this->processInvoice();
         }
     }
     public function processInvoice()
     {
-        $invoice = Invoice::findOrFail($this->id);
+        $this->paquetes = collect([]);
+        $invoice = Invoice::findOrFail($this->numDocfectado);
         $this->tipoDocAfectado = $invoice->tipoDoc;
         $this->numDocfectado = $invoice->id;
         $this->motivo = '01';
@@ -81,6 +83,24 @@ class NoteCreateLive extends Component
         }
         //$this->paquetes = $invoice->details;
         $this->calculateTotals();
+    }
+    public function updatedNumDocfectado()
+    {
+        $this->processInvoice();
+    }
+    public function updatedTipoDocAfectado()
+    {
+        $this->paquetes = collect([]);
+        $this->calculateTotals();
+        $this->resetValidation();
+        $this->numDocfectado = '';
+        $this->client = null;
+        $this->tipoDocumento = '1';
+        $this->numDocumento = '';
+        $this->razonSocial = '';
+        $this->direccion = '';
+        $this->ubigeo = '';
+        $this->telefono = '';
     }
     public function render()
     {
@@ -108,6 +128,8 @@ class NoteCreateLive extends Component
             ['key' => 'amount', 'label' => 'P.UNIT'],
             ['key' => 'sub_total', 'label' => 'MONTO'],
         ];
+
+
         return view('livewire.facturacion.note-create-live', compact('tipoDocs', 'docElectronicos', 'motivos', 'tipoDocuments', 'ubigeos', 'unidadMedidas', 'headers_paquetes'));
     }
     public function buscarDocumento()

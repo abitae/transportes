@@ -49,6 +49,7 @@ class InvoiceCreateLive extends Component
     public $client;
     public $id;
     public $docAdjunto;
+    public $docAdjunto_type;
     public $modalPrintInvoice = false;
     public $invoice;
 
@@ -74,6 +75,8 @@ class InvoiceCreateLive extends Component
         $this->ubigeo = $encomienda->remitente->ubigeo;
         $this->client = $encomienda->remitente;
         $this->paquetes = $encomienda->paquetes;
+        $this->docAdjunto = json_decode($encomienda->docsTraslado)[0]->documento ?? null;
+        $this->docAdjunto_type = json_decode($encomienda->docsTraslado)[0]->tipoDoc ?? null;
         $this->calculateTotals();
     }
     public function render()
@@ -132,7 +135,6 @@ class InvoiceCreateLive extends Component
 
         $this->serie = $this->tipoDoc == '01' ? Auth::user()->sucursal->serieFactura : Auth::user()->sucursal->serieBoleta;
         $correlativo = Invoice::where('tipoDoc', $this->tipoDoc)->where('serie', $this->serie)->count() + 1;
-
         $rules = [
             'client' => 'required',
             'tipoDoc' => 'required',
@@ -162,7 +164,29 @@ class InvoiceCreateLive extends Component
             'total.required' => 'Error, es necesario seleccionar un total!',
         ];
         $this->validate($rules, $messages);
+        if ($this->docAdjunto) {
+            $this->docAdjunto = strtoupper($this->docAdjunto);
+            // Reconocer el tipo de documento según el prefijo
+            $firstChar = substr($this->docAdjunto, 0, 1);
 
+            switch ($firstChar) {
+                case 'F':
+                    $this->docAdjunto_type = 'Factura'; // Factura
+                    break;
+                case 'B':
+                    $this->docAdjunto_type = 'Boleta'; // Boleta
+                    break;
+                case 'T':
+                    $this->docAdjunto_type = 'Guía de Remisión'; // Guía de Remisión
+                    break;
+                case 'V':
+                    $this->docAdjunto_type = 'Guía de Transportista'; // Guía de Transportista
+                    break;
+                default:
+                    $this->docAdjunto_type = 'Otro documento'; // Otro documento
+                    break;
+            }
+        }
         $formatter = new NumeroALetras();
         $company = Company::first();
         $factura = new Invoice();
@@ -187,6 +211,8 @@ class InvoiceCreateLive extends Component
             'mtoImpVenta' => $this->total,
             'monto_letras' => $formatter->toInvoice($this->total, 2, 'SOLES'),
             'observacion' => $this->observacion,
+            'docAdjunto' => $this->docAdjunto ?? '',
+            'docAdjunto_type' => $this->docAdjunto_type ?? '',
         ]);
 
         $legends = [
@@ -265,6 +291,9 @@ class InvoiceCreateLive extends Component
         $this->tipoOperacion = '0101';
         $this->tipoDocumento = '1';
         $this->tipoDoc = '03';
+        $this->docAdjunto = null;
+        $this->docAdjunto_type = null;
+        $this->observacion = null;
         $this->success('Factura emitida correctamente');
     }
     public function buscarDocumento()
