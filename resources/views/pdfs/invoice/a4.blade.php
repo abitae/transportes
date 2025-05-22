@@ -248,7 +248,7 @@
                 @endif
             </td>
             <td>
-                @if ($invoice->encomienda->despatche && $invoice->encomienda->despatche->docsTraslado)
+                @if ($invoice->encomienda)
                     @php
                         $docsTraslado = json_decode($invoice->encomienda->despatche->docsTraslado, true);
                     @endphp
