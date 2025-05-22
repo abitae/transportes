@@ -60,7 +60,7 @@
                                 link="/despache/80mm/{{ $stuff->id }}" spinner class="text-white bg-green-500 btn-xs" />
                         @endscope
                         @scope('cell_xml', $stuff)
-                            @if ($stuff->cdr_code != 0 || $stuff->cdr_code == null)
+                            @if ($stuff->cdr_code != 0)
                                 <x-mary-button icon="o-exclamation-triangle" target="_blank" label="{{ $stuff->cdr_code }}"
                                     wire:click="statusDespatch({{ $stuff->id }})" no-wire-navigate spinner
                                     class="text-white bg-red-500 btn-xs" />
