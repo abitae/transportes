@@ -243,8 +243,11 @@
             </td>
             <td>
                 @if ($invoice->encomienda)
+                @if ($invoice->encomienda->despatche)
                     {{ $invoice->encomienda->despatche->serie }} -
                     {{ $invoice->encomienda->despatche->correlativo }}
+                @endif
+                
                 @endif
             </td>
             <td>
