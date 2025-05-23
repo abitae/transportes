@@ -243,15 +243,15 @@
             </td>
             <td>
                 @if ($invoice->encomienda)
-                @if ($invoice->encomienda->despatche)
-                    {{ $invoice->encomienda->despatche->serie }} -
-                    {{ $invoice->encomienda->despatche->correlativo }}
-                @endif
-                
+
+                    {{ $invoice->encomienda->despatche->serie ?? '' }} -
+                    {{ $invoice->encomienda->despatche->correlativo ?? '' }}
+
+
                 @endif
             </td>
             <td>
-                @if ($invoice->encomienda)
+                @if ($invoice->encomienda->despatche->docsTraslado)
                     @php
                         $docsTraslado = json_decode($invoice->encomienda->despatche->docsTraslado, true);
                     @endphp
