@@ -251,15 +251,17 @@
                 @endif
             </td>
             <td>
-                @if (!is_null($invoice->encomienda->despatche->docsTraslado))
+                @if (!is_null($invoice->encomienda))
                     @php
                         $docsTraslado = json_decode($invoice->encomienda->despatche->docsTraslado, true);
                     @endphp
+                    @if (!is_null($docsTraslado))
                     @forelse ($docsTraslado as $doc)
                         <div class="customer-detail">{{ $doc['tipoDoc'] }}: {{ $doc['documento'] }}</div>
-                    @empty
-                        <div class="customer-detail">Sin documentos</div>
-                    @endforelse
+                        @empty
+                            <div class="customer-detail">Sin documentos</div>
+                        @endforelse
+                    @endif
                 @elseif ($invoice->docAdjunto)
                     <div class="customer-detail">{{ $invoice->docAdjunto_type }}: {{ $invoice->docAdjunto }}</div>
                 @else
