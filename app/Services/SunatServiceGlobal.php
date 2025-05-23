@@ -350,4 +350,5 @@ class SunatServiceGlobal
 
         return $response;
     }
+    
 }

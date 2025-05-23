@@ -141,7 +141,7 @@
 
     <x-slot:actions>
         <x-mary-button label="Cerrar" wire:click="closePrintNote" class="btn-ghost" />
-        <x-mary-button label="Descargar PDF" icon="o-document-arrow-down" class="btn-primary" target="_blank"
+        <x-mary-button target="_blank" label="Descargar PDF" icon="o-document-arrow-down" class="btn-primary"
             link="/note/a4/{{ $note->id }}" />
     </x-slot:actions>
 </x-mary-modal>
