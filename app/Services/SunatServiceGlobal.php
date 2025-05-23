@@ -10,6 +10,8 @@ use Greenter\Model\Despatch\AdditionalDoc;
 use Greenter\Model\Despatch\Transportist;
 use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
 use Greenter\Model\Sale\FormaPagos\FormaPagoCredito;
+use Greenter\Model\Summary\Summary;
+use Greenter\Model\Summary\SummaryDetail;
 use Greenter\See;
 use Greenter\Ws\Services\SunatEndpoints;
 use Illuminate\Support\Facades\Storage;
@@ -350,5 +352,27 @@ class SunatServiceGlobal
 
         return $response;
     }
-    
+    public function setResumenDiario($invoices)
+    {
+        $details = [];
+        foreach ($invoices as $invoice) {
+            $detail = new SummaryDetail();
+            $detail->setTipoDoc('03')
+                ->setSerieNro($invoice->serie . '-' . $invoice->correlativo)
+                ->setEstado('3')
+                ->setClienteTipo($invoice->client->type_code)
+                ->setClienteNro($invoice->client->code)
+                ->setTotal($invoice->mtoImpVenta)
+                ->setMtoOperGravadas($invoice->mtoOperGravadas)
+                ->setMtoIGV($invoice->mtoIGV);
+            $details[] = $detail;
+        }
+        $sum = new Summary();
+        $sum->setFecGeneracion(new DateTime($invoices->first()->fechaEmision))
+            ->setFecResumen(new DateTime('-1days'))
+            ->setCorrelativo('001')
+            ->setCompany($this->getCompany($invoices->first()->company))
+            ->setDetails($details);
+        return $sum;
+    }
 }

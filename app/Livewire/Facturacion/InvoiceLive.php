@@ -7,6 +7,7 @@ use App\Services\SunatServiceGlobal;
 use App\Traits\UtilsTrait;
 use Carbon\Carbon;
 use Greenter\Report\XmlUtils;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
@@ -108,6 +109,8 @@ class InvoiceLive extends Component
             $invoice->cdr_code = $response['cdrResponse']['code'];
             $invoice->cdr_note = $response['cdrResponse']['notes'];
             $invoice->cdr_path = 'cdr/' . 'R-' . $invoice->company->ruc . '-' . $invoice->tipoDoc . '-' . $invoice->serie . '-' . $invoice->correlativo . '.zip';
+            $invoice->errorCode = null;
+            $invoice->errorMessage = null;
             $invoice->save();
             $cdr = $result->getCdrZip();
             Storage::disk('public')->put($invoice->cdr_path, $cdr);
@@ -152,7 +155,7 @@ class InvoiceLive extends Component
     }
     public function enviarBloque()
     {
-        $invoices = Invoice::whereNotNull('xml_path')
+        $invoices = Invoice::whereNull('xml_path')
             ->when($this->filtroFechaInicio && $this->filtroFechaFin, function ($query) {
                 return $query->whereBetween('created_at', [
                     Carbon::parse($this->filtroFechaInicio)->startOfDay(),
@@ -179,5 +182,38 @@ class InvoiceLive extends Component
             }
         }
         $this->toast('info', 'Enviando ' . $invoices->count() . ' comprobantes');
+    }
+    public function buscaResumen()
+    {
+        $invoices = Invoice::whereNull('cdr_path')
+            ->where('serie', 'like', 'B%')
+            ->get();
+        dd($invoices);
+    }
+    public function sendSummary()
+    {
+        $invoices = Invoice::whereNull('cdr_path')
+            ->where('serie', 'like', 'B%')
+            ->get();
+        dd($invoices);
+        $sunat = new SunatServiceGlobal();
+        $see = $sunat->getSee($invoices->first()->company);
+        $sum = $sunat->setResumenDiario($invoices);
+        $result = $see->send($sum);
+        dd($result);
+        $response = $sunat->sunatResponse($result);
+        if ($response['success']) {
+            foreach ($invoices as $invoice) {
+                $invoice->cdr_description = $response['cdrResponse']['description'];
+                $invoice->cdr_code = $response['cdrResponse']['code'];
+                $invoice->cdr_note = $response['cdrResponse']['notes'];
+                $invoice->cdr_path = 'cdr/' . 'R-' . $invoice->company->ruc . '-' . $invoice->tipoDoc . '-' . $invoice->serie . '-' . $invoice->correlativo . '.zip';
+                $invoice->save();
+                Storage::disk('public')->put($invoice->cdr_path, $cdr);
+            }
+            $this->toast('success', 'Resumen diario enviado a la sunat');
+        } else {
+            $this->toast('error', 'Error al enviar el resumen diario a la sunat');
+        }
     }
 }

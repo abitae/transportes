@@ -1,9 +1,10 @@
 <div>
     <x-mary-card title="{{ $title }}" subtitle="{{ $sub_title }}" separator>
         <x-slot:menu>
-
+            <x-mary-button wire:click.prevent="buscaResumen" label="Resumen Boletas" icon="o-arrow-path"
+                spinner responsive />
             <x-mary-button wire:click.prevent="enviarBloque" label="Enviar bloque" icon="o-arrow-path"
-                 spinner responsive />
+                spinner responsive />
         </x-slot:menu>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 p-2 shadow-xl">
             <div>
