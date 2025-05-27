@@ -40,7 +40,7 @@ trait InvoiceTrait
             'tipoOperacion' => 'TICKET',
             'serie' => $encomienda->code,
             'correlativo' => Ticket::count() + 1,
-            'fechaEmision' => $encomienda->created_at,
+            'fechaEmision' => Carbon::now(),
             'formaPago_moneda' => 'PEN',
             'formaPago_tipo' => $encomienda->tipo_pago,
             'tipoMoneda' => 'PEN',
@@ -179,7 +179,7 @@ trait InvoiceTrait
             'tipoDoc' => '31',
             'serie' => 'V001',
             'correlativo' => $correlativo,
-            'fechaEmision' => $encomienda->created_at,
+            'fechaEmision' => Carbon::now(),
             'company_id' => $company->id,
             'flete_id' => $encomienda->remitente->id,
             'remitente_id' => $encomienda->remitente->id,
@@ -189,7 +189,7 @@ trait InvoiceTrait
 
             'docsTraslado' => $encomienda->docsTraslado,
 
-            'fecTraslado' => $encomienda->created_at,
+            'fecTraslado' => Carbon::now(),
             'pesoTotal' => $encomienda->paquetes->sum('peso'),
             'undPesoTotal' => 'KGM',
             'llegada_ubigueo' => $encomienda->sucursal_destinatario->ubigeo ?? '150203',
