@@ -57,7 +57,6 @@ class EncomiendaForm extends Form
                 'estado_credito' => $this->estado_credito,
                 'fecha_creacion' => $this->fecha_creacion,
                 'docsTraslado' => $this->docsTraslado,
-
                 'glosa' => $this->glosa,
                 'observation' => $this->observation,
                 'estado_encomienda' => $this->estado_encomienda,

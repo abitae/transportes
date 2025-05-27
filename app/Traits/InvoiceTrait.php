@@ -10,6 +10,7 @@ use App\Models\Facturacion\InvoiceDetail;
 use App\Models\Facturacion\Ticket;
 use App\Models\Facturacion\TicketDetail;
 use App\Models\Package\Encomienda;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Luecano\NumeroALetras\NumeroALetras;
 
@@ -99,7 +100,7 @@ trait InvoiceTrait
         $data = [
             'encomienda_id' => $encomienda->id,
             'sucursal_id' => Auth::user()->sucursal->id,
-            'fechaEmision' => $encomienda->created_at,
+            'fechaEmision' => Carbon::now(),
             'formaPago_moneda' => 'PEN',
             'formaPago_tipo' => $encomienda->tipo_pago,
             'tipoMoneda' => 'PEN',
