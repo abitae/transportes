@@ -63,6 +63,7 @@ class SendPackageLive extends Component
     public $peso;
     public $amount;
     public $cantidad;
+    public $editingPaqueteId = null;
     public function mount()
     {
         $this->date_traslado = Carbon::now()->endOfDay()->format('Y-m-d H:i');
@@ -130,6 +131,7 @@ class SendPackageLive extends Component
                     });
                 });
             })
+            ->with(['remitente', 'destinatario', 'sucursal_remitente', 'sucursal_destinatario'])
             ->latest()
             ->paginate($this->perPage, ['*'], 'page');
 
@@ -248,6 +250,12 @@ class SendPackageLive extends Component
     }
     public function editEncomienda(Encomienda $encomienda)
     {
+        // Validar que la encomienda sea editable
+        if (!$this->isEncomiendaEditable($encomienda)) {
+            $this->error($this->getEditableErrorMessage($encomienda));
+            return;
+        }
+
         $this->encomienda = $encomienda;
         $this->editEncomiendaModal = true;
         $this->paquetes = $encomienda->paquetes;
@@ -264,17 +272,57 @@ class SendPackageLive extends Component
     }
     public function updateEncomienda()
     {
-        //revisar si el destinatario existe
-        if ($this->customerFormDest->code && $this->customerFormDest->type_code) {
-            $this->encomienda->customer_dest_id = Customer::where('code', $this->customerFormDest->code)
-                ->where('type_code', $this->customerFormDest->type_code)
-                ->first()
-                ->id;
+        try {
+            // Validar que la encomienda existe y es editable
+            if (!$this->encomienda) {
+                $this->error('No se encontró la encomienda a editar');
+                return;
+            }
 
-            $this->encomienda->isHome = $this->isHome;
-            $this->customerFormDest->update();
-            $this->encomienda->save();
-            $this->editModal = false;
+            // Validar que la encomienda sea editable
+            if (!$this->isEncomiendaEditable($this->encomienda)) {
+                $this->error($this->getEditableErrorMessage($this->encomienda));
+                return;
+            }
+
+            // Validar que se proporcionó información del destinatario
+            if ($this->customerFormDest->code && $this->customerFormDest->type_code) {
+                $destinatario = Customer::where('code', $this->customerFormDest->code)
+                    ->where('type_code', $this->customerFormDest->type_code)
+                    ->first();
+
+                if (!$destinatario) {
+                    $this->error('El destinatario no existe en la base de datos');
+                    return;
+                }
+
+                // Validar que la encomienda tenga al menos un paquete
+                if (!$this->validarPaquetes()) {
+                    return;
+                }
+
+                // Actualizar datos de la encomienda
+                $this->encomienda->customer_dest_id = $destinatario->id;
+                $this->encomienda->isHome = $this->isHome;
+
+                // Recalcular el monto total de la encomienda
+                $this->encomienda->monto = $this->calcularTotalPaquetes();
+
+                // Guardar cambios
+                $this->customerFormDest->update();
+                $this->encomienda->save();
+
+                // Log de la acción
+                $this->infoLog('Encomienda editada: ' . $this->encomienda->code);
+
+                $this->success('Encomienda actualizada correctamente');
+                $this->editEncomiendaModal = false;
+            } else {
+                $this->error('Debe proporcionar la información del destinatario');
+            }
+        } catch (\Exception $e) {
+            $this->errorLog('Error al actualizar encomienda', $e);
+            $this->error('Error al actualizar la encomienda: ' . $e->getMessage());
         }
     }
     public function excelGenerate(Manifiesto $manifiesto)
@@ -344,46 +392,292 @@ class SendPackageLive extends Component
     }
     public function addPaquete()
     {
-        $rules = [
-            'cantidad' => 'required|numeric',
-            'und_medida' => 'required',
-            'description' => 'required',
-            'peso' => 'required|numeric',
-            'amount' => 'required|numeric',
-        ];
-        $messages = [
-            'cantidad.required' => 'Error, es necesario ingresar la cantidad!',
-            'cantidad.numeric' => 'Error, la cantidad debe ser un número!',
-            'und_medida.required' => 'Error, es necesario ingresar la unidad de medida!',
-            'description.required' => 'Error, es necesario ingresar la descripción!',
-            'peso.required' => 'Error, es necesario ingresar el peso!',
-            'peso.numeric' => 'Error, el peso debe ser un número!',
-            'amount.required' => 'Error, es necesario ingresar el precio unitario!',
-            'amount.numeric' => 'Error, el precio unitario debe ser un número!',
-        ];
-        $this->validate($rules, $messages);
-        $paquete = new Paquete();
-        $paquete->id = $this->paquetes->count() + 1;
-        $paquete->encomienda_id = $this->encomienda->id;
-        $paquete->cantidad = $this->cantidad;
-        $paquete->und_medida = $this->und_medida;
-        $paquete->description = $this->description;
-        $paquete->peso = $this->peso;
-        $paquete->amount = $this->amount;
-        $paquete->sub_total = $this->amount * $this->cantidad;
-        //dd($this->paquetes);
-        $this->paquetes->push($paquete->toArray());
-        $this->success('Genial', 'Paquete ingresado correctamente!');
+        try {
+            $rules = [
+                'cantidad' => 'required|numeric|min:0.01',
+                'und_medida' => 'required',
+                'description' => 'required|min:3',
+                'peso' => 'required|numeric|min:0.01',
+                'amount' => 'required|numeric|min:0.01',
+            ];
+            $messages = [
+                'cantidad.required' => 'Error, es necesario ingresar la cantidad!',
+                'cantidad.numeric' => 'Error, la cantidad debe ser un número!',
+                'cantidad.min' => 'Error, la cantidad debe ser mayor a 0!',
+                'und_medida.required' => 'Error, es necesario ingresar la unidad de medida!',
+                'description.required' => 'Error, es necesario ingresar la descripción!',
+                'description.min' => 'Error, la descripción debe tener al menos 3 caracteres!',
+                'peso.required' => 'Error, es necesario ingresar el peso!',
+                'peso.numeric' => 'Error, el peso debe ser un número!',
+                'peso.min' => 'Error, el peso debe ser mayor a 0!',
+                'amount.required' => 'Error, es necesario ingresar el precio unitario!',
+                'amount.numeric' => 'Error, el precio unitario debe ser un número!',
+                'amount.min' => 'Error, el precio unitario debe ser mayor a 0!',
+            ];
+            $this->validate($rules, $messages);
+
+                        if ($this->editingPaqueteId) {
+                // Actualizar paquete existente
+                $paquete = Paquete::where('id', $this->editingPaqueteId)
+                    ->where('encomienda_id', $this->encomienda->id)
+                    ->first();
+
+                if (!$paquete) {
+                    $this->error('Paquete no encontrado');
+                    return;
+                }
+
+                $paquete->update([
+                    'cantidad' => $this->cantidad,
+                    'und_medida' => $this->und_medida,
+                    'description' => $this->description,
+                    'peso' => $this->peso,
+                    'amount' => $this->amount,
+                    'sub_total' => $this->amount * $this->cantidad,
+                ]);
+
+                $this->success('Paquete actualizado correctamente!');
+                $this->infoLog('Paquete actualizado en encomienda: ' . $this->encomienda->code);
+            } else {
+                // Crear nuevo paquete en la base de datos
+                $paquete = Paquete::create([
+                    'encomienda_id' => $this->encomienda->id,
+                    'cantidad' => $this->cantidad,
+                    'und_medida' => $this->und_medida,
+                    'description' => $this->description,
+                    'peso' => $this->peso,
+                    'amount' => $this->amount,
+                    'sub_total' => $this->amount * $this->cantidad,
+                ]);
+
+                $this->success('Paquete agregado correctamente!');
+                $this->infoLog('Paquete agregado a encomienda: ' . $this->encomienda->code);
+            }
+
+            // Actualizar la colección de paquetes
+            $this->paquetes = $this->encomienda->fresh()->paquetes;
+            $this->paquetes = $this->paquetes->map(function($paquete) {
+                $paquete->amount = number_format($paquete->amount, 2, '.', '');
+                return $paquete;
+            });
+
+            // Limpiar campos del formulario
+            $this->resetPaqueteForm();
+
+        } catch (\Exception $e) {
+            $this->errorLog('Error al agregar paquete', $e);
+            $this->error('Error al agregar paquete: ' . $e->getMessage());
+        }
     }
     public function restPaquete($id)
     {
-        $this->success('Genial', 'Paquete eliminado correctamente!');
-        $this->paquetes->pull($id - 1);
+        try {
+            // Buscar el paquete en la base de datos
+            $paquete = Paquete::where('id', $id)
+                ->where('encomienda_id', $this->encomienda->id)
+                ->first();
+
+            if (!$paquete) {
+                $this->error('Paquete no encontrado');
+                return;
+            }
+
+            // Eliminar el paquete de la base de datos
+            $paquete->delete();
+
+            // Actualizar la colección de paquetes
+            $this->paquetes = $this->encomienda->fresh()->paquetes;
+            $this->paquetes = $this->paquetes->map(function($paquete) {
+                $paquete->amount = number_format($paquete->amount, 2, '.', '');
+                return $paquete;
+            });
+
+            $this->success('Paquete eliminado correctamente!');
+
+            // Log de la acción
+            $this->infoLog('Paquete eliminado de encomienda: ' . $this->encomienda->code);
+
+        } catch (\Exception $e) {
+            $this->errorLog('Error al eliminar paquete', $e);
+            $this->error('Error al eliminar paquete: ' . $e->getMessage());
+        }
     }
 
     public function resetPaquete()
     {
-        $this->success('Genial', 'Paquetes eliminados correctamente!');
-        $this->paquetes = collect([]);
+        try {
+            // Eliminar todos los paquetes de la encomienda
+            Paquete::where('encomienda_id', $this->encomienda->id)->delete();
+
+            // Limpiar la colección de paquetes
+            $this->paquetes = collect([]);
+
+            $this->success('Todos los paquetes han sido eliminados correctamente!');
+
+            // Log de la acción
+            $this->infoLog('Todos los paquetes eliminados de encomienda: ' . $this->encomienda->code);
+
+        } catch (\Exception $e) {
+            $this->errorLog('Error al eliminar todos los paquetes', $e);
+            $this->error('Error al eliminar paquetes: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Verifica si una encomienda es editable
+     */
+    private function isEncomiendaEditable(Encomienda $encomienda): bool
+    {
+        return $encomienda->tipo_comprobante === 'TICKET' &&
+               in_array($encomienda->estado_encomienda, ['REGISTRADO', 'RETORNADO']);
+    }
+
+    /**
+     * Obtiene el mensaje de error para encomiendas no editables
+     */
+    private function getEditableErrorMessage(Encomienda $encomienda): string
+    {
+        if ($encomienda->tipo_comprobante !== 'TICKET') {
+            return 'Solo se pueden editar encomiendas con tipo de comprobante TICKET';
+        }
+
+        if (!in_array($encomienda->estado_encomienda, ['REGISTRADO', 'RETORNADO'])) {
+            return 'Solo se pueden editar encomiendas en estado REGISTRADO o RETORNADO';
+        }
+
+        return 'La encomienda no es editable';
+    }
+
+    /**
+     * Limpia los campos del formulario de paquetes
+     */
+    private function resetPaqueteForm()
+    {
+        $this->cantidad = null;
+        $this->und_medida = 'NIU';
+        $this->description = null;
+        $this->peso = null;
+        $this->amount = null;
+        $this->editingPaqueteId = null;
+    }
+
+    /**
+     * Calcula el total de los paquetes
+     */
+    private function calcularTotalPaquetes()
+    {
+        return $this->paquetes->sum('sub_total');
+    }
+
+    /**
+     * Valida que la encomienda tenga al menos un paquete
+     */
+    private function validarPaquetes()
+    {
+        if ($this->paquetes->isEmpty()) {
+            $this->error('La encomienda debe tener al menos un paquete');
+            return false;
+        }
+        return true;
+    }
+
+        /**
+     * Edita un paquete existente
+     */
+    public function editPaquete($id)
+    {
+        try {
+            $paquete = Paquete::where('id', $id)
+                ->where('encomienda_id', $this->encomienda->id)
+                ->first();
+
+            if (!$paquete) {
+                $this->error('Paquete no encontrado');
+                return;
+            }
+
+            // Cargar datos del paquete en el formulario
+            $this->editingPaqueteId = $paquete->id;
+            $this->cantidad = $paquete->cantidad;
+            $this->und_medida = $paquete->und_medida;
+            $this->description = $paquete->description;
+            $this->peso = $paquete->peso;
+            $this->amount = $paquete->amount;
+
+            $this->success('Paquete cargado para edición');
+
+        } catch (\Exception $e) {
+            $this->errorLog('Error al cargar paquete para edición', $e);
+            $this->error('Error al cargar paquete: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Actualiza un paquete existente
+     */
+    public function updatePaquete($id)
+    {
+        try {
+            $rules = [
+                'cantidad' => 'required|numeric|min:0.01',
+                'und_medida' => 'required',
+                'description' => 'required|min:3',
+                'peso' => 'required|numeric|min:0.01',
+                'amount' => 'required|numeric|min:0.01',
+            ];
+            $messages = [
+                'cantidad.required' => 'Error, es necesario ingresar la cantidad!',
+                'cantidad.numeric' => 'Error, la cantidad debe ser un número!',
+                'cantidad.min' => 'Error, la cantidad debe ser mayor a 0!',
+                'und_medida.required' => 'Error, es necesario ingresar la unidad de medida!',
+                'description.required' => 'Error, es necesario ingresar la descripción!',
+                'description.min' => 'Error, la descripción debe tener al menos 3 caracteres!',
+                'peso.required' => 'Error, es necesario ingresar el peso!',
+                'peso.numeric' => 'Error, el peso debe ser un número!',
+                'peso.min' => 'Error, el peso debe ser mayor a 0!',
+                'amount.required' => 'Error, es necesario ingresar el precio unitario!',
+                'amount.numeric' => 'Error, el precio unitario debe ser un número!',
+                'amount.min' => 'Error, el precio unitario debe ser mayor a 0!',
+            ];
+            $this->validate($rules, $messages);
+
+            $paquete = Paquete::where('id', $id)
+                ->where('encomienda_id', $this->encomienda->id)
+                ->first();
+
+            if (!$paquete) {
+                $this->error('Paquete no encontrado');
+                return;
+            }
+
+            // Actualizar el paquete
+            $paquete->update([
+                'cantidad' => $this->cantidad,
+                'und_medida' => $this->und_medida,
+                'description' => $this->description,
+                'peso' => $this->peso,
+                'amount' => $this->amount,
+                'sub_total' => $this->amount * $this->cantidad,
+            ]);
+
+            // Actualizar la colección de paquetes
+            $this->paquetes = $this->encomienda->fresh()->paquetes;
+            $this->paquetes = $this->paquetes->map(function($paquete) {
+                $paquete->amount = number_format($paquete->amount, 2, '.', '');
+                return $paquete;
+            });
+
+            // Limpiar campos del formulario
+            $this->resetPaqueteForm();
+
+            $this->success('Paquete actualizado correctamente!');
+
+            // Log de la acción
+            $this->infoLog('Paquete actualizado en encomienda: ' . $this->encomienda->code);
+
+        } catch (\Exception $e) {
+            $this->errorLog('Error al actualizar paquete', $e);
+            $this->error('Error al actualizar paquete: ' . $e->getMessage());
+        }
     }
 }

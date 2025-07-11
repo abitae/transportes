@@ -1,5 +1,42 @@
 @if ($encomienda)
     <x-mary-modal wire:model="editEncomiendaModal" box-class="max-h-full max-w-4xl" title="Editar Encomienda"  separator>
+        {{-- Información de restricciones --}}
+        <div class="p-4 mb-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div class="flex items-center gap-2">
+                <x-mary-icon name="o-information-circle" class="text-blue-500" />
+                <div class="text-sm text-blue-700">
+                    <p class="font-semibold">Restricciones de Edición:</p>
+                    <ul class="mt-1 space-y-1">
+                        <li>• Solo se pueden editar encomiendas con tipo de comprobante <strong>TICKET</strong></li>
+                        <li>• Solo se pueden editar encomiendas en estado <strong>REGISTRADO</strong> o <strong>RETORNADO</strong></li>
+                        <li>• Los cambios se aplicarán inmediatamente al guardar</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {{-- Información de la Encomienda --}}
+        <div class="p-4 mb-4 bg-gray-50 border border-gray-200 rounded-lg">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                    <span class="font-semibold text-gray-600">Código:</span>
+                    <p class="text-gray-800">{{ $encomienda->code }}</p>
+                </div>
+                <div>
+                    <span class="font-semibold text-gray-600">Estado:</span>
+                    <p class="text-gray-800">{{ $encomienda->estado_encomienda }}</p>
+                </div>
+                <div>
+                    <span class="font-semibold text-gray-600">Tipo Comprobante:</span>
+                    <p class="text-gray-800">{{ $encomienda->tipo_comprobante }}</p>
+                </div>
+                <div>
+                    <span class="font-semibold text-gray-600">Fecha Registro:</span>
+                    <p class="text-gray-800">{{ $encomienda->created_at->format('d/m/Y H:i') }}</p>
+                </div>
+            </div>
+        </div>
+
         <div class="space-y-4">
             {{-- Sección de Destinatario --}}
             <div class="p-4 border border-green-500 rounded-lg">
@@ -50,6 +87,11 @@
             </div>
 
             <div class="grid grid-cols-1 gap-3 p-2 bg-white rounded-lg shadow-sm md:grid-cols-4">
+                @if($editingPaqueteId)
+                    <div class="col-span-4 mb-2">
+                        <x-mary-badge value="Editando paquete #{{ $editingPaqueteId }}" class="bg-blue-500 text-white" />
+                    </div>
+                @endif
                 <div class="col-span-1 md:col-span-1">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
@@ -78,12 +120,14 @@
                                     wire:keydown.enter="addPaquete" wire:keydown.ctrl.enter="addPaquete"
                                     placeholder="0.00" />
                                 <div class="flex justify-end gap-2 mt-2">
-                                    <x-mary-button icon="o-plus" wire:click='addPaquete'
-                                        class="text-white rounded-lg bg-sky-500 hover:bg-sky-600"
-                                        tooltip="Agregar paquete" />
+                                                                        <x-mary-button icon="{{ $editingPaqueteId ? 'o-pencil' : 'o-plus' }}"
+                                        wire:click='addPaquete'
+                                        class="text-white rounded-lg {{ $editingPaqueteId ? 'bg-blue-500 hover:bg-blue-600' : 'bg-sky-500 hover:bg-sky-600' }}"
+                                        tooltip="{{ $editingPaqueteId ? 'Actualizar paquete' : 'Agregar paquete' }}" />
                                     <x-mary-button icon="o-trash" wire:click='resetPaquete'
+                                        wire:confirm="¿Está seguro de eliminar todos los paquetes?"
                                         class="text-white bg-red-500 hover:bg-red-600 rounded-lg"
-                                        tooltip="Limpiar campos" />
+                                        tooltip="Eliminar todos los paquetes" />
                                 </div>
                             </div>
                         </div>
@@ -92,6 +136,13 @@
             </div>
             <div class="mt-0">
                 <x-mary-card shadow separator>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-700">Paquetes de la Encomienda</h3>
+                        <div class="flex gap-2">
+                            <x-mary-badge :value="'Total: ' . count($paquetes) . ' paquetes'" class="bg-blue-500" />
+                            <x-mary-badge :value="'Monto: S/ ' . number_format($paquetes->sum('sub_total'), 2)" class="bg-green-500" />
+                        </div>
+                    </div>
                     <x-mary-table :headers="$headers_paquetes" :rows="$paquetes" striped hover
                         @row-click="$wire.restPaquete($event.detail.id)">
                         <x-slot:empty>
@@ -101,6 +152,17 @@
                                 <p class="text-sm">Agregue paquetes utilizando el formulario superior</p>
                             </div>
                         </x-slot:empty>
+                                                @scope('actions', $paquete)
+                            <div class="flex gap-1">
+                                <x-mary-button icon="o-pencil" wire:click="editPaquete({{ $paquete->id }})"
+                                    class="btn-sm text-white bg-blue-500 hover:bg-blue-600"
+                                    tooltip="Editar paquete" />
+                                <x-mary-button icon="o-trash" wire:click="restPaquete({{ $paquete->id }})"
+                                    wire:confirm="¿Está seguro de eliminar este paquete?"
+                                    class="btn-sm text-white bg-red-500 hover:bg-red-600"
+                                    tooltip="Eliminar paquete" />
+                            </div>
+                        @endscope
                     </x-mary-table>
                 </x-mary-card>
             </div>

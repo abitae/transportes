@@ -95,6 +95,17 @@
                                     <x-mary-badge :value="strtoupper($stuff->code)"
                                         class="w-full text-white text-lg sm:text-xl {{ $stuff->estado_pago == 'CONTRA ENTREGA' ? 'bg-red-500' : 'bg-green-500' }}" />
                                 </div>
+                                <div class="col-span-2 mb-1">
+                                    <div class="flex gap-1">
+                                        <x-mary-badge :value="$stuff->tipo_comprobante"
+                                            class="text-xs {{ $stuff->tipo_comprobante === 'TICKET' ? 'bg-blue-500' : 'bg-gray-500' }}" />
+                                        @if ($stuff->tipo_comprobante === 'TICKET' && in_array($stuff->estado_encomienda, ['REGISTRADO', 'RETORNADO']))
+                                            <x-mary-badge value="EDITABLE" class="text-xs bg-green-500" />
+                                        @else
+                                            <x-mary-badge value="NO EDITABLE" class="text-xs bg-red-500" />
+                                        @endif
+                                    </div>
+                                </div>
                                 <div class="col-span-1">
                                     <x-mary-button label='Detalle' icon="s-bars-3"
                                         wire:click="detailEncomienda({{ $stuff->id }})" spinner
@@ -129,9 +140,15 @@
                                         class="w-full text-white bg-red-500 btn-xs" />
                                 </div>
                                 <div class="col-span-1 mt-1">
-                                    <x-mary-button label='Editar' icon="o-pencil-square"
-                                        wire:click="editEncomienda({{ $stuff->id }})" spinner
-                                        class="w-full text-white bg-orange-500 btn-xs" />
+                                    @if ($stuff->tipo_comprobante === 'TICKET' && in_array($stuff->estado_encomienda, ['REGISTRADO', 'RETORNADO']))
+                                        <x-mary-button label='Editar' icon="o-pencil-square"
+                                            wire:click="editEncomienda({{ $stuff->id }})" spinner
+                                            class="w-full text-white bg-orange-500 btn-xs" />
+                                    @else
+                                        <x-mary-button label='Editar' icon="o-pencil-square"
+                                            class="w-full text-white bg-gray-400 btn-xs cursor-not-allowed" disabled
+                                            tooltip="{{ $stuff->tipo_comprobante !== 'TICKET' ? 'Solo se pueden editar encomiendas con TICKET' : 'Solo se pueden editar encomiendas en estado REGISTRADO o RETORNADO' }}" />
+                                    @endif
                                 </div>
                                 <div class="col-span-2 mt-1">
                                     <x-mary-badge :value="strtoupper($stuff->estado_pago)"
