@@ -150,6 +150,8 @@
     <div class="customer-info">
         <strong>TRANSPORTE y CONDUCTOR</strong><br>
         <strong>PLACA N°: :</strong>{{ $despache->encomienda->vehiculo->name }}<br>
+        <strong>Config Vehiculo: :</strong>{{ $despache->encomienda->vehiculo->modelo }}<br>
+        <strong>MTC: :</strong>{{ $despache->encomienda->vehiculo->nroCirculacion }}<br>
         <strong>DNI:</strong>{{ $despache->encomienda->transportista->dni }}<br>
         <strong>NOMBRE:</strong>{{ $despache->encomienda->transportista->name }}<br>
         <strong>LICENCIA:</strong>{{ $despache->encomienda->transportista->licencia }}
